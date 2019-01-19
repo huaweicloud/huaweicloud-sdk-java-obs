@@ -9,6 +9,6 @@
 /target
 .externalNativeBuild
 /.settings
-/gradle/wrapper/gradle-wrapper.jar
+.gradle
 .classpath
 .project
