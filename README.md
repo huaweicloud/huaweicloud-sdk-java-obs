@@ -1,1 +1,2 @@
-# huaweicloud-sdk-java-obs
+
+Version:3.0.3
