@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -204,7 +205,6 @@ public abstract class RestStorageService {
 		
 		Call call = httpClient.newCall(request);
 		final long start = System.currentTimeMillis();
-		this.semaphore.acquire();
 		call.enqueue(new Callback() {
 			@Override
 			public void onResponse(Call call, Response response) throws IOException {
@@ -251,7 +251,14 @@ public abstract class RestStorageService {
 						}else {
 							ServiceUtils.closeStream(response);
 						}
-						performRequestAsync(authorizeHttpRequest(request, context.bucketName, location), context, callback); 
+						
+						if(context.doSignature) {
+							performRequestAsync(authorizeHttpRequest(request, context.bucketName, location), context, callback); 
+						}else {
+							Request.Builder builder = request.newBuilder();
+							RestStorageService.this.setHost(builder, request, location);
+							performRequestAsync(builder.build(), context, callback);
+						}
 						return;
 					}else if((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
 						String xmlMessage = null;
@@ -301,7 +308,6 @@ public abstract class RestStorageService {
 					if (log.isInfoEnabled()) {
 						log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
 					}
-					RestStorageService.this.semaphore.release();
 				}
 			}
 			
@@ -340,7 +346,6 @@ public abstract class RestStorageService {
 					if (log.isInfoEnabled()) {
 						log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
 					}
-					RestStorageService.this.semaphore.release();
 				}
 			}
 		});
@@ -353,10 +358,16 @@ public abstract class RestStorageService {
 		int internalErrorCount = 0;
 		String bucketName;
 		Exception lastException;
+		boolean doSignature;
 		Map<String, String> requestParameters;
 	}
 	
-	protected void performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName, ObsCallback<Response, ServiceException> callback) throws ServiceException, InterruptedException {
+	private static class ResponseContext{
+		Response response;
+		ServiceException ex;
+	}
+	
+	protected void performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName, boolean doSignature, ObsCallback<Response, ServiceException> callback) throws ServiceException, InterruptedException {
 		InterfaceLogBean reqBean = new InterfaceLogBean("performRequest", "", "");
 		
 		if (log.isDebugEnabled()) {
@@ -370,7 +381,55 @@ public abstract class RestStorageService {
 				ObsConstraint.HTTP_RETRY_MAX_VALUE);
 		context.bucketName = bucketName;
 		context.requestParameters = requestParameters;
-		this.performRequestAsync(authorizeHttpRequest(request, bucketName, null), context, callback);
+		context.doSignature = doSignature;
+		
+		if(doSignature) {
+			request = authorizeHttpRequest(request, bucketName, null);
+		}else {
+			Request.Builder builder = request.newBuilder();
+			builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
+			this.setHost(builder, request, null);
+			request = builder.build();
+		}
+		this.performRequestAsync(request, context, callback);
+	}
+	
+	protected Response performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName, boolean doSignature) throws ServiceException {
+		final CountDownLatch latch = new CountDownLatch(1);
+		final ResponseContext context = new ResponseContext();
+		try {
+			this.performRequestAsync(request, requestParameters, bucketName, doSignature, new ObsCallback<Response, ServiceException>() {
+				
+				@Override
+				public void onSuccess(Response result) {
+					context.response = result;
+					latch.countDown();
+				}
+				
+				@Override
+				public void onFailure(ServiceException e) {
+					context.ex = e;
+					latch.countDown();
+				}
+			});
+			latch.await();
+		}catch (InterruptedException e) {
+			throw new ServiceException(e);
+		}
+		
+		if(context.ex != null) {
+			throw context.ex;
+		}
+		
+		return context.response;
+	}
+	
+	protected Response performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName) throws ServiceException {
+		return this.performRequestAsync(request, requestParameters, bucketName, true);
+	}
+	
+	protected Response performRequesttWithoutSignatureAsync(Request request, Map<String, String> requestParameters, String bucketName) throws ServiceException {
+		return this.performRequestAsync(request, requestParameters, bucketName, false);
 	}
 	
 
@@ -408,6 +467,7 @@ public abstract class RestStorageService {
 						Request.Builder builder = request.newBuilder();
 						builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
 						this.setHost(builder, request, null);
+						request = builder.build();
 					}
 				} else {
 					wasRecentlyRedirected = false;
@@ -479,9 +539,12 @@ public abstract class RestStorageService {
 
 					if (doSignature) {
 						request = authorizeHttpRequest(request, bucketName, location);
+					}else {
+						Request.Builder builder = request.newBuilder();
+						this.setHost(builder, request, location);
+						request = builder.build();
 					}
 
-					request = authorizeHttpRequest(request, bucketName, location); 
 					internalErrorCount++;
 					wasRecentlyRedirected = true;
 					if (internalErrorCount > retryMaxCount) {

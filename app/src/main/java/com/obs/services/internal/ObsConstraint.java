@@ -85,7 +85,7 @@ public class ObsConstraint
     
     public static final int DEFAULT_IDLE_CONNECTION_TIME = 30000;
     
-    public static final int DEFAULT_MAX_IDLE_CONNECTIONS = 10; 
+    public static final int DEFAULT_MAX_IDLE_CONNECTIONS = HTTP_MAX_CONNECT_VALUE; 
     
     public static final int DEFAULT_TASK_THREAD_NUM = 10;
     

@@ -660,6 +660,7 @@ public class ServiceUtils
 
 	public static XMLReader loadXMLReader() throws ServiceException
 	{
+		Exception ex;
 		try
 		{
 			return XMLReaderFactory.createXMLReader();
@@ -667,6 +668,7 @@ public class ServiceUtils
 		catch (Exception e)
 		{
 			// Ignore failure
+			ex = e;
 		}
 
 		// No dice using the standard approach, try loading alternatives...
@@ -686,7 +688,7 @@ public class ServiceUtils
 			}
 		}
 		// If we haven't found and returned an XMLReader yet, give up.
-		throw new ServiceException("Failed to initialize a SAX XMLReader");
+		throw new ServiceException("Failed to initialize a SAX XMLReader", ex);
 	}
 
     public static SimpleDateFormat getShortDateFormat()
