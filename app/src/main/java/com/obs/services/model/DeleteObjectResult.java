@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services.model;
 
 /**
@@ -20,6 +7,8 @@ public class DeleteObjectResult extends HeaderResponse
 {
     private boolean deleteMarker;
     
+    private String objectKey;
+    
     private String versionId;
     
     
@@ -27,8 +16,16 @@ public class DeleteObjectResult extends HeaderResponse
 		this.deleteMarker = deleteMarker;
 		this.versionId = versionId;
 	}
+    
+   
+	public DeleteObjectResult(boolean deleteMarker, String objectKey, String versionId) {
+        this.deleteMarker = deleteMarker;
+        this.objectKey = objectKey;
+        this.versionId = versionId;
+    }
 
-	/**
+
+    /**
      * 判断多版本对象是否已被删除
      * @return 对象是否被删除标识
      */
@@ -43,11 +40,19 @@ public class DeleteObjectResult extends HeaderResponse
 	public String getVersionId() {
 		return versionId;
 	}
+	
+	/**
+	 * 获取被删除对象的对象名
+	 * @return 对象名
+	 */
+	public String getObjectKey() {
+        return objectKey;
+    }
 
 
-	@Override
-	public String toString() {
-		return "DeleteObjectResult [deleteMarker=" + deleteMarker + ", versionId=" + versionId + "]";
-	}
-    
+    @Override
+    public String toString() {
+        return "DeleteObjectResult [deleteMarker=" + deleteMarker + ", objectKey=" + objectKey + ", versionId="
+                + versionId + "]";
+    } 
 }

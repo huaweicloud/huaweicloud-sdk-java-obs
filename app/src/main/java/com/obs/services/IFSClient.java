@@ -1,23 +1,14 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services;
 
 import java.io.IOException;
 
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.TaskProgressStatus;
 import com.obs.services.model.fs.ObsFSAttribute;
+import com.obs.services.model.fs.DropFileRequest;
+import com.obs.services.model.fs.DropFileResult;
+import com.obs.services.model.fs.DropFolderRequest;
 import com.obs.services.model.fs.GetAttributeRequest;
 import com.obs.services.model.fs.GetBucketFSStatusRequest;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
@@ -143,5 +134,21 @@ public interface IFSClient {
 	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	TruncateFileResult truncateFile(TruncateFileRequest request) throws ObsException;
+	
+	/**
+	 * 删除文件
+	 * @param request 删除文件请求
+	 * @return 删除文件响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
+	DropFileResult dropFile(DropFileRequest request) throws ObsException;
+	
+	/**
+	 * 删除文件夹
+	 * @param request 删除文件夹请求参数
+	 * @return 批量任务执行状态
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
+	TaskProgressStatus dropFolder(DropFolderRequest request) throws ObsException; 
 	
 }

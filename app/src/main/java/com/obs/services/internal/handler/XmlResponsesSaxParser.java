@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services.internal.handler;
 
 import java.io.BufferedReader;
@@ -44,7 +31,6 @@ import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketTagInfo;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CanonicalGrantee;
-import com.obs.services.model.CompleteMultipartUploadResult;
 import com.obs.services.model.CopyPartResult;
 import com.obs.services.model.DeleteObjectsResult;
 import com.obs.services.model.EventTypeEnum;
@@ -138,7 +124,7 @@ public class XmlResponsesSaxParser {
 				Constructor<T> c = handlerClass.getConstructor(XMLReader.class);
 				handler = c.newInstance(this.xr);
 			}else {
-				handler = handlerClass.newInstance();
+				handler = handlerClass.getConstructor().newInstance();
 			}
 			if(handler instanceof DefaultHandler) {
 				if(sanitize) {

@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services.internal;
 
 import java.io.BufferedInputStream;
@@ -31,6 +18,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -63,11 +53,15 @@ import com.obs.services.internal.handler.XmlResponsesSaxParser.ListPartsHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.ListVersionsHandler;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.task.BlockRejectedExecutionHandler;
+import com.obs.services.internal.task.DefaultTaskProgressStatus;
 import com.obs.services.internal.utils.AbstractAuthentication;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.utils.V2Authentication;
 import com.obs.services.internal.utils.V4Authentication;
+import com.obs.services.model.AbstractBulkRequest;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
@@ -120,11 +114,13 @@ import com.obs.services.model.ObsBucket;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.OptionsInfoRequest;
 import com.obs.services.model.Permission;
+import com.obs.services.model.PolicyTempSignatureRequest;
 import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
 import com.obs.services.model.ProgressListener;
 import com.obs.services.model.PutObjectBasicRequest;
 import com.obs.services.model.PutObjectRequest;
+import com.obs.services.model.AbstractTemporarySignatureRequest;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
@@ -134,6 +130,8 @@ import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.SseCHeader;
 import com.obs.services.model.SseKmsHeader;
 import com.obs.services.model.StorageClassEnum;
+import com.obs.services.model.TaskCallback;
+import com.obs.services.model.TaskProgressListener;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.UploadPartRequest;
@@ -142,6 +140,7 @@ import com.obs.services.model.V4PostSignatureResponse;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.VersioningStatusEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.fs.DropFileResult;
 import com.obs.services.model.fs.FSStatusEnum;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.fs.NewBucketRequest;
@@ -875,17 +874,11 @@ public class ObsService extends RestStorageService {
 		return ret;
 	}
 	
-	protected TemporarySignatureResponse _createTemporarySignature(TemporarySignatureRequest request) throws Exception {
-
-		long secondsSinceEpoch = request.getExpires() <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS : request.getExpires();
-		secondsSinceEpoch += System.currentTimeMillis() / 1000;
-		
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.putAll(request.getHeaders());
-		
+	protected TemporarySignatureResponse _createTemporarySignature(AbstractTemporarySignatureRequest request) throws Exception {
+	    String requestMethod = request.getMethod() != null ? request.getMethod().getOperationType() : "GET";
+	    
 		Map<String, Object> queryParams = new TreeMap<String, Object>();
 		queryParams.putAll(request.getQueryParams());
-		
 		if (!queryParams.containsKey(this.getIHeaders().securityTokenHeader())) {
 			String securityToken = this.getProviderCredentials().getSecurityToken();
 			if (ServiceUtils.isValid(securityToken)) {
@@ -894,7 +887,6 @@ public class ObsService extends RestStorageService {
 		}
 
 		String endpoint = this.getEndpoint();
-		
 		String bucketName = request.getBucketName();
 		String objectKey = request.getObjectKey();
 		String hostname = ServiceUtils.generateHostnameForBucket(bucketName, this.isPathStyle(), endpoint);
@@ -908,35 +900,56 @@ public class ObsService extends RestStorageService {
             }
             uriPath = objectKeyPath;
         } else {
-            if(isCname()) {
-                uriPath = objectKeyPath;
-            } else {
-                uriPath = ((!ServiceUtils.isValid(bucketName)) ? "" : bucketName.trim()) + "/" + objectKeyPath;
-            }  
+            uriPath = (((!ServiceUtils.isValid(bucketName)) ? "" : bucketName.trim()) + "/" + objectKeyPath);
+        }
+        
+        if(this.isCname()) {
+            hostname = endpoint;
+            uriPath = objectKeyPath;
+            virtualBucketPath = endpoint + "/";
         }
 		
+        uriPath += "?";
 		if (request.getSpecialParam() != null) {
-			
 			if(request.getSpecialParam() == SpecialParamEnum.STORAGECLASS || request.getSpecialParam() == SpecialParamEnum.STORAGEPOLICY) {
 				request.setSpecialParam(this.getSpecialParamForStorageClass());
 			}
-			
-			uriPath += "?" + request.getSpecialParam().getOriginalStringCode() + "&";
-		} else {
-			uriPath += "?";
+			uriPath +=  request.getSpecialParam().getOriginalStringCode() + "&";
 		}
-		
-		if(this.isCname()) {
-			hostname = endpoint;
-			virtualBucketPath = endpoint + "/";
-		}
-		
-		headers.put(CommonHeaders.HOST, hostname +  ":" + (this.getHttpsOnly() ? this.getHttpsPort() : this.getHttpPort()));
-		
-		String accessKeyIdPrefix = this.getProviderCredentials().getAuthType() == AuthTypeEnum.V2 ? "AWSAccessKeyId=" : "AccessKeyId=";
+	 	
+		String accessKeyIdPrefix = this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? "AccessKeyId=" : "AWSAccessKeyId=";
 		uriPath += accessKeyIdPrefix + this.getProviderCredentials().getAccessKey();
-		uriPath += "&Expires=" + secondsSinceEpoch;
-		String requestMethod = request.getMethod() != null ? request.getMethod().getOperationType() : "GET";
+		
+		String expiresOrPolicy = "";
+		String uriExpiresOrPolicy = "";
+		if (request instanceof TemporarySignatureRequest) {
+            TemporarySignatureRequest tempRequest = (TemporarySignatureRequest)request;
+            long secondsSinceEpoch = tempRequest.getExpires() <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS : tempRequest.getExpires();
+            secondsSinceEpoch += System.currentTimeMillis() / 1000;
+            expiresOrPolicy = String.valueOf(secondsSinceEpoch);
+            uriExpiresOrPolicy = "&Expires=" + expiresOrPolicy;
+        } else if(request instanceof PolicyTempSignatureRequest) {
+            PolicyTempSignatureRequest policyRequest = (PolicyTempSignatureRequest)request;
+            String policy = policyRequest.generatePolicy();
+            expiresOrPolicy = ServiceUtils.toBase64(policy.getBytes(Constants.DEFAULT_ENCODING));
+            uriExpiresOrPolicy = "&Policy=" +  expiresOrPolicy;
+        }
+		uriPath += uriExpiresOrPolicy;
+		
+		for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+            if (entry.getKey() != null && entry.getValue() != null) {
+                String key = RestUtils.uriEncode(entry.getKey(), false);
+                uriPath += "&";
+                uriPath += key;
+                uriPath += "=";
+                String value = RestUtils.uriEncode(entry.getValue().toString(), false);
+                uriPath += value;
+            }
+        }
+		
+		Map<String, String> headers = new HashMap<String, String>();
+        headers.putAll(request.getHeaders());
+        headers.put(CommonHeaders.HOST, hostname +  ":" + (this.getHttpsOnly() ? this.getHttpsPort() : this.getHttpPort()));
 		Map<String, String> actualSignedRequestHeaders = new TreeMap<String, String>();
 		for (Map.Entry<String, String> entry : headers.entrySet()) {
 			if (ServiceUtils.isValid(entry.getKey())) {
@@ -959,19 +972,17 @@ public class ObsService extends RestStorageService {
 			}
 		}
 		
-		for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-			if (entry.getKey() != null && entry.getValue() != null) {
-				String key = RestUtils.uriEncode(entry.getKey(), false);
-				uriPath += "&";
-				uriPath += key;
-				uriPath += "=";
-				String value = RestUtils.uriEncode(entry.getValue().toString(), false);
-				uriPath += value;
-			}
+		String resource = "";
+		if (request instanceof TemporarySignatureRequest) {
+		    resource = "/" + virtualBucketPath + uriPath;
 		}
-		String canonicalString = this.getAuthentication().makeServiceCanonicalString(requestMethod,
-				"/" + virtualBucketPath + uriPath, actualSignedRequestHeaders, String.valueOf(secondsSinceEpoch),
-				Constants.ALLOWED_RESOURCE_PARAMTER_NAMES);
+		
+		AbstractAuthentication authentication = this.getAuthentication();
+		if (authentication == null) {
+		    authentication = V2Authentication.getInstance();
+		}
+		String canonicalString = authentication.makeServiceCanonicalString(requestMethod, resource, 
+		        actualSignedRequestHeaders, expiresOrPolicy, Constants.ALLOWED_RESOURCE_PARAMTER_NAMES);
 		if (log.isDebugEnabled()) {
 			log.debug("CanonicalString is :" + canonicalString);
 		}
@@ -979,7 +990,7 @@ public class ObsService extends RestStorageService {
 		String signedCanonical = ServiceUtils.signWithHmacSha1(credentials.getSecretKey(), canonicalString);
 		String encodedCanonical = RestUtils.encodeUrlString(signedCanonical);
 		uriPath += "&Signature=" + encodedCanonical;
-
+		
 		String signedUrl;
 		if (this.getHttpsOnly()) {
 			signedUrl = "https://";
@@ -990,9 +1001,7 @@ public class ObsService extends RestStorageService {
 		TemporarySignatureResponse response = new TemporarySignatureResponse(signedUrl);
 		response.getActualSignedRequestHeaders().putAll(actualSignedRequestHeaders);
 		return response;
-
 	}
-	
 	
 	protected PostSignatureResponse _createPostSignature(PostSignatureRequest request, boolean isV4) throws Exception {
 		
@@ -2507,7 +2516,8 @@ public class ObsService extends RestStorageService {
 
 		Response response = performRestDelete(bucketName, objectKey, requestParameters);
 
-		DeleteObjectResult result = new DeleteObjectResult(Boolean.valueOf(response.header(this.getIHeaders().deleteMarkerHeader())), response.header(this.getIHeaders().versionIdHeader()));
+		DropFileResult result = new DropFileResult(Boolean.valueOf(response.header(this.getIHeaders().deleteMarkerHeader())), 
+		        objectKey, response.header(this.getIHeaders().versionIdHeader()));
 		Map<String, Object> map = this.cleanResponseHeaders(response);
 		setResponseHeaders(result, map);
 		setStatusCode(result, response.code());
@@ -2841,6 +2851,29 @@ public class ObsService extends RestStorageService {
 		Map<String, String> requestParameters = new HashMap<String, String>();
 		requestParameters.put("apiversion", "");
 		return performRestForApiVersion(bucketName, null, requestParameters, null);
+	}
+	
+	protected ThreadPoolExecutor initThreadPool(AbstractBulkRequest request) {
+        int taskThreadNum = request.getTaskThreadNum();
+        int workQueenLength = request.getTaskQueueNum();
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(taskThreadNum, taskThreadNum, 0, TimeUnit.SECONDS, 
+                new LinkedBlockingQueue<Runnable>(workQueenLength));
+        executor.setRejectedExecutionHandler(new BlockRejectedExecutionHandler());
+        return executor;
+    }
+	
+	protected void recordBulkTaskStatus(DefaultTaskProgressStatus progressStatus, TaskCallback<DeleteObjectResult, String> callback, 
+	        TaskProgressListener listener, int interval) {
+	    
+	    progressStatus.execTaskIncrement();
+        if (listener != null) {
+            if (progressStatus.getExecTaskNum() % interval == 0) {
+                listener.progressChanged(progressStatus);
+            }
+            if (progressStatus.getExecTaskNum() == progressStatus.getTotalTaskNum()) {
+                listener.progressChanged(progressStatus);
+            }
+        }
 	}
 
 }

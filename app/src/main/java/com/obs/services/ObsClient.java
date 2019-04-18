@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services;
 
 import java.io.Closeable;
@@ -20,9 +7,13 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -40,10 +31,9 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.consensus.CacheManager;
 import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.security.ProviderCredentials;
-import com.obs.services.internal.task.BlankTaksCallback;
-import com.obs.services.internal.task.BlankTaskProgressStatus;
-import com.obs.services.internal.task.BlockRejectedExecutionHandler;
 import com.obs.services.internal.task.DefaultTaskProgressStatus;
+import com.obs.services.internal.task.DropFolderTask;
+import com.obs.services.internal.task.LazyTaksCallback;
 import com.obs.services.internal.task.RestoreObjectTask;
 import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ReflectUtils;
@@ -100,6 +90,9 @@ import com.obs.services.model.ObsBucket;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.OptionsInfoRequest;
 import com.obs.services.model.OptionsInfoResult;
+import com.obs.services.model.PolicyConditionItem;
+import com.obs.services.model.PolicyConditionItem.ConditionOperator;
+import com.obs.services.model.PolicyTempSignatureRequest;
 import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
 import com.obs.services.model.PutObjectRequest;
@@ -117,6 +110,7 @@ import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TaskCallback;
 import com.obs.services.model.TaskProgressListener;
+import com.obs.services.model.TaskProgressStatus;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.UploadFileRequest;
@@ -128,6 +122,9 @@ import com.obs.services.model.V4TemporarySignatureRequest;
 import com.obs.services.model.V4TemporarySignatureResponse;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.fs.DropFileRequest;
+import com.obs.services.model.fs.DropFileResult;
+import com.obs.services.model.fs.DropFolderRequest;
 import com.obs.services.model.fs.GetAttributeRequest;
 import com.obs.services.model.fs.GetBucketFSStatusRequest;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
@@ -328,6 +325,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	 * @throws ObsException
 	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
+	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
 			SpecialParamEnum specialParam, Date expiryTime, Map<String, String> headers,
 			Map<String, Object> queryParams) throws ObsException {
@@ -358,6 +356,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	 * @throws ObsException
 	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
+	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
 			SpecialParamEnum specialParam, long expires, Map<String, String> headers, Map<String, Object> queryParams) {
 		TemporarySignatureRequest request = new TemporarySignatureRequest();
@@ -447,8 +446,68 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 			}
 			throw new ObsException(e.getMessage(), e);
 		}
-
 	}
+	
+	/**
+	 * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param prefix 对象名前缀
+	 * @param expiryDate 有效截止日期(ISO 8601 UTC)
+	 * @param headers 头信息
+	 * @param queryParams 查询参数信息
+	 * @return 临时授权访问的响应结果
+     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
+	public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
+	        Date expiryDate, Map<String, String> headers, Map<String, Object> queryParams) {
+        try {
+            PolicyTempSignatureRequest request = createPolicyGetRequest(bucketName, objectKey, prefix, headers, queryParams);
+            request.setExpiryDate(expiryDate);
+            TemporarySignatureResponse response = this._createTemporarySignature(request);
+            return response;
+        } catch (Exception e) {
+            throw new ObsException(e.getMessage(), e);
+        } 
+	}
+	
+	/**
+     * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param prefix 对象名前缀
+     * @param expires 有效时间(单位：秒)
+     * @param headers 头信息
+     * @param queryParams 查询参数信息
+     * @return 临时授权访问的响应结果
+     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+     */
+    public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
+            long expires, Map<String, String> headers, Map<String, Object> queryParams) {
+        try {
+            PolicyTempSignatureRequest request = createPolicyGetRequest(bucketName, objectKey, prefix, headers, queryParams);
+            request.setExpires(expires);
+            TemporarySignatureResponse response = this._createTemporarySignature(request);
+            return response;
+        } catch (Exception e) {
+            throw new ObsException(e.getMessage(), e);
+        } 
+    }
+    
+    private PolicyTempSignatureRequest createPolicyGetRequest(String bucketName, String objectKey, String prefix, 
+            Map<String, String> headers, Map<String, Object> queryParams) {
+        PolicyTempSignatureRequest request = new PolicyTempSignatureRequest(HttpMethodEnum.GET, bucketName, objectKey);
+        List<PolicyConditionItem> conditions = new ArrayList<PolicyConditionItem>();
+        PolicyConditionItem keyCondition = new PolicyConditionItem(ConditionOperator.STARTS_WITH, "key", prefix);
+        String _bucket = this.isCname() ? this.getEndpoint() : bucketName;
+        PolicyConditionItem bucketCondition = new PolicyConditionItem(ConditionOperator.EQUAL, "bucket", _bucket);
+        conditions.add(keyCondition);
+        conditions.add(bucketCondition);
+        request.setConditions(conditions);
+        request.setHeaders(headers);
+        request.setQueryParams(queryParams);
+        return request;
+    }
 
 	/**
 	 * 生成基于浏览器表单的授权访问参数
@@ -1695,7 +1754,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
      * @see com.obs.services.IObsClient#restoreObjects(com.obs.services.model.RestoreObjectsRequest)
      */
 	@Override
-    public void restoreObjects(RestoreObjectsRequest request) throws ObsException {
+    public TaskProgressStatus restoreObjects(RestoreObjectsRequest request) throws ObsException {
         ServiceUtils.asserParameterNotNull(request, "RestoreObjectsRequest is null");
         if (! this.isCname()) {
             ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
@@ -1709,31 +1768,25 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         if (! (days >= 1 && days <= 30)) {
             throw new IllegalArgumentException("Restoration days should be at least 1 and at most 30");
         }
-        int taskThreadNum = request.getTaskThreadNum();
-        int workQueenLength = request.getTaskQueueNum();
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(taskThreadNum, taskThreadNum, 0, TimeUnit.SECONDS, 
-                new LinkedBlockingQueue<Runnable>(workQueenLength));
-        executor.setRejectedExecutionHandler(new BlockRejectedExecutionHandler());
+        DefaultTaskProgressStatus progreStatus =  new DefaultTaskProgressStatus();
+        ThreadPoolExecutor executor = this.initThreadPool(request);
+        
         try {
             String bucketName = request.getBucketName();
             String prefix = request.getPrefix();
             RestoreTierEnum tier = request.getRestoreTier();
             boolean versionRestored = request.isVersionRestored();
-            
             TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback;
             TaskProgressListener listener;
-            DefaultTaskProgressStatus progreStatus;
-            callback = (request.getCallback() == null) ? new BlankTaksCallback<RestoreObjectResult, RestoreObjectRequest>() : request.getCallback();
+            callback = (request.getCallback() == null) ? new LazyTaksCallback<RestoreObjectResult, RestoreObjectRequest>() : request.getCallback();
             listener = request.getProgressListener() ;
-            progreStatus = (listener == null) ? new BlankTaskProgressStatus() : new DefaultTaskProgressStatus();
-            
-            int progressIntenal = request.getProgressInterval();
-            int totalTaskNum = 0;
+            int progressInterval = request.getProgressInterval();
+            int totalTasks = 0;
             if (request.getKeyAndVersions() != null) {
-                totalTaskNum = request.getKeyAndVersions().size();
+                totalTasks = request.getKeyAndVersions().size();
                 for (KeyAndVersion kv : request.getKeyAndVersions()) {
                     RestoreObjectRequest taskRequest = new RestoreObjectRequest(bucketName, kv.getKey(), kv.getVersion(), days, tier);
-                    RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressIntenal);
+                    RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressInterval);
                     executor.execute(task);
                 }
             } else {
@@ -1745,13 +1798,13 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
                         versionResult = this.listVersions(listRequest);
                         for(VersionOrDeleteMarker v : versionResult.getVersions()) {
                             if (v.getObjectStorageClass() == StorageClassEnum.COLD) {
-                                totalTaskNum ++;
+                                totalTasks ++;
                                 RestoreObjectRequest taskRequest = new RestoreObjectRequest(bucketName, v.getKey(), v.getVersionId(), days, tier);
-                                RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressIntenal);
+                                RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressInterval);
                                 executor.execute(task);
                                 if (ILOG.isInfoEnabled()) {
-                                    if (totalTaskNum % 1000 == 0) {
-                                        ILOG.info("RestoreObjects: " + totalTaskNum + " tasks have submitted to be restored");
+                                    if (totalTasks % 1000 == 0) {
+                                        ILOG.info("RestoreObjects: " + totalTasks + " tasks have submitted to restore objects");
                                     }
                                 }
                             }
@@ -1767,13 +1820,13 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
                         objectsResult = this.listObjects(listObjectsRequest);
                         for(ObsObject o : objectsResult.getObjects()) {
                             if (o.getMetadata().getObjectStorageClass() == StorageClassEnum.COLD) {
-                                totalTaskNum ++;
+                                totalTasks ++;
                                 RestoreObjectRequest taskRequest = new RestoreObjectRequest(bucketName, o.getObjectKey(), null, days, tier);
-                                RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressIntenal);
+                                RestoreObjectTask task = new RestoreObjectTask(this, bucketName, taskRequest, callback, listener, progreStatus, progressInterval);
                                 executor.execute(task);
                                 if (ILOG.isInfoEnabled()) {
-                                    if (totalTaskNum % 1000 == 0) {
-                                        ILOG.info("RestoreObjects: " + totalTaskNum + " tasks have submitted to be restored");
+                                    if (totalTasks % 1000 == 0) {
+                                        ILOG.info("RestoreObjects: " + totalTasks + " tasks have submitted to restore objects");
                                     }
                                 }
                             }
@@ -1783,7 +1836,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
                 }
             }
 
-            progreStatus.setTotalTaskNum(totalTaskNum);            
+            progreStatus.setTotalTaskNum(totalTasks);            
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (ObsException e) {
@@ -1791,7 +1844,144 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         } catch (Exception e) {
             throw new ObsException(e.getMessage(), e);
         }
+        return progreStatus;
     }
+	
+	/* (non-Javadoc)
+     * @see com.obs.services.IFSClient#deleteFolder(com.obs.services.model.fs.DeleteFSFolderRequest)
+     */
+	@Override
+    public TaskProgressStatus dropFolder(DropFolderRequest request) throws ObsException {
+	    ServiceUtils.asserParameterNotNull(request, "DropFolderRequest is null");
+        if (! this.isCname()) {
+            ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+        }
+        ThreadPoolExecutor executor = this.initThreadPool(request);
+        DefaultTaskProgressStatus progressStatus = new DefaultTaskProgressStatus();
+        try {
+            String bucketName = request.getBucketName();
+            String folderName = request.getFolderName();
+            String delimiter = this.getFileSystemDelimiter(); 
+            if (! folderName.endsWith(delimiter)) {
+                folderName = folderName + delimiter;
+            }
+            TaskCallback<DeleteObjectResult, String> callback;
+            TaskProgressListener listener;
+            callback = (request.getCallback() == null) ? new LazyTaksCallback<DeleteObjectResult, String>() : request.getCallback();
+            listener = request.getProgressListener();
+            int interval = request.getProgressInterval();
+            int[] totalTasks = {0};
+            boolean isSubDeleted = recurseFolders(folderName, bucketName, callback, interval, progressStatus, listener, executor, totalTasks);
+            Map<String, Future<?>> futures = new HashMap<String, Future<?>>();
+            totalTasks[0] ++;
+            progressStatus.setTotalTaskNum(totalTasks[0]);
+            
+            if (isSubDeleted) {
+                submitDropTask(folderName, bucketName, callback, interval, progressStatus, listener, executor, futures);
+                checkDropFutures(futures, progressStatus, callback, listener, interval);
+            } else {
+                progressStatus.failTaskIncrement();
+                callback.onException(new ObsException("Failed to delete due to child file deletion failed"), folderName);
+                recordBulkTaskStatus(progressStatus, callback, listener, interval);
+            }
+                        
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (ObsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ObsException(e.getMessage(), e);
+        }
+        return progressStatus;
+    }
+	
+    private boolean recurseFolders(String folders, String bucketName, TaskCallback<DeleteObjectResult, String> callback, int interval, 
+            DefaultTaskProgressStatus progressStatus, TaskProgressListener listener, ThreadPoolExecutor executor, int[] count) {
+        ListObjectsRequest request = new ListObjectsRequest(bucketName);
+        request.setDelimiter("/");
+        request.setPrefix(folders);
+        ObjectListing result;
+        boolean isDeleted = true;
+        do {
+            result = this.listObjects(request);
+            Map<String, Future<?>> futures = new HashMap<String, Future<?>>();
+            
+            for (ObsObject o : result.getObjects()) {
+                if (!o.getObjectKey().endsWith("/")) {
+                    count[0] ++;
+                    isDeleted = submitDropTask(o.getObjectKey(),bucketName,callback,interval,progressStatus,listener,executor, futures) && isDeleted;
+                    if (ILOG.isInfoEnabled()) {
+                        if (count[0] % 1000 == 0) {
+                            ILOG.info("DropFolder: " + count + " tasks have submitted to delete objects");
+                        }
+                    }
+                }
+            }
+            
+            for (String prefix : result.getCommonPrefixes()) {
+                boolean isSubDeleted = recurseFolders(prefix, bucketName, callback, interval, progressStatus, listener, executor, count);
+                count[0] ++;
+                if (isSubDeleted) {
+                    isDeleted = submitDropTask(prefix, bucketName, callback, interval, progressStatus, listener, executor, futures) && isDeleted;
+                } else {
+                    progressStatus.failTaskIncrement();
+                    callback.onException(new ObsException("Failed to delete due to child file deletion failed"), prefix);
+                    recordBulkTaskStatus(progressStatus, callback, listener, interval);
+                }
+                if (ILOG.isInfoEnabled()) {
+                    if (count[0] % 1000 == 0) {
+                        ILOG.info("DropFolder: " + count + " tasks have submitted to delete objects");
+                    }
+                }
+            }
+            
+            request.setMarker(result.getNextMarker()); 
+            isDeleted = checkDropFutures(futures, progressStatus, callback, listener, interval) && isDeleted;
+        } while (result.isTruncated());
+        return isDeleted;
+    }
+    
+    private boolean submitDropTask(String key, String bucketName, TaskCallback<DeleteObjectResult, String> callback, int interval, 
+            DefaultTaskProgressStatus progreStatus, TaskProgressListener listener, ThreadPoolExecutor executor, Map<String, Future<?>> futures) {
+        DropFolderTask task = new DropFolderTask(this, bucketName, key, progreStatus, listener, interval, callback);
+        try {
+            futures.put(key, executor.submit(task));
+        } catch (RejectedExecutionException e) {
+            progreStatus.failTaskIncrement();
+            callback.onException(new ObsException(e.getMessage(), e), key);
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean checkDropFutures(Map<String, Future<?>> futures, DefaultTaskProgressStatus progressStatus, 
+            TaskCallback<DeleteObjectResult, String> callback, TaskProgressListener listener, int interval) {
+        boolean isDeleted = true;
+        for (Entry<String, Future<?>> entry :futures.entrySet()) {
+            try {
+                entry.getValue().get();
+            } catch(ExecutionException e) {
+                progressStatus.failTaskIncrement();
+                if (e.getCause() instanceof ObsException) {
+                    callback.onException((ObsException)e.getCause(), entry.getKey());
+                } else {
+                    callback.onException(new ObsException(e.getMessage(), e), entry.getKey());
+                }
+                isDeleted = false;
+            } catch(InterruptedException e) {
+                progressStatus.failTaskIncrement();
+                callback.onException(new ObsException(e.getMessage(), e), entry.getKey());
+                isDeleted = false;
+            }
+            recordBulkTaskStatus(progressStatus, callback, listener, interval);
+        }
+        return isDeleted;
+    }
+    
+    
+    
+	
+	
     
 	/* (non-Javadoc)
 	 * @see com.obs.services.IObsClient#deleteObject(java.lang.String, java.lang.String, java.lang.String)
@@ -2219,6 +2409,8 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 	
+	
+	
 	@Override
 	public GetBucketFSStatusResult getBucketFSStatus(final GetBucketFSStatusRequest request) throws ObsException {
 		ServiceUtils.asserParameterNotNull(request, "GetBucketFSStatusRequest is null");
@@ -2231,7 +2423,20 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 	
+	@Override
+    public DropFileResult dropFile(final DropFileRequest request) throws ObsException {
+        ServiceUtils.asserParameterNotNull(request, "DropFileRequest is null");
+        return this.doActionWithResult("dropFile", request.getBucketName(), new ActionCallbackWithResult<DropFileResult>() {
 
+            @Override
+            public DropFileResult action() throws ServiceException {
+                ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                return (DropFileResult)ObsClient.this.deleteObjectImpl(request.getBucketName(), request.getObjectKey(), request.getVersionId());
+            }
+        });
+    }
+	
+	
 	private abstract class ActionCallbackWithResult<T> {
 
 		abstract T action() throws ServiceException;
@@ -2308,4 +2513,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		super.finalize();
 		this.close();
 	}
+
+    
+
 }

@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services;
 
 import java.io.File;
@@ -76,6 +63,7 @@ import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
 import com.obs.services.model.RestoreObjectResult;
 import com.obs.services.model.RestoreObjectsRequest;
 import com.obs.services.model.SetObjectMetadataRequest;
+import com.obs.services.model.TaskProgressStatus;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.UploadFileRequest;
@@ -985,13 +973,14 @@ public interface IObsClient {
      * 
      * @param request
      *            批量取回归档存储对象的请求参数
+	 * @return 批量任务执行状态
      *
      * @throws ObsException
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      * 
      */
 	
-    void restoreObjects(RestoreObjectsRequest request) throws ObsException;
+    TaskProgressStatus restoreObjects(RestoreObjectsRequest request) throws ObsException;
 
     /**
      * 删除对象

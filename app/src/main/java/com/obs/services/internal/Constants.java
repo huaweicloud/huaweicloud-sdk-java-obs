@@ -1,16 +1,3 @@
-/**
- * Copyright 2019 Huawei Technologies Co.,Ltd.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- * this file except in compliance with the License.  You may obtain a copy of the
- * License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations under the License.
- */
 package com.obs.services.internal;
 
 import java.util.Arrays;
@@ -189,7 +176,7 @@ public class Constants
     
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
     
-    public static final String OBS_SDK_VERSION = "3.0.3";
+    public static final String OBS_SDK_VERSION = "3.1.1";
     
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
     
@@ -322,6 +309,8 @@ public class Constants
         "response-cache-control",
         "response-content-disposition",
         "response-content-encoding",
+        "x-image-save-bucket",
+        "x-image-save-object",
         "x-image-process",
         "x-oss-process"));
     
