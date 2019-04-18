@@ -2,12 +2,14 @@ package com.obs.services.internal;
 
 import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.CanonicalGrantee;
 import com.obs.services.model.EventTypeEnum;
+import com.obs.services.model.FunctionGraphConfiguration;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
@@ -165,46 +167,24 @@ public class ObsConvertor extends V2Convertor {
 		
 		try {
 			XMLBuilder builder = XMLBuilder.create("NotificationConfiguration");
-			if (bucketNotificationConfiguration == null
-					|| bucketNotificationConfiguration.getTopicConfigurations().isEmpty()) {
+			if (bucketNotificationConfiguration == null) {
 				return builder.asString();
 			}
 	
 			for (TopicConfiguration config : bucketNotificationConfiguration.getTopicConfigurations()) {
-				builder = builder.e("TopicConfiguration");
-				if (config.getId() != null) {
-					builder.e("Id").t(config.getId());
-				}
-				if (config.getFilter() != null && !config.getFilter().getFilterRules().isEmpty()) {
-					builder = builder.e("Filter").e("Object");
-					for (TopicConfiguration.Filter.FilterRule rule : config.getFilter().getFilterRules()) {
-						if (rule != null) {
-							builder.e("FilterRule").e("Name").t(ServiceUtils.toValid(rule.getName())).up()
-							.e("Value").t(ServiceUtils.toValid(rule.getValue()));
-						}
-					}
-					builder = builder.up().up();
-				}
-	
-				if (config.getTopic() != null) {
-					builder.e("Topic").t(config.getTopic());
-				}
-	
-				if (config.getEventTypes() != null) {
-					for (EventTypeEnum event : config.getEventTypes()) {
-						if(event != null) {
-							builder.e("Event").t(this.transEventType(event));
-						}
-					}
-				}
-				builder = builder.up();
-			}
+                packNotificationConfig(builder, config, "TopicConfiguration", "Topic", "Object");
+            }
+            
+            for (FunctionGraphConfiguration config : bucketNotificationConfiguration.getFunctionGraphConfigurations()) {
+                packNotificationConfig(builder, config, "FunctionGraphConfiguration", "FunctionGraph", "Object");
+            }
 	
 			return builder.asString();
 		} catch (Exception e) {
 			throw new ServiceException("Failed to build XML document for Notification", e);
 		}
 	}
+	
 	
 	@Override
 	public String transReplicationConfiguration(ReplicationConfiguration replicationConfiguration) throws ServiceException {

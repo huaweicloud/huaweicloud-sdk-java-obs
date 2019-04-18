@@ -10,6 +10,7 @@ import java.util.List;
 public class BucketNotificationConfiguration extends HeaderResponse
 {
     private List<TopicConfiguration> topicConfigurations;
+    private List<FunctionGraphConfiguration> functionGraphConfigurations;
     
     public BucketNotificationConfiguration(){
         
@@ -26,6 +27,16 @@ public class BucketNotificationConfiguration extends HeaderResponse
     }
     
     /**
+     * 新增函数工作流服务通知配置
+     * @param functionGraphConfiguration 函数工作流通知配置
+     * @return 桶的消息通知配置
+     */
+    public BucketNotificationConfiguration addFunctionGraphConfiguration(FunctionGraphConfiguration functionGraphConfiguration){
+        this.getFunctionGraphConfigurations().add(functionGraphConfiguration);
+        return this;
+    }
+    
+    /**
      * 获取事件通知配置列表
      * @return 事件通知配置列表
      */
@@ -36,6 +47,18 @@ public class BucketNotificationConfiguration extends HeaderResponse
         }
         return topicConfigurations;
     }
+    
+    /**
+     * 获取函数工作流通知配置列表
+     * @return 函数工作流通知配置列表
+     */
+    public List<FunctionGraphConfiguration> getFunctionGraphConfigurations()
+    {
+        if(this.functionGraphConfigurations == null){
+            this.functionGraphConfigurations = new ArrayList<FunctionGraphConfiguration>();
+        }
+        return functionGraphConfigurations;
+    }
 
     /**
      * 设置事件通知配置列表
@@ -45,11 +68,20 @@ public class BucketNotificationConfiguration extends HeaderResponse
     {
         this.topicConfigurations = topicConfigurations;
     }
+    
+    /**
+     * 设置函数工作流通知配置列表
+     * @param functionGraphConfigurations 函数工作流通知配置列表
+     */
+    public void setFunctionGraphConfigurations(List<FunctionGraphConfiguration> functionGraphConfigurations)
+    {
+        this.functionGraphConfigurations = functionGraphConfigurations;
+    }
 
     @Override
-    public String toString()
-    {
-        return "BucketNotificationConfiguration [topicConfigurations=" + topicConfigurations + "]";
+    public String toString() {
+        return "BucketNotificationConfiguration [topicConfigurations=" + topicConfigurations
+                + ", functionGraphConfigurations=" + functionGraphConfigurations + "]";
     }
     
 }

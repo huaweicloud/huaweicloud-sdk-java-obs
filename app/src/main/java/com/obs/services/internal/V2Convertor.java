@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
@@ -16,6 +17,7 @@ import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketTagInfo;
 import com.obs.services.model.CanonicalGrantee;
 import com.obs.services.model.EventTypeEnum;
+import com.obs.services.model.FunctionGraphConfiguration;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
@@ -460,45 +462,58 @@ public class V2Convertor implements IConvertor {
 			BucketNotificationConfiguration bucketNotificationConfiguration) throws ServiceException {
 		try {
 			XMLBuilder builder = XMLBuilder.create("NotificationConfiguration");
-			if (bucketNotificationConfiguration == null
-					|| bucketNotificationConfiguration.getTopicConfigurations().isEmpty()) {
+			if (bucketNotificationConfiguration == null) {
 				return builder.asString();
 			}
 	
 			for (TopicConfiguration config : bucketNotificationConfiguration.getTopicConfigurations()) {
-				builder = builder.e("TopicConfiguration");
-				if (config.getId() != null) {
-					builder.e("Id").t(config.getId());
-				}
-				if (config.getFilter() != null && !config.getFilter().getFilterRules().isEmpty()) {
-					builder = builder.e("Filter").e("S3Key");
-					for (TopicConfiguration.Filter.FilterRule rule : config.getFilter().getFilterRules()) {
-						if (rule != null) {
-							builder.e("FilterRule").e("Name").t(ServiceUtils.toValid(rule.getName())).up()
-									.e("Value").t(ServiceUtils.toValid(rule.getValue()));
-						}
-					}
-					builder = builder.up().up();
-				}
-	
-				if (config.getTopic() != null) {
-					builder.e("Topic").t(config.getTopic());
-				}
-	
-				if (config.getEventTypes() != null) {
-					for (EventTypeEnum event : config.getEventTypes()) {
-						if(event != null) {
-							builder.e("Event").t(this.transEventType(event));
-						}
-					}
-				}
-				builder = builder.up();
+			    packNotificationConfig(builder, config, "TopicConfiguration", "Topic", "S3Key");
 			}
+			
+			for (FunctionGraphConfiguration config : bucketNotificationConfiguration.getFunctionGraphConfigurations()) {
+                packNotificationConfig(builder, config, "FunctionGraphConfiguration", "FunctionGraph", "S3Key");
+            }
 	
 			return builder.asString();
 		} catch (Exception e) {
 			throw new ServiceException("Failed to build XML document for Notification", e);
 		}
+	}
+	
+	protected void packNotificationConfig(XMLBuilder builder, AbstractNotification config, String configType, String urnType, String adapter) {
+	    builder = builder.e(configType);
+        if (config.getId() != null) {
+            builder.e("Id").t(config.getId());
+        }
+        if (config.getFilter() != null && !config.getFilter().getFilterRules().isEmpty()) {
+            builder = builder.e("Filter").e(adapter);
+            for (AbstractNotification.Filter.FilterRule rule : config.getFilter().getFilterRules()) {
+                if (rule != null) {
+                    builder.e("FilterRule").e("Name").t(ServiceUtils.toValid(rule.getName())).up()
+                            .e("Value").t(ServiceUtils.toValid(rule.getValue()));
+                }
+            }
+            builder = builder.up().up();
+        }
+        String urn = null;
+        if (config instanceof TopicConfiguration) {
+            urn = ((TopicConfiguration)config).getTopic();
+        } 
+        if (config instanceof FunctionGraphConfiguration) {
+            urn = ((FunctionGraphConfiguration)config).getFunctionGraph();
+        }
+        if (urn != null) {
+            builder.e(urnType).t(urn);
+        }
+
+        if (config.getEventTypes() != null) {
+            for (EventTypeEnum event : config.getEventTypes()) {
+                if(event != null) {
+                    builder.e("Event").t(this.transEventType(event));
+                }
+            }
+        }
+        builder = builder.up();
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -76,13 +77,15 @@ public abstract class RestStorageService {
 	protected CacheManager apiVersionCache;
 
 	protected SegmentLock segmentLock;
+	
+	protected Semaphore semaphore;
 
 	protected RestStorageService() {
-
+		
 	}
 
 	protected void initHttpClient(Dispatcher httpDispatcher) {
-
+		
 		OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(this, obsProperties, keyManagerFactory,
 				trustManagerFactory, httpDispatcher);
 
@@ -98,6 +101,9 @@ public abstract class RestStorageService {
 		}
 
 		this.httpClient = builder.build();
+		//Fix okhttp bug
+		int maxConnections = this.obsProperties.getIntProperty(ObsConstraint.HTTP_MAX_CONNECT, ObsConstraint.HTTP_MAX_CONNECT_VALUE);
+		this.semaphore = new Semaphore(maxConnections);
 	}
 
 	protected void shutdownImpl() {
@@ -194,10 +200,11 @@ public abstract class RestStorageService {
 		return serviceException;
 	}
 	
-	private void performRequestAsync(final Request request, final RequestContext context, final ObsCallback<Response, ServiceException> callback) {
+	private void performRequestAsync(final Request request, final RequestContext context, final ObsCallback<Response, ServiceException> callback) throws InterruptedException {
 		
 		Call call = httpClient.newCall(request);
 		final long start = System.currentTimeMillis();
+		this.semaphore.acquire();
 		call.enqueue(new Callback() {
 			@Override
 			public void onResponse(Call call, Response response) throws IOException {
@@ -294,6 +301,7 @@ public abstract class RestStorageService {
 					if (log.isInfoEnabled()) {
 						log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
 					}
+					RestStorageService.this.semaphore.release();
 				}
 			}
 			
@@ -332,6 +340,7 @@ public abstract class RestStorageService {
 					if (log.isInfoEnabled()) {
 						log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
 					}
+					RestStorageService.this.semaphore.release();
 				}
 			}
 		});
@@ -347,7 +356,7 @@ public abstract class RestStorageService {
 		Map<String, String> requestParameters;
 	}
 	
-	protected void performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName, ObsCallback<Response, ServiceException> callback) {
+	protected void performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName, ObsCallback<Response, ServiceException> callback) throws ServiceException, InterruptedException {
 		InterfaceLogBean reqBean = new InterfaceLogBean("performRequest", "", "");
 		
 		if (log.isDebugEnabled()) {
@@ -404,8 +413,10 @@ public abstract class RestStorageService {
 					wasRecentlyRedirected = false;
 				}
 				long start = System.currentTimeMillis();
+				
 				call = httpClient.newCall(request);
 				try {
+					semaphore.acquire();
 					response = call.execute();
 				} catch (IOException e) {
 					if (e instanceof UnrecoverableIOException) {
@@ -432,6 +443,7 @@ public abstract class RestStorageService {
 					}
 					throw e;
 				}finally {
+					semaphore.release();
 					if (log.isInfoEnabled()) {
 						log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
 					}

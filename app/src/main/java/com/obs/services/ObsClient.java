@@ -626,7 +626,18 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 					    if (isCname()) {
 				            throw new ServiceException("createBucket is not allowed in customdomain mode");
 				        }
-						return ObsClient.this.createBucketImpl(request);
+					    try {
+					        return ObsClient.this.createBucketImpl(request);
+					    } catch (ServiceException e) {
+					        if(ObsClient.this.isAuthTypeNegotiation() && e.getResponseCode() == 400 && 
+					                "Unsupported Authorization Type".equals(e.getErrorMessage()) && 
+					                ObsClient.this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS) {
+					            ObsClient.this.getProviderCredentials().setThreadLocalAuthType(AuthTypeEnum.V2);
+					            return ObsClient.this.createBucketImpl(request);
+					        } else {
+					            throw e;
+					        }
+					    }
 					}
 
 					@Override

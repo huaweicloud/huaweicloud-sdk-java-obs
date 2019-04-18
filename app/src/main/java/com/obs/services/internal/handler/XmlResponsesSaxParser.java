@@ -20,6 +20,7 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
@@ -34,6 +35,7 @@ import com.obs.services.model.CanonicalGrantee;
 import com.obs.services.model.CopyPartResult;
 import com.obs.services.model.DeleteObjectsResult;
 import com.obs.services.model.EventTypeEnum;
+import com.obs.services.model.FunctionGraphConfiguration;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
@@ -1409,11 +1411,17 @@ public class XmlResponsesSaxParser {
 
 		private BucketNotificationConfiguration bucketNotificationConfiguration = new BucketNotificationConfiguration();
 
-		private TopicConfiguration config;
+		private String id;
+		
+		private String urn;
+		
+		private AbstractNotification.Filter filter;
+		
+		private List<EventTypeEnum> events = new ArrayList<EventTypeEnum>();
 
-		private String currentName;
+		private String ruleName;
 
-		private String currentValue;
+		private String ruleValue;
 
 		public BucketNotificationConfiguration getBucketNotificationConfiguration() {
 			return bucketNotificationConfiguration;
@@ -1421,12 +1429,8 @@ public class XmlResponsesSaxParser {
 
 		@Override
 		public void startElement(String name) {
-			if ("TopicConfiguration".equals(name)) {
-				config = new TopicConfiguration();
-			} else if ("Filter".equals(name)) {
-				if(config != null) {
-					config.setFilter(new TopicConfiguration.Filter());
-				}
+			 if ("Filter".equals(name)) {
+			    filter = new AbstractNotification.Filter();
 			}
 		}
 
@@ -1434,21 +1438,25 @@ public class XmlResponsesSaxParser {
 		public void endElement(String name, String elementText) {
 			try {
 				if ("Id".equals(name)) {
-					config.setId(elementText);
-				} else if ("Topic".equals(name)) {
-					config.setTopic(elementText);
+				    id = elementText;
+				} else if ("Topic".equals(name) || "FunctionGraph".equals(name)) {
+				    urn = elementText;
 				} else if ("Event".equals(name)) {
-					config.getEventTypes().add(EventTypeEnum.getValueFromCode(elementText));
+					events.add(EventTypeEnum.getValueFromCode(elementText));
 				} else if ("Name".equals(name)) {
-					currentName = elementText;
+					ruleName = elementText;
 				} else if ("Value".equals(name)) {
-					currentValue = elementText;
+					ruleValue = elementText;
 				} else if ("FilterRule".equals(name)) {
-					config.getFilter().addFilterRule(currentName, currentValue);
+				    filter.addFilterRule(ruleName, ruleValue);
 				} else if ("TopicConfiguration".equals(name)) {
-					bucketNotificationConfiguration.addTopicConfiguration(config);
+					bucketNotificationConfiguration.addTopicConfiguration(new TopicConfiguration(id, filter, urn, events));
+					events = new ArrayList<EventTypeEnum>();
+				} else if ("FunctionGraphConfiguration".equals(name)) {
+				    bucketNotificationConfiguration.addFunctionGraphConfiguration(new FunctionGraphConfiguration(id, filter, urn, events));
+				    events = new ArrayList<EventTypeEnum>();
 				}
-			}catch (NullPointerException e) {
+			} catch (NullPointerException e) {
 				if(log.isErrorEnabled()) {
 					log.error("Response xml is not well-formt", e);
 				}

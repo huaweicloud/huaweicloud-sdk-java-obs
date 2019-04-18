@@ -358,9 +358,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * 获取允许打开的最大HTTP连接数，默认值：1000
+     * 获取最大允许的HTTP并发请求数，默认值：1000
      * 
-     * @return 允许打开的最大HTTP连接数
+     * @return 最大允许的HTTP并发请求数
      */
     public int getMaxConnections()
     {
@@ -368,9 +368,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * 设置允许打开的最大HTTP连接数，默认值：1000
+     * 设置最大允许的HTTP并发请求数，默认值：1000
      * 
-     * @param maxConnections 允许打开的最大HTTP连接数
+     * @param maxConnections 最大允许的HTTP并发请求数
      */
     public void setMaxConnections(int maxConnections)
     {
@@ -672,7 +672,7 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * 获取连接池中最大空闲连接数，默认值：10
+     * 获取连接池中最大空闲连接数，默认值：1000
      * @return 连接池中最大空闲连接数
      */
 	public int getMaxIdleConnections() {
@@ -680,7 +680,7 @@ public class ObsConfiguration implements Cloneable
 	}
 
 	/**
-	 * 设置连接池中最大空闲连接数，默认值：10
+	 * 设置连接池中最大空闲连接数，默认值：1000
 	 * @param maxIdleConnections 连接池中最大空闲连接数
 	 */
 	public void setMaxIdleConnections(int maxIdleConnections) {
