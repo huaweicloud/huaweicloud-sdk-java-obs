@@ -11,6 +11,7 @@ import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketMetadataInfoRequest;
@@ -688,19 +689,51 @@ public interface IObsClient {
 	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	HeaderResponse deleteBucketTagging(String bucketName) throws ObsException;
-
+	
 	/**
-	 * 设置桶的跨Region复制配置
-	 * 
+	 * 获取桶加密配置
+	 * @param bucketName 
+	 *             桶名
+	 * @return 桶加密配置
+	 * @throws ObsException
+	 *         OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
+	BucketEncryption getBucketEncryption(String bucketName) throws ObsException;
+	
+	/**
+	 * 设置桶加密配置
 	 * @param bucketName
-	 *            桶名
-	 * @param replicationConfiguration
-	 *            跨Region复制配置
+	 *             桶名
+	 * @param bucketEncryption
+	 *             桶加密配置
 	 * @return 公共响应头信息
 	 * @throws ObsException
 	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 * 
 	 */
+	HeaderResponse setBucketEncryption(String bucketName, BucketEncryption bucketEncryption) throws ObsException;
+	
+	/**
+	 * 删除桶加密配置
+	 * @param bucketName
+	 *             桶名
+	 * @return 公共响应头信息
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
+	HeaderResponse deleteBucketEncryption(String bucketName) throws ObsException;
+	
+	/**
+     * 设置桶的跨Region复制配置
+     * 
+     * @param bucketName
+     *            桶名
+     * @param replicationConfiguration
+     *            跨Region复制配置
+     * @return 公共响应头信息
+     * @throws ObsException
+     *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+     * 
+     */
 	HeaderResponse setBucketReplication(String bucketName, ReplicationConfiguration replicationConfiguration)
 			throws ObsException;
 

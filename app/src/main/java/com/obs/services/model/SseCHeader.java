@@ -9,9 +9,10 @@ import com.obs.services.internal.Constants;
  */
 public class SseCHeader
 {
-   
-
+    
     private ServerAlgorithm algorithm;
+    
+    private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.AES256;
     
     private byte[] sseCKey;
     
@@ -22,6 +23,7 @@ public class SseCHeader
      * 
      * @return 加密算法类型
      */
+    @Deprecated
     public ServerAlgorithm getAlgorithm()
     {
         return algorithm;
@@ -32,9 +34,20 @@ public class SseCHeader
      * 
      * @param algorithm 加密算法类型
      */
+    @Deprecated
     public void setAlgorithm(ServerAlgorithm algorithm)
     {
         this.algorithm = algorithm;
+    }
+    
+    
+    /**
+     * 获取加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
+     * 
+     * @return 加密算法类型
+     */
+    public SSEAlgorithmEnum getSSEAlgorithm() {
+        return sseAlgorithm;
     }
     
     /**

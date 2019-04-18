@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketQuota;
@@ -35,6 +36,8 @@ public interface IConvertor {
 	String transRestoreObjectRequest(RestoreObjectRequest req) throws ServiceException;
 
 	String transBucketQuota(BucketQuota quota) throws ServiceException;
+	
+	String transBucketEcryption(BucketEncryption encryption) throws ServiceException;
 
 	String transStoragePolicy(BucketStoragePolicyConfiguration status) throws ServiceException;
 

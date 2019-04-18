@@ -116,7 +116,12 @@ public enum SpecialParamEnum
 	/**
 	 * 设置/删除对象属性
 	 */
-	METADATA("metadata");
+	METADATA("metadata"),
+	
+	/**
+	 * 设置/获取/删除桶的加密配置
+	 */
+	ENCRYPTION("encryption");
     
     /**
      * stringCode对应数据库中和外部的Code

@@ -3,6 +3,7 @@ package com.obs.services.model;
 /**
  * SSE-KMS的加密方式
  */
+@Deprecated
 public final class ServerEncryption
 {
     /**

@@ -7,6 +7,8 @@ public class SseKmsHeader
 {
     private ServerEncryption encryption;
     
+    private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.KMS;
+    
     private String kmsKeyId;
     
     private String context;
@@ -16,19 +18,30 @@ public class SseKmsHeader
      * 
      * @return 加密算法类型
      */
+    @Deprecated
     public ServerEncryption getEncryption()
     {
         return encryption;
     }
-    
+     
     /**
      * 设置加密算法类型，目前仅支持kms
      * 
      * @param encryption 加密算法类型
      */
+    @Deprecated
     public void setEncryption(ServerEncryption encryption)
     {
         this.encryption = encryption;
+    }
+    
+    /**
+     * 获取加密算法类型，目前仅支持kms
+     * 
+     * @return 加密算法类型
+     */
+    public SSEAlgorithmEnum getSSEAlgorithm() {
+        return sseAlgorithm;
     }
     
     /**

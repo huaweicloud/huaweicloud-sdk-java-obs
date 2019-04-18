@@ -24,6 +24,7 @@ import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketQuota;
@@ -54,6 +55,7 @@ import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RouteRule;
 import com.obs.services.model.RouteRuleCondition;
 import com.obs.services.model.RuleStatusEnum;
+import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.VersionOrDeleteMarker;
@@ -1620,6 +1622,37 @@ public class XmlResponsesSaxParser {
 				}
 			}
 		}
+	}
+	
+	public static class BucketEncryptionHandler extends DefaultXmlHandler {
+	    protected BucketEncryption encryption;
+	    
+	    public BucketEncryption getEncryption() {
+	        return encryption;
+	    }
+
+        @Override
+        public void startElement(String name) {
+            if(name.equals("ApplyServerSideEncryptionByDefault")) {
+                encryption = new BucketEncryption();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            try {
+                if (name.equals("SSEAlgorithm")) {
+                    encryption.setSseAlgorithm(SSEAlgorithmEnum.getValueFromCode(elementText.replace("aws:", "")));
+                } else if(name.equals("KMSMasterKeyID")) {
+                    encryption.setKmsKeyId(elementText);
+                }
+            } catch (NullPointerException e) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Response xml is not well-formt", e);
+                }
+            }
+        }
+	    
 	}
 	
 	public static class BucketStoragePolicyHandler extends DefaultXmlHandler{

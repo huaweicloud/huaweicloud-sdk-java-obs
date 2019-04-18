@@ -213,10 +213,17 @@ public abstract class PutObjectBasicRequest {
 		return grantPermissions;
 	}
 	
-    Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
+    public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
 		if(extensionPermissionMap == null) {
 			extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
 		}
 		return extensionPermissionMap;
+	}
+
+	public void setExtensionPermissionMap(Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap) {
+		if(extensionPermissionMap == null) {
+			return;
+		}
+		this.extensionPermissionMap = extensionPermissionMap;
 	}
 }

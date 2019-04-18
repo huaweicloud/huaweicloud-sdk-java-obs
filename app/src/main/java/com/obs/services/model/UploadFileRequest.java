@@ -6,10 +6,8 @@ import com.obs.services.model.ObjectMetadata;
 /**
  * 上传文件的请求参数
  */
-public class UploadFileRequest {
+public class UploadFileRequest extends PutObjectBasicRequest {
 	
-    private String bucketName;
-    private String objectKey;
     // 分片大小，单位字节，默认5MB
     private long partSize = 1024 * 1024 * 5l;
     // 分片上传线程数，默认1
@@ -134,42 +132,6 @@ public class UploadFileRequest {
 	}
 	
 	/**
-	 * 获取桶名
-	 * 
-	 * @return 桶名
-	 */
-	public String getBucketName() {
-		return bucketName;
-	}
-
-	/**
-	 * 设置桶名
-	 * 
-	 * @param bucketName 桶名
-	 */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
-
-	/**
-	 * 获取对象名
-	 * 
-	 * @return 对象名
-	 */
-	public String getObjectKey() {
-		return objectKey;
-	}
-
-	/**
-	 * 设置对象名
-	 * 
-	 * @param objectKey 对象名
-	 */
-	public void setObjectKey(String objectKey) {
-		this.objectKey = objectKey;
-	}
-	
-	/**
 	 * 获取上传时的分段大小
 	 * 
 	 * @return 上传时的分段大小
@@ -184,8 +146,8 @@ public class UploadFileRequest {
 	 * @param partSize 上传时的分段大小
 	 */
 	public void setPartSize(long partSize) {
-		if (partSize < 5 * 1024 * 1024l) {
-            this.partSize = 5 * 1024 * 1024l;
+		if (partSize < 100 * 1024l) {
+            this.partSize = 100 * 1024l;
         } else if (partSize > 5 * 1024 * 1024 * 1024l) {
         	this.partSize = 5 * 1024 * 1024 * 1024l;
 		}else {

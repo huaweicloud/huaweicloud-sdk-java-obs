@@ -25,7 +25,7 @@
         <!-- access log -->
         <RollingFile name="AccessLogAppender" fileName="${sys:user.dir}/logs/OBS-SDK.access.log"
                      filePattern="${sys:user.dir}/logs/OBS-SDK.access-%i.log">
-            <PatternLayout charset="UTF-8" pattern="%t|%m%n" />
+            <PatternLayout charset="UTF-8" pattern="%t|%-5p|%m%n" />
             <SizeBasedTriggeringPolicy size="20M" />
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
@@ -46,7 +46,7 @@
         </Logger>
 
         <!-- access log -->
-        <Logger name="com.obs.log.AccessLogger" level="WARN"
+        <Logger name="com.obs.log.AccessLogger" level="INFO"
                 additivity="false">
             <AppenderRef ref="AccessLogAppender" />
         </Logger>

@@ -147,7 +147,7 @@ public class BasicLogger implements ILogger
 
     public void accessRecord(Object obj) {
         if(obj != null){
-            this.logger.log(LogConfigurator.ERROR, obj.toString());
+            this.logger.log(LogConfigurator.INFO, obj.toString());
         }
     }
 }

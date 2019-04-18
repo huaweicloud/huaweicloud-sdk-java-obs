@@ -12,6 +12,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.jamesmurty.utils.XMLBuilder;
+import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.ServiceUtils;
 
 public class ServiceException extends RuntimeException {
@@ -117,6 +118,7 @@ public class ServiceException extends RuntimeException {
             this.errorMessage += " " + errorDetails;
         }
     }
+    
 
     public String getErrorCode() {
         return this.errorCode;

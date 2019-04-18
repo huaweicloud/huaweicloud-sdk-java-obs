@@ -8,9 +8,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -44,6 +47,7 @@ import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketMetadataInfoRequest;
@@ -67,6 +71,7 @@ import com.obs.services.model.DeleteObjectsRequest;
 import com.obs.services.model.DeleteObjectsResult;
 import com.obs.services.model.DownloadFileRequest;
 import com.obs.services.model.DownloadFileResult;
+import com.obs.services.model.ExtensionObjectPermissionEnum;
 import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.GetObjectRequest;
 import com.obs.services.model.HeaderResponse;
@@ -95,6 +100,8 @@ import com.obs.services.model.PolicyConditionItem.ConditionOperator;
 import com.obs.services.model.PolicyTempSignatureRequest;
 import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
+import com.obs.services.model.ProgressListener;
+import com.obs.services.model.ProgressStatus;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.ReplicationConfiguration;
@@ -107,6 +114,8 @@ import com.obs.services.model.S3Bucket;
 import com.obs.services.model.S3BucketCors;
 import com.obs.services.model.SetObjectMetadataRequest;
 import com.obs.services.model.SpecialParamEnum;
+import com.obs.services.model.SseCHeader;
+import com.obs.services.model.SseKmsHeader;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TaskCallback;
 import com.obs.services.model.TaskProgressListener;
@@ -1441,6 +1450,49 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 					}
 				});
 	}
+	
+	/* (non-Javadoc)
+     * @see com.obs.services.IObsClient#getBucketEncryption(java.lang.String)
+     */
+    @Override
+    public BucketEncryption getBucketEncryption(final String bucketName) throws ObsException {
+        return this.doActionWithResult("getBucketEncryption", bucketName, new ActionCallbackWithResult<BucketEncryption>() {
+
+            @Override
+            BucketEncryption action() throws ServiceException {
+                return ObsClient.this.getBucketEncryptionImpl(bucketName);
+            }
+        });
+    }
+
+    /* (non-Javadoc)
+     * @see com.obs.services.IObsClient#setBucketEncryption(java.lang.String, com.obs.services.model.BucketEncryption)
+     */
+    @Override
+    public HeaderResponse setBucketEncryption(final String bucketName, final BucketEncryption bucketEncryption)
+            throws ObsException {
+        return this.doActionWithResult("setBucketEncryption", bucketName, new ActionCallbackWithResult<HeaderResponse>() {
+
+            @Override
+            HeaderResponse action() throws ServiceException {
+                ServiceUtils.asserParameterNotNull(bucketEncryption, "BucketEncryption is null");
+                return ObsClient.this.setBucketEncryptionImpl(bucketName, bucketEncryption);
+            }
+        });
+    }
+    
+    /* (non-Javadoc)
+     * @see com.obs.services.IObsClient#deleteBucketEncryption(java.lang.String)
+     */
+    @Override
+    public HeaderResponse deleteBucketEncryption(final String bucketName) throws ObsException {
+        return this.doActionWithResult("deleteBucketEncryption", bucketName, new ActionCallbackWithResult<HeaderResponse>() {
+            @Override
+            HeaderResponse action() throws ServiceException {
+                return ObsClient.this.deleteBucketEncryptionImpl(bucketName);
+            }
+        });
+    }
 
 	@Deprecated
 	public HeaderResponse setBucketReplicationConfiguration(final String bucketName,
@@ -1857,6 +1909,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         }
         return progreStatus;
     }
+	
 	
 	/* (non-Javadoc)
      * @see com.obs.services.IFSClient#deleteFolder(com.obs.services.model.fs.DeleteFSFolderRequest)
@@ -2524,7 +2577,4 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		super.finalize();
 		this.close();
 	}
-
-    
-
 }

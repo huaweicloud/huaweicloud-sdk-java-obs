@@ -30,6 +30,8 @@ public class Mimetypes
     
     public static final String MIMETYPE_GZIP = "application/x-gzip";
     
+    public static final String MIMETYPE_JSON = "application/json";
+    
     private final Map<String, String> extensionToMimetypeMap;
     
     private Mimetypes()

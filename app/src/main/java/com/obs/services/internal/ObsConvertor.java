@@ -4,6 +4,7 @@ import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
@@ -18,6 +19,7 @@ import com.obs.services.model.Owner;
 import com.obs.services.model.Permission;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
+import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TopicConfiguration;
 
@@ -63,6 +65,25 @@ public class ObsConvertor extends V2Convertor {
 		}
 		
 	}
+	
+	@Override
+    public String transBucketEcryption(BucketEncryption encryption) throws ServiceException {
+        String algorithm = encryption.getSseAlgorithm().getCode();
+        String kmsKeyId = "";
+        if (algorithm.equals(SSEAlgorithmEnum.KMS.getCode())) {
+            kmsKeyId = encryption.getKmsKeyId();
+        }
+        try {
+            XMLBuilder builder = XMLBuilder.create("ServerSideEncryptionConfiguration").e("Rule").e("ApplyServerSideEncryptionByDefault");
+            builder.e("SSEAlgorithm").t(algorithm);
+            if (ServiceUtils.isValid(kmsKeyId)) {
+                builder.e("KMSMasterKeyID").t(kmsKeyId);
+            }
+            return builder.asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for bucketEncryption", e);
+        }
+    }
 
 
 	@Override

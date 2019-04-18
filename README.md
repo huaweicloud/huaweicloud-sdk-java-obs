@@ -1,3 +1,19 @@
+Version 3.1.3
+新特性：
+1. 新增桶加密接口（ObsClient.setBucketEncryption/ObsClient.getBucketEncryption/ObsClient.deleteBucketEncryption），目前仅支持SSE-KMS的服务端加密方式；
+2. 新增服务端加密方式枚举类型（SSEAlgorithmEnum），将服务端加密相关模型 ServerAlgorithm，ServerEncryption 标记为 Deprecated；
+
+资料&demo:
+1. 开发指南服务端加密章节，修改加密示例代码；
+
+修复问题：
+1. 优化异常情况下的日志记录；
+2. 修复上传对象时，传入ByteArrayInputStream数据流可能导致报错的问题；
+3. 优化access日志的级别，避免产生歧义；
+4. 修改断点续传上传接口对段大小限制，从最小5MB改为最小100KB；
+
+-----------------------------------------------------------------------------------
+
 Version 3.1.2.1
 
 修复问题：
@@ -29,3 +45,7 @@ Version 3.1.1
 修复问题：
 1. 修复设置桶事件通知接口（ObsClient.setBucketNotification）无法设置多个TopicConfiguration的问题；
 2. 修复SDK对JDK 9 及以上版本不兼容的问题；
+
+
+
+

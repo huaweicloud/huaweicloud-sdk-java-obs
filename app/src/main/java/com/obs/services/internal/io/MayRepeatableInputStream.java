@@ -44,13 +44,9 @@ public class MayRepeatableInputStream extends FilterInputStream {
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Invalid FileInputStream", e);
 			}
-			if(bufferSize > 0) {
-				this.in = new SdkBufferedInputStream(in, bufferSize);
-			}
-		} else {
-			if(bufferSize > 0) {
-				this.in = new BufferedInputStream(in, bufferSize);
-			}
+		}
+		if(bufferSize > 0) {
+			this.in = new SdkBufferedInputStream(in, bufferSize);
 		}
 	}
 
@@ -72,7 +68,7 @@ public class MayRepeatableInputStream extends FilterInputStream {
 			if (fileChannel != null) {
 				markPos = fileChannel.position();
 			}else if(originInputStream instanceof ByteArrayInputStream) {
-				((ByteArrayInputStream)in).mark(a);
+				((ByteArrayInputStream)originInputStream).mark(a);
 			}
 		} catch (IOException e) {
 			throw new ServiceException("Failed to mark the file position", e);
@@ -90,7 +86,7 @@ public class MayRepeatableInputStream extends FilterInputStream {
 			if(in instanceof SdkBufferedInputStream) {
 				((SdkBufferedInputStream)in).tearDown();
 			}
-			((ByteArrayInputStream)in).reset();
+			((ByteArrayInputStream)originInputStream).reset();
 		} else {
 			throw new UnrecoverableIOException("UnRepeatable");
 		}

@@ -3,6 +3,7 @@ package com.obs.services.model;
 /**
  * SSE-C加密算法
  */
+@Deprecated
 public final class ServerAlgorithm
 {
     /**

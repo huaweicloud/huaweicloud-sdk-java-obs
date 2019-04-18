@@ -331,10 +331,10 @@ public class Log4j2Logger implements ILogger
 
     public void accessRecord(Object obj)
     {
-        if(this.logger != null && LoggerMethodHolder.error != null){
+        if(this.logger != null && LoggerMethodHolder.info != null){
             try
             {
-                LoggerMethodHolder.error.invoke(this.logger, obj, null);
+                LoggerMethodHolder.info.invoke(this.logger, obj, null);
             }
             catch (Exception ex)
             {

@@ -176,7 +176,7 @@ public class Constants
     
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
     
-    public static final String OBS_SDK_VERSION = "3.1.2";
+    public static final String OBS_SDK_VERSION = "3.1.3";
     
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
     
@@ -200,6 +200,8 @@ public class Constants
     
     public static final String REQUEST_ID_HEADER = "request-id";
     
+    public static final String OEF_MARKER = "oef-marker";
+    
     public static final String TRUE = "true";
     
     public static final String FALSE = "false";
@@ -208,6 +210,7 @@ public class Constants
     
     public static final String DISABLED = "Disabled";
     
+    public static final String YES = "yes";
     
     
     public static final List<String> ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -291,6 +294,7 @@ public class Constants
         "tagging",
         "replication",
         "metadata",
+        "encryption",
         /**
          * File System API
          */

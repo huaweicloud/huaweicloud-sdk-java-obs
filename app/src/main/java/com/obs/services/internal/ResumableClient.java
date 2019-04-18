@@ -28,6 +28,7 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.utils.SecureObjectInputStream;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.CompleteMultipartUploadRequest;
@@ -335,6 +336,13 @@ public class ResumableClient {
 
 		InitiateMultipartUploadRequest initiateUploadRequest = new InitiateMultipartUploadRequest(
 				uploadFileRequest.getBucketName(), uploadFileRequest.getObjectKey());
+		
+		initiateUploadRequest.setExtensionPermissionMap(uploadFileRequest.getExtensionPermissionMap());
+		initiateUploadRequest.setAcl(uploadFileRequest.getAcl());
+		initiateUploadRequest.setSuccessRedirectLocation(uploadFileRequest.getSuccessRedirectLocation());
+		initiateUploadRequest.setSseCHeader(uploadFileRequest.getSseCHeader());
+		initiateUploadRequest.setSseKmsHeader(uploadFileRequest.getSseKmsHeader());
+		
 		InitiateMultipartUploadResult initiateUploadResult = this.obsClient.initiateMultipartUpload(initiateUploadRequest);
 		uploadCheckPoint.uploadID = initiateUploadResult.getUploadId();
 		if (uploadFileRequest.isEnableCheckpoint()) {
@@ -399,10 +407,10 @@ public class ResumableClient {
 		 */
 		public void load(String checkPointFile) throws Exception {
 			FileInputStream fileInput = null;
-			ObjectInputStream in = null;
+			SecureObjectInputStream in = null;
 			try {
 				fileInput = new FileInputStream(checkPointFile);
-				in = new ObjectInputStream(fileInput);
+				in = new SecureObjectInputStream(fileInput);
 				UploadCheckPoint tmp = (UploadCheckPoint) in.readObject();
 				assign(tmp);
 			} finally {
@@ -1109,10 +1117,10 @@ public class ResumableClient {
 		 */
 		public void load(String checkPointFile) throws Exception {
 			FileInputStream fileIn = null;
-			ObjectInputStream in = null;
+			SecureObjectInputStream in = null;
 			try {
 				fileIn = new FileInputStream(checkPointFile);
-				in = new ObjectInputStream(fileIn);
+				in = new SecureObjectInputStream(fileIn);
 				DownloadCheckPoint info = (DownloadCheckPoint) in.readObject();
 				assign(info);
 			} finally {

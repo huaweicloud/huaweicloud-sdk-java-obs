@@ -30,6 +30,7 @@ import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.AccessControlListHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketCorsHandler;
+import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketEncryptionHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLifecycleConfigurationHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLocationHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLoggingHandler;
@@ -56,6 +57,7 @@ import com.obs.services.internal.io.ProgressInputStream;
 import com.obs.services.internal.task.BlockRejectedExecutionHandler;
 import com.obs.services.internal.task.DefaultTaskProgressStatus;
 import com.obs.services.internal.utils.AbstractAuthentication;
+import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -68,6 +70,7 @@ import com.obs.services.model.AppendObjectResult;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.AvailableZoneEnum;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketMetadataInfoRequest;
@@ -153,6 +156,10 @@ import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.oef.services.model.CreateAsynchFetchJobsResult;
+import com.oef.services.model.QueryExtensionPolicyResult;
+import com.oef.services.model.QueryAsynchFetchJobsResult;
+import com.oef.services.model.RequestParamEnum;
 
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -829,6 +836,46 @@ public class ObsService extends RestStorageService {
 		setStatusCode(ret, response.code());
 		return ret;
 	}
+	
+	protected BucketEncryption getBucketEncryptionImpl(String bucketName) throws ServiceException {
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        requestParameters.put(SpecialParamEnum.ENCRYPTION.getOriginalStringCode(), "");
+        
+        Response httpResponse = performRestGet(bucketName, null, requestParameters, null);
+        
+        this.verifyResponseContentType(httpResponse);
+        
+        BucketEncryption ret = getXmlResponseSaxParser()
+                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketEncryptionHandler.class, false).getEncryption();
+        
+        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
+        setStatusCode(ret, httpResponse.code());
+        return ret;
+    }
+
+	protected HeaderResponse setBucketEncryptionImpl(String bucketName, BucketEncryption encryption) throws ServiceException {
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        requestParameters.put(SpecialParamEnum.ENCRYPTION.getOriginalStringCode(), "");
+        Map<String, String> metadata = new HashMap<String, String>();
+        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        
+        String encryptAsXml = encryption == null ? "" : this.getIConvertor().transBucketEcryption(encryption);
+        metadata.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(encryptAsXml.length()));
+        Response response = performRestPut(bucketName, null, metadata, requestParameters,
+                createRequestBody(Mimetypes.MIMETYPE_XML, encryptAsXml), true);
+        HeaderResponse ret = build(this.cleanResponseHeaders(response));
+        setStatusCode(ret, response.code());
+        return ret;
+    }
+	
+	protected HeaderResponse deleteBucketEncryptionImpl(String bucketName) throws ServiceException {
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        requestParameters.put(SpecialParamEnum.ENCRYPTION.getOriginalStringCode(), "");
+        Response response = performRestDelete(bucketName, null, requestParameters);
+        HeaderResponse ret = build(this.cleanResponseHeaders(response));
+        setStatusCode(ret, response.code());
+        return ret;
+    }
 
 	protected ReplicationConfiguration getBucketReplicationConfigurationImpl(String bucketName)
 			throws ServiceException {
@@ -1776,7 +1823,7 @@ public class ObsService extends RestStorageService {
 			try {
 				input = new FileInputStream(request.getFile());
 			} catch (FileNotFoundException e) {
-				 throw new IllegalArgumentException("File doesnot exist", e);
+				 throw new IllegalArgumentException("File doesnot exist");
 			}
 			
 			long fileSize = request.getFile().length();
@@ -1844,10 +1891,8 @@ public class ObsService extends RestStorageService {
 		if (kmsHeader == null) {
 			return;
 		}
-		String sseKmsEncryption = null;
-		if (null != kmsHeader.getEncryption()) {
-			sseKmsEncryption = this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? "aws:" + kmsHeader.getEncryption().getServerEncryption() : kmsHeader.getEncryption().getServerEncryption();
-		}
+		
+		String sseKmsEncryption = this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? "aws:" + kmsHeader.getSSEAlgorithm().getCode() : kmsHeader.getSSEAlgorithm().getCode();
 		putHeader(headers, iheaders.sseKmsHeader(), ServiceUtils.toValid(sseKmsEncryption));
 		if (null != kmsHeader.getKmsKeyId()) {
 			putHeader(headers, iheaders.sseKmsKeyHeader(), kmsHeader.getKmsKeyId());
@@ -1858,10 +1903,9 @@ public class ObsService extends RestStorageService {
 		if (cHeader == null) {
 			return;
 		}
-		String sseCAlgorithm = null;
-		if (null != cHeader.getAlgorithm()) {
-			sseCAlgorithm = cHeader.getAlgorithm().getServerAlgorithm();
-		}
+		
+		String sseCAlgorithm = cHeader.getSSEAlgorithm().getCode();
+		
 		putHeader(headers, iheaders.sseCHeader(), ServiceUtils.toValid(sseCAlgorithm));
 		if(cHeader.getSseCKeyBase64() != null) {
 			try {
@@ -2094,10 +2138,7 @@ public class ObsService extends RestStorageService {
 	void transSseCSourceHeaders(SseCHeader sseCHeader, Map<String, String> headers, IHeaders iheaders)
 			throws ServiceException {
 		if (sseCHeader != null) {
-			String algorithm = null;
-			if (null != sseCHeader.getAlgorithm()) {
-				algorithm = sseCHeader.getAlgorithm().getServerAlgorithm();
-			}
+			String algorithm = sseCHeader.getSSEAlgorithm().getCode();
 			putHeader(headers, iheaders.copySourceSseCHeader(), ServiceUtils.toValid(algorithm));
 			if(sseCHeader.getSseCKeyBase64() != null) {
 				try {
@@ -2874,6 +2915,124 @@ public class ObsService extends RestStorageService {
                 listener.progressChanged(progressStatus);
             }
         }
+	}
+	
+	protected HeaderResponse setExtensionPolicyImpl(String bucketName, String policyDocument)
+			throws ServiceException {
+		Map<String, String> requestParameters = new HashMap<String, String>();
+		requestParameters.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
+
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+		metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+				+ Constants.OEF_MARKER, Constants.YES);
+		
+		Response response = performRestPut(bucketName, null, metadata, requestParameters,
+				this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument), false, true);
+		HeaderResponse ret = build(this.cleanResponseHeaders(response));
+		setStatusCode(ret, response.code());
+		return ret;
+	}
+
+	protected QueryExtensionPolicyResult queryExtensionPolicyImpl(String bucketName) throws ServiceException{
+		Map<String, String> requestParams = new HashMap<String, String>();
+		requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
+		
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+				+ Constants.OEF_MARKER, Constants.YES);
+		
+		Response response = performRestGet(bucketName, null, requestParams, metadata, true);
+		
+		this.verifyResponseContentTypeForOef(response);
+		
+		String body;
+		try {
+			body = response.body().string();
+		} catch (IOException e) {
+			throw new ServiceException(e);
+		}
+		
+		QueryExtensionPolicyResult ret = (QueryExtensionPolicyResult) JSONChange.jsonToObj(new QueryExtensionPolicyResult(), body);
+		ret.setResponseHeaders(this.cleanResponseHeaders(response));
+		setStatusCode(ret, response.code());
+		return ret;
+	}
+	
+	protected HeaderResponse deleteExtensionPolicyImpl(String bucketName) throws ServiceException {
+		Map<String, String> requestParams = new HashMap<String, String>();
+		requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
+		
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+				+ Constants.OEF_MARKER, Constants.YES);
+		
+		Response response = performRestDelete(bucketName, null, requestParams, metadata, true);
+		return this.build(response);
+	}
+	
+	protected CreateAsynchFetchJobsResult createFetchJobImpl(String bucketName, String policyDocument) throws ServiceException{
+		Map<String, String> requestParameters = new HashMap<String, String>();
+		requestParameters.put(RequestParamEnum.ASYNCH_FETCH_JOB.getOriginalStringCode(), "");
+
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+		metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+				+ Constants.OEF_MARKER, Constants.YES);
+		
+		Response response = performRestPost(bucketName, null, metadata, requestParameters,
+				this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument), false, true);
+		
+		this.verifyResponseContentTypeForOef(response);
+		
+		String body;
+		try {
+			body = response.body().string();
+		} catch (IOException e) {
+			throw new ServiceException(e);
+		}
+		
+		CreateAsynchFetchJobsResult ret = (CreateAsynchFetchJobsResult) JSONChange.jsonToObj(new CreateAsynchFetchJobsResult(), body);
+		ret.setResponseHeaders(this.cleanResponseHeaders(response));
+		setStatusCode(ret, response.code());
+		return ret;
+	}
+	
+	protected QueryAsynchFetchJobsResult queryFetchJobImpl(String bucketName, String jobId) throws ServiceException{
+		Map<String, String> requestParams = new HashMap<String, String>();
+		requestParams.put(RequestParamEnum.ASYNCH_FETCH_JOB.getOriginalStringCode() + "/" +jobId, "");
+		
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+		metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+				+ Constants.OEF_MARKER, Constants.YES);
+		
+		Response response = performRestGet(bucketName, null, requestParams, metadata, true);
+		
+		this.verifyResponseContentTypeForOef(response);
+		
+		String body;
+		try {
+			body = response.body().string();
+		} catch (IOException e) {
+			throw new ServiceException(e);
+		}
+		
+		QueryAsynchFetchJobsResult ret = (QueryAsynchFetchJobsResult) JSONChange.jsonToObj(new QueryAsynchFetchJobsResult(), body);
+		ret.setResponseHeaders(this.cleanResponseHeaders(response));
+		setStatusCode(ret, response.code());
+		
+		return ret;
+	}
+	
+	protected void verifyResponseContentTypeForOef(Response response) throws ServiceException {
+		if (this.obsProperties.getBoolProperty(ObsConstraint.VERIFY_RESPONSE_CONTENT_TYPE, true)) {
+			String contentType = response.header(Constants.CommonHeaders.CONTENT_TYPE);
+			if (!Mimetypes.MIMETYPE_JSON.equalsIgnoreCase(contentType)) {
+				throw new ServiceException(
+						"Expected JSON document response from OEF but received content type " + contentType);
+			}
+		}
 	}
 
 }
