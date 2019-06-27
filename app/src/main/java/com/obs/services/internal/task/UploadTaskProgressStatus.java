@@ -27,7 +27,7 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
 	
 	private final long progressInterval;
 	private final Date startDate;
-    private ConcurrentHashMap<String, ProgressStatus> taskTable = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ProgressStatus> taskTable = new ConcurrentHashMap<String, ProgressStatus>();
     private AtomicLong totalSize = new AtomicLong();
     private AtomicLong totalMilliseconds = new AtomicLong();
     private AtomicLong endingTaskSize = new AtomicLong();
@@ -124,7 +124,7 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
 	@Override
 	public long getTransferredSize() {
 		long transferredSize = this.endingTaskSize.get();
-		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<>(this.taskTable);
+		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(this.taskTable);
 		for(Entry<String, ProgressStatus> entry: taskStatusTable.entrySet()){
 			transferredSize += entry.getValue().getTransferredBytes();
 		}
@@ -154,7 +154,7 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
 
 	@Override
 	public ConcurrentHashMap<String, ProgressStatus> getTaskTable() {
-		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<>(this.taskTable);
+		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(this.taskTable);
 		return taskStatusTable;
 	}
 
