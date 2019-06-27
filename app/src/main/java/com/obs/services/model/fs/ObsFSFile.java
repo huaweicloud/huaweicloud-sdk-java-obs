@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model.fs;
 
 import java.io.File;
@@ -7,7 +21,7 @@ import com.obs.services.exception.ObsException;
 import com.obs.services.model.StorageClassEnum;
 
 /**
- * 支持文件接口的桶中的文件
+ * Files in a bucket that supports the file interface
  *
  */
 public class ObsFSFile extends ObsFSFolder{
@@ -18,18 +32,18 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 获取文件的属性
-	 * @return 文件的属性
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Obtains file properties.
+	 * @return File properties
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSAttribute attribute() throws ObsException {
 		return super.attribute();
 	}
 	
 	/**
-	 * 读取文件内容
-	 * @return 读取文件内容的响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Obtain the file content.
+	 * @return Response to the request for obtaining file content
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ReadFileResult read() throws ObsException{
 		this.checkInternalClient();
@@ -38,10 +52,10 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 读取文件内容
-	 * @param rangeStart 读取文件内容的起始位置
-	 * @param rangeEnd 读取文件内容的结束位置
-	 * @return ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Obtain the file content.
+	 * @param rangeStart Start position for reading file content
+	 * @param rangeEnd End position for reading file content
+	 * @return ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ReadFileResult read(long rangeStart, long rangeEnd) throws ObsException{
 		this.checkInternalClient();
@@ -52,11 +66,11 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 写文件内容
-	 * @param file 本地文件路径
-	 * @param position 写文件的起始位置
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Write data to a file.
+	 * @param file Local path to the file
+	 * @param position Start position for writing data to a file
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile write(File file, long position) throws ObsException {
 		this.checkInternalClient();
@@ -65,21 +79,21 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 写文件内容
-	 * @param file 本地文件路径
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Write data to a file.
+	 * @param file Local path to the file
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile write(File file) throws ObsException{
 		return this.write(file, 0);
 	}
 	
 	/**
-	 * 写文件内容
-	 * @param input 待上传的数据流
-	 * @param position 写文件的起始位置
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Write data to a file.
+	 * @param input Data stream to be uploaded
+	 * @param position Start position for writing data to a file
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile write(InputStream input, long position) throws ObsException {
 		this.checkInternalClient();
@@ -88,10 +102,10 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 在文件末尾追加内容
-	 * @param file 本地文件路径
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Append data to a file.
+	 * @param file Local path to the file
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile append(File file) throws ObsException{
 		this.checkInternalClient();
@@ -100,10 +114,10 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 在文件末尾追加内容
-	 * @param input 待上传的数据流
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Append data to a file.
+	 * @param input Data stream to be uploaded
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile append(InputStream input) throws ObsException{
 		this.checkInternalClient();
@@ -112,20 +126,20 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 	
 	/**
-	 * 写文件内容
-	 * @param input 待上传的数据流
-	 * @return 代表支持文件接口的桶中的文件
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Write data to a file.
+	 * @param input Data stream to be uploaded
+	 * @return Files in the bucket that supports the file interface
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSFile write(InputStream input) throws ObsException{
 		return this.write(input, 0);
 	}
 
 	/**
-	 * 重命名文件
-	 * @param newName 新的文件名
-	 * @return 重命名文件响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Rename a file.
+	 * @param newName New file name
+	 * @return Response to the request for renaming a file
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public RenameResult rename(String newName) throws ObsException{
 		this.checkInternalClient();
@@ -134,10 +148,10 @@ public class ObsFSFile extends ObsFSFolder{
 	}
 
 	/**
-	 * 截断文件
-	 * @param newLength 文件截断后的大小
-	 * @return 截断文件的响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Truncate a file.
+	 * @param newLength File size after the truncation
+	 * @return Response to the request for truncating a file
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public TruncateFileResult truncate(long newLength) throws ObsException{
 		this.checkInternalClient();
@@ -145,11 +159,7 @@ public class ObsFSFile extends ObsFSFolder{
 		return this.innerClient.truncateFile(request);
 	}
 	
-	/**
-	 * 删除文件
-	 * @return 删除文件的响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
+
 	public DropFileResult drop() throws ObsException {
 	    this.checkInternalClient();
 	    DropFileRequest request = new DropFileRequest(this.getBucketName(), this.getObjectKey(), this.getVersionId());

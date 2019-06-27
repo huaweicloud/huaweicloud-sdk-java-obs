@@ -1,9 +1,23 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.io.Serializable;
 
 /**
- * 段信息，包含段的etag校验值和分段号
+ * Part information, including the ETag and part number
  */
 public class PartEtag implements Serializable
 {
@@ -21,9 +35,9 @@ public class PartEtag implements Serializable
     }
     
     /**
-     * 构造函数
-     * @param etag 分段的etag校验值
-     * @param partNumber 分段号
+     * Constructor
+     * @param etag Part ETag
+     * @param partNumber Part number
      */
     public PartEtag(String etag, Integer partNumber)
     {
@@ -33,8 +47,8 @@ public class PartEtag implements Serializable
 
     
     /**
-     * 获取段的etag校验值
-     * @return 段的etag校验值
+     * Obtain the ETag of the part.
+     * @return Part ETag
      */
     public String getEtag()
     {
@@ -42,8 +56,8 @@ public class PartEtag implements Serializable
     }
     
     /**
-     * 设置段的etag校验值
-     * @param etag 段的etag校验值
+     * Set the ETag of the part.
+     * @param etag Part ETag
      */
     public void setEtag(String etag)
     {
@@ -52,8 +66,8 @@ public class PartEtag implements Serializable
 
 
     /**
-     * 获取段的etag校验值
-     * @return 段的etag校验值
+     * Obtain the ETag of the part.
+     * @return Part ETag
      */
     @Deprecated
     public String geteTag()
@@ -62,8 +76,8 @@ public class PartEtag implements Serializable
     }
     
     /**
-     * 设置段的etag校验值
-     * @param etag 段的etag校验值
+     * Set the ETag of the part.
+     * @param etag Part ETag
      */
     @Deprecated
     public void seteTag(String etag)
@@ -72,8 +86,8 @@ public class PartEtag implements Serializable
     }
     
     /**
-     * 获取分段号
-     * @return 分段号
+     * Obtain the part number.
+     * @return Part number
      */
     public Integer getPartNumber()
     {
@@ -81,8 +95,8 @@ public class PartEtag implements Serializable
     }
     
     /**
-     * 设置分段号
-     * @param partNumber 分段号
+     * Set the part number.
+     * @param partNumber Part number
      */
     public void setPartNumber(Integer partNumber)
     {
@@ -119,3 +133,5 @@ public class PartEtag implements Serializable
     	return false;
     }
 }
+
+

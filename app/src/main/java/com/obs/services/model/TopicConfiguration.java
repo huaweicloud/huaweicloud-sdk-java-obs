@@ -1,9 +1,22 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.List;
 
 /**
- * 简单通知服务(SMN), 消息通知配置
+ * Event notification configuration
  *
  */
 public class TopicConfiguration extends AbstractNotification
@@ -14,11 +27,11 @@ public class TopicConfiguration extends AbstractNotification
     }
     
     /**
-     * 构造函数
-     * @param id 事件通知配置ID
-     * @param filter 过滤规则组
-     * @param topic 事件通知主题的URN
-     * @param events 需要发布通知消息的事件类型列表
+     * Constructor
+     * @param id Event notification configuration ID
+     * @param filter Filtering rule group
+     * @param topic URN of the event notification topic
+     * @param events List of the event types that require the release of notification messages
      */
     public TopicConfiguration(String id, Filter filter, String topic, List<EventTypeEnum> events)
     {
@@ -31,8 +44,9 @@ public class TopicConfiguration extends AbstractNotification
    
 
     /**
-     * 获取事件通知主题的URN
-     * @return 事件通知主题的URN
+     * Obtain the URN of the event notification topic.
+     * @return URN of the event notification topic
+
      */
     public String getTopic()
     {
@@ -40,8 +54,8 @@ public class TopicConfiguration extends AbstractNotification
     }
 
     /**
-     * 设置事件通知主题的URN
-     * @param topic 事件通知主题的URN
+     * Set the URN of the event notification topic. 
+     * @param topic URN of the event notification topic
      */
     public void setTopic(String topic)
     {

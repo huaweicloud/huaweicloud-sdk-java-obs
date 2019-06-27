@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.HashMap;
@@ -8,7 +21,7 @@ import java.util.Set;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * 创建桶的请求参数 
+ * Parameters in a bucket creation request 
  *
  */
 public class CreateBucketRequest {
@@ -34,17 +47,17 @@ public class CreateBucketRequest {
 	}
 	
 	/**
-	 * 构造函数
-	 * @param bucketName 桶名
+	 * Constructor
+	 * @param bucketName Bucket name
 	 */
 	public CreateBucketRequest(String bucketName) {
 		this.bucketName = bucketName;
 	}
 	
 	/**
-	 * 构造函数
-	 * @param bucketName 桶名
-	 * @param location 桶的区域位置
+	 * Constructor
+	 * @param bucketName Bucket name
+	 * @param location Bucket location
 	 */
 	public CreateBucketRequest(String bucketName, String location) {
 		this.bucketName = bucketName;
@@ -52,9 +65,9 @@ public class CreateBucketRequest {
 	}
 	
 	/**
-	 * 为用户授予OBS扩展权限
-	 * @param domainId 用户的domainId
-	 * @param extensionPermissionEnum OBS扩展权限
+	 * Grant the OBS extension permission to users.
+	 * @param domainId ID of the domain to which the user belongs
+	 * @param extensionPermissionEnum OBS extension permission
 	 */
 	public void grantExtensionPermission(String domainId, ExtensionBucketPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -69,9 +82,9 @@ public class CreateBucketRequest {
 	}
 	
 	/**
-	 * 撤回用户的OBS扩展权限
-	 * @param domainId 用户的domainId
-	 * @param extensionPermissionEnum OBS扩展权限
+	 * Withdraw the OBS extension permission. 
+	 * @param domainId ID of the domain to which the user belongs
+	 * @param extensionPermissionEnum OBS extension permission
 	 */
 	public void withdrawExtensionPermission(String domainId, ExtensionBucketPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -85,8 +98,8 @@ public class CreateBucketRequest {
 	}
 	
 	/**
-	 * 撤回用户的所有OBS扩展权限
-	 * @param domainId 用户的domainId
+	 * Withdraw all OBS extension permissions. 
+	 * @param domainId ID of the domain to which the user belongs
 	 */
 	public void withdrawExtensionPermissions(String domainId) {
 		if(ServiceUtils.isValid(domainId)) {
@@ -126,9 +139,9 @@ public class CreateBucketRequest {
 	
 	
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -136,9 +149,9 @@ public class CreateBucketRequest {
     }
     
     /**
-     * 设置桶名
-     * 只能包含小写字母、数字、 "-"、 "."
-     * @param bucketName 桶名
+     * Set the bucket name.
+     * The value can contain only lowercase letters, digits, hyphens (-), and periods (.).
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -146,8 +159,8 @@ public class CreateBucketRequest {
     }
     
     /**
-     * 获取桶的区域位置
-     * @return 桶的区域位置
+     * Obtain the bucket location.
+     * @return Bucket location
      */
     public String getLocation()
     {
@@ -155,27 +168,21 @@ public class CreateBucketRequest {
     }
     
     /**
-     * 设置桶的区域位置
-     * @param location 桶的区域位置，如果使用的终端节点归属于默认区域，可以不携带此参数；如果使用的终端节点归属于其他区域，则必须携带此参数
+     * Set the bucket location.
+     * @param location Bucket location. This parameter is mandatory unless the endpoint belongs to the default region. 
      */
     public void setLocation(String location)
     {
         this.location = location;
     }
     
-    /**
-     * 获取桶的企业ID
-     * @return 桶的企业ID
-     */
+
     public String getEpid()
     {
         return epid;
     }
     
-    /**
-     * 设置桶的企业ID
-     * @param epid 企业ID
-     */
+
     public void setEpid(String epid)
     {
         this.epid = epid;
@@ -187,8 +194,8 @@ public class CreateBucketRequest {
     }
     
     /**
-     * 设置桶的访问权限
-     * @param acl 桶的访问权限
+     * Set the bucket ACL.
+     * @param acl Bucket ACL
      */
     public void setAcl(AccessControlList acl)
     {
@@ -196,8 +203,8 @@ public class CreateBucketRequest {
     }
     
     /**
-     * 获取桶的存储类型
-     * @return 桶存储类型
+     * Obtain the bucket storage class. 
+     * @return Bucket storage class
      */
     public StorageClassEnum getBucketStorageClass()
     {
@@ -205,26 +212,20 @@ public class CreateBucketRequest {
     }
 
     /**
-     * 设置桶的存储类型
-     * @param storageClass 桶存储类型
+     * Set the bucket storage class. 
+     * @param storageClass Bucket storage class
      */
     public void setBucketStorageClass(StorageClassEnum storageClass)
     {
         this.storageClass = storageClass;
     }
     
-    /**
-     * 获取桶的集群类型
-     * @return 桶的集群类型
-     */
+
 	public AvailableZoneEnum getAvailableZone() {
 		return availableZone;
 	}
 
-	/**
-	 * 设置桶的集群类型
-	 * @param availableZone 桶的集群类型
-	 */
+
 	public void setAvailableZone(AvailableZoneEnum availableZone) {
 		this.availableZone = availableZone;
 	}

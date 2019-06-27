@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 重定向时的路由规则配置
+ * Route rules for redirection
  */
 public class RouteRule
 {
@@ -10,8 +24,8 @@ public class RouteRule
     private Redirect redirect;
     
     /**
-     * 获取重定向条件
-     * @return 重定向条件
+     * Obtain the redirection condition.
+     * @return Redirection condition 
      */
     public RouteRuleCondition getCondition()
     {
@@ -19,8 +33,8 @@ public class RouteRule
     }
     
     /**
-     * 设置重定向条件
-     * @param condition 重定向条件
+     * Set the redirection condition
+     * @param condition Redirection condition
      */
     public void setCondition(RouteRuleCondition condition)
     {
@@ -28,8 +42,8 @@ public class RouteRule
     }
     
     /**
-     * 获取重定向配置
-     * @return 重定向配置
+     * Obtain the redirection configuration.
+     * @return Redirection configuration 
      */
     public Redirect getRedirect()
     {
@@ -37,8 +51,8 @@ public class RouteRule
     }
     
     /**
-     * 设置重定向配置
-     * @param redirect 重定向配置
+     * Configure the redirection.
+     * @param redirect Redirection configuration
      */
     public void setRedirect(Redirect redirect)
     {
@@ -52,3 +66,5 @@ public class RouteRule
     }
     
 }
+
+

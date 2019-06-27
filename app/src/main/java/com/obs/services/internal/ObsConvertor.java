@@ -1,8 +1,20 @@
+/**
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.internal;
 
 import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
@@ -51,13 +63,8 @@ public class ObsConvertor extends V2Convertor {
 		
 		try {
 			XMLBuilder builder = XMLBuilder.create("RestoreRequest").elem("Days").t(String.valueOf(req.getDays())).up();
-			switch (req.getRestoreTier()) {
-			case EXPEDITED:
-			case STANDARD:	
+			if (req.getRestoreTier() != null) {
 				builder.e("RestoreJob").e("Tier").t(req.getRestoreTier().getCode());
-				break;
-			default:
-				break;
 			}
 			return builder.asString();
 		} catch (Exception e) {
@@ -126,8 +133,11 @@ public class ObsConvertor extends V2Convertor {
 							} else if (grantee instanceof GroupGrantee) {
 								subBuilder = XMLBuilder.create("Grantee").element("Canned").text(this.transGroupGrantee(((GroupGrantee)grantee).getGroupGranteeType()));
 							}
-							grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
-							.text(ServiceUtils.toValid(permission.getPermissionString())).up();
+							
+							if(subBuilder != null) {
+								grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
+								.text(ServiceUtils.toValid(permission.getPermissionString())).up();
+							}
 						}
 					}
 				}
@@ -161,16 +171,21 @@ public class ObsConvertor extends V2Convertor {
 					if (grantee instanceof CanonicalGrantee) {
 						subBuilder = XMLBuilder.create("Grantee").element("ID").text(ServiceUtils.toValid(grantee.getIdentifier()));
 					} else if (grantee instanceof GroupGrantee) {
+						if(((GroupGrantee)grantee).getGroupGranteeType() != GroupGranteeEnum.ALL_USERS) {
+							continue;
+						}
 						subBuilder = XMLBuilder.create("Grantee").element("Canned").text(this.transGroupGrantee(((GroupGrantee)grantee).getGroupGranteeType()));
 					}else if(grantee != null) {
 						subBuilder = XMLBuilder.create("Grantee").element("ID").text(ServiceUtils.toValid(grantee.getIdentifier()));
 					}
-					XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
-					if(permission != null) {
-						grantBuilder.elem("Permission").text(ServiceUtils.toValid(permission.getPermissionString()));
-					}
-					if(isBucket) {
-						grantBuilder.e("Delivered").t(String.valueOf(gap.isDelivered()));
+					if(subBuilder != null) {
+						XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
+						if(permission != null) {
+							grantBuilder.elem("Permission").text(ServiceUtils.toValid(permission.getPermissionString()));
+						}
+						if(isBucket) {
+							grantBuilder.e("Delivered").t(String.valueOf(gap.isDelivered()));
+						}
 					}
 				}
 			}

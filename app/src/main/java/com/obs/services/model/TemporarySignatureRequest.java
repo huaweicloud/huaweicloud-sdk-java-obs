@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.Date;
@@ -7,7 +20,7 @@ import java.util.TreeMap;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * 临时授权访问的请求参数
+ * Parameters in a request for temporarily authorized access
  *
  */
 public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest {
@@ -20,23 +33,21 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     }
 
     /**
-     * 构造函数
-     * 
-     * @param method  HTTP/HTTPS请求方法
-     * @param expires 有效时间，单位：秒
+     * Constructor
+     * @param method HTTP/HTTPS request method 
+     * @param expires Expiration time (in seconds)
      */
     public TemporarySignatureRequest(HttpMethodEnum method, long expires) {
         this(method, null, null, null, expires);
     }
 
     /**
-     * 构造函数
-     * 
-     * @param method       HTTP/HTTPS请求方法
-     * @param bucketName   桶名
-     * @param objectKey    对象名
-     * @param specialParam 特殊操作符
-     * @param expires      有效时间，单位：秒
+     * Constructor
+     * @param method HTTP/HTTPS request method 
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param specialParam Special operator
+     * @param expires Expiration time (in seconds)
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires) {
@@ -44,14 +55,13 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     }
 
     /**
-     * 构造函数
-     * 
-     * @param method       HTTP/HTTPS请求方法
-     * @param bucketName   桶名
-     * @param objectKey    对象名
-     * @param specialParam 特殊操作符
-     * @param expires      有效时间，单位：秒
-     * @param requestDate  请求日期
+     * Constructor
+     * @param method HTTP/HTTPS request method 
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param specialParam Special operator
+     * @param expires Expiration time (in seconds)
+     * @param requestDate Request date
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires, Date requestDate) {
@@ -64,36 +74,31 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     }
 
     /**
-     * 获取临时授权访问有效时间，单位：秒。默认值为5分钟（300），最大取值为7天（604800）
-     * 
-     * @return 有效时间
-     */
-    public long getExpires() {
+     * Obtain the validity period of the temporary authorization (in seconds). The devalue value is 5 minutes (value "300") and the maximum value is 7 days ("604800").
+     * @return Validity period
+     */    public long getExpires() {
         return expires;
     }
 
     /**
-     * 设置临时授权访问有效时间，单位：秒。默认值为5分钟（300），最大取值为7天（604800）
-     * 
-     * @param expires 有效时间
+     * Obtain the validity period of the temporary authorization (in seconds). The devalue value is 5 minutes (value "300") and the maximum value is 7 days ("604800").
+     * @param expires Validity period
      */
     public void setExpires(long expires) {
         this.expires = expires;
     }
 
     /**
-     * 获取请求时间
-     * 
-     * @return 请求时间
+     * Set the request time.
+     * @return Request time
      */
     public Date getRequestDate() {
         return requestDate;
     }
 
-    /**
-     * 设置请求时间
-     * 
-     * @param requestDate 请求时间
+   /**
+     * Set the request time.
+     * @param requestDate Request date
      */
     public void setRequestDate(Date requestDate) {
         this.requestDate = requestDate;

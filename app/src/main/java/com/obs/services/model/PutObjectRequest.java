@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.io.File;
@@ -6,7 +19,7 @@ import java.io.InputStream;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * 上传对象的请求参数
+ * Parameters in an object upload request
  */
 public class PutObjectRequest extends PutObjectBasicRequest
 {
@@ -44,9 +57,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
      */
     public PutObjectRequest(String bucketName, String objectKey)
     {
@@ -55,10 +68,10 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param file 待上传文件
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param file File to be uploaded
      */
     public PutObjectRequest(String bucketName, String objectKey, File file)
     {
@@ -69,10 +82,10 @@ public class PutObjectRequest extends PutObjectBasicRequest
     
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param input 待上传的数据流
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param input Data stream to be uploaded
      */
     public PutObjectRequest(String bucketName, String objectKey, InputStream input)
     {
@@ -83,9 +96,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     
     
     /**
-     * 获取待上传内容在本地文件中的起始位置，仅在设置了本地上传文件路径时有效
+     * Obtain the start position of the to-be-uploaded content in the file. This parameter is effective only when the path where the file is to be uploaded is configured. 
      * 
-     * @return 待上传内容在本地文件中的起始位置
+     * @return Start position of the content to be uploaded in the local file
      */
     public long getOffset()
     {
@@ -93,9 +106,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 设置待上传内容在本地文件中的起始位置，仅在设置了本地上传文件路径时有效，单位：字节，默认为0
+     * Set the start position of the to-be-uploaded content in the file. This parameter is effective only when the path where the file is to be uploaded is configured. The unit is byte and the default value is 0.
      * 
-     * @param offset 待上传内容在本地文件中的起始位置
+     * @param offset Start position of the content to be uploaded in the local file
      */
     public void setOffset(long offset)
     {
@@ -103,9 +116,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 获取待上传的数据流，不可与待上传的文件一起使用
+     * Obtain the data stream to be uploaded, which cannot be used with the file to be uploaded.
      * 
-     * @return 待上传的数据流
+     * @return Data stream to be uploaded
      */
     public InputStream getInput()
     {
@@ -113,9 +126,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 设置待上传的数据流，不可与待上传的文件一起使用
+     * Set the data stream to be uploaded, which cannot be used with the file to be uploaded.
      * 
-     * @param input 待上传的数据流
+     * @param input Data stream to be uploaded
      * 
      */
     public void setInput(InputStream input)
@@ -125,9 +138,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 获取对象属性，支持content-type，content-length，content-md5，自定义元数据
+     * Obtain object properties, including "content-type", "content-length", "content-md5", and customized metadata.
      * 
-     * @return 对象属性
+     * @return Object properties
      */
     public ObjectMetadata getMetadata()
     {
@@ -135,9 +148,9 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
     
     /**
-     * 设置对象属性，支持content-type，content-length，自定义元数据
+     * Set the object properties, including "content-type", "content-length", and customized metadata.
      * 
-     * @param metadata 对象属性
+     * @param metadata Object properties
      */
     public void setMetadata(ObjectMetadata metadata)
     {
@@ -146,8 +159,8 @@ public class PutObjectRequest extends PutObjectBasicRequest
     
 
     /**
-     * 获取待上传的文件，不可与待上传的数据流一起使用
-     * @return 待上传的文件
+     * Obtain the file to be uploaded, which cannot be used with the data stream.
+     * @return File to be uploaded
      */
     public File getFile()
     {
@@ -155,8 +168,8 @@ public class PutObjectRequest extends PutObjectBasicRequest
     }
 
     /**
-     * 设置待上传的文件，不可与待上传的数据流一起使用
-     * @param file 待上传的文件
+     * Set the file to be uploaded, which cannot be used with the data stream.
+     * @param file File to be uploaded
      */
     public void setFile(File file)
     {
@@ -166,65 +179,53 @@ public class PutObjectRequest extends PutObjectBasicRequest
     
     
     /**
-     * 获取对象的过期时间
-     * @return 对象的过期时间
+     * Obtain the expiration time of the object.
+     * @return Expiration time of the object
      */
 	public int getExpires() {
 		return expires;
 	}
 
 	/**
-	 * 设置对象的过期时间，正整数
-	 * @param expires 对象的过期时间
+	 * Set the expiration time of the object. The value must be a positive integer.
+	 * @param expires Expiration time of the object
 	 */
 	public void setExpires(int expires) {
 		this.expires = expires;
 	}
 	
     /**
-     * 获取是否自动关闭输入流标识，默认为true
-     * @return 是否自动关闭输入流标识
+     * Check whether the input stream will be automatically closed. The default value is "true".
+     * @return Identifier specifying whether the input stream will be automatically closed
      */
     public boolean isAutoClose() {
 		return autoClose;
 	}
 
     /**
-     * 设置是否自动关闭输入流标识，默认为true
-     * @param autoClose 是否自动关闭输入流标识
+     * Specify whether to automatically close the input stream. The default value is "true".
+     * @param autoClose Identifier specifying whether the input stream will be automatically closed
      */
 	public void setAutoClose(boolean autoClose) {
 		this.autoClose = autoClose;
 	}
 	
-	/**
-	 * 获取数据传输监听器
-	 * @return 数据传输监听器
-	 */
+
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
-	/**
-	 * 设置数据传输监听器
-	 * @param progressListener 数据传输监听器
-	 */
+
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
-	/**
-	 * 获取数据传输监听器回调的阈值，默认为100KB
-	 * @return 数据传输监听器回调的阈值
-	 */
+
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
-	/**
-	 * 设置数据传输监听器回调的阈值，默认为100KB
-	 * @param progressInterval 数据传输监听器回调的阈值
-	 */
+
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
 	}

@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 桶的website（托管）配置
+ * Website hosting configuration of a bucket
  */
 public class WebsiteConfiguration extends HeaderResponse
 {
@@ -17,8 +31,8 @@ public class WebsiteConfiguration extends HeaderResponse
     private List<RouteRule> routeRules;
     
     /**
-     * 获取托管首页
-     * @return 托管首页 
+     * Obtain the hosting homepage.
+     * @return Hosting homepage 
      * 
      */
     public String getSuffix()
@@ -27,8 +41,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置托管首页
-     * @param suffix 托管首页 
+     * Set the hosting homepage.
+     * @param suffix Hosting homepage 
      * 
      */
     public void setSuffix(String suffix)
@@ -37,8 +51,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 获取托管错误页面
-     * @return key 托管错误页面
+     * Obtain the error page of the hosting.
+     ** @return key Error page of the hosting.
      */
     public String getKey()
     {
@@ -46,8 +60,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置托管错误页面
-     * @param key 托管错误页面
+     * Set the error page of the hosting.
+     * @param key Error page of the hosting
      */
     public void setKey(String key)
     {
@@ -55,8 +69,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 获取重定向路由规则列表
-     * @return routeRules 重定向路由规则列表
+     * Set the redirection route rules.
+     * @return routeRules Redirection route rule list
      */
     public List<RouteRule> getRouteRules()
     {
@@ -67,8 +81,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置重定向路由规则列表
-     * @param routeRules 重定向路由规则列表
+     * Set the redirection route rule list.
+     * @param routeRules Redirection route rule list
      */
     public void setRouteRules(List<RouteRule> routeRules)
     {
@@ -76,8 +90,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 获取所有请求重定向规则
-     * @return 所有请求重定向规则
+     * Obtain the redirection rules of all requests.
+     * @return Redirection rules of all requests
      */
     public RedirectAllRequest getRedirectAllRequestsTo()
     {
@@ -85,8 +99,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置所有请求重定向规则
-     * @param redirectAllRequestsTo 所有请求重定向规则
+     * Set redirection rules of all requests.
+     * @param redirectAllRequestsTo Redirection rules of all requests
      */
     public void setRedirectAllRequestsTo(RedirectAllRequest redirectAllRequestsTo)
     {
@@ -101,3 +115,5 @@ public class WebsiteConfiguration extends HeaderResponse
             + ", routeRules=" + routeRules + "]";
     }
 }
+
+

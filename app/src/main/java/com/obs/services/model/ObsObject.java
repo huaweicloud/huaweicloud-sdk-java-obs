@@ -1,54 +1,68 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.io.InputStream;
 
 /**
- * OBS中的对象
+ * Objects in OBS
  */
 public class ObsObject extends S3Object{
 
 	/**
-	 * 获取对象所属的桶
+	 * Obtain the name of the bucket to which the object belongs. 
 	 * 
-	 * @return 对象所属的桶
+	 * @return Name of the bucket to which the object belongs
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * 设置对象所属的桶
+	 * Set the bucket to which the object belongs. 
 	 * 
 	 * @param bucketName
-	 *            对象所属的桶
+	 *            Name of the bucket to which the object belongs
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * 获取对象名
+	 * Obtain the object name.
 	 * 
-	 * @return 对象名
+	 * @return Object name
 	 */
 	public String getObjectKey() {
 		return objectKey;
 	}
 
 	/**
-	 * 设置对象名
+	 * Set the object name.
 	 * 
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 */
 	public void setObjectKey(String objectKey) {
 		this.objectKey = objectKey;
 	}
 
 	/**
-	 * 获取对象的属性，包括content-type，content-length，自定义元数据等
+	 * Obtain the object properties, including "content-type", "content-length", and customized metadata.
 	 * 
-	 * @return 对象的属性
+	 * @return Object properties
 	 */
 	public ObjectMetadata getMetadata() {
 		if (metadata == null) {
@@ -58,48 +72,48 @@ public class ObsObject extends S3Object{
 	}
 
 	/**
-	 * 设置对象的属性，包括content-type，content-length，自定义元数据等
+	 * Set the object properties, including "content-type", "content-length", and customized metadata.
 	 * 
 	 * @param metadata
-	 *            对象的属性
+	 *            Object properties
 	 */
 	public void setMetadata(ObjectMetadata metadata) {
 		this.metadata = metadata;
 	}
 
 	/**
-	 * 获取对象的数据流
+	 * Obtain the data stream of the object.
 	 * 
-	 * @return 对象的数据流
+	 * @return Data stream of the object
 	 */
 	public InputStream getObjectContent() {
 		return objectContent;
 	}
 
 	/**
-	 * 设置对象的数据流
+	 * Set the data stream of the object.
 	 * 
 	 * @param objectContent
-	 *            对象的数据流
+	 *            Object data stream
 	 */
 	public void setObjectContent(InputStream objectContent) {
 		this.objectContent = objectContent;
 	}
 
 	/**
-	 * 获取对象的所有者
+	 * Obtain the owner of the object. 
 	 * 
-	 * @return 对象的所有者
+	 * @return Owner of the object 
 	 */
 	public Owner getOwner() {
 		return owner;
 	}
 
 	/**
-	 * 设置对象的所有者
+	 * Set the owner of the object. 
 	 * 
 	 * @param owner
-	 *            对象的所有者
+	 *            Owner of the object
 	 */
 	public void setOwner(Owner owner) {
 		this.owner = owner;
@@ -111,3 +125,5 @@ public class ObsObject extends S3Object{
 				+ metadata + ", objectContent=" + objectContent + "]";
 	}
 }
+
+

@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 桶的跨Region复制配置
+ * Cross-region replication configuration of a bucket
  *
  */
 public class ReplicationConfiguration extends HeaderResponse{
@@ -20,64 +34,64 @@ public class ReplicationConfiguration extends HeaderResponse{
 		private Destination destination;
 		
 		/**
-		 * 获取规则ID
-		 * @return 规则ID
+		 * Obtain the rule ID.
+		 * @return Rule ID
 		 */
 		public String getId() {
 			return id;
 		}
 
 		/**
-		 * 设置规则ID
-		 * @param id 规则ID
+		 * Set the rule ID.
+		 * @param id Rule ID
 		 */
 		public void setId(String id) {
 			this.id = id;
 		}
 		
 		/**
-		 * 获取规则状态
-		 * @return 规则状态
+		 * Obtain the rule status.
+		 * @return Rule status
 		 */
 		public RuleStatusEnum getStatus() {
 			return status;
 		}
 		
 		/**
-		 * 设置规则状态
-		 * @param status 规则状态
+		 * Set the rule status.
+		 * @param status Rule status
 		 */
 		public void setStatus(RuleStatusEnum status) {
 			this.status = status;
 		}
 		
 		/**
-		 * 获取规则匹配的对象名前缀
-		 * @return 对象名前缀
+		 * Obtain the object name prefix that identifies objects to which the rule applies.
+		 * @return Object name prefix
 		 */
 		public String getPrefix() {
 			return prefix;
 		}
 		
 		/**
-		 * 设置规则匹配的对象名前缀
-		 * @param prefix 对象名前缀
+		 * Set the object name prefix that identifies objects to which the rule applies.
+		 * @param prefix Object name prefix
 		 */
 		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 		
 		/**
-		 * 获取复制的目标信息
-		 * @return 目标信息
+		 * Obtain the information about the replication destination.
+		 * @return Destination information
 		 */
 		public Destination getDestination() {
 			return destination;
 		}
 		
 		/**
-		 * 设置复制的目标信息
-		 * @param destination 目标信息
+		 * Set the information about the replication target.
+		 * @param destination Destination information
 		 */
 		public void setDestination(Destination destination) {
 			this.destination = destination;
@@ -95,32 +109,32 @@ public class ReplicationConfiguration extends HeaderResponse{
 		private StorageClassEnum storageClass;
 		
 		/**
-		 * 获取复制的目标桶名
-		 * @return 目标桶名
+		 * Obtain the information about the destination bucket.
+		 * @return Destination bucket name
 		 */
 		public String getBucket() {
 			return bucket;
 		}
 		
 		/**
-		 * 设置复制的目标桶名
-		 * @param bucket 目标桶名
+		 * Set the destination bucket name.
+		 * @param bucket Destination bucket name
 		 */
 		public void setBucket(String bucket) {
 			this.bucket = bucket;
 		}
 		
 		/**
-		 * 获取复制后的对象的存储类型
-		 * @return 对象的存储类型
+		 * Obtain the storage class of the object generated after the replication.
+		 * @return Object storage class
 		 */
 		public StorageClassEnum getObjectStorageClass() {
 			return storageClass;
 		}
 
 		/**
-		 * 设置复制后的对象的存储类型
-		 * @param storageClass 对象的存储类型
+		 * Set the storage class of the object generated after the replication.
+		 * @param storageClass Object storage class
 		 */
 		public void setObjectStorageClass(StorageClassEnum storageClass) {
 			this.storageClass = storageClass;
@@ -133,8 +147,8 @@ public class ReplicationConfiguration extends HeaderResponse{
 	}
 
 	/**
-	 * 获取复制规则列表
-	 * @return 复制规则列表
+	 * Obtain the replication rule list.
+	 * @return Replication rule list
 	 */
 	public List<Rule> getRules() {
 		if (rules == null) {
@@ -144,24 +158,24 @@ public class ReplicationConfiguration extends HeaderResponse{
 	}
 
 	/**
-	 * 设置复制规则列表
-	 * @param rules 复制规则列表
+	 * Set the replication rule list.
+	 * @param rules Replication rule list
 	 */
 	public void setRules(List<Rule> rules) {
 		this.rules = rules;
 	}
 	
 	/**
-	 * 设置委托名字
-	 * @return 委托名字
+	 * Set the agent name.
+	 * @return Agent name
 	 */
 	public String getAgency() {
 		return agency;
 	}
 
 	/**
-	 * 获取委托名字
-	 * @param agency 委托名字
+	 * Obtain the agent name
+	 * @param agency Agent name
 	 */
 	public void setAgency(String agency) {
 		this.agency = agency;
@@ -172,3 +186,5 @@ public class ReplicationConfiguration extends HeaderResponse{
 		return "ReplicationConfiguration [agency=" + agency + ", rules=" + rules + "]";
 	}
 }
+
+

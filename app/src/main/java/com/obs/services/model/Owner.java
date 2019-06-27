@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 桶或对象的所有者
+ * Bucket or object owner
  */
 public class Owner
 {
@@ -10,9 +24,9 @@ public class Owner
     private String id;
     
     /**
-     * 获取所有者的名称
+     * Obtain the owner name.
      * 
-     * @return 所有者的名称
+     * @return Owner name
      */
     @Deprecated
     public String getDisplayName()
@@ -21,9 +35,9 @@ public class Owner
     }
     
     /**
-     * 设置所有者的名称
+     * Set the owner name.
      * 
-     * @param displayName 所有者的名称
+     * @param displayName Owner name
      */
     @Deprecated
     public void setDisplayName(String displayName)
@@ -32,9 +46,9 @@ public class Owner
     }
     
     /**
-     * 获取所有者的DomainId
+     * Obtain the ID of the domain to which the owner belongs.
      * 
-     * @return 所有者的DomainId
+     * @return ID of the domain to which the owner belongs
      */
     public String getId()
     {
@@ -42,9 +56,9 @@ public class Owner
     }
     
     /**
-     * 设置所有者的DomainId
+     * Set the ID of the domain to which the owner belongs.
      * 
-     * @param id 所有者的DomainId
+     * @param id ID of the domain to which the owner belongs
      */
     public void setId(String id)
     {
@@ -58,3 +72,5 @@ public class Owner
     }
     
 }
+
+

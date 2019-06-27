@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model.fs;
 
 import java.io.File;
@@ -6,7 +20,7 @@ import java.io.InputStream;
 import com.obs.services.model.AppendObjectRequest;
 
 /**
- * 写文件内容的请求参数
+ * Parameters in a request for writing data to a file
  *
  */
 public class WriteFileRequest extends AppendObjectRequest{
@@ -16,9 +30,9 @@ public class WriteFileRequest extends AppendObjectRequest{
 	}
 	
 	 /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey File name
      */
     public WriteFileRequest(String bucketName, String objectKey)
     {
@@ -27,10 +41,10 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param file 本地文件路径
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey File name
+     * @param file Local path to the file
      */
     public WriteFileRequest(String bucketName, String objectKey, File file)
     {
@@ -39,11 +53,11 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param file 本地文件路径
-     * @param position 写文件的起始位置
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey File name
+     * @param file Local path to the file
+     * @param position Start position for writing data to a file
      */
     public WriteFileRequest(String bucketName, String objectKey, File file, long position)
     {
@@ -52,10 +66,10 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param input 待上传的数据流
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey File name
+     * @param input Data stream to be uploaded
      */
     public WriteFileRequest(String bucketName, String objectKey, InputStream input)
     {
@@ -64,11 +78,11 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param input 待上传的数据流
-     * @param position 写文件的起始位置
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey File name
+     * @param input Data stream to be uploaded
+     * @param position Start position for writing data to a file
      */
     public WriteFileRequest(String bucketName, String objectKey, InputStream input, long position)
     {
@@ -76,3 +90,5 @@ public class WriteFileRequest extends AppendObjectRequest{
     	this.position = position;
     }
 }
+
+

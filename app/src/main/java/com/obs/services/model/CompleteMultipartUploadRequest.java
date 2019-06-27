@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 合并段的请求参数
+ * Parameters in a request for combining parts
  */
 public class CompleteMultipartUploadRequest
 {
@@ -21,11 +35,11 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param uploadId 分段上传任务的ID号
-     * @param partEtag 待合并的段列表
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param uploadId Multipart upload ID
+     * @param partEtag List of parts to be combined
      */
     public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId, List<PartEtag> partEtag)
     {
@@ -38,9 +52,9 @@ public class CompleteMultipartUploadRequest
 
 
     /**
-     * 获取分段上传任务的ID号
+     * Obtain the multipart upload ID.
      * 
-     * @return 分段上传任务的ID号
+     * @return Multipart upload ID
      */
     public String getUploadId()
     {
@@ -48,9 +62,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 设置分段上传任务的ID号
+     * Set the multipart upload ID.
      * 
-     * @param uploadId 分段上传任务的ID号
+     * @param uploadId Multipart upload ID
      */
     public void setUploadId(String uploadId)
     {
@@ -58,9 +72,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 获取分段上传任务所属的桶名
+     * Obtain the name of the bucket to which the multipart upload belongs.
      * 
-     * @return 分段上传任务所属的桶名
+     * @return Name of the bucket to which the multipart upload belongs
      */
     public String getBucketName()
     {
@@ -68,9 +82,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 设置分段上传任务所属的桶名
+     * Set the name for the bucket to which the multipart upload belongs.
      * 
-     * @param bucketName 分段上传任务所属的桶名
+     * @param bucketName Name of the bucket to which the multipart upload belongs
      */
     public void setBucketName(String bucketName)
     {
@@ -78,9 +92,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 获取分段上传任务所属的对象名
+     * Obtain the name of the object involved in the multipart upload.
      * 
-     * @return 分段上传任务所属的对象名
+     * @return Name of the object involved in the multipart upload
      */
     public String getObjectKey()
     {
@@ -88,9 +102,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 设置分段上传任务所属的对象名
+     * Set the name for the object involved in the multipart upload.
      * 
-     * @param objectKey 分段上传任务所属的对象名
+     @param objectKey Name of the object involved in the multipart upload
      */
     public void setObjectKey(String objectKey)
     {
@@ -98,9 +112,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 获取待合并的段列表
+     * Obtain the to-be-combined part list.
      * 
-     * @return 待合并的段列表
+     * @return List of parts to be combined
      */
     public List<PartEtag> getPartEtag()
     {
@@ -111,9 +125,9 @@ public class CompleteMultipartUploadRequest
     }
     
     /**
-     * 设置待合并的段列表
+     * Set the to-be-combined part list.
      * 
-     * @param partEtags 待合并的段列表
+     * @param partEtags List of parts to be combined
      */
     public void setPartEtag(List<PartEtag> partEtags)
     {
@@ -128,3 +142,5 @@ public class CompleteMultipartUploadRequest
     }
     
 }
+
+

@@ -1,8 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 /**
  * 
- * 基于浏览器表单授权访问的响应结果
+ * Response to a request for browser-based authorized access 
  *
  */
 public class PostSignatureResponse
@@ -32,8 +45,8 @@ public class PostSignatureResponse
     }
     
     /**
-     * 获取请求安全策略Base64格式
-     * @return 安全策略Base64格式
+     * Obtain the security policy of the request in the Base64 format.
+     * @return Security policy in the Base64 format
      */
     public String getPolicy()
     {
@@ -41,8 +54,8 @@ public class PostSignatureResponse
     }
     
     /**
-     * 获取请求安全策略原始格式
-     * @return 安全策略原始格式
+     * Obtain the security policy of the request in the original format.
+     * @return Security policy in the original format
      */
     public String getOriginPolicy()
     {
@@ -50,8 +63,8 @@ public class PostSignatureResponse
     }
     
     /**
-     * 获取签名串
-     * @return 签名串
+     * Obtain the signature string.
+     * @return Signature string
      */
     public String getSignature()
     {
@@ -59,8 +72,8 @@ public class PostSignatureResponse
     }
     
     /**
-     * 获取请求失效日期
-     * @return 失效日期
+     * Obtain the expiration date of the request.
+     * @return Expiration date
      */
     public String getExpiration()
     {
@@ -68,7 +81,7 @@ public class PostSignatureResponse
     }
     
     /**
-     * 获取 token
+     * Obtain the token
      * @return token
      */
 	public String getToken() {

@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 桶的标签配置
+ * Bucket tagging configuration
  *
  */
 public class BucketTagInfo extends HeaderResponse
@@ -16,15 +30,15 @@ public class BucketTagInfo extends HeaderResponse
     }
     
     /**
-     * 构造函数
-     * @param tagSet 桶标签集合
+     * Constructor
+     * @param tagSet Bucket tag set
      */
     public BucketTagInfo(TagSet tagSet){
         this.tagSet = tagSet;
     }
     
     /**
-     * 桶标签集合
+     * Bucket tag set
      *
      */
     public static class TagSet
@@ -32,7 +46,7 @@ public class BucketTagInfo extends HeaderResponse
         private List<Tag> tags;
         
         /**
-         * 桶标签
+         * Bucket tag
          *
          */
         public static class Tag
@@ -47,9 +61,9 @@ public class BucketTagInfo extends HeaderResponse
             }
             
             /**
-             * 构造函数
-             * @param key 标签键
-             * @param value 标签值
+             * Constructor
+             * @param key Tag key
+             * @param value Tag value
              */
             public Tag(String key, String value)
             {
@@ -58,8 +72,8 @@ public class BucketTagInfo extends HeaderResponse
             }
             
             /**
-             * 获取标签键
-             * @return 标签键
+             * Obtain the tag key. 
+             * @return Tag key
              */
             public String getKey()
             {
@@ -67,8 +81,8 @@ public class BucketTagInfo extends HeaderResponse
             }
             
             /**
-             * 设置标签键
-             * @param key 标签键
+             * Set the tag key.
+             * @param key Tag key
              */
             public void setKey(String key)
             {
@@ -76,8 +90,8 @@ public class BucketTagInfo extends HeaderResponse
             }
             
             /**
-             * 获取标签值
-             * @return 获取标签值
+             * Obtain the tag value. 
+             * @return Tag value
              */
             public String getValue()
             {
@@ -85,8 +99,8 @@ public class BucketTagInfo extends HeaderResponse
             }
             
             /**
-             * 设置标签值
-             * @param value 标签值
+             * Set the tag value.
+             * @param value Tag value
              */
             public void setValue(String value)
             {
@@ -133,8 +147,8 @@ public class BucketTagInfo extends HeaderResponse
         }
         
         /**
-         * 获取标签列表
-         * @return 标签列表
+         * Obtain the tag list.
+         * @return Tag list
          */
         public List<Tag> getTags()
         {
@@ -146,10 +160,10 @@ public class BucketTagInfo extends HeaderResponse
         }
         
         /**
-         * 新增标签
-         * @param key 标签键
-         * @param value 标签值
-         * @return 新增的标签
+         * Add a tag.
+         * @param key Tag key
+         * @param value Tag value
+         * @return Newly added tag
          */
         public Tag addTag(String key, String value)
         {
@@ -159,10 +173,10 @@ public class BucketTagInfo extends HeaderResponse
         }
         
         /**
-         * 删除标签
-         * @param key 标签键
-         * @param value 标签值
-         * @return 删除的标签
+         * Delete a tag.
+         * @param key Tag key
+         * @param value Tag value
+         * @return Deleted tag
          */
         public Tag removeTag(String key, String value)
         {
@@ -172,9 +186,9 @@ public class BucketTagInfo extends HeaderResponse
         }
         
         /**
-         * 删除标签
-         * @param key 标签键
-         * @return 删除的标签
+         * Delete a tag.
+         * @param key Tag key
+         * @return Deleted tag
          */
         public Tag removeTagByKey(String key)
         {
@@ -191,8 +205,8 @@ public class BucketTagInfo extends HeaderResponse
     }
 
     /**
-     * 获取桶标签集合
-     * @return 标签集合
+     *Obtain the tag set of a bucket.
+     * @return Tag set
      */
     public TagSet getTagSet()
     {
@@ -203,8 +217,8 @@ public class BucketTagInfo extends HeaderResponse
     }
 
     /**
-     * 设置桶标签集合
-     * @param tagSet 标签集合
+     * Configure the tag set for a bucket.
+     * @param tagSet Tag set
      */
     public void setTagSet(TagSet tagSet)
     {
@@ -232,3 +246,5 @@ public class BucketTagInfo extends HeaderResponse
         return "BucketTagInfo [tagSet=[tags=" + s.toString() + "]";
     }
 }
+
+

@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 追加上传请求结果
+ * Response to an appendable upload request
  *
  */
 public class AppendObjectResult extends HeaderResponse{
@@ -30,41 +44,41 @@ public class AppendObjectResult extends HeaderResponse{
 	}
 
 	/**
-	 * 获取下次追加上传的位置
-	 * @return 下次追加上传的位置
+	 * Obtain the position from which the next appending starts.
+	 * @return Position from which the next appending starts
 	 */
 	public long getNextPosition() {
 		return nextPosition;
 	}
 
 	/**
-     * 获取本次追加内容的etag校验值
+     * Obtain the ETag of the appended data.
      * 
-     * @return 本次追加内容的etag校验值
+     * @return ETag of the appended data
      */
 	public String getEtag() {
 		return etag;
 	}
 
 	/**
-     * 获取对象所属的桶名
-     * @return 对象所属的桶名
+     * Obtain the name of the bucket to which the object belongs. 
+     * @return Name of the bucket to which the object belongs
      */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-     * 获取对象名
-     * @return 对象名
+     * Obtain the object name.
+     * @return Object name
      */
 	public String getObjectKey() {
 		return objectKey;
 	}
 
     /**
-     * 获取对象的存储类型
-     * @return 对象的存储类型
+     * Obtain the object storage class. 
+     * @return Object storage class
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -72,8 +86,8 @@ public class AppendObjectResult extends HeaderResponse{
     }
     
     /**
-     * 获取对象的全路径
-     * @return 对象的全路径
+     * Obtain the full path to the object.
+     * @return Full path to the object
      */
 	public String getObjectUrl() {
 		return objectUrl;
@@ -87,3 +101,5 @@ public class AppendObjectResult extends HeaderResponse{
 	}
     
 }
+
+

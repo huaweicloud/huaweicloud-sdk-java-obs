@@ -1,33 +1,47 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
 *
-* 取回归档存储对象的请求参数
+* Parameters in a request for restoring an Archive object
 *
 */
 public class RestoreObjectRequest
 {
     /**
-     * 快速取回，取回耗时1~5分钟
+     * Expedited restoration, which restores an object in 1 to 5 minutes
      */
 	@Deprecated
     public static final String EXPEDITED = "Expedited";
     
     /**
-     * 标准取回，取回耗时3~5小时
+     * Standard restoration, which restores the object in 3 to 5 hours
      */
 	@Deprecated
     public static final String STANDARD = "Standard";
     
     /**
-     * 批量取回，取回耗时5~12小时
+     * Batch restoration, which restores objects in 5 to 12 hours
      */
 	@Deprecated
     public static final String BULK = "Bulk";
     
     /**
      * 
-     * 归档存储对象状态
+     * Status of the Archive object
      *
      */
     public static class RestoreObjectStatus extends HeaderResponse
@@ -35,11 +49,11 @@ public class RestoreObjectRequest
         
         private int code;
         /**
-         * 对象已取回，可以下载
+         * The object has been restored and can be downloaded. 
          */
         public static final RestoreObjectStatus AVALIABLE = new RestoreObjectStatus(200);
         /**
-         * 对象正在取回，不能下载
+         * The object is being restored and cannot be downloaded. 
          */
         public static final RestoreObjectStatus INPROGRESS = new RestoreObjectStatus(202);
         
@@ -49,8 +63,8 @@ public class RestoreObjectRequest
         }
         
         /**
-         * 获取对象状态码
-         * @return 对象状态码
+         * Obtain the status code of the object.
+         * @return Status code of the object
          */
         public int getCode()
         {
@@ -79,10 +93,10 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param days 对象取回后保存时间
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param days Retention period of the restored object
      */
     public RestoreObjectRequest(String bucketName, String objectKey, int days)
     {
@@ -92,11 +106,11 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param versionId 对象版本号
-     * @param days 对象取回后保存时间
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param versionId Version ID of the object
+     * @param days Retention period of the restored object
      */
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days)
     {
@@ -105,12 +119,12 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param versionId 对象版本号
-     * @param days 对象取回后保存时间
-     * @param tier 取回选项
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param versionId Version ID of the object
+     * @param days Retention period of the restored object
+     * @param tier Restore option
      */
     @Deprecated
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, String tier)
@@ -120,12 +134,12 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param versionId 对象版本号
-     * @param days 对象取回后保存时间
-     * @param tier 取回选项
+     * Constructor
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param versionId Version ID of the object
+     * @param days Retention period of the restored object
+     * @param tier Restore option
      */
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, RestoreTierEnum tier)
     {
@@ -134,8 +148,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取桶名
-     * @return 桶名
+     * Obtain the bucket name.
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -143,8 +157,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置桶名
-     * @param bucketName 桶名
+     * Set the bucket name.
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -152,9 +166,9 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取对象名
+     * Obtain the object name.
      * 
-     * @return 对象名
+     * @return Object name
      */
     public String getObjectKey()
     {
@@ -162,9 +176,9 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置对象名
+     * Set the object name.
      * 
-     * @param objectKey 对象名
+     * @param objectKey Object name
      */
     public void setObjectKey(String objectKey)
     {
@@ -172,8 +186,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取对象版本号
-     * @return 对象版本号
+     * Obtain the object version ID.
+     * @return Version ID of the object
      */
     public String getVersionId()
     {
@@ -181,8 +195,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置对象版本号
-     * @param versionId 对象版本号
+     * Set the version ID of the object. 
+     * @param versionId Version ID of the object
      */
     public void setVersionId(String versionId)
     {
@@ -190,8 +204,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取对象取回后保存时间，单位：天，最小值为1，最大值为30
-     * @return 对象取回后保存时间
+     * Obtain the retention period of the restored object. The value ranges from 1 to 30 (in days).
+     * @return Retention period of the restored object
      */
     public int getDays()
     {
@@ -199,8 +213,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置对象取回后保存时间，单位：天，最小值为1，最大值为30
-     * @param days 对象取回后保存时间
+     * Set the retention period of the restored object. The value ranges from 1 to 30 (in days).
+     * @param days Retention period of the restored object
      */
     public void setDays(int days)
     {
@@ -208,9 +222,9 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取取回选项.
+     * Obtain the restore option.
      * @see #getRestoreTier()
-     * @return 取回选项
+     * @return Restore option
      */
     @Deprecated
     public String getTier()
@@ -219,9 +233,9 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置取回选项.
+     * Set the restore option.
      * @see #setRestoreTier(RestoreTierEnum tier)
-     * @param tier 取回选项
+     * @param tier Restore option
      */
     @Deprecated
     public void setTier(String tier)
@@ -230,8 +244,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 获取取回选项.
-     * @return 取回选项
+     * Obtain the restore option.
+     * @return Restore option
      */
     public RestoreTierEnum getRestoreTier()
     {
@@ -239,8 +253,8 @@ public class RestoreObjectRequest
     }
     
     /**
-     * 设置取回选项.
-     * @param tier 取回选项
+     * Set the restore option.
+     * @param tier Restore option
      */
     public void setRestoreTier(RestoreTierEnum tier)
     {
@@ -254,3 +268,5 @@ public class RestoreObjectRequest
             + ", tier=" + tier + "]";
     }
 }
+
+

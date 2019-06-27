@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services;
 
 import java.io.FileInputStream;
@@ -6,7 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
- * 集成Log4j2的日志配置类 
+ * Log configuration class integrated with Log4j2 
  *
  */
 public class Log4j2Configurator {
@@ -16,17 +30,17 @@ public class Log4j2Configurator {
 	private static volatile boolean log4j2Enabled = false;
 	
 	/**
-	 * 配置日志
-	 * @param configPath 日志配置文件路径
+	 * Configure logs.
+	 * @param configPath Path to the log configuration file
 	 */
 	public static synchronized void setLogConfig(String configPath) {
 		setLogConfig(configPath, false);
 	}
 	
 	/**
-	 * 配置日志
-	 * @param configPath 日志配置文件路径
-	 * @param isWatchConfig 是否监控日志配置文件变化
+	 * Configure logs.
+	 * @param configPath Path to the log configuration file
+	 * @param isWatchConfig Whether to monitor changes of the log configuration file
 	 */
 	public static synchronized void setLogConfig(String configPath, boolean isWatchConfig) {
 		setLogConfig(configPath, isWatchConfig, 60000);
@@ -75,10 +89,10 @@ public class Log4j2Configurator {
 	}
 	
 	/**
-	 * 配置日志
-	 * @param configPath 日志配置文件路径
-	 * @param isWatchConfig 是否监控日志配置文件变化
-	 * @param watchInterval 监控日志配置文件变化的时间间隔，单位毫秒
+	 * Configure logs.
+	 * @param configPath Path to the log configuration file
+	 * @param isWatchConfig Whether to monitor changes of the log configuration file
+	 * @param watchInterval Interval for monitoring changes of the log configuration file, in units of ms
 	 */
 	public static synchronized void setLogConfig(String configPath, boolean isWatchConfig, long watchInterval) {
 		if(log4j2Enabled) {
@@ -99,3 +113,5 @@ public class Log4j2Configurator {
 	}
 
 }
+
+

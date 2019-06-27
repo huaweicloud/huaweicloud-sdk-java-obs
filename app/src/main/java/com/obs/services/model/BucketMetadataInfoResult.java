@@ -1,9 +1,22 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.List;
 
 /**
- * 获取桶元数据信息的响应结果
+ * Response to a request for obtaining bucket metadata
  *
  */
 public class BucketMetadataInfoResult extends OptionsInfoResult
@@ -46,8 +59,8 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 	
 
 	/**
-     * 获取桶的存储类型
-     * @return 桶的存储类型
+     * Obtain the bucket storage class. 
+     * @return Bucket storage class
      */
     @Deprecated
     public String getDefaultStorageClass()
@@ -56,41 +69,35 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
     }
     
     /**
-     * 获取桶的存储类型
-     * @return 桶的存储类型
+     * Obtain the bucket storage class. 
+     * @return Bucket storage class
      */
     public StorageClassEnum getBucketStorageClass() {
     	return this.storageClass;
     }
     
     /**
-     * 获取桶的区域位置
-     * @return 桶的区域位置
+     * Obtain the bucket location.
+     * @return Bucket location
      */
 	public String getLocation() {
 		return location;
 	}
 	
 	/**
-	 * 获取OBS服务的版本
-	 * @return OBS服务的版本
+	 * Obtain the OBS version.
+	 * @return OBS version
 	 */
 	public String getObsVersion() {
 		return obsVersion;
 	}
 	
-	/**
-	 * 获取桶的企业ID
-	 * @return 企业ID
-	 */
+
 	public String getEpid() {
 	    return epid;
 	}
 	
-	/**
-	 * 获取桶的集群类型
-	 * @return 桶的集群类型
-	 */
+
 	public AvailableZoneEnum getAvailableZone() {
 		return this.availableZone;
 	}

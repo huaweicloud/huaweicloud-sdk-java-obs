@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -5,10 +18,7 @@ import java.util.List;
 
 import com.obs.services.internal.ObsConvertor;
 
-/**
- * 消息通知配置抽象类
- *
- */
+
 public class AbstractNotification extends HeaderResponse
 {
     
@@ -16,12 +26,7 @@ public class AbstractNotification extends HeaderResponse
         
     }
     
-    /**
-     * 构造函数
-     * @param id 消息通知配置ID
-     * @param filter 过滤规则组
-     * @param events 需要发布通知消息的事件类型列表
-     */
+
     public AbstractNotification(String id, Filter filter, List<EventTypeEnum> events)
     {
         this.id = id;
@@ -35,18 +40,12 @@ public class AbstractNotification extends HeaderResponse
     
     protected List<EventTypeEnum> events;
     
-    /**
-     * 表示消息通知配置的过滤规则列表
-     *
-     */
+
     public static class Filter{
         
         private List<FilterRule> filterRules;
         
-        /**
-         * 表示消息通知配置的过滤规则 
-         *
-         */
+ 
         public static class FilterRule{
             
             private String name;
@@ -57,47 +56,31 @@ public class AbstractNotification extends HeaderResponse
                 
             }
             
-            /**
-             * 构造函数
-             * @param name 指定过滤规则按对象名的前缀或后缀进行过滤
-             * @param value 规律规则中对象名关键字
-             */
+    
             public FilterRule(String name, String value){
                 this.name = name;
                 this.value = value;
             }
             
-            /**
-             * 获取按对象名的前缀或后缀进行过滤标识
-             * @return 按对象名前缀或后缀进行过滤标识
-             */
+   
             public String getName()
             {
                 return name;
             }
 
-            /**
-             * 设置按对象名的前缀或后缀进行过滤标识
-             * @param name 按对象名前缀或后缀进行过滤标识
-             */
+ 
             public void setName(String name)
             {
                 this.name = name;
             }
 
-            /**
-             * 获取对象名关键字 
-             * @return 对象名关键字
-             */
+    
             public String getValue()
             {
                 return value;
             }
 
-            /**
-             * 设置对象名关键字
-             * @param value 对象名关键字
-             */
+
             public void setValue(String value)
             {
                 this.value = value;
@@ -148,10 +131,7 @@ public class AbstractNotification extends HeaderResponse
             
         }
         
-        /**
-         * 获取过滤规则列表
-         * @return 过滤规则列表
-         */
+
         public List<FilterRule> getFilterRules()
         {
             if(this.filterRules == null){
@@ -160,20 +140,13 @@ public class AbstractNotification extends HeaderResponse
             return filterRules;
         }
 
-        /**
-         * 设置过滤规则列表
-         * @param filterRules 过滤规则列表
-         */
+
         public void setFilterRules(List<FilterRule> filterRules)
         {
             this.filterRules = filterRules;
         }
         
-        /**
-         * 新增过滤规则
-         * @param name 指定过滤规则按对象名的前缀或后缀进行过滤
-         * @param value 过滤规则中对象名关键字
-         */
+
         public void addFilterRule(String name, String value){
             this.getFilterRules().add(new FilterRule(name, value));
         }
@@ -186,19 +159,13 @@ public class AbstractNotification extends HeaderResponse
         
     }
 
-    /**
-     * 获取消息通知配置ID
-     * @return 消息通知配置ID
-     */
+
     public String getId()
     {
         return id;
     }
 
-    /**
-     * 设置消息通知配置ID
-     * @param id 消息通知配置ID
-     */
+
     public void setId(String id)
     {
         this.id = id;
@@ -228,10 +195,7 @@ public class AbstractNotification extends HeaderResponse
     	}
     }
 
-    /**
-     * 获取需要发布通知消息的消息类型列表
-     * @return 消息类型列表
-     */
+
     public List<EventTypeEnum> getEventTypes()
     {
         if(this.events == null){
@@ -240,28 +204,19 @@ public class AbstractNotification extends HeaderResponse
         return events;
     }
 
-    /**
-     * 设置需要发布通知消息的消息类型列表
-     * @param events 消息类型列表
-     */
+
     public void setEventTypes(List<EventTypeEnum> events)
     {
     	this.events = events;
     }
 
-    /**
-     * 获取过滤规则组
-     * @return 过滤规则组
-     */
+
     public Filter getFilter()
     {
         return filter;
     }
 
-    /**
-     * 设置过滤规则组
-     * @param filter 过滤规则组
-     */
+
     public void setFilter(Filter filter)
     {
         this.filter = filter;

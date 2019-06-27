@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 复制段的请求参数
+ * Parameters in the request for copying a part
  */
 public class CopyPartRequest
 {
@@ -32,13 +46,13 @@ public class CopyPartRequest
     }
     
     /**
-     * 构造函数
-     * @param uploadId 分段上传任务的ID号
-     * @param sourceBucketName 源桶名
-     * @param sourceObjectKey 源对象名
-     * @param destinationBucketName 目标桶名
-     * @param destinationObjectKey 目标对象名
-     * @param partNumber 目标段的分段号
+     * Constructor
+     * @param uploadId Multipart upload ID
+     * @param sourceBucketName Source bucket name
+     * @param sourceObjectKey Source object name
+     * @param destinationBucketName Destination bucket name
+     * @param destinationObjectKey Destination object name
+     * @param partNumber Part number
      */
     public CopyPartRequest(String uploadId, String sourceBucketName, String sourceObjectKey, String destinationBucketName,
         String destinationObjectKey, int partNumber)
@@ -54,9 +68,9 @@ public class CopyPartRequest
 
 
     /**
-     * 获取源对象SSE-C解密头域信息
+     * Obtain SSE-C decryption headers of the source object. 
      * 
-     * @return 源对象SSE-C解密头域信息
+     * @return SSE-C decryption headers of the source object
      */
     public SseCHeader getSseCHeaderSource()
     {
@@ -64,9 +78,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置源对象SSE-C解密头域信息
+     * Set SSE-C decryption headers of the source object. 
      * 
-     * @param sseCHeaderSource 源对象SSE-C解密头域信息
+     * @param sseCHeaderSource SSE-C decryption headers of the source object
      */
     public void setSseCHeaderSource(SseCHeader sseCHeaderSource)
     {
@@ -74,9 +88,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取目标对象SSE-C加密头域信息
+     * Obtain SSE-C encryption headers of the destination object. 
      * 
-     * @return 目标对象SSE-C加密头域信息
+     * @return SSE-C encryption headers of the destination object
      */
     public SseCHeader getSseCHeaderDestination()
     {
@@ -84,9 +98,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置目标对象SSE-C加密头域信息
+     * Set SSE-C encryption headers for the destination object. 
      * 
-     * @param sseCHeaderDestination 目标对象SSE-C加密头域信息
+     * @param sseCHeaderDestination SSE-C encryption headers of the destination object
      */
     public void setSseCHeaderDestination(SseCHeader sseCHeaderDestination)
     {
@@ -94,9 +108,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取复制的起始位置
+     * Obtain the start position for copying.
      * 
-     * @return 复制的起始位置
+     * @return Start position for copying
      */
     public Long getByteRangeStart()
     {
@@ -104,9 +118,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置复制的起始位置
+     * Set the start position for copying.
      * 
-     * @param byteRangeStart 复制的起始位置
+     * @param byteRangeStart Start position for copying
      * 
      */
     public void setByteRangeStart(Long byteRangeStart)
@@ -115,9 +129,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取复制的终止位置
+     * Obtain the end position for copying.
      * 
-     * @return 复制的终止位置
+     * @return End position for copying
      */
     public Long getByteRangeEnd()
     {
@@ -125,9 +139,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置复制的终止位置
+     * Set the end position for copying.
      * 
-     * @param byteRangeEnd 复制的终止位置
+     * @param byteRangeEnd End position for copying
      * 
      */
     public void setByteRangeEnd(Long byteRangeEnd)
@@ -136,9 +150,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取目标段的分段号
+     * Obtain the part number of the to-be-copied part.
      * 
-     * @return 目标段的分段号
+     * @return Part number
      */
     public int getPartNumber()
     {
@@ -146,9 +160,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置目标段的分段号
+     * Set the part number of the to-be-copied part.
      * 
-     * @param partNumber 目标段的分段号
+     * @param partNumber Part number
      * 
      */
     public void setPartNumber(int partNumber)
@@ -157,9 +171,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取分段上传任务的ID号
+     * Obtain the multipart upload ID.
      * 
-     * @return 分段上传任务的ID号
+     * @return Multipart upload ID
      */
     public String getUploadId()
     {
@@ -167,9 +181,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置分段上传任务的ID号
+     * Set the multipart upload ID.
      * 
-     * @param uploadId 分段上传任务的ID号
+     * @param uploadId Multipart upload ID
      */
     public void setUploadId(String uploadId)
     {
@@ -177,9 +191,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取源桶名
+     * Obtain the source bucket name.
      * 
-     * @return 源桶名
+     * @return Source bucket name
      */
     public String getSourceBucketName()
     {
@@ -187,9 +201,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置源桶名
+     * Set the source bucket name.
      * 
-     * @param bucketName 源桶名
+     * @param bucketName Source bucket name
      * 
      */
     public void setSourceBucketName(String bucketName)
@@ -198,9 +212,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取源对象名
+     * Obtain the source object name.
      * 
-     * @return 源对象名
+     * @return Source object name
      */
     public String getSourceObjectKey()
     {
@@ -208,9 +222,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置源对象名
+     * Set the source object name.
      * 
-     * @param objectKey 源对象名
+     * @param objectKey Source object name
      * 
      */
     public void setSourceObjectKey(String objectKey)
@@ -219,9 +233,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取分段上传任务所属的桶名（目标桶名）
+     * Obtain the name of the bucket (destination bucket) to which the multipart upload belongs.
      * 
-     * @return 分段上传任务所属的桶名
+     * @return Name of the bucket to which the multipart upload belongs
      */
     public String getDestinationBucketName()
     {
@@ -229,9 +243,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置分段上传任务所属的桶名（目标桶名）
+     * Set the name of the bucket (destination bucket) to which the multipart upload belongs.
      * 
-     * @param destBucketName 分段上传任务所属的桶名
+     * @param destBucketName Name of the bucket to which the multipart upload belongs
      * 
      */
     public void setDestinationBucketName(String destBucketName)
@@ -240,9 +254,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 获取分段上传任务所属的对象名（目标对象名）
+     * Obtain the name of the object (destination object) involved in the multipart upload.
      * 
-     * @return 分段上传任务所属的对象名
+     * @return Name of the object involved in the multipart upload
      * 
      */
     public String getDestinationObjectKey()
@@ -251,9 +265,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置分段上传任务所属的对象名（目标对象名）
+     * Set the name of the object (destination object) involved in the multipart upload.
      * 
-     * @param destObjectKey 分段上传任务所属的对象名
+     * @param destObjectKey Name of the object involved in the multipart upload
      * 
      */
     public void setDestinationObjectKey(String destObjectKey)
@@ -263,9 +277,9 @@ public class CopyPartRequest
     
     
     /**
-     * 获取源对象的版本号
+     * Obtain the version ID of the source object. 
      * 
-     * @return 源对象版本号
+     * @return Version ID of the source object
      * 
      */
     public String getVersionId()
@@ -274,9 +288,9 @@ public class CopyPartRequest
     }
     
     /**
-     * 设置源对象的版本号
+     * Set the version ID for the source object. 
      * 
-     * @param versionId 源对象版本号
+     * @param versionId Version ID of the source object
      * 
      */
     public void setVersionId(String versionId)
@@ -294,3 +308,5 @@ public class CopyPartRequest
 	}
     
 }
+
+

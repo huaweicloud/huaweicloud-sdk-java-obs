@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -5,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 桶的日志管理配置
+ * Logging settings of a bucket
  */
 public class BucketLoggingConfiguration extends HeaderResponse
 {
@@ -23,9 +37,9 @@ public class BucketLoggingConfiguration extends HeaderResponse
     
     
     /**
-     * 构造函数
-     * @param targetBucketName 日志目标桶
-     * @param logfilePrefix 日志对象名前缀
+     * Constructor
+     * @param targetBucketName Name of the bucket in which logs are saved
+     * @param logfilePrefix Name prefix of the logged objects
      */
     public BucketLoggingConfiguration(String targetBucketName, String logfilePrefix)
     {
@@ -35,8 +49,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
 
 
     /**
-     * 获取日志目标桶
-     * @return 日志目标桶
+     * Obtain the bucket in which logs are saved.
+     * @return Bucket in which logs are saved
      */
     public String getTargetBucketName()
     {
@@ -44,8 +58,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置日志目标桶
-     * @param targetBucketName 日志目标桶
+     * Set the bucket to write logs.
+     * @param targetBucketName Name of the bucket in which logs are saved
      */
     public void setTargetBucketName(String targetBucketName)
     {
@@ -53,8 +67,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 获取日志对象名前缀
-     * @return 日志对象名前缀
+     * Obtain the name prefix of the logged objects. 
+     * @return Name prefix of the logged objects
      */
     public String getLogfilePrefix()
     {
@@ -62,8 +76,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置日志对象名前缀
-     * @param logfilePrefix 日志对象名前缀
+     * Set the name prefix of the logged objects.
+     * @param logfilePrefix Name prefix of the logged objects
      */
     public void setLogfilePrefix(String logfilePrefix)
     {
@@ -71,8 +85,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 获取日志对象权限组
-     * @return 日志对象权限组{@link GrantAndPermission}
+     * Obtain the log delivery group.
+     * @return Log delivery group {@link GrantAndPermission}
      */
     public GrantAndPermission[] getTargetGrants()
     {
@@ -80,8 +94,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 设置日志对象权限组
-     * @param targetGrants 日志对象权限组 {@link GrantAndPermission}
+     * Set the log delivery group.
+     * @param targetGrants Log delivery group {@link GrantAndPermission}
      */
     public void setTargetGrants(GrantAndPermission[] targetGrants)
     {
@@ -90,8 +104,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 添加日志对象权限
-     * @param targetGrant 日志对象权限
+     * Add permissions for logged objects
+     * @param targetGrant Permissions of the logged object
      */
     public void addTargetGrant(GrantAndPermission targetGrant)
     {
@@ -99,8 +113,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * 是否开启桶日志标识
-     * @return 是否开启标识
+     * Check whether bucket logging is enabled.
+     * @return Identifier specifying whether bucket logging is enabled
      */
     public boolean isLoggingEnabled()
     {
@@ -109,16 +123,16 @@ public class BucketLoggingConfiguration extends HeaderResponse
 
 
 	/**
-	 * 设置委托名字
-	 * @return 委托名字
+	 * Set the agent name.
+	 * @return Agent name
 	 */
 	public String getAgency() {
 		return agency;
 	}
 
 	/**
-	 * 获取委托名字
-	 * @param agency 委托名字
+	 * Obtain the agent name.
+	 * @param agency Agent name
 	 */
 	public void setAgency(String agency) {
 		this.agency = agency;
@@ -132,3 +146,5 @@ public class BucketLoggingConfiguration extends HeaderResponse
 	}
 	
 }
+
+

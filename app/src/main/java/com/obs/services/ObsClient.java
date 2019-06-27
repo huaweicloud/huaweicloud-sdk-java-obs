@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services;
 
 import java.io.Closeable;
@@ -13,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -37,7 +49,10 @@ import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.task.DefaultTaskProgressStatus;
 import com.obs.services.internal.task.DropFolderTask;
 import com.obs.services.internal.task.LazyTaksCallback;
+import com.obs.services.internal.task.PutObjectTask;
 import com.obs.services.internal.task.RestoreObjectTask;
+import com.obs.services.internal.task.ResumableUploadTask;
+import com.obs.services.internal.task.UploadTaskProgressStatus;
 import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ReflectUtils;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -47,6 +62,7 @@ import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
@@ -102,8 +118,13 @@ import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
 import com.obs.services.model.ProgressListener;
 import com.obs.services.model.ProgressStatus;
+import com.obs.services.model.PutObjectBasicRequest;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
+import com.obs.services.model.PutObjectsRequest;
+import com.obs.services.model.ReadAheadQueryResult;
+import com.obs.services.model.ReadAheadRequest;
+import com.obs.services.model.ReadAheadResult;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
@@ -123,8 +144,10 @@ import com.obs.services.model.TaskProgressStatus;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.UploadFileRequest;
+import com.obs.services.model.UploadObjectsProgressListener;
 import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
+import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.V4PostSignatureRequest;
 import com.obs.services.model.V4PostSignatureResponse;
 import com.obs.services.model.V4TemporarySignatureRequest;
@@ -154,7 +177,7 @@ import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
 
 /**
- * OBS客户端
+ * ObsClient
  */
 public class ObsClient extends ObsService implements Closeable, IObsClient, IFSClient {
 
@@ -203,10 +226,10 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param endPoint
-	 *            OBS服务地址
+	 *            OBS endpoint
 	 * 
 	 */
 	public ObsClient(String endPoint) {
@@ -216,10 +239,10 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param config
-	 *            OBS客户端配置参数
+	 *            Configuration parameters of ObsClient
 	 * 
 	 */
 	public ObsClient(ObsConfiguration config) {
@@ -230,14 +253,14 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param accessKey
-	 *            访问密钥中的AK
+	 *            AK in the access key
 	 * @param secretKey
-	 *            访问密钥中的SK
+	 *            SK in the access key
 	 * @param endPoint
-	 *            OBS服务地址
+	 *            OBS endpoint
 	 * 
 	 */
 	public ObsClient(String accessKey, String secretKey, String endPoint) {
@@ -247,14 +270,14 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param accessKey
-	 *            访问密钥中的AK
+	 *            AK in the access key
 	 * @param secretKey
-	 *            访问密钥中的SK
+	 *            SK in the access key
 	 * @param config
-	 *            OBS客户端配置参数
+	 *            Configuration parameters of ObsClient
 	 * 
 	 */
 	public ObsClient(String accessKey, String secretKey, ObsConfiguration config) {
@@ -265,16 +288,16 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param accessKey
-	 *            临时访问密钥中的AK
+	 *            AK in the temporary access key
 	 * @param secretKey
-	 *            临时访问密钥中的SK
+	 *            SK in the temporary access key
 	 * @param securityToken
-	 *            安全令牌
+	 *            Security token
 	 * @param endPoint
-	 *            OBS的服务地址
+	 *            OBS endpoint
 	 * 
 	 */
 	public ObsClient(String accessKey, String secretKey, String securityToken, String endPoint) {
@@ -284,16 +307,16 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 构造函数
+	 * Constructor
 	 * 
 	 * @param accessKey
-	 *            临时访问密钥中的AK
+	 *            AK in the temporary access key
 	 * @param secretKey
-	 *            临时访问密钥中的SK
+	 *            SK in the temporary access key
 	 * @param securityToken
-	 *            安全令牌
+	 *            Security token
 	 * @param config
-	 *            OBS客户端配置参数
+	 *            Configuration parameters of ObsClient
 	 * 
 	 */
 	public ObsClient(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {
@@ -314,25 +337,25 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 创建临时授权URL
+	 * Create a temporarily authorized URL.
 	 * 
 	 * @param method
-	 *            Http请求方法
+	 *            HTTP request method
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param specialParam
-	 *            特殊操作符
+	 *            Special operator
 	 * @param expiryTime
-	 *            临时授权的有效截止日期
+	 *            Time when the temporary authentication expires
 	 * @param headers
-	 *            头信息
+	 *            Header information
 	 * @param queryParams
-	 *            查询参数信息
-	 * @return 临时授权URL
+	 *            Query parameter information
+	 * @return Temporarily authorized URL
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
@@ -345,25 +368,25 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 创建临时授权URL
+	 * Create a temporarily authorized URL.
 	 * 
 	 * @param method
-	 *            Http请求方法
+	 *            HTTP request method
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param specialParam
-	 *            特殊操作符
+	 *            Special operator
 	 * @param expires
-	 *            临时授权的有效时间，单位：秒，默认值：300
+	 *            Time when the temporary authentication expires. The unit is second and the default value is 300.
 	 * @param headers
-	 *            头信息
+	 *            Header information
 	 * @param queryParams
-	 *            查询参数信息
-	 * @return 临时授权URL
+	 *            Query parameter information
+	 * @return Temporarily authorized URL
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
@@ -457,17 +480,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		}
 	}
 	
-	/**
-	 * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
-	 * @param bucketName 桶名
-	 * @param objectKey 对象名
-	 * @param prefix 对象名前缀
-	 * @param expiryDate 有效截止日期(ISO 8601 UTC)
-	 * @param headers 头信息
-	 * @param queryParams 查询参数信息
-	 * @return 临时授权访问的响应结果
-     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
+
 	public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
 	        Date expiryDate, Map<String, String> headers, Map<String, Object> queryParams) {
         try {
@@ -480,17 +493,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         } 
 	}
 	
-	/**
-     * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param prefix 对象名前缀
-     * @param expires 有效时间(单位：秒)
-     * @param headers 头信息
-     * @param queryParams 查询参数信息
-     * @return 临时授权访问的响应结果
-     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-     */
+
     public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
             long expires, Map<String, String> headers, Map<String, Object> queryParams) {
         try {
@@ -519,21 +522,21 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
     }
 
 	/**
-	 * 生成基于浏览器表单的授权访问参数
+	 * Generate parameters for browser-based authorized access.
 	 * 
 	 * @param acl
-	 *            对象的访问权限
+	 *            Object ACL
 	 * @param contentType
-	 *            对象的MIME类型
+	 *            MIME type of the object
 	 * @param expires
-	 *            有效时间，单位：秒
+	 *            Validity period (in seconds)
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 基于浏览器表单授权访问的响应结果
+	 *            Object name
+	 * @return Response to the V4 browser-based authorized access
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public PostSignatureResponse createPostSignature(String acl, String contentType, long expires, String bucketName,
 			String objectKey) throws ObsException {
@@ -546,17 +549,17 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 生成基于浏览器表单的授权访问参数
+	 * Generate parameters for browser-based authorized access.
 	 * 
 	 * @param expires
-	 *            有效时间，单位：秒
+	 *            Validity period (in seconds)
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 基于浏览器表单授权访问的响应结果
+	 *            Object name
+	 * @return Response to the V4 browser-based authorized access
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public PostSignatureResponse createPostSignature(long expires, String bucketName, String objectKey)
 			throws ObsException {
@@ -778,25 +781,25 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 列举桶内多版本对象
+	 * List versioning objects in a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param prefix
-	 *            列举多版本对象时的对象名前缀
+	 *            Object name prefix used for listing versioning objects
 	 * @param delimiter
-	 *            对象名进行分组的字符
+	 *            Character for grouping object names
 	 * @param keyMarker
-	 *            列举多版本对象的起始位置（按对象名排序）
+	 *            Start position for listing versioning objects (sorted by object name)
 	 * @param versionIdMarker
-	 *            列举多版本对象的起始位置（按对象版本号排序）
+	 *            Start position for listing versioning objects (sorted by version ID)
 	 * @param maxKeys
-	 *            列举多版本对象的最大条目数
+	 *            Maximum number of versioning objects to be listed
 	 * @param nextVersionIdMarker
-	 *            废弃字段。
-	 * @return 列举桶内多版本对象响应结果
+	 *            Deprecated field
+	 * @return Response to the request for listing versioning objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public ListVersionsResult listVersions(final String bucketName, final String prefix, final String delimiter,
@@ -890,17 +893,17 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 设置桶的访问权限<br>
+	 * Set a bucket ACL. <br>
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param cannedACL
-	 *            预定义访问策略
+	 *            Pre-defined access control policy
 	 * @param acl
-	 *            访问权限 （ acl和cannedACL不能同时使用）
-	 * @return 公共响应头信息
+	 *            ACL ("acl" and "cannedACL" cannot be used together.)
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public HeaderResponse setBucketAcl(final String bucketName, final String cannedACL, final AccessControlList acl)
@@ -1079,15 +1082,15 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * OPTIONS桶
+	 * Pre-request a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param optionInfo
-	 *            OPTIONS桶的请求参数
-	 * @return OPTIONS桶的响应结果
+	 *            Parameters in a bucket preflight request
+	 * @return Response to the bucket preflight request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public OptionsInfoResult optionsBucket(final String bucketName, final OptionsInfoRequest optionInfo)
@@ -1103,17 +1106,17 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * OPTIONS对象
+	 * Perform a preflight on a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param optionInfo
-	 *            OPTIONS对象的请求参数
-	 * @return OPTIONS对象的响应结果
+	 *            Parameters in an object preflight request
+	 * @return Response to the object preflight request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public OptionsInfoResult optionsObject(final String bucketName, final String objectKey,
@@ -1129,13 +1132,13 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 获取桶的日志管理配置
+	 * Obtain the logging settings of a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的日志管理配置
+	 *            Bucket name
+	 * @return Logging settings of the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public BucketLoggingConfiguration getBucketLoggingConfiguration(final String bucketName) throws ObsException {
@@ -1910,6 +1913,169 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         return progreStatus;
     }
 	
+	@Override
+	public UploadProgressStatus putObjects(final PutObjectsRequest request) throws ObsException {
+		ServiceUtils.asserParameterNotNull(request, "PutObjectsRequest is null");
+        
+        ThreadPoolExecutor executor = this.initThreadPool(request);
+        Date now = new Date();
+        UploadTaskProgressStatus progressStatus = new UploadTaskProgressStatus(request.getTaskProgressInterval(), now);
+        
+        try {
+            UploadObjectsProgressListener listener = request.getUploadObjectsProgressListener();
+            TaskCallback<PutObjectResult, PutObjectBasicRequest> callback = (request.getCallback() == null) ? 
+            		new LazyTaksCallback<PutObjectResult, PutObjectBasicRequest>() : request.getCallback();
+			String prefix = request.getPrefix() == null ? "" : request.getPrefix();
+
+			int totalTasks = 0;
+			if(request.getFolderPath() != null) {
+				String folderPath = request.getFolderPath();
+				File fileRoot = new File(folderPath);
+				
+				if(fileRoot.exists()) {
+					if(fileRoot.isDirectory()) {
+						String folderRoot = fileRoot.getName();
+						LinkedList<File> list = new LinkedList<File>();
+						list.add(fileRoot);
+				        File[] files = fileRoot.listFiles();
+				        File temp_file;
+				        while (!list.isEmpty()) {
+				            temp_file = list.removeFirst();
+				            files = temp_file.listFiles();
+				            for (File file : files) {
+				                if (file.isDirectory()) {
+				                	if(!file.exists()) {
+				                		String filePath = file.getCanonicalPath();
+				                		String erroInfo = "putObjects: the folder \"" + filePath + "\" dose not a folder";
+				            			ILOG.warn(erroInfo);
+				                	}else {
+				                		list.add(file);
+				                	}
+				                } else {
+				                	String filePath = file.getCanonicalPath();
+					            	if(!file.exists()) {
+					        			ILOG.warn("putObjects: the file \"" + filePath + "\" dose not exist");
+					        			continue;
+					        		}
+				                	totalTasks ++;
+					            	String objectKey = prefix + folderRoot 
+	                						+ filePath.substring(folderPath.length(), filePath.length()).replace("\\", "/");
+					            	uploadObjectTask(request, filePath, objectKey, executor, progressStatus, callback, listener);
+				                }
+				            }
+				        }
+					}else {
+						String erroInfo = "putObjects: the folder \"" + folderPath + "\" dose not a folder";
+            			ILOG.warn(erroInfo);
+            			throw new ObsException(erroInfo);
+					}
+					
+				}else {
+					String erroInfo = "putObjects: the folder \"" + folderPath + "\" dose not exist";
+        			ILOG.warn(erroInfo);
+        			throw new ObsException(erroInfo);
+				}
+				
+			}else if (request.getFilePaths() != null) {
+        		for(String filePath: request.getFilePaths()) {
+        			File file = new File(filePath);
+        			if(file.exists()) {
+        				totalTasks ++;
+        				String objectKey = prefix + file.getName();
+        				//�ļ��ϴ�
+        				uploadObjectTask(request, filePath, objectKey, executor, progressStatus, callback, listener);
+        			}else {
+        				ILOG.warn("putObjects: the file \"" + filePath + "\" is not exist");
+        			}
+        		}
+			}
+        	
+        	progressStatus.setTotalTaskNum(totalTasks);            
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        }catch (ObsException e) {
+        	throw e;
+		}catch (Exception e) {
+            throw new ObsException(e.getMessage(), e);
+        }
+        
+        return progressStatus;
+	}
+	
+	private void uploadObjectTask(final PutObjectsRequest request, final String filePath, final String objectKey
+			, final ThreadPoolExecutor executor, final UploadTaskProgressStatus progressStatus
+			, final TaskCallback<PutObjectResult, PutObjectBasicRequest> callback, final UploadObjectsProgressListener listener) {
+		File fileObject = new File(filePath);
+		String bucketName = request.getBucketName();		
+        int progressInterval = request.getProgressInterval();
+        int taskNum = request.getTaskNum();
+        long detailProgressInterval = request.getDetailProgressInterval();
+        long bigfileThreshold = request.getBigfileThreshold();
+		long partSize = request.getPartSize();
+		AccessControlList acl = request.getAcl();
+		Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap = request.getExtensionPermissionMap();
+		SseCHeader sseCHeader = request.getSseCHeader();
+		SseKmsHeader sseKmsHeader = request.getSseKmsHeader();
+		String successRedirectLocation = request.getSuccessRedirectLocation();
+
+		if(fileObject.length() > bigfileThreshold) {
+			UploadFileRequest taskRequest = new UploadFileRequest(bucketName, objectKey);
+			taskRequest.setUploadFile(filePath);
+			taskRequest.setPartSize(partSize);
+			taskRequest.setTaskNum(taskNum);
+			taskRequest.setExtensionPermissionMap(extensionPermissionMap);
+			taskRequest.setAcl(acl);
+			taskRequest.setSuccessRedirectLocation(successRedirectLocation);
+			taskRequest.setSseCHeader(sseCHeader);
+			taskRequest.setSseKmsHeader(sseKmsHeader);
+			taskRequest.setEnableCheckpoint(true);
+			progressStatus.addTotalSize(fileObject.length());
+			taskRequest.setProgressListener(new ProgressListener() {
+				
+				@Override
+				public void progressChanged(ProgressStatus status) {
+					progressStatus.putTaskTable(objectKey, status);
+					if(progressStatus.isRefreshprogress()) {
+						Date dateNow = new Date();
+						long totalMilliseconds = dateNow.getTime() - progressStatus.getStartDate().getTime();
+						progressStatus.setTotalMilliseconds(totalMilliseconds);
+						listener.progressChanged(progressStatus);
+					}
+				}
+			});
+			taskRequest.setProgressInterval(detailProgressInterval);
+			
+			ResumableUploadTask task = new ResumableUploadTask(this, bucketName, taskRequest
+					, callback, listener, progressStatus, progressInterval);
+			executor.execute(task);
+		}else {
+			PutObjectRequest taskRequest = new PutObjectRequest(bucketName, objectKey, fileObject);
+			taskRequest.setExtensionPermissionMap(extensionPermissionMap);
+			taskRequest.setAcl(acl);
+			taskRequest.setSuccessRedirectLocation(successRedirectLocation);
+			taskRequest.setSseCHeader(sseCHeader);
+			taskRequest.setSseKmsHeader(sseKmsHeader);
+			progressStatus.addTotalSize(fileObject.length());
+			taskRequest.setProgressListener(new ProgressListener() {
+				
+				@Override
+				public void progressChanged(ProgressStatus status) {
+					progressStatus.putTaskTable(objectKey, status);
+                    if(progressStatus.isRefreshprogress()) {
+                    	Date dateNow = new Date();
+                    	long totalMilliseconds = dateNow.getTime() - progressStatus.getStartDate().getTime();
+                		progressStatus.setTotalMilliseconds(totalMilliseconds);
+                    	listener.progressChanged(progressStatus);
+					}
+				}
+			});
+			taskRequest.setProgressInterval(detailProgressInterval);
+			PutObjectTask task = new PutObjectTask(this, bucketName, taskRequest, callback, listener
+					, progressStatus, progressInterval);
+			executor.execute(task);
+		}
+	}
+	
 	
 	/* (non-Javadoc)
      * @see com.obs.services.IFSClient#deleteFolder(com.obs.services.model.fs.DeleteFSFolderRequest)
@@ -2112,21 +2278,21 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 
 	/**
-	 * 设置对象访问权限
+	 * Set an object ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param cannedACL
-	 *            预定义访问策略
+	 *            Pre-defined access control policy
 	 * @param acl
-	 *            访问权限（acl和cannedACL不能同时使用）
+	 *            ACL ("acl" and "cannedACL" cannot be used together.)
 	 * @param versionId
-	 *            对象版本号
-	 * @return 公共响应头信息
+	 *            Object version ID
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	@Deprecated
 	public HeaderResponse setObjectAcl(final String bucketName, final String objectKey, final String cannedACL,
@@ -2415,6 +2581,9 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		ServiceUtils.asserParameterNotNull(request, "WriteFileRequest is null");
 		ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
 		ObjectMetadata metadata = this.getObjectMetadata(new GetObjectMetadataRequest(request.getBucketName(), request.getObjectKey()));
+		if(request.getPosition() >= 0L && request.getPosition() != metadata.getNextPosition()) {
+			throw new IllegalArgumentException("Where you proposed append to is not equal to length");
+		}
 		request.setPosition(metadata.getNextPosition());
 		return this.writeFile(request);
 	}
@@ -2500,6 +2669,81 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         });
     }
 	
+	@Override
+	public ReadAheadResult readAheadObjects(final ReadAheadRequest request) throws ObsException {
+		ServiceUtils.asserParameterNotNull(request, "request is null");
+		return this.doActionWithResult("readAheadObjects", request.getBucketName(), new ActionCallbackWithResult<ReadAheadResult>() {
+			@Override
+			public ReadAheadResult action() throws ServiceException {
+				return ObsClient.this.readAheadObjectsImpl(request);
+				 
+			}
+		});
+	}
+
+	@Override
+	public ReadAheadResult deleteReadAheadObjects(final String bucketName, final String prefix) throws ObsException {
+		ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+		ServiceUtils.asserParameterNotNull(prefix, "prefix is null");
+		return this.doActionWithResult("deleteReadAheadObjects", bucketName, new ActionCallbackWithResult<ReadAheadResult>() {
+			@Override
+			public ReadAheadResult action() throws ServiceException {
+				return ObsClient.this.DeleteReadAheadObjectsImpl(bucketName, prefix);
+				 
+			}
+		});
+	}
+	
+	@Override
+	public ReadAheadQueryResult queryReadAheadObjectsTask(final String bucketName, final String taskId) throws ObsException {
+		ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+		ServiceUtils.asserParameterNotNull(taskId, "taskId is null");
+		return this.doActionWithResult("queryReadAheadObjectsTask", bucketName, new ActionCallbackWithResult<ReadAheadQueryResult>() {
+			@Override
+			public ReadAheadQueryResult action() throws ServiceException {
+				return ObsClient.this.queryReadAheadObjectsTaskImpl(bucketName, taskId);
+				 
+			}
+		});
+	}
+	
+	@Override
+	public HeaderResponse setBucketDirectColdAccess(final String bucketName, final BucketDirectColdAccess access)
+			throws ObsException {
+		ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+		ServiceUtils.asserParameterNotNull(access, "bucketDirectColdAccess is null");
+		return this.doActionWithResult("setBucketDirectColdAccess", bucketName, new ActionCallbackWithResult<HeaderResponse>() {
+
+			@Override
+			public HeaderResponse action() throws ServiceException {
+				return ObsClient.this.setBucketDirectColdAccessImpl(bucketName, access);
+			}
+		});
+	}
+
+	@Override
+	public BucketDirectColdAccess getBucketDirectColdAccess(final String bucketName) throws ObsException {
+		ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+		return this.doActionWithResult("getBucketDirectColdAccess", bucketName, new ActionCallbackWithResult<BucketDirectColdAccess>() {
+
+			@Override
+			public BucketDirectColdAccess action() throws ServiceException {
+				return ObsClient.this.getBucketDirectColdAccessImpl(bucketName);
+			}
+		});
+	}
+
+	@Override
+	public HeaderResponse deleteBucketDirectColdAccess(final String bucketName) throws ObsException {
+		ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+		return this.doActionWithResult("deleteBucketDirectColdAccess", bucketName, new ActionCallbackWithResult<HeaderResponse>() {
+
+			@Override
+			public HeaderResponse action() throws ServiceException {
+				return ObsClient.this.deleteBucketDirectColdAccessImpl(bucketName);
+			}
+		});
+	}
 	
 	private abstract class ActionCallbackWithResult<T> {
 
@@ -2577,4 +2821,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		super.finalize();
 		this.close();
 	}
+
+    
+
 }

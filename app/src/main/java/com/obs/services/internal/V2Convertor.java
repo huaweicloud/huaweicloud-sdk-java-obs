@@ -1,3 +1,16 @@
+/**
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.internal;
 
 import java.util.Collections;
@@ -10,6 +23,7 @@ import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
+import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketNotificationConfiguration;
@@ -342,8 +356,11 @@ public class V2Convertor implements IConvertor {
 										.attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 										.attr("xsi:type", "Group").element("URI").text(this.transGroupGrantee(((GroupGrantee)grantee).getGroupGranteeType()));
 							}
-							grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
-							.text(ServiceUtils.toValid(permission.getPermissionString()));
+							
+							if(subBuilder != null) {
+								grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
+								.text(ServiceUtils.toValid(permission.getPermissionString()));
+							}
 						}
 					}
 				}
@@ -431,10 +448,13 @@ public class V2Convertor implements IConvertor {
 								.attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 								.attr("xsi:type", "CanonicalUser").element("ID").text(ServiceUtils.toValid(grantee.getIdentifier()));
 					}
-					XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
-					if(permission != null) {
-						grantBuilder.elem("Permission")
-						.text(ServiceUtils.toValid(permission.getPermissionString()));
+					
+					if(subBuilder != null) {
+						XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
+						if(permission != null) {
+							grantBuilder.elem("Permission")
+							.text(ServiceUtils.toValid(permission.getPermissionString()));
+						}
 					}
 				}
 			}
@@ -634,6 +654,20 @@ public class V2Convertor implements IConvertor {
 			}
 		}
 		return storageClassStr;
+	}
+	
+	@Override
+	public String transBucketDirectColdAccess(BucketDirectColdAccess access) throws ServiceException {
+		try {
+			XMLBuilder builder = XMLBuilder.create("DirectColdAccessConfiguration");
+			
+			builder = builder.e("Status").t(access.getStatus().getCode());
+			builder = builder.up();
+			
+			return builder.up().asString();
+		} catch (Exception e) {
+			throw new ServiceException("Failed to build XML document for Tagging", e);
+		}
 	}
 
 	@Override

@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * ACL中被授权的用户/用户组及其对应的权限信息，{@link AccessControlList}
+ * Grantee or grantee group and permission information, {@link AccessControlList}
  */
 public class GrantAndPermission
 {
@@ -13,10 +27,10 @@ public class GrantAndPermission
     private boolean delivered;
     
     /**
-     * 构造函数
+     * Constructor
      * 
-     * @param grantee 被授权的用户/用户组
-     * @param permission 权限信息
+     * @param grantee Grantee (group) name
+     * @param permission Permission information
      */
     public GrantAndPermission(GranteeInterface grantee, Permission permission)
     {
@@ -25,9 +39,9 @@ public class GrantAndPermission
     }
     
     /**
-     * 获取被授权的用户/用户组
+     * Obtain the grantee (group) information.
      * 
-     * @return 被授权的用户/用户组
+     * @return Grantee (group) information
      */
     public GranteeInterface getGrantee()
     {
@@ -35,9 +49,9 @@ public class GrantAndPermission
     }
     
     /**
-     * 获取权限信息
+     * Obtain the permission information.
      * 
-     * @return 权限信息
+     * @return Permission information
      */
     public Permission getPermission()
     {
@@ -45,16 +59,16 @@ public class GrantAndPermission
     }
     
     /**
-     * 获取桶的ACL传递标识
-     * @return ACL传递标识
+     * Check whether the bucket ACL is deliverable.
+     * @return Identifier specifying whether the ACL is delivered
      */
 	public boolean isDelivered() {
 		return delivered;
 	}
 	
 	/**
-	 * 设置桶的ACL传递标识，只对桶权限有效
-	 * @param delivered ACL传递标识
+	 * Specify whether to deliver the bucket ACL. (This is only applicable to bucket ACLs.)
+	 * @param delivered Whether to deliver the bucket ACL
 	 */
 	public void setDelivered(boolean delivered) {
 		this.delivered = delivered;
@@ -104,3 +118,5 @@ public class GrantAndPermission
 	
     
 }
+
+

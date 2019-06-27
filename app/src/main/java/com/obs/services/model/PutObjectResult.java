@@ -1,7 +1,23 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
+import java.util.Map;
+
 /**
- * 上传对象的响应结果
+ * Response to an object upload request
  */
 public class PutObjectResult extends HeaderResponse
 {
@@ -28,12 +44,24 @@ public class PutObjectResult extends HeaderResponse
 		this.storageClass = storageClass;
 		this.objectUrl = objectUrl;
 	}
+    
+    public PutObjectResult(String bucketName, String objectKey, String etag, String versionId, 
+    		String objectUrl, Map<String,Object> responseHeaders, int statusCode) {
+		super();
+		this.bucketName = bucketName;
+		this.objectKey = objectKey;
+		this.etag = etag;
+		this.versionId = versionId;
+		this.objectUrl = objectUrl;
+		this.responseHeaders = responseHeaders;
+		this.statusCode = statusCode;
+	}
 
 
 	/**
-     * 获取对象的etag校验值
+     * Obtain the ETag of the object.
      * 
-     * @return 对象的etag校验值
+     * @return ETag of the object
      */
     public String getEtag()
     {
@@ -42,8 +70,8 @@ public class PutObjectResult extends HeaderResponse
     
 
     /**
-     * 获取对象所属的桶名
-     * @return 对象所属的桶名
+     * Obtain the name of the bucket to which the object belongs. 
+     * @return Name of the bucket to which the object belongs
      */
     public String getBucketName()
     {
@@ -52,8 +80,8 @@ public class PutObjectResult extends HeaderResponse
 
 
     /**
-     * 获取对象名
-     * @return 对象名
+     * Obtain the object name.
+     * @return Object name
      */
     public String getObjectKey()
     {
@@ -63,8 +91,8 @@ public class PutObjectResult extends HeaderResponse
 
    
     /**
-     * 获取对象版本号
-     * @return 对象版本号
+     * Obtain the object version ID.
+     * @return Version ID of the object
      */
     public String getVersionId()
     {
@@ -74,8 +102,8 @@ public class PutObjectResult extends HeaderResponse
 
 
     /**
-     * 获取对象的存储类型
-     * @return 对象的存储类型
+     * Obtain the object storage class. 
+     * @return Object storage class
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -84,8 +112,8 @@ public class PutObjectResult extends HeaderResponse
     
 
     /**
-     * 获取对象的全路径
-     * @return 对象的全路径
+     * Obtain the full path to the object.
+     * @return Full path to the object
      */
 	public String getObjectUrl() {
 		return objectUrl;
@@ -101,3 +129,5 @@ public class PutObjectResult extends HeaderResponse
 
     
 }
+
+

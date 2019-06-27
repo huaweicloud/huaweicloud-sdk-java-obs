@@ -1,9 +1,23 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.Date;
 
 /**
- * 复制对象的响应结果
+ * Response to a request for copying an object
  */
 public class CopyObjectResult extends HeaderResponse
 {
@@ -29,9 +43,9 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * 获取目标对象的etag值
+     * Obtain the ETag of the destination object.
      * 
-     * @return 目标对象的etag值
+     * @return ETag value of the destination object
      */
     public String getEtag()
     {
@@ -40,9 +54,9 @@ public class CopyObjectResult extends HeaderResponse
     
     
     /**
-     * 获取目标对象的最后修改时间
+     * Last modification time of the destination object
      * 
-     * @return 目标对象的最后修改时间
+     * @return Last modification time of the destination object
      */
     public Date getLastModified()
     {
@@ -50,8 +64,8 @@ public class CopyObjectResult extends HeaderResponse
     }
     
     /**
-     * 获取目标对象的版本号
-     * @return 对象版本号
+     * Obtain the version ID of the destination object. 
+     * @return Version ID of the object
      */
 	public String getVersionId() {
 		return versionId;
@@ -59,8 +73,8 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * 获取源对象的版本号
-     * @return 对象版本号
+     * Obtain the version ID of the source object. 
+     * @return Version ID of the object
      */
 	public String getCopySourceVersionId() {
 		return copySourceVersionId;
@@ -68,8 +82,8 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * 获取目标对象的存储类型
-     * @return 对象的存储类型
+     * Obtain the storage class of the destination object.
+     * @return Object storage class
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -85,3 +99,5 @@ public class CopyObjectResult extends HeaderResponse
 	
     
 }
+
+

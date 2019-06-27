@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.HashMap;
@@ -26,9 +40,9 @@ public abstract class PutObjectBasicRequest {
     
     
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -36,9 +50,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 设置桶名
+     * Set the bucket name.
      * 
-     * @param bucketName 桶名
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -46,9 +60,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 获取对象名
+     * Obtain the object name.
      * 
-     * @return 对象名
+     * @return Object name
      */
     public String getObjectKey()
     {
@@ -56,9 +70,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 设置对象名
+     * Set the object name.
      * 
-     * @param objectKey 对象名
+     * @param objectKey Object name
      *           
      */
     public void setObjectKey(String objectKey)
@@ -67,9 +81,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 获取对象SSE-KMS加密头域信息
+     * Obtain SSE-KMS encryption headers of the object. 
      * 
-     * @return SSE-KMS加密头域信息
+     * @return SSE-KMS encryption headers
      */
     public SseKmsHeader getSseKmsHeader()
     {
@@ -77,9 +91,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 设置对象SSE-KMS加密头域信息
+     * Set SSE-KMS encryption headers of the object. 
      * 
-     * @param sseKmsHeader SSE-KMS加密头域信息
+     * @param sseKmsHeader SSE-KMS encryption headers
      */
     public void setSseKmsHeader(SseKmsHeader sseKmsHeader)
     {
@@ -87,9 +101,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 获取对象SSE-C加密头域信息
+     * Obtain SSE-C encryption headers of the object. 
      * 
-     * @return SSE-C加密头域信息
+     * @return SSE-C encryption headers
      */
     public SseCHeader getSseCHeader()
     {
@@ -97,9 +111,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 设置对象SSE-C加密头域信息
+     * Set SSE-C encryption headers of the object. 
      * 
-     * @param sseCHeader SSE-C加密头域信息
+     * @param sseCHeader SSE-C encryption headers
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -107,8 +121,8 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 获取对象的访问权限
-     * @return 对象的访问权限
+     * Obtain the ACL of the object.
+     * @return Object ACL
      */
     public AccessControlList getAcl()
     {
@@ -116,8 +130,8 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * 设置对象的访问权限
-     * @param acl 对象的访问权限
+     * Set the object ACL.
+     * @param acl Bucket ACL
      */
     public void setAcl(AccessControlList acl)
     {
@@ -125,25 +139,25 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-	 * 获取请求操作响应成功后的重定向地址
-	 * @return 重定向地址
+	 * Obtain the redirection address after a successfully responded request. 
+	 * @return Redirection address
 	 */
 	public String getSuccessRedirectLocation() {
 		return successRedirectLocation;
 	}
 
 	/**
-	 * 设置请求操作响应成功后的重定向地址
-	 * @param successRedirectLocation 重定向地址
+	 * Set the redirection address after a successfully responded request. 
+	 * @param successRedirectLocation Redirection address
 	 */
 	public void setSuccessRedirectLocation(String successRedirectLocation) {
 		this.successRedirectLocation = successRedirectLocation;
 	}
     
     /**
-	 * 为用户授予OBS扩展权限
-	 * @param domainId 用户的domainId
-	 * @param extensionPermissionEnum OBS扩展权限
+	 * Grant the OBS extension permission to users.
+	 * @param domainId ID of the domain to which the user belongs
+	 * @param extensionPermissionEnum OBS extension permission
 	 */
 	public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -158,9 +172,9 @@ public abstract class PutObjectBasicRequest {
 	}
 	
 	/**
-	 * 撤回用户的OBS扩展权限
-	 * @param domainId 用户的domainId
-	 * @param extensionPermissionEnum OBS扩展权限
+	 * Withdraw the OBS extension permission. 
+	 * @param domainId ID of the domain to which the user belongs
+	 * @param extensionPermissionEnum OBS extension permission
 	 */
 	public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -174,8 +188,8 @@ public abstract class PutObjectBasicRequest {
 	}
 	
 	/**
-	 * 撤回用户的所有OBS扩展权限
-	 * @param domainId 用户的domainId
+	 * Withdraw all OBS extension permissions. 
+	 * @param domainId ID of the domain to which the user belongs
 	 */
 	public void withdrawExtensionPermissions(String domainId) {
 		if(ServiceUtils.isValid(domainId)) {
@@ -213,7 +227,7 @@ public abstract class PutObjectBasicRequest {
 		return grantPermissions;
 	}
 	
-    public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
+	public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
 		if(extensionPermissionMap == null) {
 			extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
 		}
@@ -227,3 +241,5 @@ public abstract class PutObjectBasicRequest {
 		this.extensionPermissionMap = extensionPermissionMap;
 	}
 }
+
+

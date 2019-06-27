@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 桶的存量信息
+ * Bucket storage information
  */
 public class BucketStorageInfo extends HeaderResponse
 {
@@ -10,9 +24,9 @@ public class BucketStorageInfo extends HeaderResponse
     private long objectNum;
     
     /**
-     * 获取桶的空间大小，单位：字节
+     * Obtain the bucket quota (in bytes). 
      * 
-     * @return 桶的空间大小
+     * @return Bucket size
      */
     public long getSize()
     {
@@ -20,9 +34,9 @@ public class BucketStorageInfo extends HeaderResponse
     }
     
     /** 
-     * 设置桶的空间大小 ，单位：字节
+     * Set the bucket size (in bytes). 
      * 
-     * @param storageSize 桶的空间大小
+     * @param storageSize Bucket size
      */
     public void setSize(long storageSize)
     {
@@ -30,9 +44,9 @@ public class BucketStorageInfo extends HeaderResponse
     }
     
     /**
-     * 获取桶的对象个数
+     * Obtain the number of objects in the bucket.
      * 
-     * @return 桶的对象个数
+     * @return Number of objects in the bucket
      */
     public long getObjectNumber()
     {
@@ -40,9 +54,9 @@ public class BucketStorageInfo extends HeaderResponse
     }
     
     /** 
-     * 设置桶的对象个数
+     * Set the number of objects in the bucket.
      * 
-     * @param objectNumber 桶的对象个数
+     * @param objectNumber Number of objects in the bucket
      */
     public void setObjectNumber(long objectNumber)
     {
@@ -56,3 +70,5 @@ public class BucketStorageInfo extends HeaderResponse
     }
     
 }
+
+

@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.util.Date;
@@ -8,40 +21,44 @@ import com.obs.services.internal.ObsConstraint;
  * 下载文件的请求参数
  */
 public class DownloadFileRequest {
-    // 桶名
+
     private String bucketName;
-    // 对象名
+ 
     private String objectKey;
-    // 本地文件
+  
     private String downloadFile;
-    // 分片大小，单位字节，默认100KB
+
     private long partSize = 100 * 1024l;
-    // 分片上传线程数，默认1
+
     private int taskNum = 1;
-    // 开启断点续传时记录下载信息的本地文件
+
     private String checkpointFile;
-    // 是否开启断点续传，默认为false
+
     private boolean enableCheckpoint;
-    // 限定条件下载对应的If-Modified-Since参数,如果指定的时间早于对象的实际修改时间,正常传送文件返回文件内容
+
     private Date ifModifiedSince;
-    // If-Unmodified-Since参数,如果传入参数中的时间等于或者晚于文件实际修改时间,则传送文件
+
     private Date ifUnmodifiedSince;
-    // If-Match参数,如果对象的ETag值与该参数值相同，则返回对象内容,目前只支持单一形式.
+
     private String ifMatchTag;
-    // If-None-Match参数,如果对象的ETag值与该参数值不相同，则返回对象内容,目前只支持单一形式.
+
     private String ifNoneMatchTag;
-    // 开启多版本，指定版本号下载
+
     private String versionId;
     
     private ProgressListener progressListener;
     
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
     
+    private CacheOptionEnum cacheOption;
+    
+    private long ttl;
+    
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-	 * @param bucketName 桶名
-	 * @param objectKey 对象名
+	 * @param bucketName Bucket name
+	 * @param objectKey Object name
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey) {
 		this.bucketName = bucketName;
@@ -50,11 +67,11 @@ public class DownloadFileRequest {
 	}
 
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-	 * @param downloadFile 下载文件的目标路径
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+	 * @param downloadFile Path to the to-be-downloaded file
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey, String downloadFile) {
 		this(bucketName, objectKey);
@@ -62,12 +79,12 @@ public class DownloadFileRequest {
 	}
 
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param downloadFile 下载文件的目标路径
-	 * @param partSize 下载时的分段大小
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param downloadFile Path to the to-be-downloaded file
+	 * @param partSize Part size
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize) {
 		this(bucketName, objectKey);
@@ -76,27 +93,27 @@ public class DownloadFileRequest {
 	}
 
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param downloadFile 下载文件的目标路径
-     * @param partSize 下载时的分段大小
-	 * @param taskNum 用于并发执行下载任务的最大线程数
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param downloadFile Path to the to-be-downloaded file
+     * @param partSize Part size
+	 * @param taskNum Maximum number of threads used for processing download tasks concurrently
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum) {
 		this(bucketName, objectKey, downloadFile, partSize, taskNum, false);
 	}
 
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param downloadFile 下载文件的目标路径
-     * @param partSize 下载时的分段大小
-     * @param taskNum 用于并发执行下载任务的最大线程数
-     * @param enableCheckpoint 是否开启断点续传模式
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param downloadFile Path to the to-be-downloaded file
+     * @param partSize Part size
+     * @param taskNum Maximum number of threads used for processing download tasks concurrently
+     * @param enableCheckpoint Whether to enable the resumable mode
      * 
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
@@ -105,15 +122,15 @@ public class DownloadFileRequest {
 	}
 
 	/**
-	 * 构造参数
+	 * Constructor
 	 * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param downloadFile 下载文件的目标路径
-     * @param partSize 下载时的分段大小
-     * @param taskNum 用于并发执行下载任务的最大线程数
-     * @param enableCheckpoint 是否开启断点续传模式
-	 * @param checkpointFile 断点续传模式下，记录下载进度的文件
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param downloadFile Path to the to-be-downloaded file
+     * @param partSize Part size
+     * @param taskNum Maximum number of threads used for processing download tasks concurrently
+     * @param enableCheckpoint Whether to enable the resumable mode
+	 * @param checkpointFile File used to record download progresses in resumable mode
 	 * 
 	 */
 	public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
@@ -127,16 +144,16 @@ public class DownloadFileRequest {
 	}
 	
 	   /**
-     * 构造参数
+     * Constructor
      * 
-     * @param bucketName 桶名
-     * @param objectKey 对象名
-     * @param downloadFile 下载文件的目标路径
-     * @param partSize 下载时的分段大小
-     * @param taskNum 用于并发执行下载任务的最大线程数
-     * @param enableCheckpoint 是否开启断点续传模式
-     * @param checkpointFile 断点续传模式下，记录下载进度的文件
-     * @param versionId 对象的版本号
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param downloadFile Path to the to-be-downloaded file
+     * @param partSize Part size
+     * @param taskNum Maximum number of threads used for processing download tasks concurrently
+     * @param enableCheckpoint Whether to enable the resumable mode
+     * @param checkpointFile File used to record download progresses in resumable mode
+     * @param versionId Version ID of the object
      * 
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
@@ -151,90 +168,90 @@ public class DownloadFileRequest {
     }
 
 	/**
-	 * 获取桶名
+	 * Obtain the bucket name.
 	 * 
-	 * @return 桶名
+	 * @return Bucket name
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * 设置桶名
+	 * Set the bucket name.
 	 * 
-	 * @param bucketName 桶名
+	 * @param bucketName Bucket name
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * 获取对象名
+	 * Obtain the object name.
 	 * 
-	 * @return 对象名
+	 * @return Object name
 	 */
 	public String getObjectKey() {
 		return objectKey;
 	}
 
 	/**
-	 * 设置对象名
+	 * Set the object name.
 	 * 
-	 * @param objectKey 对象名
+	 * @param objectKey Object name
 	 */
 	public void setObjectKey(String objectKey) {
 		this.objectKey = objectKey;
 	}
 
 	/**
-	 * 获取下载文件的目标路径
+	 * Obtain the path to the to-be-downloaded file. 
 	 * 
-	 * @return 下载文件的目标路径
+	 * @return Path to the to-be-downloaded file
 	 */
 	public String getDownloadFile() {
 		return downloadFile;
 	}
 
 	/**
-	 * 设置下载文件的目标路径
+	 * Set the path to the to-be-downloaded file.
 	 * 
-	 * @param downloadFile 下载文件的目标路径
+	 * @param downloadFile Path to the to-be-downloaded file
 	 */
 	public void setDownloadFile(String downloadFile) {
 		this.downloadFile = downloadFile;
 	}
 
 	/**
-	 * 获取下载时的分段大小
+	 * Obtain the part size.
 	 * 
-	 * @return 下载时的分段大小
+	 * @return Part size
 	 */
 	public long getPartSize() {
 		return partSize;
 	}
 
 	/**
-	 * 设置下载时的分段大小
+	 * Set the part size.
 	 * 
-	 * @param partSize 下载时的分段大小
+	 * @param partSize Part size
 	 */
 	public void setPartSize(long partSize) {
 		this.partSize = partSize;
 	}
 
 	/**
-	 * 获取用于并发执行下载任务的最大线程数
+	 * Obtain the maximum number of threads used for processing download tasks concurrently.
 	 * 
-	 * @return 用于并发执行下载任务的最大线程数
+	 * @return Maximum number of threads used for processing download tasks concurrently
 	 */
 	public int getTaskNum() {
 		return taskNum;
 	}
 
 	/**
-	 * 设置用于并发执行下载任务的最大线程数
+	 * Set the maximum number of threads used for processing download tasks concurrently.
 	 * 
-	 * @param taskNum 用于并发执行下载任务的最大线程数
+	 * @param taskNum Maximum number of threads used for processing download tasks concurrently
 	 */
 	public void setTaskNum(int taskNum) {
 		if (taskNum < 1) {
@@ -247,54 +264,54 @@ public class DownloadFileRequest {
 	}
 
     /**
-     * 判断是否开启断点续传模式
+     * Identify whether the resumable mode is enabled.
      * 
-     * @return 是否开启断点续传模式标识
+     * @return Identifier specifying whether the resumable mode is enabled
      */
     public boolean isEnableCheckpoint() {
         return enableCheckpoint;
     }
 
     /**
-     * 设置是否开启断点续传模式
+     * Specify whether to enable the resumable mode.
      * 
-     * @param enableCheckpoint 是否开启断点续传模式标识
+     * @param enableCheckpoint Identifier specifying whether the resumable mode is enabled
      */
     public void setEnableCheckpoint(boolean enableCheckpoint) {
         this.enableCheckpoint = enableCheckpoint;
     }
     
     /**
-     * 获取断点续传模式下，记录下载进度的文件
+     * File used to record download progresses in resumable mode
      * 
-     * @return 记录下载进度的文件
+     * @return File used to record the download progress
      */
     public String getCheckpointFile() {
         return checkpointFile;
     }
 
     /**
-     * 设置断点续传模式下，记录下载进度的文件
+     * Specify a file used to record resumable download progresses. 
      * 
-     * @param checkpointFile 记录下载进度的文件
+     * @param checkpointFile File used to record the download progress
      */
     public void setCheckpointFile(String checkpointFile) {
         this.checkpointFile = checkpointFile;
     }
 
 	/**
-	 * 获取下载时的临时文件
+	 * Obtain the temporary file generated during the download.
 	 * 
-	 * @return 下载时的临时文件
+	 * @return Temporary file generated during the download
 	 */
 	public String getTempDownloadFile() {
 		return downloadFile + ".tmp";
 	}
 
     /**
-     * 获取下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
+     * Obtain the time conditions set for downloading the object. Only when the object is modified after the point in time specified by this parameter, it will be downloaded. Otherwise, "304 Not Modified" will be returned.
      * 
-     * @return 下载对象的时间条件
+     * @return Time condition set for downloading the object
      */
     public Date getIfModifiedSince()
     {
@@ -302,9 +319,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 设置下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
+     * Set the time conditions set for downloading the object. Only when the object is modified after the point in time specified by this parameter, it will be downloaded. Otherwise, "304 Not Modified" will be returned.
      * 
-     * @param ifModifiedSince 下载对象的时间条件
+     * @param ifModifiedSince Time condition set for downloading the object
      */
     public void setIfModifiedSince(Date ifModifiedSince)
     {
@@ -312,9 +329,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 获取下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
+     * Obtain the time conditions for downloading the object. Only when the object remains unchanged after the point in time specified by this parameter, it will be downloaded; otherwise, "412 Precondition Failed" will be returned.
      * 
-     * @return 下载对象的时间条件
+     * @return Time condition set for downloading the object
      */
     public Date getIfUnmodifiedSince()
     {
@@ -322,9 +339,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 设置下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
+     * Set the time conditions for downloading the object. Only when the object remains unchanged after the point in time specified by this parameter, it will be downloaded; otherwise, "412 Precondition Failed" will be returned.
      * 
-     * @param ifUnmodifiedSince 下载对象的时间条件
+     * @param ifUnmodifiedSince Time condition set for downloading the object
      */
     public void setIfUnmodifiedSince(Date ifUnmodifiedSince)
     {
@@ -332,9 +349,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 获取下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
+     * Obtain the ETag verification conditions for downloading the object. Only when the ETag of the object is the same as that specified by this parameter, the object will be downloaded. Otherwise, "412 Precondition Failed" will be returned.
      * 
-     * @return 下载对象的校验值条件
+     * @return ETag verification condition set for downloading the object
      */
     public String getIfMatchTag()
     {
@@ -342,9 +359,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 设置下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
+     * Set the ETag verification conditions for downloading the object. Only when the ETag of the object is the same as that specified by this parameter, the object will be downloaded. Otherwise, "412 Precondition Failed" will be returned.
      * 
-     * @param ifMatchTag 下载对象的校验值条件
+     * @param ifMatchTag ETag verification condition set for downloading the object
      */
     public void setIfMatchTag(String ifMatchTag)
     {
@@ -352,9 +369,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 获取下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
+     * Obtain the ETag verification conditions for downloading the object. Only when the ETag of the object is different from that specified by this parameter, the object will be downloaded. Otherwise, "304 Not Modified" will be returned.
      * 
-     * @return 下载对象的校验值条件
+     * @return ETag verification condition set for downloading the object
      */
     public String getIfNoneMatchTag()
     {
@@ -362,9 +379,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 设置下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
+     * Set the ETag verification conditions for downloading the object. Only when the ETag of the object is different from that specified by this parameter, the object will be downloaded. Otherwise, "304 Not Modified" will be returned.
      * 
-     * @param ifNoneMatchTag 下载对象的校验值条件
+     * @param ifNoneMatchTag ETag verification condition set for downloading the object
      * 
      */
     public void setIfNoneMatchTag(String ifNoneMatchTag)
@@ -373,9 +390,9 @@ public class DownloadFileRequest {
     }
 
     /**
-     * 获取对象的版本号
+     * Obtain the object version ID.
      * 
-     * @return 对象的版本号
+     * @return Version ID of the object
      */
     public String getVersionId()
     {
@@ -383,9 +400,9 @@ public class DownloadFileRequest {
     }
     
     /**
-     * 设置对象的版本号
+     * Set the version ID of the object. 
      * 
-     * @param versionId 对象的版本号
+     * @param versionId Version ID of the object
      * 
      */
     public void setVersionId(String versionId)
@@ -393,36 +410,44 @@ public class DownloadFileRequest {
         this.versionId = versionId;
     }
     
-    /**
-	 * 获取数据传输监听器
-	 * @return 数据传输监听器
-	 */
+
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
-	/**
-	 * 设置数据传输监听器
-	 * @param progressListener 数据传输监听器
-	 */
+
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
-	/**
-	 * 获取数据传输监听器回调的阈值，默认为100KB
-	 * @return 数据传输监听器回调的阈值
-	 */
+
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
-	/**
-	 * 设置数据传输监听器回调的阈值，默认为100KB
-	 * @param progressInterval 数据传输监听器回调的阈值
-	 */
+
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
+	}
+
+	public CacheOptionEnum getCacheOption() {
+		return cacheOption;
+	}
+
+
+	public void setCacheOption(CacheOptionEnum cacheOption) {
+		this.cacheOption = cacheOption;
+	}
+
+	public long getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(long ttl) {
+		if(ttl < 0 || ttl > 259200) {
+			ttl = 60 * 60 * 24L;
+		}
+		this.ttl = ttl;
 	}
     
     @Override

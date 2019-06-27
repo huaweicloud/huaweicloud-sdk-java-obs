@@ -1,3 +1,16 @@
+/**
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.internal;
 
 import java.util.Arrays;
@@ -71,6 +84,8 @@ public class Constants
 		public static final String IF_MATCH = "If-Match";
 		
 		public static final String IF_NONE_MATCH = "If-None-Match";
+		
+		public static final String X_RESERVED_INDICATOR = "x-reserved-indicator";
 	}
 	
 	public static class ObsRequestParams{
@@ -99,6 +114,10 @@ public class Constants
 		
 		public static final String NAME = "name";
 		public static final String LENGTH = "length";
+		
+		public static final String READAHEAD = "readAhead";
+		public static final String X_CACHE_CONTROL = "x-cache-control";
+		public static final String TASKID = "taskID";
 	}
 	
 	
@@ -176,7 +195,7 @@ public class Constants
     
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
     
-    public static final String OBS_SDK_VERSION = "3.1.3";
+    public static final String OBS_SDK_VERSION = "3.19.5";
     
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
     
@@ -231,6 +250,7 @@ public class Constants
         "last-modified",
         "content-range",
         "x-reserved",
+        "x-reserved-indicator",
         "access-control-allow-origin",
         "access-control-allow-headers",
         "access-control-max-age",
@@ -263,7 +283,8 @@ public class Constants
         "if-match",
         "if-none-match",
         "last-modified",
-        "content-range"));
+        "content-range",
+        "x-cache-control"));
     
     
     public static final List<String> ALLOWED_RESOURCE_PARAMTER_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -295,6 +316,7 @@ public class Constants
         "replication",
         "metadata",
         "encryption",
+        "directcoldaccess",
         /**
          * File System API
          */
@@ -307,6 +329,8 @@ public class Constants
         "name",
         "fileinterface",
         
+        "readahead",
+        
         "response-content-type",
         "response-content-language",
         "response-expires",
@@ -316,6 +340,7 @@ public class Constants
         "x-image-save-bucket",
         "x-image-save-object",
         "x-image-process",
+        "x-obs-sse-kms-key-project-id",
         "x-oss-process"));
     
 }

@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * OPTIONS桶或对象的响应结果
+ * Response to a bucket or object preflight request
  *
  */
 public class OptionsInfoResult extends HeaderResponse
@@ -33,9 +47,9 @@ public class OptionsInfoResult extends HeaderResponse
 
 
 	/**
-     * 获取允许跨域请求的来源
+     * Obtain the origin of the allowed cross-origin request.
      * 
-     * @return 允许跨域请求的来源
+     * @return Origin of the allowed cross-origin request
      */
     public String getAllowOrigin()
     {
@@ -44,9 +58,9 @@ public class OptionsInfoResult extends HeaderResponse
     
     
     /** 
-     * 获取允许携带的请求头域列表
+     * Obtain the list of allowed request headers.
      * 
-     * @return 允许携带的请求头域列表
+     * @return List of allowed request headers
      */
     public List<String> getAllowHeaders()
     {
@@ -58,18 +72,18 @@ public class OptionsInfoResult extends HeaderResponse
     
     
     /** 
-     * 获取客户端对请求结果的缓存时间，单位：秒
+     * Obtain the cache duration (in seconds) of the request result in the instance of ObsClient.
      * 
-     * @return 客户端对请求结果的缓存时间
+     * @return Cache duration of the request result in the instance of ObsClient
      */
     public int getMaxAge()
     {
         return maxAge;
     }
     /**
-     * 获取允许的跨域请求方法列表
+     * Obtain the list of allowed cross-origin request methods.
      * 
-     * @return 允许的跨域请求方法列表
+     * @return List of allowed cross-origin request methods
      */
     public List<String> getAllowMethods()
     {
@@ -81,9 +95,9 @@ public class OptionsInfoResult extends HeaderResponse
     
     
     /**
-     * 获取允许响应中带的附加头域列表
+     * Obtain the list of allowed additional headers in the response.
      * 
-     * @return 允许响应中带的附加头域列表
+     * @return List of allowed additional headers in the response
      */
     public List<String> getExposeHeaders()
     {
@@ -102,3 +116,5 @@ public class OptionsInfoResult extends HeaderResponse
     }
     
 }
+
+

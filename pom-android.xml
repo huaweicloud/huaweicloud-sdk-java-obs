@@ -4,7 +4,7 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.1.3</version>
+	<version>3.19.5</version>
 
 	<name>OBS SDK for Android</name>
 	<description>The OBS SDK for Android used for accessing Object Storage Service</description>

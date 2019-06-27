@@ -1,25 +1,39 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import com.obs.services.internal.Constants;
 
 /**
- * 用户组类型 
+ * Type of the user group 
  *
  */
 public enum GroupGranteeEnum {
     /**
-     * 匿名用户组，代表所有用户
+     * Anonymous user group, indicating all users
      */
     ALL_USERS,
 
     /**
-     * OBS授权用户组，代表任何拥有OBS账户的用户
+     * OBS authorized user group, indicating all users who own OBS accounts
      */
     @Deprecated
     AUTHENTICATED_USERS,
 
     /**
-     * 日志投递用户组，一般用户配置访问日志
+     * Log delivery group, indicating common users who can configure access logs
      */
     @Deprecated
     LOG_DELIVERY;
@@ -39,3 +53,5 @@ public enum GroupGranteeEnum {
 		return null;
 	}
 }
+
+

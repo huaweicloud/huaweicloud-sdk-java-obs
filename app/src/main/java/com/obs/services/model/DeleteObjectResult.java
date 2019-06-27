@@ -1,7 +1,20 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 /**
- * 删除对象的响应结果
+ * Response to an object deletion request
  */
 public class DeleteObjectResult extends HeaderResponse
 {
@@ -26,25 +39,22 @@ public class DeleteObjectResult extends HeaderResponse
 
 
     /**
-     * 判断多版本对象是否已被删除
-     * @return 对象是否被删除标识
+     * Check whether a versioning object has been deleted.
+     * @return Identifier indicating whether the versioning object has been deleted
      */
 	public boolean isDeleteMarker() {
 		return deleteMarker;
 	}
 
 	/**
-	 * 获取被删除对象的版本号
-	 * @return 对象的版本号
+	 * Obtain the version ID of the deleted object.
+	 * @return Version ID of the object
 	 */
 	public String getVersionId() {
 		return versionId;
 	}
 	
-	/**
-	 * 获取被删除对象的对象名
-	 * @return 对象名
-	 */
+
 	public String getObjectKey() {
         return objectKey;
     }

@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -5,7 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 对象的属性
+ * Object properties
  */
 public class ObjectMetadata extends HeaderResponse
 {
@@ -34,8 +48,8 @@ public class ObjectMetadata extends HeaderResponse
 	}
     
     /**
-     * 判断对象是否可被追加写
-     * @return 对象是否可被追加写标识
+     * Identify whether an object is appendable.
+     * @return Identifier specifying whether the object is appendable
      */
 	public boolean isAppendable() {
 		return appendable;
@@ -46,8 +60,8 @@ public class ObjectMetadata extends HeaderResponse
 	}
     
 	/**
-	 * 获取下次追加上传的位置，仅在该值大于0，且isAppendable为true时有效
-	 * @return 下次追加上传的位置
+	 * Obtain the start position for next appending. This setting is valid only when "isAppendable" is set to "true" and this parameter value is larger than "0". 
+	 * @return Position from which the next appending starts
 	 */
 	public long getNextPosition() {
 		return nextPosition;
@@ -58,9 +72,9 @@ public class ObjectMetadata extends HeaderResponse
 	}
 
 	/**
-     * 获取对象属性集合
+     * Obtain object properties.
      * 
-     * @return 对象属性集合
+     * @return Object properties
      */
     public Map<String, Object> getMetadata()
     {
@@ -68,27 +82,27 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 新增对象的自定义元数据
-     * @param key 自定义元数据的关键字
-     * @param value 自定义元数据的值
+     * Add customized metadata for an object.
+     * @param key Keyword of the customized metadata
+     * @param value Value of the customized metadata
      */
     public void addUserMetadata(String key, String value){
         getMetadata().put(key, value);
     }
     
     /**
-     * 获取对象的自定义元数据
-     * @param key 自定义元数据的关键字
-     * @return 自定义元数据的值
+     * Obtain the customized metadata of an object.
+     * @param key Keyword of the customized metadata
+     * @return Value of the customized metadata
      */
     public Object getUserMetadata(String key){
         return getMetadata().get(key);
     }
     
     /** 
-     * 获取对象的etag校验值
+     * Obtain the ETag of the object.
      * 
-     * @return 对象的etag校验值
+     * @return ETag of the object
      */
     public String getEtag()
     {
@@ -103,9 +117,9 @@ public class ObjectMetadata extends HeaderResponse
     
     
     /**
-     * 设置对象属性集合
+     * Set object properties.
      * 
-     * @param metadata 对象属性集合
+     * @param metadata Object properties
      */
     public void setMetadata(Map<String, Object> metadata)
     {
@@ -113,9 +127,9 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 获取对象的最后修改时间
+     * Obtain the last modification time of the object.
      * 
-     * @return 对象的最后修改时间
+     * @return Last modification time of the object
      */
     public Date getLastModified()
     {
@@ -128,9 +142,9 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /** 
-     * 获取对象内容编码格式
+     * Obtain the content encoding of the object.
      * 
-     * @return 对象内容编码格式
+     * @return Content encoding
      */
     public String getContentEncoding()
     {
@@ -138,8 +152,8 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 设置对象内容编码格式
-     * @param contentEncoding 对象内容编码格式
+     * Set the content encoding of the object.
+     * @param contentEncoding Content encoding
      */
     public void setContentEncoding(String contentEncoding)
     {
@@ -147,9 +161,9 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /** 
-     * 获取对象内容的长度
+     * Obtain the content length of an object.
      * 
-     * @return 对象内容的长度
+     * @return Content length of the object
      */
     public Long getContentLength()
     {
@@ -157,9 +171,9 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /** 
-     * 设置对象内容的长度
+     * Set the content length of an object.
      * 
-     * @param contentLength 对象内容的长度
+     * @param contentLength Content length of the object
      */
     public void setContentLength(Long contentLength)
     {
@@ -167,18 +181,18 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /** 
-     * 获取对象的MIME类型
+     * Obtain the MIME type of an object.
      * 
-     * @return 对象的MIME类型
+     * @return MIME type of the object
      */
     public String getContentType()
     {
         return contentType;
     }
     
-    /** 设置对象的MIME类型
+    /** Set the MIME type for an object.
      * 
-     * @param contentType 对象的MIME类型
+     * @param contentType MIME type of the object
      */
     public void setContentType(String contentType)
     {
@@ -186,8 +200,8 @@ public class ObjectMetadata extends HeaderResponse
     }
 
     /**
-     * 获取对象的存储类型
-     * @return 对象的存储类型
+     * Obtain the object storage class. 
+     * @return Object storage class
      */
     @Deprecated
     public String getStorageClass()
@@ -196,8 +210,8 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 设置对象的存储类型
-     * @param storageClass 对象的存储类型
+     * Set the object storage class. 
+     * @param storageClass Object storage class
      */
     @Deprecated
     public void setStorageClass(String storageClass)
@@ -206,8 +220,8 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 获取对象的存储类型
-     * @return 对象的存储类型
+     * Obtain the object storage class. 
+     * @return Object storage class
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -215,8 +229,8 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 设置对象的存储类型
-     * @param storageClass 对象的存储类型
+     * Set the object storage class. 
+     * @param storageClass Object storage class
      */
     public void setObjectStorageClass(StorageClassEnum storageClass)
     {
@@ -245,8 +259,8 @@ public class ObjectMetadata extends HeaderResponse
      }
     
     /**
-     * 获取对象内容经过base64编码的MD5值
-     * @return 对象内容经过base64编码的MD5值
+     * Obtain Base64-encoded MD5 value of an object.
+     * @return Base64-encoded MD5 value of the object
      */
     public String getContentMd5()
     {
@@ -254,8 +268,8 @@ public class ObjectMetadata extends HeaderResponse
     }
 
     /**
-     * 设置对象内容经过base64编码的MD5值
-     * @param contentMd5 对象内容经过base64编码的MD5值
+     * Set the Base64-encoded MD5 value for an object.
+     * @param contentMd5 Base64-encoded MD5 value of the object
      */
     public void setContentMd5(String contentMd5)
     {
@@ -263,9 +277,9 @@ public class ObjectMetadata extends HeaderResponse
     }
 
     /**
-     * 设置对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
+     * Set the redirection link which can redirect the request to another object in the bucket or to an external URL.
      * 
-     * @return 重定向链接
+     * @return Redirection link
      */
     public String getWebSiteRedirectLocation()
     {
@@ -273,9 +287,9 @@ public class ObjectMetadata extends HeaderResponse
     }
     
     /**
-     * 获取对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
+     * Obtain the redirection link which can redirect the request to another object in the bucket or to an external URL. 
      * 
-     * @param webSiteRedirectLocation 重定向链接
+     * @param webSiteRedirectLocation Redirection link
      */
     public void setWebSiteRedirectLocation(String webSiteRedirectLocation)
     {
@@ -292,3 +306,5 @@ public class ObjectMetadata extends HeaderResponse
 
     
 }
+
+

@@ -1,130 +1,143 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 特殊操作符，代表要操作的子资源
+ * Special operator, which indicates the sub-resource to be operated
  */
 public enum SpecialParamEnum
 {
     
     /**
-     * 获取桶区域位置信息
+     * Obtain the bucket location information.
      */
     LOCATION("location"),
     /**
-     * 获取桶存量信息
+     * Obtain bucket storage information.
      */
     STORAGEINFO("storageinfo"),
     /**
-     * 获取/设置桶配额
+     * Obtain or set the bucket quota.
      */
     QUOTA("quota"),
     /**
-     * 获取/设置桶（对象）设置访问权限
+     * Obtain or set the ACL of the bucket (object).
      */
     ACL("acl"),
     /**
-     * 获取/设置桶日志管理配置
+     * Obtain the logging settings of or configure logging for a bucket.
      */
     LOGGING("logging"),
     /**
-     * 获取/设置/删除桶策略
+     * Obtain, set, or delete bucket policies.
      */
     POLICY("policy"),
     /**
-     * 获取/设置/删除桶的生命周期规则
+     * Obtain, set, or delete bucket lifecycle rules.
      */
     LIFECYCLE("lifecycle"),
     /**
-     * 获取/设置/删除桶的托管配置
+     * Obtain or delete website hosting settings of or configure website hosting for a bucket.
      */
     WEBSITE("website"),
     /**
-     * 获取/设置桶的多版本状态
+     * Obtain or set the versioning status of a bucket.
      */
     VERSIONING("versioning"),
     /**
-     * 获取/设置桶的存储策略
+     * Obtain or set bucket storage policies.
      */
     @Deprecated
     STORAGEPOLICY("storagePolicy"),
     /**
-     * 获取/设置桶的存储类型
+     * Obtain or set the bucket storage class. 
      */
     STORAGECLASS("storageClass"),
     /**
-     * 获取/设置/删除桶的跨域资源共享配置
+     * Obtain, set, or delete the CORS rules of a bucket.
      */
     CORS("cors"),
     /**
-     * 列举/初始化分段上传任务
+     * List or initialize multipart uploads.
      */
     UPLOADS("uploads"),
     /**
-     * 列举桶内多版本对象
+     * List versioning objects in a bucket.
      */
     VERSIONS("versions"),
     /**
-     * 批量删除对象
+     * Delete objects in a batch.
      */
     DELETE("delete"),
     
     /**
-     * 取回归档存储对象
+     * Restore an Archive object.
      */
     RESTORE("restore"),
     
     /**
-     * 设置/获取/删除桶标签
+     * Obtain, set, or delete bucket tags.
      */
     TAGGING("tagging"),
     
     /**
-     * 设置/获取桶的通知配置
+     * Configure bucket notification or obtain bucket notification configuration.
      */
     NOTIFICATION("notification"),
 	
 	/**
-     * 设置/获取/删除桶的跨Region复制配置
+     * Set, obtain, or delete the cross-region replication configuration of a bucket.
      */
     REPLICATION("replication"),
     
     /**
-     * 追加上传对象
+     * Perform an appendable upload.
      */
     APPEND("append"),
     
     /**
-     * 重命名文件/文件夹
+     * Rename a file or folder.
      */
     RENAME("rename"),
     
     /**
-     * 截断文件
+     * Truncate a file.
      */
     TRUNCATE("truncate"),
     
     /**
-     * 修改文件
+     * Modify a file.
      */
 	MODIFY("modify"),
 	
 	/**
-	 * 设置文件网关特性
+	 * Configure the file gateway feature.
 	 */
 	FILEINTERFACE("fileinterface"),
 	
 	/**
-	 * 设置/删除对象属性
+	 * Set or delete object properties.
 	 */
 	METADATA("metadata"),
 	
-	/**
-	 * 设置/获取/删除桶的加密配置
-	 */
-	ENCRYPTION("encryption");
+	ENCRYPTION("encryption"),
+	
+	DIRECTCOLDACCESS("directcoldaccess"); 
     
     /**
-     * stringCode对应数据库中和外部的Code
+     * Specify the corresponding code in the database and the external code.
      */
     private String stringCode;
     
@@ -165,3 +178,5 @@ public enum SpecialParamEnum
         throw new IllegalArgumentException("string code is illegal");
     }
 }
+
+

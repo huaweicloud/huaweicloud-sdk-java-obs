@@ -1,7 +1,20 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services;
 
 /**
- * HTTP代理配置信息
+ * HTTP proxy configuration
  */
 public class HttpProxyConfiguration
 {
@@ -24,11 +37,11 @@ public class HttpProxyConfiguration
     
     /**
      * 
-     * @param proxyAddr 代理地址
-     * @param proxyPort 代理端口
-     * @param proxyUname 代理用户名
-     * @param userPaaswd 代理密码
-     * @param domain 代理域
+     * @param proxyAddr Proxy address
+     * @param proxyPort Proxy port
+     * @param proxyUname Proxy username
+     * @param userPaaswd Proxy password
+     * @param domain Proxy domain
      */
     public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain)
     {
@@ -41,14 +54,14 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 带参构造函数
+     * Parameterized constructor
      * 
-     * @param proxyAddr 代理地址
-     * @param proxyPort 代理端口
-     * @param proxyUname 代理用户名
-     * @param userPaaswd 代理密码
-     * @param domain 代理域
-     * @param workstation 代理所在工作区
+     * @param proxyAddr Proxy address
+     * @param proxyPort Proxy port
+     * @param proxyUname Proxy username
+     * @param userPaaswd Proxy password
+     * @param domain Proxy domain
+     * @param workstation Workstation where the proxy is resides
      */
     public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain, String workstation)
     {
@@ -57,9 +70,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 获取代理地址
+     * Obtain the proxy address.
      * 
-     * @return 代理地址
+     * @return Proxy address
      */
     public String getProxyAddr()
     {
@@ -67,9 +80,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 设置代理地址
+     * Set the proxy address.
      * 
-     * @param proxyAddr 代理地址
+     * @param proxyAddr Proxy address
      */
     public void setProxyAddr(String proxyAddr)
     {
@@ -77,9 +90,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 获取代理端口
+     * Obtain the proxy port.
      * 
-     * @return 代理端口
+     * @return Proxy port
      */
     public int getProxyPort()
     {
@@ -87,9 +100,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 设置代理端口
+     * Set the proxy port.
      * 
-     * @param proxyPort 代理端口
+     * @param proxyPort Proxy port
      */
     public void setProxyPort(int proxyPort)
     {
@@ -97,9 +110,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 获取用户名
+     * Obtain the proxy username.
      * 
-     * @return 用户名
+     * @return Proxy username
      */
     public String getProxyUName()
     {
@@ -107,9 +120,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 设置用户名
+     * Set the username.
      * 
-     * @param proxyUName 用户名
+     * @param proxyUName Proxy username
      */
     public void setProxyUName(String proxyUName)
     {
@@ -117,8 +130,8 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 获取代理用户密码
-     * @return 代理用户密码
+     * Obtain the proxy password.
+     * @return Proxy password
      */
     public String getUserPaaswd()
     {
@@ -126,8 +139,8 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 设置代理用户密码
-     * @param userPaaswd 代理用户密码
+     * Set the proxy password.
+     * @param userPaaswd Proxy password
      */
     public void setUserPaaswd(String userPaaswd)
     {
@@ -135,9 +148,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 获取代理域
+     * Obtain the proxy domain.
      * 
-     * @return 代理域
+     * @return Proxy domain
      */
     public String getDomain()
     {
@@ -145,9 +158,9 @@ public class HttpProxyConfiguration
     }
     
     /**
-     * 设置代理域
+     * Set the proxy domain.
      * 
-     * @param domain 代理域
+     * @param domain Proxy domain
      */
     public void setDomain(String domain)
     {
@@ -155,8 +168,8 @@ public class HttpProxyConfiguration
     }
 
     /**
-     * 获取代理工作区
-     * @return 代理工作区
+     * Obtain the proxy workstation.
+     * @return Proxy workstation
      */
     public String getWorkstation()
     {
@@ -164,8 +177,8 @@ public class HttpProxyConfiguration
     }
 
     /**
-     * 设置代理工作区
-     * @param workstation 代理工作区
+     * Set the proxy workstation.
+     * @param workstation Workstation where the proxy is resides
      */
     public void setWorkstation(String workstation)
     {

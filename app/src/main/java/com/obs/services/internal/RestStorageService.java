@@ -1,3 +1,16 @@
+/**
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.internal;
 
 import java.io.IOException;
@@ -178,6 +191,7 @@ public abstract class RestStorageService {
 			serviceException.setResponseCode(response.code());
 			serviceException.setResponseStatus(response.message());
 			serviceException.setResponseDate(response.header(CommonHeaders.DATE));
+			serviceException.setErrorIndicator(response.header(CommonHeaders.X_RESERVED_INDICATOR));
 			serviceException
 			.setResponseHeaders(ServiceUtils.cleanRestMetadataMapV2(convertHeadersToMap(response.headers()),
 					getRestHeaderPrefix(), getRestMetadataPrefix()));
@@ -199,6 +213,22 @@ public abstract class RestStorageService {
 	
 	private void performRequestAsync(final Request request, final RequestContext context, final ObsCallback<Response, ServiceException> callback) throws InterruptedException{
 		this.performRequestAsync(request, context, callback, false);
+	}
+	
+	private boolean isLocationHostOnly(String location) {
+		boolean isOnlyHost = false;
+		
+		URI uri;
+		uri = URI.create(location);
+		String path = uri.getPath();
+		
+		if (location.indexOf("?") < 0) {
+			if(path == null || path.isEmpty() || path.equals("/")) {
+				isOnlyHost = true;
+			}
+		}
+		
+		return isOnlyHost;
 	}
 	
 	private void performRequestAsync(final Request request, final RequestContext context, final ObsCallback<Response, ServiceException> callback, final boolean isOEF) throws InterruptedException {
@@ -235,7 +265,7 @@ public abstract class RestStorageService {
 						
 						if (location.indexOf("?") < 0) {
 							location = addRequestParametersToUrlPath(location, context.requestParameters, isOEF);
-						}
+						} 
 						
 						context.internalErrorCount++;
 						
@@ -252,7 +282,7 @@ public abstract class RestStorageService {
 							ServiceUtils.closeStream(response);
 						}
 						
-						if(context.doSignature) {
+						if(context.doSignature && isLocationHostOnly(location)) {
 							performRequestAsync(authorizeHttpRequest(request, context.bucketName, location), context, callback); 
 						}else {
 							Request.Builder builder = request.newBuilder();
@@ -536,8 +566,9 @@ public abstract class RestStorageService {
 							}
 						}catch (IOException e) {
 						}
-						OefExceptionMessage oefException = (OefExceptionMessage) JSONChange.jsonToObj(new OefExceptionMessage(), xmlMessage);
-						ServiceException exception = new ServiceException("Request Error." + xmlMessage);
+						
+						OefExceptionMessage oefException = (OefExceptionMessage) JSONChange.jsonToObj(new OefExceptionMessage(), ServiceUtils.toValid(xmlMessage));
+						ServiceException exception = new ServiceException("Request Error." + ServiceUtils.toValid(xmlMessage));
 						exception.setErrorMessage(oefException.getMessage());
 						exception.setErrorCode(oefException.getCode());
 						exception.setErrorRequestId(oefException.getRequest_id());
@@ -571,12 +602,12 @@ public abstract class RestStorageService {
 									"|" + responseCode + "|" + response.message() + "|");
 							throw exception;
 						}
-
+						
 						if (location.indexOf("?") < 0) {
 							location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
-						}
+						} 
 
-						if (doSignature) {
+						if (doSignature && isLocationHostOnly(location)) {
 							request = authorizeHttpRequest(request, bucketName, location);
 						}else {
 							Request.Builder builder = request.newBuilder();
@@ -783,6 +814,16 @@ public abstract class RestStorageService {
 			Map<String, String> requestHeaders) throws ServiceException {
 		return this.performRestGet(bucketName, objectKey, requestParameters, requestHeaders, false);
 	}
+	
+	protected Response performRestGetForListBuckets(String bucketName, String objectKey, Map<String, String> requestParameters,
+			Map<String, String> requestHeaders) throws ServiceException {
+
+		//no bucket name required for listBuckets
+		Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null, false, true);
+
+		addRequestHeadersToConnection(builder, requestHeaders);
+		return performRequest(builder.build(), requestParameters, bucketName, true, false);
+	}
 
 	protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
 			Map<String, String> requestHeaders, boolean isOEF) throws ServiceException {
@@ -892,7 +933,7 @@ public abstract class RestStorageService {
 	protected Response performRestForApiVersion(String bucketName, String objectKey, Map<String, String> requestParameters,
 	                                            Map<String, String> requestHeaders) throws ServiceException {
 
-		Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null);
+		Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null, false, true);
 
 		addRequestHeadersToConnection(builder, requestHeaders);
 
@@ -989,11 +1030,16 @@ public abstract class RestStorageService {
 	
 	protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
 			Map<String, String> requestParameters, RequestBody body, boolean isOEF) throws ServiceException {
+		return this.setupConnection(method, bucketName, objectKey, requestParameters, body, isOEF, false);
+	}
+	
+	protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
+			Map<String, String> requestParameters, RequestBody body, boolean isOEF, boolean isListBuckets) throws ServiceException {
 
 		boolean pathStyle = this.isPathStyle();
 		String endPoint = this.getEndpoint();
 		boolean isCname = this.isCname();
-		String hostname = isCname ? endPoint : ServiceUtils.generateHostnameForBucket(RestUtils.encodeUrlString(bucketName),
+		String hostname = (isCname || isListBuckets) ? endPoint : ServiceUtils.generateHostnameForBucket(RestUtils.encodeUrlString(bucketName),
 				pathStyle, endPoint);
 		String resourceString = "/";
 		if (hostname.equals(endPoint) && !isCname && bucketName.length() > 0 )

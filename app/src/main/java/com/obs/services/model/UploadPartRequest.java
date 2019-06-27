@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model;
 
 import java.io.File;
@@ -6,7 +19,7 @@ import java.io.InputStream;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * 上传段的请求参数
+ * Parameters in a part upload request
  * 
  */
 public class UploadPartRequest
@@ -44,9 +57,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 分段上传任务所属的桶名
-     * @param objectKey 分段上传任务所属的对象名
+     * Constructor
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey Name of the object involved in the multipart upload
      */
     public UploadPartRequest(String bucketName, String objectKey)
     {
@@ -55,11 +68,11 @@ public class UploadPartRequest
     }
     
     /**
-     * 构造函数
+     * Constructor
      * 
-     * @param bucketName 分段上传任务所属的桶名
-     * @param objectKey 分段上传任务所属的对象名
-     * @param fileName 待上传的文件名
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey Name of the object involved in the multipart upload
+     * @param fileName File name to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, String fileName)
     {
@@ -69,11 +82,11 @@ public class UploadPartRequest
     }
     
     /**
-     * 构造函数
+     * Constructor
      * 
-     * @param bucketName 分段上传任务所属的桶名
-     * @param objectKey 分段上传任务所属的对象名
-     * @param file 待上传的文件
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey Name of the object involved in the multipart upload
+     * @param file File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, File file)
     {
@@ -83,11 +96,11 @@ public class UploadPartRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 分段上传任务所属的桶名
-     * @param objectKey 分段上传任务所属的对象名
-     * @param partSize 分段大小，单位：字节
-     * @param input 待上传的数据流
+     * Constructor
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey Name of the object involved in the multipart upload
+     * @param partSize Part size (in bytes)
+     * @param input Data stream to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, InputStream input)
     {
@@ -98,12 +111,12 @@ public class UploadPartRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 分段上传任务所属的桶名
-     * @param objectKey 分段上传任务所属的对象名
-     * @param partSize 分段大小，单位：字节
-     * @param offset 分段在本地文件中的起始位置，单位：字节，默认为0
-     * @param file 待上传的文件
+     * Constructor
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey Name of the object involved in the multipart upload
+     * @param partSize Part size (in bytes)
+     * @param offset Offset of the part in the file. The default value is 0 (in bytes).
+     * @param file File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, long offset, File file)
     {
@@ -115,9 +128,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取SSE-C加密方式头域信息
+     * Obtain SSE-C encryption headers.
      * 
-     * @return SSE-C加密方式头域信息
+     * @return SSE-C encryption headers
      */
     public SseCHeader getSseCHeader()
     {
@@ -125,9 +138,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置SSE-C加密方式头域信息
+     * Set SSE-C encryption headers.
      * 
-     * @param sseCHeader SSE-C加密方式头域信息
+     * @param sseCHeader SSE-C encryption headers
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -135,9 +148,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段在本地文件中的起始位置，单位：字节，默认为0
+     * Obtain the offset of the part in the file. The default value is 0 (in bytes).
      * 
-     * @return 分段在本地文件中的起始位置
+     * @return Offset of the part in the file
      */
     public long getOffset()
     {
@@ -145,9 +158,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段在本地文件中的起始位置，仅在设置了本地上传文件路径时有效，单位：字节，默认为0
+     * Set the start position of the to-be-uploaded content in the file. This parameter is effective only when the path where the file is to be uploaded is configured. The unit is byte and the default value is 0.
      * 
-     * @param offset 分段在本地文件中的起始位置
+     * @param offset Offset of the part in the file
      */
     public void setOffset(long offset)
     {
@@ -155,9 +168,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段号
+     * Obtain the part number.
      * 
-     * @return 分段号
+     * @return Part number
      */
     public int getPartNumber()
     {
@@ -165,9 +178,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段号
+     * Set the part number.
      * 
-     * @param partNumber 分段号
+     * @param partNumber Part number
      */
     public void setPartNumber(int partNumber)
     {
@@ -175,9 +188,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段上传任务的ID号
+     * Obtain the multipart upload ID.
      * 
-     * @return 分段上传任务的ID号
+     * @return Multipart upload ID
      */
     public String getUploadId()
     {
@@ -185,9 +198,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段上传任务的ID号
+     * Set the multipart upload ID.
      * 
-     * @param uploadId 分段上传任务的ID号
+     * @param uploadId Multipart upload ID
      */
     public void setUploadId(String uploadId)
     {
@@ -195,9 +208,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段上传任务所属的桶名
+     * Obtain the name of the bucket to which the multipart upload belongs.
      * 
-     * @return 分段上传任务所属的桶名
+     * @return Name of the bucket to which the multipart upload belongs
      */
     public String getBucketName()
     {
@@ -205,9 +218,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段上传任务所属的桶名
+     * Set the name for the bucket to which the multipart upload belongs.
      * 
-     * @param bucketName 分段上传任务所属的桶名
+     * @param bucketName Name of the bucket to which the multipart upload belongs
      */
     public void setBucketName(String bucketName)
     {
@@ -215,9 +228,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段上传任务所属的对象名
+     * Obtain the name of the object involved in the multipart upload.
      * 
-     * @return 分段上传任务所属的对象名
+     * @return Name of the object involved in the multipart upload
      */
     public String getObjectKey()
     {
@@ -225,9 +238,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段上传任务所属的对象名
+     * Set the name for the object involved in the multipart upload.
      * 
-     * @param objectKey 分段上传任务所属的对象名
+     * @param objectKey Name of the object involved in the multipart upload
      */
     public void setObjectKey(String objectKey)
     {
@@ -235,9 +248,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置分段大小，单位：字节
+     * Set the part size (in bytes). 
      * 
-     * @param partSize 分段大小
+     * @param partSize Part size
      */
     public void setPartSize(Long partSize)
     {
@@ -245,9 +258,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取分段大小，单位：字节
+     * Obtain the part size, in bytes.
      * 
-     * @return 分段大小
+     * @return Part size
      */
     public Long getPartSize()
     {
@@ -255,9 +268,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取待上传的文件，不可与待上传的数据流一起使用
+     * Obtain the file to be uploaded, which cannot be used with the data stream.
      * 
-     * @return 待上传的文件
+     * @return File to be uploaded
      */
     public File getFile()
     {
@@ -265,9 +278,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置待上传的文件，不可与待上传的数据流一起使用
+     * Set the file to be uploaded, which cannot be used with the data stream.
      * 
-     * @param file 待上传的文件
+     * @param file File to be uploaded
      */
     public void setFile(File file)
     {
@@ -276,9 +289,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取待上传的数据流，不可与待上传的文件一起使用
+     * Obtain the data stream to be uploaded, which cannot be used with the file to be uploaded.
      * 
-     * @return 待上传的数据流
+     * @return Data stream to be uploaded
      */
     public InputStream getInput()
     {
@@ -286,9 +299,9 @@ public class UploadPartRequest
     }
     
     /**
-     * 设置待上传的数据流，不可与待上传的文件一起使用
+     * Set the data stream to be uploaded, which cannot be used with the file to be uploaded.
      * 
-     * @param input 待上传的数据流
+     * @param input Data stream to be uploaded
      */
     public void setInput(InputStream input)
     {
@@ -297,8 +310,8 @@ public class UploadPartRequest
     }
     
     /**
-     * 判断是否自动计算待上传数据的MD5值，当设置了MD5值忽略该参数
-     * @return 是否计算待上传数据的MD5值标识
+     * Check whether the MD5 value of the data to be uploaded will be automatically calculated. If the MD5 value is set, this parameter can be ignored. 
+     * @return Identifier specifying whether to automatically calculate the MD5 value of the data to be uploaded
      */
     public boolean isAttachMd5()
     {
@@ -306,8 +319,8 @@ public class UploadPartRequest
     }
 
     /**
-     * 设置是否自动计算待上传数据的MD5值，当设置了MD5值忽略该参数
-     * @param attachMd5 是否计算待上传数据的MD5值标识
+     * Specify whether to automatically calculate the MD5 value of the data to be uploaded. If the MD5 value is set, this parameter can be ignored. 
+     * @param attachMd5 Identifier specifying whether to automatically calculate the MD5 value of the data to be uploaded
      */
     public void setAttachMd5(boolean attachMd5)
     {
@@ -315,8 +328,8 @@ public class UploadPartRequest
     }
 
     /**
-     * 设置待上传数据的MD5值
-     * @return 待上传数据的MD5值
+     * Set the MD5 value of the data to be uploaded. 
+     * @return MD5 value of the data to be uploaded
      */
     public String getContentMd5()
     {
@@ -324,8 +337,8 @@ public class UploadPartRequest
     }
 
     /**
-     * 获取待上传数据的MD5值
-     * @param contentMd5 待上传数据的MD5值
+     * Obtain the MD5 value of the data to be uploaded.
+     * @param contentMd5 MD5 value of the data to be uploaded
      */
     public void setContentMd5(String contentMd5)
     {
@@ -333,49 +346,37 @@ public class UploadPartRequest
     }
     
     /**
-     * 获取是否自动关闭输入流标识，默认为true
-     * @return 是否自动关闭输入流标识
+     * Check whether the input stream will be automatically closed. The default value is "true".
+     * @return Identifier specifying whether the input stream will be automatically closed
      */
     public boolean isAutoClose() {
 		return autoClose;
 	}
 
     /**
-     * 设置是否自动关闭输入流标识，默认为true
-     * @param autoClose 是否自动关闭输入流标识
+     * Specify whether to automatically close the input stream. The default value is "true".
+     * @param autoClose Identifier specifying whether the input stream will be automatically closed
      */
 	public void setAutoClose(boolean autoClose) {
 		this.autoClose = autoClose;
 	}
 	
-	/**
-	 * 获取数据传输监听器
-	 * @return 数据传输监听器
-	 */
+
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
-	/**
-	 * 设置数据传输监听器
-	 * @param progressListener 数据传输监听器
-	 */
+
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
-	/**
-	 * 获取数据传输监听器回调的阈值，默认为100KB
-	 * @return 数据传输监听器回调的阈值
-	 */
+
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
-	/**
-	 * 设置数据传输监听器回调的阈值，默认为100KB
-	 * @param progressInterval 数据传输监听器回调的阈值
-	 */
+
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
 	}

@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 所有请求重定向的配置
+ * Redirection configuration for all requests
  */
 public class RedirectAllRequest
 {
@@ -10,8 +24,8 @@ public class RedirectAllRequest
     private String hostName;
     
     /**
-     * 获取重定向请求时使用的协议
-     * @return 重定向请求时使用的协议
+     * Obtain the protocol used for redirecting requests.
+     * @return Protocol used for redirecting requests
      * @see #getRedirectProtocol()
      */
     @Deprecated
@@ -21,8 +35,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * 设置重定向请求时使用的协议
-     * @param protocol 重定向请求时使用的协议
+     * Set the protocol used for redirecting requests.
+     * @param protocol Protocol used for redirecting requests
      * @see #setRedirectProtocol(ProtocolEnum protocol)
      */
     @Deprecated
@@ -32,8 +46,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * 获取重定向请求时使用的协议
-     * @return 重定向请求时使用的协议
+     * Obtain the protocol used for redirecting requests.
+     * @return Protocol used for redirecting requests
      */
     public ProtocolEnum getRedirectProtocol()
     {
@@ -41,8 +55,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * 设置重定向请求时使用的协议
-     * @param protocol 重定向请求时使用的协议
+     * Set the protocol used for redirecting requests.
+     * @param protocol Protocol used for redirecting requests
      */
     public void setRedirectProtocol(ProtocolEnum protocol)
     {
@@ -50,8 +64,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * 获取重定向请求时使用的主机名
-     * @return 重定向请求时使用的主机名
+     * Obtain the host name used for redirecting requests.
+     * @return Host name used for redirecting requests
      */
     public String getHostName()
     {
@@ -59,8 +73,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * 设置重定向请求时使用的主机名
-     * @param hostName 重定向请求时使用的主机名
+     * Set the host name used for redirecting requests.
+     * @param hostName Host name used for redirecting requests
      */
     public void setHostName(String hostName)
     {
@@ -74,3 +88,5 @@ public class RedirectAllRequest
     }
     
 }
+
+

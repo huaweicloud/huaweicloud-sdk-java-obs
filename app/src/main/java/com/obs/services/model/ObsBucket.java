@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -5,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * OBS中的桶
+ * Buckets in OBS
  * 
  */
 public class ObsBucket extends S3Bucket	
@@ -16,9 +30,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param location 桶的区域位置
+     * Constructor
+     * @param bucketName Bucket name
+     * @param location Bucket location
      */
     public ObsBucket(String bucketName, String location){
         this.bucketName = bucketName;
@@ -27,9 +41,9 @@ public class ObsBucket extends S3Bucket
     
     
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -37,9 +51,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶名
-     * 只能包含小写字母、数字、 "-"、 "."
-     * @param bucketName 桶名
+     * Set the bucket name.
+     * The value can contain only lowercase letters, digits, hyphens (-), and periods (.).
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -47,9 +61,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 获取桶的所有者
+     * Obtain the owner of the bucket. 
      * 
-     * @return 桶的所有者
+     * @return Owner of the bucket 
      */
     public Owner getOwner()
     {
@@ -57,9 +71,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶的所有者
+     * Set the owner of the bucket. 
      * 
-     * @param bucketOwner 桶的所有者
+     * @param bucketOwner Owner of the bucket
      */
     public void setOwner(Owner bucketOwner)
     {
@@ -67,9 +81,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 获取桶的创建时间
+     Obtain the creation time of the bucket.
      * 
-     * @return 桶的创建时间
+     * @return Creation time of the bucket
      */
     public Date getCreationDate()
     {
@@ -77,9 +91,9 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶的创建时间
+     * Set the creation time of the bucket.
      * 
-     * @param bucketCreationDate 桶的创建时间
+     * @param bucketCreationDate Creation time of the bucket
      */
     public void setCreationDate(Date bucketCreationDate)
     {
@@ -87,8 +101,8 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 获取桶的属性
-     * @return 桶的属性
+     * Obtain bucket properties.
+     * @return Bucket properties
      */
     @Deprecated
     public Map<String, Object> getMetadata()
@@ -100,8 +114,8 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶的属性
-     * @param metadata 桶的属性
+     * Set bucket properties.
+     * @param metadata Bucket properties
      */
     @Deprecated
     public void setMetadata(Map<String, Object> metadata)
@@ -110,8 +124,8 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 获取桶的区域位置
-     * @return 桶的区域位置
+     * Obtain the bucket location.
+     * @return Bucket location
      */
     public String getLocation()
     {
@@ -119,18 +133,17 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶的区域位置
-     * @param location 桶的区域位置，如果使用的终端节点归属于默认区域，可以不携带此参数；如果使用的终端节点归属于其他区域，则必须携带此参数
+     * Set the bucket location.
+     * @param location Bucket location. This parameter is mandatory unless the endpoint belongs to the default region. 
      */
     public void setLocation(String location)
     {
         this.location = location;
     }
     
-    
     /**
-     * 获取桶的访问权限
-     * @return 桶的访问权限
+     * Obtain the bucket ACL.
+     * @return Bucket ACL
      */
     public AccessControlList getAcl()
     {
@@ -138,8 +151,8 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 设置桶的访问权限
-     * @param acl 桶的访问权限
+     * Set the bucket ACL.
+     * @param acl Bucket ACL
      */
     public void setAcl(AccessControlList acl)
     {
@@ -147,8 +160,8 @@ public class ObsBucket extends S3Bucket
     }
 
     /**
-     * 获取桶的存储类型
-     * @return 桶存储类型
+     * Obtain the bucket storage class. 
+     * @return Bucket storage class
      */
     @Deprecated
     public String getStorageClass()
@@ -157,8 +170,8 @@ public class ObsBucket extends S3Bucket
     }
 
     /**
-     * 设置桶的存储类型
-     * @param storageClass 桶存储类型
+     * Set the bucket storage class. 
+     * @param storageClass Bucket storage class
      */
     @Deprecated
     public void setStorageClass(String storageClass)
@@ -167,8 +180,8 @@ public class ObsBucket extends S3Bucket
     }
     
     /**
-     * 获取桶的存储类型
-     * @return 桶存储类型
+     * Obtain the bucket storage class. 
+     * @return Bucket storage class
      */
     public StorageClassEnum getBucketStorageClass()
     {
@@ -176,8 +189,8 @@ public class ObsBucket extends S3Bucket
     }
 
     /**
-     * 设置桶的存储类型
-     * @param storageClass 桶存储类型
+     * Set the bucket storage class. 
+     * @param storageClass Bucket storage class
      */
     public void setBucketStorageClass(StorageClassEnum storageClass)
     {
@@ -191,3 +204,5 @@ public class ObsBucket extends S3Bucket
             + ", storageClass=" + storageClass + ", metadata=" + metadata + ", acl=" + acl + "]";
     }
 }
+
+

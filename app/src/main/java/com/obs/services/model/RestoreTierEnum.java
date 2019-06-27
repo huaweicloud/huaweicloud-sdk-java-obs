@@ -1,20 +1,34 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 /**
- * 取回选项
+ * Restoration option
  *
  */
 public enum RestoreTierEnum {
 	/**
-	 * 快速取回，取回耗时1~5分钟
+	 * Expedited restoration, which restores an object in 1 to 5 minutes
 	 */
 	EXPEDITED("Expedited"),
 	/**
-	 * 标准取回，取回耗时3~5小时
+	 * Standard restoration, which restores the object in 3 to 5 hours
 	 */
 	STANDARD("Standard"),
 	/**
-	 * 批量取回，取回耗时5~12小时
+	 * Batch restoration, which restores objects in 5 to 12 hours
 	 */
 	@Deprecated
 	BULK("Bulk");
@@ -38,3 +52,5 @@ public enum RestoreTierEnum {
 		return null;
 	}
 }
+
+

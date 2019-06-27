@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -5,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 批量删除对象请求参数
+ * Parameters in an object batch deletion request
  */
 public class DeleteObjectsRequest
 {
@@ -20,8 +34,8 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 构造函数
-     * @param bucketName 桶名
+     * Constructor
+     * @param bucketName Bucket name
      */
     public DeleteObjectsRequest(String bucketName)
     {
@@ -30,10 +44,10 @@ public class DeleteObjectsRequest
 
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param quiet 删除响应方式，false时使用verbose模式,true时使用quiet模式
-     * @param keyAndVersions 待删除对象数组
+     * Constructor
+     * @param bucketName Bucket name
+     * @param quiet Deletion response mode. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used.
+     * @param keyAndVersions To-be-deleted object array
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions)
     {
@@ -45,9 +59,9 @@ public class DeleteObjectsRequest
 
 
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -55,9 +69,9 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 设置桶名
+     * Set the bucket name.
      * 
-     * @param bucketName 桶名
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -65,9 +79,9 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 获取批量删除对象的响应模式，false时使用verbose模式, true时使用quiet模式
+     * Obtain the response mode of the batch deletion. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used. 
      * 
-     * @return 批量删除对象的响应模式
+     * @return Response mode of the object batch deletion request
      */
     public boolean isQuiet()
     {
@@ -75,9 +89,9 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 设置批量删除对象的响应模式，false时使用verbose模式, true时使用quiet模式
+     * Set the response mode for the batch deletion. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used. 
      * 
-     * @param quiet 批量删除对象的响应模式
+     * @param quiet Response mode of the object batch deletion request
      */
     public void setQuiet(boolean quiet)
     {
@@ -85,8 +99,8 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 获取待删除对象列表
-     * @return 待删除对象列表
+     * Obtain the list of to-be-deleted objects.
+     * @return List of to-be-deleted objects
      */
     public List<KeyAndVersion> getKeyAndVersionsList(){
     	if(this.keyAndVersions == null) {
@@ -96,10 +110,10 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 新增待删除的对象
-     * @param objectKey 对象名
-     * @param versionId 对象版本号
-     * @return 新增的待删除对象
+     * Add an object to be deleted. 
+     * @param objectKey Object name
+     * @param versionId Version ID of the object
+     * @return Object newly added to the deletion list 
      */
     public KeyAndVersion addKeyAndVersion(String objectKey, String versionId)
     {
@@ -109,9 +123,9 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 新增待删除的对象
-     * @param objectKey 对象名
-     * @return 新增的待删除对象
+     * Add an object to be deleted. 
+     * @param objectKey Object name
+     * @return Object newly added to the deletion list 
      */
     public KeyAndVersion addKeyAndVersion(String objectKey)
     {
@@ -119,8 +133,8 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 获取待删除对象数组
-     * @return 待删除对象数组
+     * Obtain the to-be-deleted object array.
+     * @return To-be-deleted object array
      */
     public KeyAndVersion[] getKeyAndVersions()
     {
@@ -128,8 +142,8 @@ public class DeleteObjectsRequest
     }
     
     /**
-     * 设置待删除对象数组
-     * @param keyAndVersions 待删除对象数组
+     * Specify the to-be-deleted object array.
+     * @param keyAndVersions To-be-deleted object array
      */
     public void setKeyAndVersions(KeyAndVersion[] keyAndVersions)
     {
@@ -147,3 +161,5 @@ public class DeleteObjectsRequest
     
     
 }
+
+

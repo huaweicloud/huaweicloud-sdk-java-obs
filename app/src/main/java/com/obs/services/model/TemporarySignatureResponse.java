@@ -1,3 +1,17 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.HashMap;
@@ -5,7 +19,7 @@ import java.util.Map;
 
 /**
  * 
- * 临时授权访问的响应结果
+ * Response to a request for temporarily authorized access
  *
  */
 public class TemporarySignatureResponse
@@ -20,8 +34,8 @@ public class TemporarySignatureResponse
     }
     
     /**
-     * 获取临时授权访问的URL
-     * @return 临时授权访问的URL
+     * Obtain the URL of the temporarily authorized access.
+     * @return URL of the temporarily authorized access
      */
     public String getSignedUrl()
     {
@@ -29,8 +43,8 @@ public class TemporarySignatureResponse
     }
     
     /**
-     * 获取临时授权访问请求的头信息
-     * @return 临时授权访问请求的头信息
+     * Obtain the request headers.
+     * @return Request headers
      */
     public Map<String, String> getActualSignedRequestHeaders()
     {
@@ -49,3 +63,5 @@ public class TemporarySignatureResponse
     
     
 }
+
+

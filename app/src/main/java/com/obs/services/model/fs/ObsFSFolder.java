@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services.model.fs;
 
 import com.obs.services.ObsClient;
@@ -8,7 +21,7 @@ import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TaskProgressStatus;
 
 /**
- * 支持文件接口的桶中的文件夹
+ * Folders in a bucket that supports the file interface
  *
  */
 public class ObsFSFolder extends PutObjectResult{
@@ -21,9 +34,9 @@ public class ObsFSFolder extends PutObjectResult{
 	}
 
 	/**
-	 * 获取文件夹的属性
-	 * @return 文件夹的属性
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Obtain folder properties.
+	 * @return Folder properties
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public ObsFSAttribute attribute() throws ObsException{
 		this.checkInternalClient();
@@ -31,10 +44,10 @@ public class ObsFSFolder extends PutObjectResult{
 	}
 	
 	/**
-	 * 重命名文件夹
-	 * @param newName 新的文件夹名
-	 * @return 重命名文件夹响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Rename a folder.
+	 * @param newName New folder name
+	 * @return Response to the request for renaming a folder
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	public RenameResult rename(String newName) throws ObsException{
 		this.checkInternalClient();
@@ -42,10 +55,7 @@ public class ObsFSFolder extends PutObjectResult{
 		return this.innerClient.renameFolder(request);
 	}
 	
-	/**
-	 * 删除文件夹
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
+
 	public TaskProgressStatus dropFolder() throws ObsException {
 	    this.checkInternalClient();
 	    DropFolderRequest request = new DropFolderRequest(this.getBucketName(), this.getObjectKey());

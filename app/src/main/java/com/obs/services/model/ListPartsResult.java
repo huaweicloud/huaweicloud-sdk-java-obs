@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 列举已上传的段的响应结果
+ * Response to a request for listing uploaded parts
  */
 public class ListPartsResult extends HeaderResponse
 {
@@ -49,8 +63,8 @@ public class ListPartsResult extends HeaderResponse
 	}
 
 	/**
-     * 获取分段上传任务所属的桶名
-     * @return 分段上传任务所属的桶名
+     * Obtain the name of the bucket to which the multipart upload belongs.
+     * @return Name of the bucket to which the multipart upload belongs
      */
     public String getBucket()
     {
@@ -58,8 +72,8 @@ public class ListPartsResult extends HeaderResponse
     }
     
     /**
-     * 获取分段上传任务所属的对象名
-     * @return 分段上传任务所属的对象名
+     * Obtain the name of the object involved in the multipart upload.
+     * @return Name of the object involved in the multipart upload
      */
     public String getKey()
     {
@@ -68,8 +82,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取分段上传任务的ID号
-     * @return 分段上传任务的ID号
+     * Obtain the multipart upload ID.
+     * @return Multipart upload ID
      */
     public String getUploadId()
     {
@@ -78,8 +92,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取分段上传任务的创建者
-     * @return 分段上传任务的创建者
+     * Creator of the multipart upload
+     * @return Creator of the multipart upload
      */
     public Owner getInitiator()
     {
@@ -88,8 +102,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取分段上传任务的所有者
-     * @return 分段上传任务的所有者
+     * Query the creator of the multipart upload.
+     * @return Owner of the multipart upload
      */
     public Owner getOwner()
     {
@@ -98,8 +112,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取分段上传任务最终对象的存储类型
-     * @return 分段上传任务最终对象的存储类型
+     * Obtain the storage class of the object involved in the multipart upload.
+     * @return Storage class of the object involved in the multipart upload
      */
     @Deprecated
     public String getStorageClass()
@@ -109,8 +123,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取分段上传任务最终对象的存储类型
-     * @return 分段上传任务最终对象的存储类型
+     * Obtain the storage class of the object involved in the multipart upload.
+     * @return Storage class of the object involved in the multipart upload
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -119,8 +133,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取列出已上传段的最大条目数
-     * @return 列出已上传段的最大条目数
+     * Obtain the maximum number of uploaded parts to be listed.
+     * @return Maximum number of uploaded parts to be listed
      */
     public Integer getMaxParts()
     {
@@ -129,8 +143,8 @@ public class ListPartsResult extends HeaderResponse
     
     
     /**
-     * 获取已上传的段列表
-     * @return 已上传的段列表
+     * Obtain the list of uploaded parts.
+     * @return List of uploaded parts
      */
     public List<Multipart> getMultipartList()
     {
@@ -143,8 +157,8 @@ public class ListPartsResult extends HeaderResponse
 
 
     /**
-     * 判断查询结果列表是否被截断。true表示截断，本次没有返回全部结果；false表示未截断，本次已经返回了全部结果。
-     * @return 截断标识
+     * Check whether the query result list is truncated. Value "true" indicates that the results are incomplete while value "false" indicates that the results are complete.
+     * @return Truncation identifier
      */
     public boolean isTruncated()
     {
@@ -153,8 +167,8 @@ public class ListPartsResult extends HeaderResponse
 
 
     /**
-     * 获取请求中待列出段的起始位置
-     * @return 请求中待列出段的起始位置
+     * Obtain the start position for listing parts.
+     * @return Start position for listing parts
      */
     public String getPartNumberMarker()
     {
@@ -163,8 +177,8 @@ public class ListPartsResult extends HeaderResponse
 
 
     /**
-     * 获取下次请求的起始位置
-     * @return 下次请求的起始位置
+     * Obtain the start position for next listing.
+     * @return Start position for next listing
      */
     public String getNextPartNumberMarker()
     {
@@ -181,3 +195,5 @@ public class ListPartsResult extends HeaderResponse
     }
     
 }
+
+

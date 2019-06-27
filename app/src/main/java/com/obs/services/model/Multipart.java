@@ -1,9 +1,23 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.Date;
 
 /**
- * 分段上传任务中的段信息
+ * Part information in a multipart upload
  */
 public class Multipart extends HeaderResponse
 {
@@ -20,11 +34,11 @@ public class Multipart extends HeaderResponse
     }
     
     /**
-     * 构造函数
-     * @param partNumber 分段号
-     * @param lastModified 分段最后修改时间
-     * @param etag 分段的etag校验值
-     * @param size 分段的大小，单位：字节
+     * Constructor
+     * @param partNumber Part number
+     * @param lastModified Last modification time of the part
+     * @param etag Part ETag
+     * @param size Part size, in bytes
      */
     public Multipart(Integer partNumber, Date lastModified, String etag, Long size)
     {
@@ -35,9 +49,9 @@ public class Multipart extends HeaderResponse
     }
 
     /**
-     * 获取分段号
+     * Obtain the part number.
      * 
-     * @return 分段号
+     * @return Part number
      */
     public Integer getPartNumber()
     {
@@ -46,9 +60,9 @@ public class Multipart extends HeaderResponse
     
     
     /**
-     * 获取分段的最后修改时间
+     * Obtain the last modification time of the part.
      * 
-     * @return 分段的最后修改时间
+     * @return Last modification time of the part
      */
     public Date getLastModified()
     {
@@ -57,9 +71,9 @@ public class Multipart extends HeaderResponse
     
     
     /**
-     * 获取分段的etag校验值
+     * Obtain the ETag of the part.
      * 
-     * @return 分段的etag校验值
+     * @return Part ETag
      */
     public String getEtag()
     {
@@ -68,9 +82,9 @@ public class Multipart extends HeaderResponse
     
     
     /**
-     * 获取分段的大小，单位：字节
+     * Obtain the part size, in bytes.
      * 
-     * @return 分段的大小
+     * @return Part size
      */
     public Long getSize()
     {
@@ -84,3 +98,5 @@ public class Multipart extends HeaderResponse
         return "Multipart [partNumber=" + partNumber + ", lastModified=" + lastModified + ", etag=" + etag + ", size=" + size + "]";
     }
 }
+
+

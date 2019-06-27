@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services;
 
 
@@ -16,7 +29,7 @@ import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * 使用JDK标准日志库的日志配置类 
+ * Log configuration class that uses the standard JDK log library 
  *
  */
 public class LogConfigurator {
@@ -159,7 +172,7 @@ public class LogConfigurator {
     }
 
     /**
-     * 开启SDK日志
+     * Enable SDK logging.
      */
     public synchronized static void enableLog(){
     	if(logEnabled) {
@@ -169,15 +182,13 @@ public class LogConfigurator {
     }
 
     /**
-     * 关闭SDK日志
+     * Disable SDK logging.
      */
     protected synchronized static void disableLog(){
        logOff(logger);
     }
 
-    /**
-     * 开启SDK access日志
-     */
+
     public synchronized static void enableAccessLog()
     {
         if(accessLogEnabled)
@@ -193,8 +204,8 @@ public class LogConfigurator {
     }
 
     /**
-     * 设置日志级别
-     * @param level 日志级别
+     * Set the log level.
+     * @param level Log level
      */
     public synchronized static void setLogLevel(Level level){
         if(level != null){
@@ -203,8 +214,8 @@ public class LogConfigurator {
     }
 
     /**
-     * 设置保留日志文件的个数
-     * @param count 保留日志文件的个数
+     * Set the number of retained log files.
+     * @param count Number of retained log files
      */
     public synchronized static void setLogFileRolloverCount(int count){
         if(count > 0){
@@ -213,8 +224,8 @@ public class LogConfigurator {
     }
 
     /**
-     * 设置每个日志文件的大小，单位：字节
-     * @param fileSize 日志文件大小
+     * Set the log file size (in bytes). 
+     * @param fileSize Log file size
      */
     public synchronized static void setLogFileSize(int fileSize){
         if(fileSize >= 0){
@@ -223,8 +234,8 @@ public class LogConfigurator {
     }
 
     /**
-     * 设置日志文件存放的目录
-     * @param dir 日志文件存放的目录
+     * Set a directory for saving log files.
+     * @param dir Directory for saving log files
      */
     public synchronized static void setLogFileDir(String dir){
         if(ServiceUtils.isValid(dir)){

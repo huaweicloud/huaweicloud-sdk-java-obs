@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * OPTIONS桶或对象的请求参数
+ * Parameters in a bucket or object preflight request
  * 
  */
 public class OptionsInfoRequest
@@ -16,9 +30,9 @@ public class OptionsInfoRequest
     private List<String> requestHeaders;
     
     /**
-     * 获取预请求的来源
+     * Obtain the origin of the preflight request.
      * 
-     * @return 预请求的来源
+     * @return Origin of the preflight request
      */
     public String getOrigin()
     {
@@ -26,9 +40,9 @@ public class OptionsInfoRequest
     }
     
     /**
-     * 设置预请求的来源
+     * Set the origin of the preflight request.
      * 
-     * @param origin 预请求的来源
+     * @param origin Origin of the preflight request
      */
     public void setOrigin(String origin)
     {
@@ -36,9 +50,9 @@ public class OptionsInfoRequest
     }
     
     /**
-     * 获取允许的跨域请求方法列表
+     * Obtain the list of allowed cross-origin request methods.
      * 
-     * @return 允许的跨域请求方法列表
+     * @return List of allowed cross-origin request methods
      */
     public List<String> getRequestMethod()
     {
@@ -49,9 +63,9 @@ public class OptionsInfoRequest
     }
     
     /**
-     * 设置允许的跨域请求方法列表
+     * Set the list of allowed cross-origin request methods.
      * 
-     * @param requestMethod 允许的跨域请求方法列表
+     * @param requestMethod List of allowed cross-origin request methods
      */
     public void setRequestMethod(List<String> requestMethod)
     {
@@ -59,9 +73,9 @@ public class OptionsInfoRequest
     }
     
     /**
-     * 获取允许携带的请求头域列表
+     * Obtain the list of allowed request headers.
      * 
-     * @return 允许携带的请求头域列表
+     * @return List of allowed request headers
      */
     public List<String> getRequestHeaders()
     {
@@ -72,9 +86,9 @@ public class OptionsInfoRequest
     }
     
     /**
-     * 设置允许携带的请求头域列表
+     * Set the list of allowed request headers.
      * 
-     * @param requestHeaders 允许携带的请求头域列表
+     * @param requestHeaders List of allowed request headers
      */
     public void setRequestHeaders(List<String> requestHeaders)
     {
@@ -88,3 +102,5 @@ public class OptionsInfoRequest
     }
     
 }
+
+

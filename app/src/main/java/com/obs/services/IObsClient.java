@@ -1,3 +1,16 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
 package com.obs.services;
 
 import java.io.File;
@@ -11,6 +24,7 @@ import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
@@ -58,6 +72,10 @@ import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
+import com.obs.services.model.PutObjectsRequest;
+import com.obs.services.model.ReadAheadQueryResult;
+import com.obs.services.model.ReadAheadRequest;
+import com.obs.services.model.ReadAheadResult;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
@@ -70,430 +88,431 @@ import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.UploadFileRequest;
 import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
+import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
 
 /**
- * OBS基础接口
+ * Basic OBS interface
  */
 public interface IObsClient {
 
 	/**
 	 * 
-	 * 刷新临时访问密钥
+	 * Refresh the temporary access key.
 	 * 
 	 * @param accessKey
-	 *            临时访问密钥中的AK
+	 *            AK in the temporary access key
 	 * @param secretKey
-	 *            临时访问密钥中的SK
+	 *            SK in the temporary access key
 	 * @param securityToken
-	 *            安全令牌
+	 *            Security token
 	 * 
 	 */
 	void refresh(String accessKey, String secretKey, String securityToken);
 
 	/**
-	 * 生成临时授权访问参数
+	 * Generate temporarily authorized access parameters.
 	 * 
 	 * @param request
-	 *            临时授权访问的请求参数
-	 * @return 临时授权访问的响应结果
+	 *            Parameters in a request for temporarily authorized access
+	 * @return Response to the request for temporarily authorized access
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	TemporarySignatureResponse createTemporarySignature(TemporarySignatureRequest request);
 
 	/**
-	 * 生成基于浏览器表单的授权访问参数
+	 * Generate parameters for browser-based authorized access.
 	 * 
 	 * @param request
-	 *            基于V4的浏览器表单授权访问请求参数
-	 * @return 基于V4的浏览器表单授权访问的响应结果
+	 *            Request parameters for V4 browser-based authorized access
+	 * @return Response to the V4 browser-based authorized access
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PostSignatureResponse createPostSignature(PostSignatureRequest request) throws ObsException;
 
 	/**
-	 * 创建桶 <br>
+	 * Create a bucket. <br>
 	 * <p>
-	 * <b>桶命名规范：</b>
+	 * <b>Bucket naming rules: </b>
 	 * </p>
 	 * <ul>
-	 * <li>只能包含小写字母、数字、"-"、"."。
-	 * <li>只能以数字或字母开头。
-	 * <li>长度要求不少于3个字符，并且不能超过63个字符。
-	 * <li>不能是IP地址。
-	 * <li>不能以"-"结尾。
-	 * <li>不可以包括有两个相邻的"."。
-	 * <li>"."和"-"不能相邻，如"my-.bucket"和"my.-bucket "都是非法的。
+	 * <li>Contain only lowercase letters, digits, hyphens (-), and periods (.).
+	 * <li>Must start with a digit or a letter.
+	 * <li>Contain 3 to 63 characters.
+	 * <li>Cannot be an IP address.
+	 * <li>Cannot end with a hyphen (-).
+	 * <li>Cannot contain two consecutive periods (..).
+	 * <li>Cannot contain periods (.) and hyphens (-) adjacent to each other, for example, "my-.bucket" and "my.-bucket".
 	 * </ul>
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶信息
+	 *            Bucket name
+	 * @return Bucket information
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsBucket createBucket(String bucketName) throws ObsException;
 
 	/**
-	 * 创建桶 <br>
-	 * 按照用户指定的桶名和指定的区域创建一个新桶。
+	 * Create a bucket. <br>
+	 * Create a bucket of a specific name in the given region. 
 	 * <p>
-	 * <b>桶命名规范：</b>
+	 * <b>Bucket naming rules: </b>
 	 * </p>
 	 * <ul>
-	 * <li>只能包含小写字母、数字、"-"、"."。
-	 * <li>只能以数字或字母开头。
-	 * <li>长度要求不少于3个字符，并且不能超过63个字符。
-	 * <li>不能是IP地址。
-	 * <li>不能以"-"结尾。
-	 * <li>不可以包括有两个相邻的"."。
-	 * <li>"."和"-"不能相邻，如"my-.bucket"和"my.-bucket "都是非法的。
+	 * <li>Contain only lowercase letters, digits, hyphens (-), and periods (.).
+	 * <li>Must start with a digit or a letter.
+	 * <li>Contain 3 to 63 characters.
+	 * <li>Cannot be an IP address.s
+	 * <li>Cannot end with a hyphen (-).
+	 * <li>Cannot contain two consecutive periods (..).
+	 * <li>Cannot contain periods (.) and hyphens (-) adjacent to each other, for example, "my-.bucket" and "my.-bucket".
 	 * </ul>
 	 * 
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param location
-	 *            创建桶的区域， 如果使用的终端节点归属于默认区域，可以不携带此参数；如果使用的终端节点归属于其他区域，则必须携带此参数
-	 * @return 桶信息
+	 *            Bucket location. This parameter is mandatory unless the endpoint belongs to the default region. 
+	 * @return Bucket information
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsBucket createBucket(String bucketName, String location) throws ObsException;
 
 	/**
-	 * 创建桶<br>
-	 * 按照用户指定的桶名和指定的区域创建一个新桶。
+	 * Create a bucket. <br>
+	 * Create a bucket of a specific name in the given region. 
 	 * <p>
-	 * <b>桶命名规范：</b>
+	 * <b>Bucket naming rules: </b>
 	 * </p>
 	 * <ul>
-	 * <li>只能包含小写字母、数字、"-"、"."。
-	 * <li>只能以数字或字母开头。
-	 * <li>长度要求不少于3个字符，并且不能超过63个字符。
-	 * <li>不能是IP地址。
-	 * <li>不能以"-"结尾。
-	 * <li>不可以包括有两个相邻的"."。
-	 * <li>"."和"-"不能相邻，如"my-.bucket"和"my.-bucket "都是非法的。
+	 * <li>Contain only lowercase letters, digits, hyphens (-), and periods (.).
+	 * <li>Must start with a digit or a letter.
+	 * <li>Contain 3 to 63 characters.
+	 * <li>Cannot be an IP address.
+	 * <li>Cannot end with a hyphen (-).
+	 * <li>Cannot contain two consecutive periods (..).
+	 * <li>Cannot contain periods (.) and hyphens (-) adjacent to each other, for example, "my-.bucket" and "my.-bucket".
 	 * </ul>
 	 * 
 	 * @param bucket
-	 *            桶信息，包含请求参数
-	 * @return 桶信息
+	 *            Bucket information, including the request parameters
+	 * @return Bucket information
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsBucket createBucket(ObsBucket bucket) throws ObsException;
 
 	/**
-	 * 创建桶<br>
+	 * Create a bucket. <br>
 	 * <p>
-	 * <b>桶命名规范：</b>
+	 * <b>Bucket naming rules: </b>
 	 * </p>
 	 * <ul>
-	 * <li>只能包含小写字母、数字、"-"、"."。
-	 * <li>只能以数字或字母开头。
-	 * <li>长度要求不少于3个字符，并且不能超过63个字符。
-	 * <li>不能是IP地址。
-	 * <li>不能以"-"结尾。
-	 * <li>不可以包括有两个相邻的"."。
-	 * <li>"."和"-"不能相邻，如"my-.bucket"和"my.-bucket "都是非法的。
+	 * <li>Contain only lowercase letters, digits, hyphens (-), and periods (.).
+	 * <li>Must start with a digit or a letter.
+	 * <li>Contain 3 to 63 characters.
+	 * <li>Cannot be an IP address.
+	 * <li>Cannot end with a hyphen (-).
+	 * <li>Cannot contain two consecutive periods (..).
+	 * <li>Cannot contain periods (.) and hyphens (-) adjacent to each other, for example, "my-.bucket" and "my.-bucket".
 	 * </ul>
 	 * 
 	 * @param request
-	 *            创建桶请求参数
-	 * @return 桶信息
+	 *            Request parameters for creating a bucket
+	 * @return Bucket information
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 * 
 	 */
 	ObsBucket createBucket(CreateBucketRequest request) throws ObsException;
 
 	/**
-	 * 获取桶列表
+	 * Obtain the bucket list.
 	 * 
 	 * @param request
-	 *            获取桶列表请求参数
-	 * @return 桶列表
+	 *            Obtain the request parameters for obtaining the bucket list.
+	 * @return Bucket list
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	List<ObsBucket> listBuckets(ListBucketsRequest request) throws ObsException;
 
 	/**
-	 * 获取桶列表
+	 * Obtain the bucket list.
 	 * 
 	 * @param request
-	 *            获取桶列表请求参数
-	 * @return 获取桶列表响应结果
+	 *            Obtain the request parameters for obtaining the bucket list.
+	 * @return Response to the request for obtaining the bucket list
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListBucketsResult listBucketsV2(ListBucketsRequest request) throws ObsException;
 
 	/**
-	 * 删除桶
+	 * Delete a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucket(String bucketName) throws ObsException;
 
 	/**
-	 * 列举桶内的对象
+	 * List objects in the bucket.
 	 * 
 	 * @param request
-	 *            列举桶内对象请求参数
-	 * @return 列举桶内对象响应结果
+	 *            Request parameters for listing objects in a bucket
+	 * @return Response to the request for listing objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectListing listObjects(ListObjectsRequest request) throws ObsException;
 
 	/**
-	 * 列举桶内的对象
+	 * List objects in the bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 列举桶内对象响应结果
+	 *            Bucket name
+	 * @return Response to the request for listing objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectListing listObjects(String bucketName) throws ObsException;
 
 	/**
-	 * 判断桶是否存在
+	 * Identify whether a bucket exists.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶是否存在标识
+	 *            Bucket name
+	 * @return Identifier indicating whether the bucket exists
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	boolean headBucket(String bucketName) throws ObsException;
 
 	/**
-	 * 列举桶内多版本对象
+	 * List versioning objects in a bucket.
 	 * 
 	 * @param request
-	 *            列举桶内多版本对象请求参数
-	 * @return 列举桶内多版本对象响应结果
+	 *            Request parameters for listing versioning objects in the bucket
+	 * @return Response to the request for listing versioning objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListVersionsResult listVersions(ListVersionsRequest request) throws ObsException;
 
 	/**
-	 * 列举桶内多版本对象
+	 * List versioning objects in a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 列举桶内多版本对象响应结果
+	 *            Bucket name
+	 * @return Response to the request for listing versioning objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListVersionsResult listVersions(String bucketName) throws ObsException;
 
 	/**
-	 * 列举桶内多版本对象
+	 * List versioning objects in a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param maxKeys
-	 *            列举多版本对象的最大条目数
-	 * @return 列举桶内多版本对象响应结果
+	 *            Maximum number of versioning objects to be listed
+	 * @return Response to the request for listing versioning objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListVersionsResult listVersions(String bucketName, long maxKeys) throws ObsException;
 
 	/**
-	 * 列举桶内多版本对象
+	 * List versioning objects in a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param prefix
-	 *            列举多版本对象时的对象名前缀
+	 *            Object name prefix used for listing versioning objects
 	 * @param delimiter
-	 *            对象名进行分组的字符
+	 *            Character for grouping object names
 	 * @param keyMarker
-	 *            列举多版本对象的起始位置（按对象名排序）
+	 *            Start position for listing versioning objects (sorted by object name)
 	 * @param versionIdMarker
-	 *            列举多版本对象的起始位置（按对象版本号排序）
+	 *            Start position for listing versioning objects (sorted by version ID)
 	 * @param maxKeys
-	 *            列举多版本对象的最大条目数
-	 * @return 列举桶内多版本对象响应结果
+	 *            Maximum number of versioning objects to be listed
+	 * @return Response to the request for listing versioning objects in the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListVersionsResult listVersions(String bucketName, String prefix, String delimiter, String keyMarker,
 			String versionIdMarker, long maxKeys) throws ObsException;
 
 	/**
-	 * 获取桶元数据
+	 * Obtain bucket metadata.
 	 * 
 	 * @param request
-	 *            获取桶元数据的请求参数
-	 * @return 获取桶元数据的响应结果
+	 *            Request parameters for obtaining bucket metadata
+	 * @return Response to the request for obtaining bucket metadata
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketMetadataInfoResult getBucketMetadata(BucketMetadataInfoRequest request) throws ObsException;
 
 	/**
-	 * 获取桶访问权限
+	 * Obtain a bucket ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的访问权限
+	 *            Bucket name
+	 * @return Bucket ACL
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	AccessControlList getBucketAcl(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶的访问权限<br>
+	 * Set a bucket ACL. <br>
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param acl
-	 *            访问权限
-	 * @return 公共响应头信息
+	 *            ACL
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketAcl(String bucketName, AccessControlList acl) throws ObsException;
 
 	/**
-	 * 获取桶区域位置
+	 * Obtain the bucket location.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的区域位置
+	 *            Bucket name
+	 * @return Bucket location
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	String getBucketLocation(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶区域位置
+	 * Obtain the bucket location.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 获取桶区域位置的响应结果
+	 *            Bucket name
+	 * @return Response to the request for obtaining the bucket location
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketLocationResponse getBucketLocationV2(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶的存量信息
+	 * Obtain bucket storage information.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的存量信息
+	 *            Bucket name
+	 * @return Bcket storage information
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketStorageInfo getBucketStorageInfo(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶配额
+	 * Obtain the bucket quota.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶配额
+	 *            Bucket name
+	 * @return Bucket quota
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketQuota getBucketQuota(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶配额
+	 * Set the bucket quota.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param bucketQuota
-	 *            桶配额
+	 *            Bucket quota
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 * @return 公共响应头信息
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * @return Common response headers
 	 */
 	HeaderResponse setBucketQuota(String bucketName, BucketQuota bucketQuota) throws ObsException;
 
 	/**
-	 * 获取桶存储类型
+	 * Obtain the bucket storage class. 
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的存储策略
+	 *            Bucket name
+	 * @return Bucket storage policy
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketStoragePolicyConfiguration getBucketStoragePolicy(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶存储类型
+	 * Set the bucket storage class. 
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param bucketStorage
-	 *            桶的存储策略
-	 * @return 公共响应头信息
+	 *            Bucket storage policy
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketStoragePolicy(String bucketName, BucketStoragePolicyConfiguration bucketStorage)
 			throws ObsException;
 
 	/**
-	 * 设置桶的跨域资源共享（CORS）配置
+	 * Configure the bucket CORS.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param bucketCors
-	 *            CORS配置
-	 * @return 公共响应头信息
+	 *            CORS rules
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketCors(String bucketName, BucketCors bucketCors) throws ObsException;
 
 	/**
-	 * 获取桶的跨域资源共享（CORS）配置
+	 * Obtain the bucket CORS rules.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的CORS配置
+	 *            Bucket name
+	 * @return Bucket CORS rules
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketCors getBucketCors(String bucketName) throws ObsException;
 
 	/**
-	 * 删除桶的跨域资源共享（CORS）配置
+	 * Delete the bucket CORS rules.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketCors(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶的日志管理配置
+	 * Obtain the logging settings of a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的日志管理配置
+	 *            Bucket name
+	 * @return Logging settings of the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketLoggingConfiguration getBucketLogging(String bucketName) throws ObsException;
 
@@ -501,771 +520,743 @@ public interface IObsClient {
 			boolean updateTargetACLifRequired) throws ObsException;
 
 	/**
-	 * 设置桶的日志管理配置<br>
+	 * Configure logging for a bucket.<br>
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param loggingConfiguration
-	 *            日志管理配置
-	 * @return 公共响应头信息
+	 *            Logging settings
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketLogging(String bucketName, BucketLoggingConfiguration loggingConfiguration)
 			throws ObsException;
 
 	/**
-	 * 设置桶的多版本状态
+	 * Set the versioning status for a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param versioningConfiguration
-	 *            桶的多版本状态配置
-	 * @return 公共响应头信息
+	 *            Versioning status of the bucket
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketVersioning(String bucketName, BucketVersioningConfiguration versioningConfiguration)
 			throws ObsException;
 
 	/**
-	 * 获取桶的多版本状态
+	 * Obtain the versioning status for a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的多版本状态配置
+	 *            Bucket name
+	 * @return Versioning status of the bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketVersioningConfiguration getBucketVersioning(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶的生命周期配置
+	 * Obtain the bucket lifecycle rules.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的生命周期配置
+	 *            Bucket name
+	 * @return Bucket lifecycle rules
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	LifecycleConfiguration getBucketLifecycle(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶的生命周期配置
+	 * Set the bucket lifecycle rules.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param lifecycleConfig
-	 *            桶的生命周期配置
-	 * @return 公共响应头信息
+	 *            Bucket lifecycle rules
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketLifecycle(String bucketName, LifecycleConfiguration lifecycleConfig) throws ObsException;
 
 	/**
-	 * 删除桶的生命周期配置
+	 * Delete the bucket lifecycle rules from a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketLifecycle(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶策略
+	 * Obtain bucket policies. 
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶策略，JSON格式字符串
+	 *            Bucket name
+	 * @return Bucket policy, in the JSON format
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	String getBucketPolicy(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶策略<br>
+	 * Obtain bucket policies. <br>
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 获取桶策略的响应结果
+	 *            Bucket name
+	 * @return Response to a request for obtaining bucket policies
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketPolicyResponse getBucketPolicyV2(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶策略
+	 * Set bucket policies.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param policy
-	 *            桶策略，JSON格式字符串
-	 * @return 公共响应头信息
+	 *            Bucket policy, in the JSON format
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketPolicy(String bucketName, String policy) throws ObsException;
 
 	/**
-	 * 删除桶策略
+	 * Delete bucket policies.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketPolicy(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶的website（托管）配置
+	 * Obtain the website hosting configuration of a Bucket
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的website（托管）配置
+	 *            Bucket name
+	 * @return Website hosting configuration of a bucket
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	WebsiteConfiguration getBucketWebsite(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶的website（托管）配置
+	 * Configure website hosting for a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param websiteConfig
-	 *            桶的website（托管）配置
-	 * @return 公共响应头信息
+	 *            Website hosting configuration of a bucket
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketWebsite(String bucketName, WebsiteConfiguration websiteConfig) throws ObsException;
 
 	/**
-	 * 删除桶的website（托管）配置
+	 * Delete the website hosting configuration of a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketWebsite(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶标签
+	 * Obtain bucket tags.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶标签
+	 *            Bucket name
+	 * @return Bucket tag
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketTagInfo getBucketTagging(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶标签
+	 * Set bucket tags.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param bucketTagInfo
-	 *            桶标签
-	 * @return 公共响应头信息
+	 *            Bucket tags
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketTagging(String bucketName, BucketTagInfo bucketTagInfo) throws ObsException;
 
 	/**
-	 * 删除桶标签
+	 * Delete bucket tags.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketTagging(String bucketName) throws ObsException;
+
 	
-	/**
-	 * 获取桶加密配置
-	 * @param bucketName 
-	 *             桶名
-	 * @return 桶加密配置
-	 * @throws ObsException
-	 *         OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
 	BucketEncryption getBucketEncryption(String bucketName) throws ObsException;
 	
-	/**
-	 * 设置桶加密配置
-	 * @param bucketName
-	 *             桶名
-	 * @param bucketEncryption
-	 *             桶加密配置
-	 * @return 公共响应头信息
-	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
+	
 	HeaderResponse setBucketEncryption(String bucketName, BucketEncryption bucketEncryption) throws ObsException;
 	
-	/**
-	 * 删除桶加密配置
-	 * @param bucketName
-	 *             桶名
-	 * @return 公共响应头信息
-	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-	 */
+
 	HeaderResponse deleteBucketEncryption(String bucketName) throws ObsException;
 	
 	/**
-     * 设置桶的跨Region复制配置
-     * 
-     * @param bucketName
-     *            桶名
-     * @param replicationConfiguration
-     *            跨Region复制配置
-     * @return 公共响应头信息
-     * @throws ObsException
-     *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-     * 
-     */
+	 * Configure cross-region replication for a bucket.
+	 * 
+	 * @param bucketName
+	 *            Bucket name
+	 * @param replicationConfiguration
+	 *            Cross-region replication configuration
+	 * @return Common response headers
+	 * @throws ObsException
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 
+	 */
 	HeaderResponse setBucketReplication(String bucketName, ReplicationConfiguration replicationConfiguration)
 			throws ObsException;
 
 	/**
-	 * 获取桶的跨Region复制配置
+	 * Obtain the cross-region replication configuration of a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 跨Region复制配置
+	 *            Bucket name
+	 * @return Cross-region replication configuration
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ReplicationConfiguration getBucketReplication(String bucketName) throws ObsException;
 
 	/**
-	 * 删除桶的跨Region复制配置
+	 * Delete the bucket cross-region replication configuration.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 公共响应头信息
+	 *            Bucket name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse deleteBucketReplication(String bucketName) throws ObsException;
 
 	/**
-	 * 获取桶的消息通知配置
+	 * Obtain the notification configuration of a bucket.
 	 * 
 	 * @param bucketName
-	 *            桶名
-	 * @return 桶的消息通知配置
+	 *            Bucket name
+	 * @return Bucket notification configuration
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	BucketNotificationConfiguration getBucketNotification(String bucketName) throws ObsException;
 
 	/**
-	 * 设置桶的消息通知配置
+	 * Configure bucket notification.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param bucketNotificationConfiguration
-	 *            桶的消息通知配置
-	 * @return 公共响应头信息
+	 *            Bucket notification configuration
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setBucketNotification(String bucketName,
 			BucketNotificationConfiguration bucketNotificationConfiguration) throws ObsException;
 
 	/**
-	 * 上传对象
+	 * Upload an object.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param input
-	 *            待上传的数据流
+	 *            Data stream to be uploaded
 	 * @param metadata
-	 *            对象的属性
-	 * @return 上传对象的响应结果
+	 *            Object properties
+	 * @return Response to an object upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PutObjectResult putObject(String bucketName, String objectKey, InputStream input, ObjectMetadata metadata)
 			throws ObsException;
 
 	/**
-	 * 上传对象
+	 * Upload an object.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param input
-	 *            待上传的数据流
-	 * @return 上传对象的响应结果
+	 *            Data stream to be uploaded
+	 * @return Response to an object upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PutObjectResult putObject(String bucketName, String objectKey, InputStream input) throws ObsException;
 
 	/**
-	 * 上传对象
+	 * Upload an object.
 	 * 
 	 * @param request
-	 *            上传对象请求参数
-	 * @return 上传对象的响应结果
+	 *            Parameters in an object upload request
+	 * @return Response to an object upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PutObjectResult putObject(PutObjectRequest request) throws ObsException;
 
 	/**
-	 * 上传对象
+	 * Upload an object.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param file
-	 *            待上传的文件
-	 * @return 上传对象的响应结果
+	 *            File to be uploaded
+	 * @return Response to an object upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PutObjectResult putObject(String bucketName, String objectKey, File file) throws ObsException;
 
 	/**
-	 * 上传对象
+	 * Upload an object.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param file
-	 *            待上传的文件
+	 *            File to be uploaded
 	 * @param metadata
-	 *            对象的属性
-	 * @return 上传对象的响应结果
+	 *            Object properties
+	 * @return Response to an object upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	PutObjectResult putObject(String bucketName, String objectKey, File file, ObjectMetadata metadata)
 			throws ObsException;
 
 	/**
-	 * 追加上传对象
-	 * @param request 追加上传请求参数
-	 * @return 追加上传响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Perform an appendable upload.
+	 * @param request Parameters in an appendable upload request
+	 * @return Response to the appendable upload request
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	AppendObjectResult appendObject(AppendObjectRequest request) throws ObsException;
 
 	/**
-	 * 上传文件，支持断点续传模式
+	 * Upload a file. The resumable upload mode is supported.
 	 * 
 	 * @param uploadFileRequest
-	 *            上传文件请求参数
-	 * @return 合并段响应结果
+	 *            Parameters in a file upload request
+	 * @return Result of part combination
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	CompleteMultipartUploadResult uploadFile(UploadFileRequest uploadFileRequest) throws ObsException;
+UploadProgressStatus putObjects(PutObjectsRequest request) throws ObsException;
 
 	/**
-	 * 下载文件，支持断点续传模式
+	 * Download a file. The resumable download mode is supported.
 	 * 
 	 * @param downloadFileRequest
-	 *            下载文件的请求参数
-	 * @return 下载文件的响应结果
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *            Parameters in a request for downloading a file
+	 * @return File download result
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	DownloadFileResult downloadFile(DownloadFileRequest downloadFileRequest) throws ObsException;
 
 	/**
-	 * 下载对象
+	 * Download an object. 
 	 * 
 	 * @param request
-	 *            下载对象的请求参数
-	 * @return 对象信息，包含对象数据流
+	 *            Parameters in an object download request
+	 * @return Object information, including the object data stream
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsObject getObject(GetObjectRequest request) throws ObsException;
 
 	/**
-	 * 下载对象
+	 * Download an object. 
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param versionId
-	 *            对象版本号
-	 * @return 对象信息，包含对象数据流
+	 *            Object version ID
+	 * @return Object information, including the object data stream
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsObject getObject(String bucketName, String objectKey, String versionId) throws ObsException;
 
 	/**
-	 * 下载对象
+	 * Download an object. 
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 对象信息，包含对象数据流
+	 *            Object name
+	 * @return Object information, including the object data stream
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObsObject getObject(String bucketName, String objectKey) throws ObsException;
 
 	/**
-	 * 获取对象属性
+	 * Obtain object properties.
 	 * 
 	 * @param request
-	 *            获取对象属性的请求参数
-	 * @return 对象的属性
+	 *            Parameters in a request for obtaining the properties of an object
+	 * @return Object properties
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectMetadata getObjectMetadata(GetObjectMetadataRequest request) throws ObsException;
 
 	/**
-	 * 获取对象属性
+	 * Obtain object properties.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param versionId
-	 *            对象版本号
-	 * @return 对象的属性
+	 *            Object version ID
+	 * @return Object properties
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectMetadata getObjectMetadata(String bucketName, String objectKey, String versionId) throws ObsException;
 
 	/**
-	 * 获取对象属性
+	 * Obtain object properties.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 对象的属性
+	 *            Object name
+	 * @return Object properties
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectMetadata getObjectMetadata(String bucketName, String objectKey) throws ObsException;
 	
 	/**
-	 * 设置对象属性
-	 * @param request 设置对象属性的请求参数
-	 * @return 对象的属性
-	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 * Set object properties.
+	 * @param request Parameters in the request for obtaining object properties
+	 * @return Object properties
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ObjectMetadata setObjectMetadata(SetObjectMetadataRequest request) throws ObsException;
 	
 	/**
-	 * 取回归档存储对象
+	 * Restore an Archive object.
 	 * 
 	 * @param request
-	 *            取回归档存储对象的请求参数
-	 * @return 取回归档存储对象的状态
+	 *            Parameters in a request for restoring an Archive object
+	 * @return Status of the to-be-restored Archive object
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 * 
 	 */
 	@Deprecated
 	RestoreObjectStatus restoreObject(RestoreObjectRequest request) throws ObsException;
 	
-	/**
-     * 取回归档存储对象
-     * 
-     * @param request
-     *            取回归档存储对象的请求参数
-     * @return 取回归档存储对象的结果
-     * @throws ObsException
-     *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-     * 
-     */
+
     RestoreObjectResult restoreObjectV2(RestoreObjectRequest request) throws ObsException;
 
-	/**
-     * 批量取回归档存储对象
-     * 
-     * @param request
-     *            批量取回归档存储对象的请求参数
-	 * @return 批量任务执行状态
-     *
-     * @throws ObsException
-     *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
-     * 
-     */
+
 	
     TaskProgressStatus restoreObjects(RestoreObjectsRequest request) throws ObsException;
 
     /**
-     * 删除对象
+     * Delete an object.
      * 
      * @param bucketName
-     *            桶名
+     *            Bucket name
      * @param objectKey
-     *            对象名
+     *            Object name
      * @param versionId
-     *            对象版本号
-     * @return 公共响应头信息
+     *            Object version ID
+     * @return Common response headers
      * @throws ObsException
-     *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
      */
 	
 	DeleteObjectResult deleteObject(String bucketName, String objectKey, String versionId) throws ObsException;
 
 	/**
-	 * 删除对象
+	 * Delete an object.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 公共响应头信息
+	 *            Object name
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	DeleteObjectResult deleteObject(String bucketName, String objectKey) throws ObsException;
 
 	/**
-	 * 批量删除对象
+	 * Delete objects in a batch.
 	 * 
 	 * @param deleteObjectsRequest
-	 *            批量删除对象的请求参数
-	 * @return 批量删除对象的响应结果
+	 *            Parameters in an object batch deletion request
+	 * @return Result of the object batch deletion request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	DeleteObjectsResult deleteObjects(DeleteObjectsRequest deleteObjectsRequest) throws ObsException;
 
 	/**
-	 * 获取对象访问权限
+	 * Obtain an object ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param versionId
-	 *            对象版本号
-	 * @return 对象的访问权限
+	 *            Object version ID
+	 * @return Object ACL
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	AccessControlList getObjectAcl(String bucketName, String objectKey, String versionId) throws ObsException;
 
 	/**
-	 * 获取对象访问权限
+	 * Obtain an object ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
-	 * @return 对象的访问权限
+	 *            Object name
+	 * @return Object ACL
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	AccessControlList getObjectAcl(String bucketName, String objectKey) throws ObsException;
 
 	/**
-	 * 设置对象访问权限
+	 * Set an object ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param acl
-	 *            访问权限
+	 *            ACL
 	 * @param versionId
-	 *            对象版本号
-	 * @return 公共响应头信息
+	 *            Object version ID
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl, String versionId)
 			throws ObsException;
 
 	/**
-	 * 设置对象访问权限
+	 * Set an object ACL.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param acl
-	 *            访问权限
-	 * @return 公共响应头信息
+	 *            ACL
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl) throws ObsException;
 
 	/**
-	 * 复制对象
+	 * Copy an object.
 	 * 
 	 * @param request
-	 *            复制对象请求参数
-	 * @return 复制对象的响应结果
+	 *            Parameters in a request for copying an object
+	 * @return Result of the object copy
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	CopyObjectResult copyObject(CopyObjectRequest request) throws ObsException;
 
 	/**
-	 * 复制对象
+	 * Copy an object.
 	 * 
 	 * @param sourceBucketName
-	 *            源桶名
+	 *            Source bucket name
 	 * @param sourceObjectKey
-	 *            源对象名
+	 *            Source object name
 	 * @param destBucketName
-	 *            目标桶名
+	 *            Destination bucket name
 	 * @param destObjectKey
-	 *            目标对象名
-	 * @return 复制对象的响应结果
+	 *            Destination object name
+	 * @return Result of the object copy
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	CopyObjectResult copyObject(String sourceBucketName, String sourceObjectKey, String destBucketName,
 			String destObjectKey) throws ObsException;
 
 	/**
-	 * 初始化分段上传任务
+	 * Initialize a multipart upload.
 	 * 
 	 * @param request
-	 *            初始化分段上传任务的请求参数
-	 * @return 初始化分段上传任务的响应结果
+	 *            Parameters in a request for initializing a multipart upload
+	 * @return Result of the multipart upload
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	InitiateMultipartUploadResult initiateMultipartUpload(InitiateMultipartUploadRequest request) throws ObsException;
 
 	/**
-	 * 取消分段上传任务
+	 * Abort a multipart upload.
 	 * 
 	 * @param request
-	 *            取消分段上传任务的请求参数
-	 * @return 公共响应头信息
+	 *            Parameters in a request for aborting a multipart upload
+	 * @return Common response headers
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	HeaderResponse abortMultipartUpload(AbortMultipartUploadRequest request) throws ObsException;
 
 	/**
-	 * 上传段
+	 * Upload a part.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param uploadId
-	 *            分段上传任务的ID号
+	 *            Multipart upload ID
 	 * @param partNumber
-	 *            分段号
+	 *            Part number
 	 * @param input
-	 *            待上传的数据流
-	 * @return 上传段的响应结果
+	 *            Data stream to be uploaded
+	 * @return Response to a part upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	UploadPartResult uploadPart(String bucketName, String objectKey, String uploadId, int partNumber, InputStream input)
 			throws ObsException;
 
 	/**
-	 * 上传段
+	 * Upload a part.
 	 * 
 	 * @param bucketName
-	 *            桶名
+	 *            Bucket name
 	 * @param objectKey
-	 *            对象名
+	 *            Object name
 	 * @param uploadId
-	 *            分段上传任务的ID号
+	 *            Multipart upload ID
 	 * @param partNumber
-	 *            分段号
+	 *            Part number
 	 * @param file
-	 *            待上传的文件
-	 * @return 上传段的响应结果
+	 *            File to be uploaded
+	 * @return Response to a part upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	UploadPartResult uploadPart(String bucketName, String objectKey, String uploadId, int partNumber, File file)
 			throws ObsException;
 
 	/**
-	 * 上传段
+	 * Upload a part.
 	 * 
 	 * @param request
-	 *            上传段的请求参数
-	 * @return 上传段的响应结果
+	 *            Parameters in a part upload request
+	 * @return Response to a part upload request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	UploadPartResult uploadPart(UploadPartRequest request) throws ObsException;
 
 	/**
-	 * 复制段
+	 * Copy a part.
 	 * 
 	 * @param request
-	 *            复制段的请求参数
-	 * @return 复制段的响应结果
+	 *            Parameters in the request for copying a part
+	 * @return Response to a part copy request
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	CopyPartResult copyPart(CopyPartRequest request) throws ObsException;
 
 	/**
-	 * 合并段
+	 * Combine parts.
 	 * 
 	 * @param request
-	 *            合并段的请求参数
-	 * @return 合并段的响应结果
+	 *            Parameters in a request for combining parts
+	 * @return Result of part combination
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request) throws ObsException;
 
 	/**
-	 * 列举已上传段
+	 * List uploaded parts.
 	 * 
 	 * @param request
-	 *            列举已上传段的请求参数
-	 * @return 列举已上传段的响应结果
+	 *            Parameters in a request for listing uploaded parts
+	 * @return Response to a request for listing uploaded parts
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	ListPartsResult listParts(ListPartsRequest request) throws ObsException;
 
 	/**
-	 * 列举未完成的分段上传任务
+	 * List incomplete multipart uploads.
 	 * 
 	 * @param request
-	 *            列举分段上传任务的请求参数
-	 * @return 分段上传任务列表
+	 *            Parameters in a request for listing multipart uploads
+	 * @return List of multipart uploads
 	 * @throws ObsException
-	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
 	 */
 	MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request) throws ObsException;
 
+	ReadAheadResult readAheadObjects(ReadAheadRequest request) throws ObsException;
+
+	ReadAheadResult deleteReadAheadObjects(String bucketName, String prefix) throws ObsException;
+	
+	ReadAheadQueryResult queryReadAheadObjectsTask(String bucketName,String taskId) throws ObsException;
+
+	HeaderResponse setBucketDirectColdAccess(String bucketName, BucketDirectColdAccess access) throws ObsException;
+
+	BucketDirectColdAccess getBucketDirectColdAccess(String bucketName) throws ObsException;
+
+	HeaderResponse deleteBucketDirectColdAccess(String bucketName) throws ObsException;
+
 	/**
-	 * 关闭OBS客户端，释放连接资源
-	 * @throws IOException 客户端关闭异常
+	 * Close ObsClient and release connection resources. 
+	 * @throws IOException ObsClient close exception
 	 */
 	void close() throws IOException;
 
 }
+

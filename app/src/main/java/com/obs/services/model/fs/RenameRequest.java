@@ -1,7 +1,21 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model.fs;
 
 /**
- * 重命名文件/文件夹请求参数
+ * Parameters in a request for renaming a file or folder
  *
  */
 public class RenameRequest {
@@ -18,10 +32,10 @@ public class RenameRequest {
 	}
 	
 	/**
-	 * 构造函数
-	 * @param bucketName 桶名
-	 * @param objectKey 文件/文件夹名
-	 * @param newObjectKey  新的文件/文件夹名
+	 * Constructor
+	 * @param bucketName Bucket name
+	 * @param objectKey File or folder name
+	 * @param newObjectKey New file or folder name
 	 */
 	public RenameRequest(String bucketName, String objectKey, String newObjectKey) {
 		super();
@@ -31,9 +45,9 @@ public class RenameRequest {
 	}
 
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -41,9 +55,9 @@ public class RenameRequest {
     }
     
     /**
-     * 设置桶名
+     * Set the bucket name.
      * 
-     * @param bucketName 桶名
+     * @param bucketName Bucket name
      */
     public void setBucketName(String bucketName)
     {
@@ -51,9 +65,9 @@ public class RenameRequest {
     }
     
     /**
-     * 获取文件/文件夹名
+     * Obtain the file or folder name.
      * 
-     * @return 文件/文件夹名
+     * @return File or folder name
      */
     public String getObjectKey()
     {
@@ -61,9 +75,9 @@ public class RenameRequest {
     }
     
     /**
-     * 设置文件/文件夹名
+     * Set the file or folder name.
      * 
-     * @param objectKey 文件/文件夹名
+     * @param objectKey File or folder name
      *           
      */
     public void setObjectKey(String objectKey)
@@ -72,16 +86,16 @@ public class RenameRequest {
     }
 
     /**
-     * 获取新的文件/文件夹名
-     * @return 新的文件/文件夹名
+     * Obtain the new file or folder name.
+     * @return New file or folder name
      */
 	public String getNewObjectKey() {
 		return newObjectKey;
 	}
 
 	 /**
-     * 设置新的文件/文件夹名
-     * @param newObjectKey  新的文件/文件夹名
+     * Set the new file or folder name.
+     * @param newObjectKey New file or folder name
      */
 	public void setNewObjectKey(String newObjectKey) {
 		this.newObjectKey = newObjectKey;
@@ -89,3 +103,5 @@ public class RenameRequest {
 	
 	
 }
+
+

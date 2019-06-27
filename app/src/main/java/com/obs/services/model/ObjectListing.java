@@ -1,10 +1,24 @@
+/**
+* Copyright 2019 Huawei Technologies Co.,Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+* this file except in compliance with the License.  You may obtain a copy of the
+* License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software distributed
+* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations under the License.
+**/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 列举桶内对象的响应结果
+ * Response to a request for listing objects in a bucket
  */
 public class ObjectListing extends HeaderResponse
 {
@@ -46,8 +60,8 @@ public class ObjectListing extends HeaderResponse
 	}
 
 	/**
-     * 获取下次请求的起始位置
-     * @return 下次请求的起始位置标识
+     * Obtain the start position for next listing.
+     * @return Start position for next listing
      */
     public String getNextMarker()
     {
@@ -56,8 +70,8 @@ public class ObjectListing extends HeaderResponse
     
 
     /**
-     * 获取桶内对象列表
-     * @return 桶内对象列表
+     * Obtain the list of objects in the bucket.
+     * @return List of objects in the bucket
      */
 	public List<ObsObject> getObjects()
     {
@@ -76,9 +90,9 @@ public class ObjectListing extends HeaderResponse
     }
     
     /**
-     * 获取分组后的对象名前缀列表
+     * Obtain the list of prefixes to the names of grouped objects.
      * 
-     * @return 分组后的对象名前缀列表
+     * @return List of prefixes to the names of grouped objects
      */
     public List<String> getCommonPrefixes()
     {
@@ -90,9 +104,9 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取桶名
+     * Obtain the bucket name.
      * 
-     * @return 桶名
+     * @return Bucket name
      */
     public String getBucketName()
     {
@@ -101,8 +115,8 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 判断查询结果列表是否被截断。true表示截断，本次没有返回全部结果；false表示未截断，本次已经返回了全部结果。
-     * @return 截断标识
+     * Check whether the query result list is truncated. Value "true" indicates that the results are incomplete while value "false" indicates that the results are complete.
+     * @return Truncation identifier
      */
     public boolean isTruncated()
     {
@@ -111,8 +125,8 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取列举对象请求中的对象名前缀
-     * @return 请求中的对象名前缀
+     * Obtain the object name prefix used for filtering objects to be listed.
+     * @return Object name prefix used for listing versioning objects
      */
     public String getPrefix()
     {
@@ -121,8 +135,8 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取列举对象请求中的起始位置
-     * @return 请求中的起始位置标识
+     * Obtain the start position for listing objects.
+     * @return Start position for listing objects
      */
     public String getMarker()
     {
@@ -131,8 +145,8 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取列举对象的最大条目数
-     * @return 列举对象的最大条目数
+     * Obtain the maximum number of objects to be listed.
+     * @return Maximum number of objects to be listed
      */
     public int getMaxKeys()
     {
@@ -141,9 +155,9 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取列举对象时请求中的分组字符
+     * Obtain the character for grouping object names.
      * 
-     * @return 分组字符
+     * @return Character for grouping object names
      */
     public String getDelimiter()
     {
@@ -152,8 +166,8 @@ public class ObjectListing extends HeaderResponse
     
     
     /**
-     * 获取桶的区域位置
-     * @return 桶的区域位置
+     * Obtain the bucket location.
+     * @return Bucket location
      */
     public String getLocation()
     {
@@ -171,3 +185,5 @@ public class ObjectListing extends HeaderResponse
     
     
 }
+
+
