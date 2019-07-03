@@ -1,3 +1,13 @@
+Version 3.19.5.2
+
+New features:
+
+
+Resolved issues:
+1. Updated the copyright notice.
+
+-----------------------------------------------------------------------------------
+
 Version 3.19.5
 
 New features:
