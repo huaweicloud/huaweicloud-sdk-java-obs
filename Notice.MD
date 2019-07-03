@@ -7,13 +7,12 @@ THE OPEN SOURCE SOFTWARE IN THIS PRODUCT IS DISTRIBUTED IN THE HOPE THAT IT WILL
 
 Copyright Notice and License Texts 
 
-Software: aws-sdk-java 1.10.30
+Software: com.android.tools.build:gradle 3.2.1
 Copyright notice: 
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Copyright 2019 Huawei Technologies Co.,Ltd.
 
 
 License: 
+
 
 
 Software: JetS3t 0.9.4
