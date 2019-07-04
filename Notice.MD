@@ -15,10 +15,10 @@ Copyright notice:
 License: 
 
 
-Software: aws-sdk-java 1.10.30
-Copyright notice: 
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Copyright 2019 Huawei Technologies Co.,Ltd.
+Software: aws-sdk-java 1.10.30  
+Copyright notice:   
+Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+Copyright 2019 Huawei Technologies Co.,Ltd.  
 
 
 License: 
