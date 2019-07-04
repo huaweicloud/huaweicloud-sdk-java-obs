@@ -24,16 +24,16 @@ Copyright 2019 Huawei Technologies Co.,Ltd.
 License: 
 
 
-Software: JetS3t 0.9.4
-Copyright notice: 
-Copyright 1999-2005 The Apache Software Foundation
-Copyright 1999-2015 The Apache Software Foundation
-Copyright (c) 2000 - 2015 The Legion of the Bouncy Castle Inc. (http:www.bouncycastle.org)
-Copyright (c)  2003-2004  David Vignoni.
-Copyright 2002-2013 The Apache Software Foundation
-Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)
-Copyright (c) 2001 The Apache Software Foundation.  All rights reserved.
-Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.
+Software: JetS3t 0.9.4  
+Copyright notice:   
+Copyright 1999-2005 The Apache Software Foundation  
+Copyright 1999-2015 The Apache Software Foundation  
+Copyright (c) 2000 - 2015 The Legion of the Bouncy Castle Inc. (http:www.bouncycastle.org)  
+Copyright (c)  2003-2004  David Vignoni.  
+Copyright 2002-2013 The Apache Software Foundation  
+Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)  
+Copyright (c) 2001 The Apache Software Foundation.  All rights reserved.  
+Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.  
 
 
 License: Apache License V2.0
@@ -214,96 +214,96 @@ Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 Copyright 2019 Huawei Technologies Co.,Ltd.
 
 
-License: 
+License:   
 
 
-Software: aliyun-oss-sdk 2.6.1
-Copyright notice: 
-Copyright (C) Alibaba Cloud Computing
+Software: aliyun-oss-sdk 2.6.1  
+Copyright notice:     
+Copyright (C) Alibaba Cloud Computing  
 
 
 License: Apache License V2.0
-Please see above.
+Please see above.  
 
-Software: jackson-annotations-2.9.8
-Copyright notice: 
+Software: jackson-annotations-2.9.8  
+Copyright notice:   
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0  
+Please see above.  
 
-Software: jackson-core-2.9.8
-Copyright notice: 
-Copyright (c) 2007- Tatu Saloranta, tatu.saloranta@iki.fi
+Software: jackson-core-2.9.8  
+Copyright notice:   
+Copyright (c) 2007- Tatu Saloranta, tatu.saloranta@iki.fi  
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0  
+Please see above.  
 
-Software: jackson-databind-2.9.8
-Copyright notice: 
+Software: jackson-databind-2.9.8  
+Copyright notice:   
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0  
+Please see above.  
 
-Software: java-xmlbuilder-1.1	
-Copyright notice: 
-Copyright 2008-2014 James Murty (www.jamesmurty.com)
+Software: java-xmlbuilder-1.1	  
+Copyright notice:   
+Copyright 2008-2014 James Murty (www.jamesmurty.com)  
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0   
+Please see above.  
 
-Software: Apache log4j 2.8.2	
-Copyright notice: 
-Copyright 1999-2005 The Apache Software Foundation
-Copyright 1999-2017 Apache Software Foundation
-Copyright 2005-2006 Tim Fennell
-Copyright 2004 Jason Paul Kitchen
-Copyright 2002-2012 Ramnivas Laddad, Juergen Hoeller, Chris Beams	
+Software: Apache log4j 2.8.2	  
+Copyright notice:   
+Copyright 1999-2005 The Apache Software Foundation  
+Copyright 1999-2017 Apache Software Foundation   
+Copyright 2005-2006 Tim Fennell   
+Copyright 2004 Jason Paul Kitchen   
+Copyright 2002-2012 Ramnivas Laddad, Juergen Hoeller, Chris Beams	  
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0  
+Please see above.  
 
-Software: okhttp-3.10.0	
-Copyright notice: 
-Copyright (C) 2012 Google Inc.
-Copyright (C) 2011 The Android Open Source Project
-Copyright (C) 2016 Square, Inc.
-Copyright (C) 2012 Square, Inc.
-Copyright (C) 2011 Google Inc.
-Copyright (C) 2013 Square, Inc.
-Copyright (C) 2014 Square, Inc.
-Copyright (C) 2015 Square, Inc.
-Copyright (C) 2017 Square, Inc.
-Copyright (C) 2009 The Android Open Source Project
-Copyright (C) 2012 The Android Open Source Project
-Copyright (C) 2013 The Android Open Source Project
-Copyright 2013 Square, Inc.
-Copyright 2012 Twitter, Inc
-Copyright 2012 Twitter, Inc.
-Copyright (c) 2013 Karl Swedberg
-Copyright 2013 Twitter, Inc.
-Copyright (C) 2016 Google Inc.
-Copyright (C) 2010 The Android Open Source Project
-Copyright 2014 Square Inc.
-Copyright (C) 2011 The Guava Authors
-Copyright (C) 2018 Square, Inc.
+Software: okhttp-3.10.0	  
+Copyright notice:   
+Copyright (C) 2012 Google Inc.  
+Copyright (C) 2011 The Android Open Source Project  
+Copyright (C) 2016 Square, Inc.  
+Copyright (C) 2012 Square, Inc.  
+Copyright (C) 2011 Google Inc.  
+Copyright (C) 2013 Square, Inc.  
+Copyright (C) 2014 Square, Inc.  
+Copyright (C) 2015 Square, Inc.  
+Copyright (C) 2017 Square, Inc.  
+Copyright (C) 2009 The Android Open Source Project   
+Copyright (C) 2012 The Android Open Source Project   
+Copyright (C) 2013 The Android Open Source Project   
+Copyright 2013 Square, Inc.   
+Copyright 2012 Twitter, Inc   
+Copyright 2012 Twitter, Inc.   
+Copyright (c) 2013 Karl Swedberg   
+Copyright 2013 Twitter, Inc.   
+Copyright (C) 2016 Google Inc.   
+Copyright (C) 2010 The Android Open Source Project   
+Copyright 2014 Square Inc.   
+Copyright (C) 2011 The Guava Authors   
+Copyright (C) 2018 Square, Inc.   
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0   
+Please see above.   
 
-Software: okio-1.14.0	
-Copyright notice: 
-Copyright (C) 2014 Square, Inc.
-Copyright 2014 Square Inc.
-Copyright (C) 2015 Square, Inc.
-Copyright (C) 2016 Square, Inc.
-Copyright (C) 2017 Square, Inc.
-Copyright (C) 2018 Square, Inc.
-Copyright 2013 Square, Inc.
-Copyright (C) 2018 Square, Inc. and others.
-Copyright (C) 2014 Square, Inc. and others.
-Copyright (C) 2016 Square, Inc. and others.	
+Software: okio-1.14.0	   
+Copyright notice:    
+Copyright (C) 2014 Square, Inc.   
+Copyright 2014 Square Inc.    
+Copyright (C) 2015 Square, Inc.   
+Copyright (C) 2016 Square, Inc.     
+Copyright (C) 2017 Square, Inc.   
+Copyright (C) 2018 Square, Inc.  
+Copyright 2013 Square, Inc.   
+Copyright (C) 2018 Square, Inc. and others.  
+Copyright (C) 2014 Square, Inc. and others.   
+Copyright (C) 2016 Square, Inc. and others.	  
 
-License: Apache License V2.0
-Please see above.
+License: Apache License V2.0  
+Please see above.   
 
 
