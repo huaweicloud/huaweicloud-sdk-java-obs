@@ -225,21 +225,11 @@ Copyright (C) Alibaba Cloud Computing
 License: Apache License V2.0
 Please see above.  
 
-Software: jackson-annotations-2.9.8  
+Software: Jackson 2.9.8  
 Copyright notice:   
-
-License: Apache License V2.0  
-Please see above.  
-
-Software: jackson-core-2.9.8  
-Copyright notice:   
-Copyright (c) 2007- Tatu Saloranta, tatu.saloranta@iki.fi  
-
-License: Apache License V2.0  
-Please see above.  
-
-Software: jackson-databind-2.9.8  
-Copyright notice:   
+Copyright 2007-2019 Tatu Saloranta (tatu.saloranta@iki.fi).  
+Copyright 2007-2019 the original author or authors.  
+Copyright 2007-2019 the FasterXML.com.  
 
 License: Apache License V2.0  
 Please see above.  
