@@ -5,35 +5,17 @@ Please note we provide an open source software notice along with this product an
 Warranty Disclaimer    
 THE OPEN SOURCE SOFTWARE IN THIS PRODUCT IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY WARRANTY, WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE APPLICABLE LICENSES FOR MORE DETAILS.
 
-Copyright Notice and License Texts 
-
-Software: com.android.tools.build:gradle 3.2.1
-Copyright notice: 
-
-
-
-License: 
-
-
-Software: aws-sdk-java 1.10.30  
-Copyright notice:   
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-Copyright 2019 Huawei Technologies Co.,Ltd.  
-
-
-License: 
-
-
-Software: JetS3t 0.9.4  
-Copyright notice:   
-Copyright 1999-2005 The Apache Software Foundation  
-Copyright 1999-2015 The Apache Software Foundation  
-Copyright (c) 2000 - 2015 The Legion of the Bouncy Castle Inc. (http:www.bouncycastle.org)  
-Copyright (c)  2003-2004  David Vignoni.  
-Copyright 2002-2013 The Apache Software Foundation  
-Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)  
-Copyright (c) 2001 The Apache Software Foundation.  All rights reserved.  
-Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.  
+Copyright Notice and License Texts   
+Software: JetS3t 0.9.4   
+Copyright notice:    
+Copyright 1999-2005 The Apache Software Foundation   
+Copyright 1999-2015 The Apache Software Foundation   
+Copyright (c) 2000 - 2015 The Legion of the Bouncy Castle Inc. (http:www.bouncycastle.org)   
+Copyright (c)  2003-2004  David Vignoni.   
+Copyright 2002-2013 The Apache Software Foundation   
+Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)   
+Copyright (c) 2001 The Apache Software Foundation.  All rights reserved.   
+Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.   
 
 
 License: Apache License V2.0
@@ -208,51 +190,99 @@ License: Apache License V2.0
    limitations under the License.
 
 
-Software: aws-sdk-java 1.11.490
-Copyright notice: 
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Copyright 2019 Huawei Technologies Co.,Ltd.
-
+Software: aws-sdk-java 1.11.490  
+Copyright notice:    
+Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+- XML parsing and utility functions from JetS3t - Copyright 2006-2009 James Murty.  
+- PKCS#1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
 
 License:   
+Please see above.
 
+Software: aws-sdk-java 1.10.30  
+Copyright notice:   
+Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+Copyright 2010-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+Amazon Modifications: Copyright 2014 Amazon.com, Inc. or its affiliates.   
+Copyright (c) 1998-2010 AOL Inc.  
+Copyright 2012-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+Copyright 2013-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+Copyright 2010-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
+- XML parsing and utility functions from JetS3t - Copyright 2006-2009 James Murty.  
+- JSON parsing and utility functions from JSON.org - Copyright 2002 JSON.org.  
+- PKCS1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
+Copyright 2014-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.   
+
+License:   
+Please see above.  
+
+Software: com.android.tools.build:gradle 3.2.1
+Copyright notice:   
+Copyright 2011 the original author or authors.  
+Copyright (c) 2012, The Android Open Source Project  
+
+License:   
+Please see above.  
 
 Software: aliyun-oss-sdk 2.6.1  
-Copyright notice:     
+Copyright notice:   
 Copyright (C) Alibaba Cloud Computing  
 
 
 License: Apache License V2.0
-Please see above.  
+Please see above.
 
-Software: Jackson 2.9.8  
+Software: jackson-annotations-2.9.8
 Copyright notice:   
-Copyright 2007-2019 Tatu Saloranta (tatu.saloranta@iki.fi).  
-Copyright 2007-2019 the original author or authors.  
 Copyright 2007-2019 the FasterXML.com.  
 
 License: Apache License V2.0  
 Please see above.  
 
-Software: java-xmlbuilder-1.1	  
+Software: jackson-core-2.9.8
+Copyright notice:   
+Copyright 2007-2019 Tatu Saloranta (tatu.saloranta@iki.fi).   
+Copyright 2007-2019 the FasterXML.com.  
+
+License: Apache License V2.0
+Please see above.
+
+Software: jackson-databind-2.9.8
+Copyright notice:   
+Copyright 2007-2019 the FasterXML.com.  
+
+License: Apache License V2.0
+Please see above.
+
+
+License: Apache License V2.0
+Please see above.
+
+Software: java-xmlbuilder-1.1	
 Copyright notice:   
 Copyright 2008-2014 James Murty (www.jamesmurty.com)  
 
-License: Apache License V2.0   
-Please see above.  
+License: Apache License V2.0
+Please see above.
 
-Software: Apache log4j 2.8.2	  
+Software: log4j-api-2.8.2	
 Copyright notice:   
-Copyright 1999-2005 The Apache Software Foundation  
-Copyright 1999-2017 Apache Software Foundation   
-Copyright 2005-2006 Tim Fennell   
-Copyright 2004 Jason Paul Kitchen   
-Copyright 2002-2012 Ramnivas Laddad, Juergen Hoeller, Chris Beams	  
+Copyright 1999-2017 The Apache Software Foundation  
+Copyright 1999-2017 Apache Software Foundation  
 
-License: Apache License V2.0  
+License: Apache License V2.0
+Please see above.  
+Software: log4j-core-2.8.2	  
+Copyright notice:   
+Copyright 1999-2017 The Apache Software Foundation  
+Copyright 1999-2012 Apache Software Foundation  
+Copyright 2005-2006 Tim Fennell  
+
+License: Apache License V2.0
 Please see above.  
 
-Software: okhttp-3.10.0	  
+
+Software: okhttp-3.10.0	
 Copyright notice:   
 Copyright (C) 2012 Google Inc.  
 Copyright (C) 2011 The Android Open Source Project  
@@ -263,37 +293,37 @@ Copyright (C) 2013 Square, Inc.
 Copyright (C) 2014 Square, Inc.  
 Copyright (C) 2015 Square, Inc.  
 Copyright (C) 2017 Square, Inc.  
-Copyright (C) 2009 The Android Open Source Project   
-Copyright (C) 2012 The Android Open Source Project   
-Copyright (C) 2013 The Android Open Source Project   
-Copyright 2013 Square, Inc.   
-Copyright 2012 Twitter, Inc   
-Copyright 2012 Twitter, Inc.   
-Copyright (c) 2013 Karl Swedberg   
-Copyright 2013 Twitter, Inc.   
-Copyright (C) 2016 Google Inc.   
-Copyright (C) 2010 The Android Open Source Project   
-Copyright 2014 Square Inc.   
-Copyright (C) 2011 The Guava Authors   
-Copyright (C) 2018 Square, Inc.   
-
-License: Apache License V2.0   
-Please see above.   
-
-Software: okio-1.14.0	   
-Copyright notice:    
-Copyright (C) 2014 Square, Inc.   
-Copyright 2014 Square Inc.    
-Copyright (C) 2015 Square, Inc.   
-Copyright (C) 2016 Square, Inc.     
-Copyright (C) 2017 Square, Inc.   
+Copyright (C) 2009 The Android Open Source Project  
+Copyright (C) 2012 The Android Open Source Project  
+Copyright (C) 2013 The Android Open Source Project  
+Copyright 2013 Square, Inc.  
+Copyright 2012 Twitter, Inc  
+Copyright 2012 Twitter, Inc.  
+Copyright (c) 2013 Karl Swedberg  
+Copyright 2013 Twitter, Inc.  
+Copyright (C) 2016 Google Inc.  
+Copyright (C) 2010 The Android Open Source Project  
+Copyright 2014 Square Inc.  
+Copyright (C) 2011 The Guava Authors  
 Copyright (C) 2018 Square, Inc.  
-Copyright 2013 Square, Inc.   
+
+License: Apache License V2.0  
+Please see above.  
+
+Software: okio-1.14.0	  
+Copyright notice:   
+Copyright (C) 2014 Square, Inc.  
+Copyright 2014 Square Inc.  
+Copyright (C) 2015 Square, Inc.  
+Copyright (C) 2016 Square, Inc.  
+Copyright (C) 2017 Square, Inc.  
+Copyright (C) 2018 Square, Inc.  
+Copyright 2013 Square, Inc.  
 Copyright (C) 2018 Square, Inc. and others.  
-Copyright (C) 2014 Square, Inc. and others.   
+Copyright (C) 2014 Square, Inc. and others.  
 Copyright (C) 2016 Square, Inc. and others.	  
 
 License: Apache License V2.0  
-Please see above.   
+Please see above.  
 
 
