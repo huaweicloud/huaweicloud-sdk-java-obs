@@ -196,7 +196,7 @@ Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 - XML parsing and utility functions from JetS3t - Copyright 2006-2009 James Murty.  
 - PKCS#1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
 
-License:   
+License: Apache License V2.0
 Please see above.
 
 Software: aws-sdk-java 1.10.30  
@@ -213,7 +213,7 @@ Copyright 2010-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 - PKCS1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
 Copyright 2014-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.   
 
-License:   
+License: Apache License V2.0   
 Please see above.  
 
 Software: com.android.tools.build:gradle 3.2.1
@@ -221,7 +221,7 @@ Copyright notice:
 Copyright 2011 the original author or authors.  
 Copyright (c) 2012, The Android Open Source Project  
 
-License:   
+License: Apache License V2.0   
 Please see above.  
 
 Software: aliyun-oss-sdk 2.6.1  
