@@ -8,6 +8,14 @@
   </formats>
   <!-- 无需wrapp -->
   <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+       <dependencySet>
+           <useProjectArtifact>true</useProjectArtifact>
+           <outputDirectory>/libs</outputDirectory>
+           <unpack>false</unpack>
+           <scope>runtime</scope>
+       </dependencySet>
+  </dependencySets>
   <files>
     <file>
       <source>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</source>
@@ -32,6 +40,10 @@
       <outputDirectory>/</outputDirectory>
       <destName>pom.xml</destName>
     </file>
+	<file>
+      <source>${project.basedir}/Notice.MD</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
   </files>
       <fileSets>
         <fileSet>
@@ -41,6 +53,17 @@
         <fileSet>
             <directory>${project.build.directory}/doc</directory>
             <outputDirectory>/doc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/app</directory>
+            <outputDirectory>/source</outputDirectory>
+            <excludes>
+            	<exclude>src/test/**</exclude>
+            	<exclude>build/**</exclude>
+            	<exclude>.gitignore</exclude>
+            	<exclude>build.gradle</exclude>
+            	<exclude>proguard-rules.pro</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 </assembly>
