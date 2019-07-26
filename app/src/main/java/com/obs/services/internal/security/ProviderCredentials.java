@@ -15,8 +15,11 @@ package com.obs.services.internal.security;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
+import com.obs.services.EcsSecurityProvider;
+import com.obs.services.ISecurityProvider;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.LimitedTimeSecurityKey;
 
 public class ProviderCredentials {
     protected static final ILogger log = LoggerBuilder.getLogger(ProviderCredentials.class);
@@ -26,6 +29,7 @@ public class ProviderCredentials {
     protected AuthTypeEnum authType;
     private String securityToken;
 	private ThreadLocal<AuthTypeEnum> threadLocalAuthType;
+	private ISecurityProvider securityProvider;
 
 
     public String getRegion()
@@ -60,6 +64,19 @@ public class ProviderCredentials {
     public void setSecurityToken(String securityToken)
     {
         this.securityToken = securityToken;
+    }
+
+    public void setSecurityProvider(ISecurityProvider securityProvider){
+        this.securityProvider = securityProvider;
+    }
+
+    public void checkSecurityWillSoonExpire(){
+        if(this.securityProvider != null && this.securityProvider instanceof EcsSecurityProvider){
+            LimitedTimeSecurityKey securityKey = (LimitedTimeSecurityKey)securityProvider.getSecurityKey();
+            this.accessKey = securityKey.getAccessKey();
+            this.secretKey = securityKey.getSecretKey();
+            this.securityToken = securityKey.getSecurityToken();
+        }
     }
 
     public String getAccessKey() {
