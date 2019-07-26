@@ -56,8 +56,8 @@ public class ProviderCredentials {
         this.authType = authType;
     }
     
-    public String getSecurityToken()
-    {
+    public String getSecurityToken() {
+        this.checkSecurityWillSoonExpire();
         return securityToken;
     }
 
@@ -80,10 +80,12 @@ public class ProviderCredentials {
     }
 
     public String getAccessKey() {
+        this.checkSecurityWillSoonExpire();
         return accessKey;
     }
 
     public String getSecretKey() {
+        this.checkSecurityWillSoonExpire();
         return secretKey;
     }
 
