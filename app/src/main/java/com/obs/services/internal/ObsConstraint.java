@@ -147,6 +147,20 @@ public class ObsConstraint
 	
 	public static final String SSL_PROVIDER = "httpclient.ssl-provider";
     
+	    /**
+     * Environment variable name for the obs accesskey
+     */
+    public static final String ACCESS_KEY_ENV_VAR = "OBS_ACCESS_KEY";
+
+    /**
+     * Environment variable name for the oss secretKey
+     */
+    public static final String SECRET_KEY_ENV_VAR = "OBS_SECRET_KEY";
+
+    /**
+     * Environment variable name for the securityToken
+     */
+    public static final String SECURITY_TOKEN_ENV_VAR = "OBS_SECURITY_TOKEN";
     
 
     
