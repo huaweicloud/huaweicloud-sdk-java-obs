@@ -239,7 +239,7 @@ Copyright 2007-2019 the FasterXML.com.
 License: Apache License V2.0  
 Please see above.  
 
-Software: jackson-core-2.9.8
+Software: jackson-core-2.9.9
 Copyright notice:   
 Copyright 2007-2019 Tatu Saloranta (tatu.saloranta@iki.fi).   
 Copyright 2007-2019 the FasterXML.com.  
