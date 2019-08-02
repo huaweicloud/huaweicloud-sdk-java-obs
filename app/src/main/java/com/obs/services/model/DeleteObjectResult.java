@@ -54,7 +54,10 @@ public class DeleteObjectResult extends HeaderResponse
 		return versionId;
 	}
 	
-
+	/**
+	 * Obtain the name of the deleted object.
+	 * @return Object name
+	 */
 	public String getObjectKey() {
         return objectKey;
     }

@@ -1,9 +1,10 @@
 /**
+ * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
- *
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -18,22 +19,12 @@
  */
 package com.obs.services.internal.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
-
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
 
 public class Mimetypes
 {
-    private static final ILogger log = LoggerBuilder.getLogger(Mimetypes.class);
-    
     public static final String MIMETYPE_XML = "application/xml";
     
     public static final String MIMETYPE_TEXT_XML = "text/xml";
@@ -344,7 +335,7 @@ public class Mimetypes
         extensionToMimetypeMap.put("stl", "application/vnd.ms-pki.stl");
         extensionToMimetypeMap.put("stm", "text/html");
         extensionToMimetypeMap.put("sty", "application/x-sty");
-        extensionToMimetypeMap.put("svg", "text/xml");
+        extensionToMimetypeMap.put("svg", "image/svg+xml");
         extensionToMimetypeMap.put("swf", "application/x-shockwave-flash");
         extensionToMimetypeMap.put("tar", "application/x-tar");
         extensionToMimetypeMap.put("tdf", "application/x-tdf");
@@ -437,28 +428,6 @@ public class Mimetypes
     private static class MimetypesHolder
     {
         private static Mimetypes mimetypes = new Mimetypes();
-        static
-        {
-            InputStream mimetypesFile = mimetypes.getClass().getResourceAsStream("/mime.types");
-            if (mimetypesFile != null)
-            {
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Loading mime types from file in the classpath: mime.types");
-                }
-                try
-                {
-                    mimetypes.loadAndReplaceMimetypes(mimetypesFile);
-                }
-                catch (IOException e)
-                {
-                    if (log.isErrorEnabled())
-                    {
-                        log.error("Failed to load mime types from file in the classpath: mime.types", e);
-                    }
-                }
-            }
-        }
     }
     
     public static Mimetypes getInstance()
@@ -466,51 +435,9 @@ public class Mimetypes
         return MimetypesHolder.mimetypes;
     }
     
-    public void loadAndReplaceMimetypes(InputStream is)
-        throws IOException
-    {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        
-        while ((line = br.readLine()) != null)
-        {
-            line = line.trim();
-            
-            if (line.startsWith("#") || line.length() == 0)
-            {
-                // Ignore comments and empty lines.
-            }
-            else
-            {
-                StringTokenizer st = new StringTokenizer(line, " \t");
-                if (st.countTokens() > 1)
-                {
-                    String mimetype = st.nextToken();
-                    while (st.hasMoreTokens())
-                    {
-                        String extension = st.nextToken();
-                        extensionToMimetypeMap.put(extension, mimetype);
-                        if (log.isDebugEnabled())
-                        {
-                            log.debug("Setting mime type for extension '" + extension + "' to '" + mimetype + "'");
-                        }
-                    }
-                }
-                else
-                {
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug("Ignoring mimetype with no associated file extensions: '" + line + "'");
-                    }
-                }
-            }
-        }
-    }
     
     public String getMimetype(String fileName)
     {
-        // Look up default mimetype, represented by '*' in the mime.types file or use
-        // application/octet-stream as a fallback.
         String mimetype = extensionToMimetypeMap.get("*");
         if (mimetype == null)
         {
@@ -524,26 +451,7 @@ public class Mimetypes
             if (extensionToMimetypeMap.keySet().contains(ext))
             {
                 mimetype = extensionToMimetypeMap.get(ext);
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Recognised extension '" + ext + "', mimetype is: '" + mimetype + "'");
-                }
                 return mimetype;
-            }
-            else
-            {
-                if (log.isDebugEnabled())
-                {
-                    log.debug(
-                        "Extension '" + ext + "' is unrecognized in mime type listing" + ", using default mime type: '" + mimetype + "'");
-                }
-            }
-        }
-        else
-        {
-            if (log.isDebugEnabled())
-            {
-                log.debug("File name has no extension, mime type cannot be recognised for: " + fileName);
             }
         }
         return mimetype;

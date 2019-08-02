@@ -17,7 +17,10 @@ import com.obs.services.model.AbstractBulkRequest;
 import com.obs.services.model.DeleteObjectResult;
 import com.obs.services.model.TaskCallback;
 
-
+/**
+ * Request parameters for deleting folders. Deleting a folder will delete all sub-folders and files in the folder.
+ * This function does not support buckets with versioning enabled.
+ */
 public class DropFolderRequest extends AbstractBulkRequest {
 
     private String folderName;
@@ -27,7 +30,11 @@ public class DropFolderRequest extends AbstractBulkRequest {
     public DropFolderRequest() {
     }
 
-
+    /**
+     * Constructor
+     * 
+     * @param bucketName Bucket name
+     */
     public DropFolderRequest(String bucketName) {
         super(bucketName);
     }
@@ -37,22 +44,38 @@ public class DropFolderRequest extends AbstractBulkRequest {
         this.folderName = folderName;
     }
 
-
+    /**
+     * Obtain the folder name.
+     * 
+     * @return Folder name
+     */
     public String getFolderName() {
         return folderName;
     }
 
-
+    /**
+     * Set the folder name.
+     * 
+     * @param folderName Folder name
+     */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
 
-
+    /**
+     * Obtain the callback object of a batch task.
+     * 
+     * @return Callback object
+     */
     public TaskCallback<DeleteObjectResult, String> getCallback() {
         return callback;
     }
 
-
+    /**
+     * Set the callback object of a batch task.
+     * 
+     * @param callback Callback object
+     */
     public void setCallback(TaskCallback<DeleteObjectResult, String> callback) {
         this.callback = callback;
     }

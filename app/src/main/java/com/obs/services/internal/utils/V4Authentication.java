@@ -13,25 +13,20 @@
  */
 package com.obs.services.internal.utils;
 
+import com.obs.services.internal.Constants;
+import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.security.BasicSecurityKey;
+import com.obs.services.internal.security.ProviderCredentials;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.obs.services.internal.Constants;
-import com.obs.services.internal.ObsConstraint;
-import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.security.ProviderCredentials;
+import java.util.*;
 
 
 public class V4Authentication
@@ -99,8 +94,9 @@ public class V4Authentication
         throws ServiceException
     {
         V4Authentication v4 = new V4Authentication();
-        v4.setAk(credent.getAccessKey());
-        v4.setSk(credent.getSecretKey());
+        BasicSecurityKey securityKey = credent.getSecurityKey();
+        v4.setAk(securityKey.getAccessKey());
+        v4.setSk(securityKey.getSecretKey());
         v4.setRegion(credent.getRegion());
         v4.setNowISOTime(date);
         

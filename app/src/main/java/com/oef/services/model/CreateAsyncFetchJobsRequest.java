@@ -20,6 +20,10 @@ import com.obs.services.internal.Constants;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 
+/**
+ * Create an asynchronous fetch job request in the JSON format.
+ *
+ */
 public class CreateAsyncFetchJobsRequest {
 	@JsonProperty(value = "url")
 	private String url;
@@ -59,64 +63,125 @@ public class CreateAsyncFetchJobsRequest {
 	public CreateAsyncFetchJobsRequest(){
 	}
 	
+	/**
+	 * Constructor
+	 * @param url URL to be fetched. You can set multiple URLs and separate them with semicolons (;).
+	 * @param bucket Bucket name
+	 */
 	public CreateAsyncFetchJobsRequest(String url, String bucket){
 		this.setUrl(url);
 		this.setBucketName(bucket);
 	}
 
+	/**
+	 * Obtain the URL.
+	 * @return url
+	 */
 	public String getUrl() {
 		return url;
 	}
 
+	/**
+	 * Set the URL.
+	 * @param url
+	 */
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
+	/**
+	 * Obtain the bucket name.
+	 * @return Bucket name
+	 */
 	public String getBucketName() {
 		return bucket;
 	}
 
+	/**
+	 * Set the bucket name.
+	 * @param bucket Bucket name
+	 */
 	public void setBucketName(String bucket) {
 		this.bucket = bucket;
 	}
 
+	/**
+	 * Obtain the host used for downloading data from a specified URL.
+	 * @return Host used for downloading data from a specified URL
+	 */
 	public String getHost() {
 		return host;
 	}
 
+	/**
+	 * Set the host used for downloading data from a specified URL.
+	 * @param host Host used for downloading data from a specified URL
+	 */
 	public void setHost(String host) {
 		this.host = host;
 	}
 
+	/**
+	 * Obtain the object name.
+	 * @return Object name
+	 */
 	public String getObjectKey() {
 		return key;
 	}
 
+	/**
+	 * Set the object name.
+	 * @param key Object name
+	 */
 	public void setObjectKey(String key) {
 		this.key = key;
 	}
 
+	/**
+	 * Obtain the MD5 file.
+	 * @return File MD5
+	 */
 	public String getMd5() {
 		return md5;
 	}
 
+	/**
+	 * Set the MD5 file.
+	 * @param md5
+	 */
 	public void setMd5(String md5) {
 		this.md5 = md5;
 	}
 
-
+	/**
+	 * Obtain the callback URL.
+	 * @return Callback URL.
+	 */
 	public String getCallBackUrl() {
 		return callBackUrl;
 	}
 
+	/**
+	 * Set the callback URL.
+	 * @param callBackUrl Callback URL.
+	 */
 	public void setCallBackUrl(String callBackUrl) {
 		this.callBackUrl = callBackUrl;
 	}
 
+	/**
+	 * Obtain the callback body.
+	 * @return Callback body
+	 */
 	public String getCallBackBody() {
 		return callBackBody;
 	}
 
+	/**
+	 * Set the callback body (Base64 encoded).
+	 * @param callBackBody Callback body
+	 * @throws ServiceException
+	 */
 	public void setCallBackBody(String callBackBody) throws ServiceException {
 		try {
 			this.callBackBody = ServiceUtils.toBase64(callBackBody.getBytes(Constants.DEFAULT_ENCODING));
@@ -125,34 +190,65 @@ public class CreateAsyncFetchJobsRequest {
 		};
 	}
 	
+	/**
+	 * Obtain the content type of the callback body.
+	 * @return Content type of the callback body
+	 */
 	public String getCallbackBodyType() {
 		return callBackBodyType;
 	}
 
+	/**
+	 * Set the content type of the callback body.
+	 * @param callBackBodyType Content type of the callback body
+	 */
 	public void setCallbackBodyType(String callBackBodyType) {
 		this.callBackBodyType = callBackBodyType;
 	}
 
+	/**
+	 * Obtain the host used for callback.
+	 * @return Host used for callback
+	 */
 	public String getCallBackHost() {
 		return callBackHost;
 	}
 
+	/**
+	 * Set the host used for callback.
+	 * @param callBackHost Host used for callback
+	 */
 	public void setCallBackHost(String callBackHost) {
 		this.callBackHost = callBackHost;
 	}
 
+	/**
+	 * Obtain the storage file type
+	 * @return Storage file type
+	 */
 	public String getFileType() {
 		return fileType;
 	}
 
+	/**
+	 * Set the storage file type
+	 * @param fileType Storage file type
+	 */
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
 
+	/**
+	 * If a file with the same name already exists in the namespace, the current fetch job is canceled.
+	 * @return ignoreSameKey
+	 */
 	public boolean isignoreSameKey() {
 		return ignoreSameKey;
 	}
 
+	/**
+	 * @param ignoreSameKey
+	 */
 	public void setignoreSameKey(boolean ignoreSameKey) {
 		this.ignoreSameKey = ignoreSameKey;
 	}

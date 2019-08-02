@@ -1,9 +1,9 @@
 /**
- * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -18,19 +18,15 @@
  */
 package com.obs.services.internal.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.IHeaders;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.internal.security.ProviderCredentials;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
 
 public abstract class AbstractAuthentication{
 	
@@ -53,8 +49,12 @@ public abstract class AbstractAuthentication{
         {
             throw new ServiceException(e);
         }
-        String signedCanonical = AbstractAuthentication.caculateSignature(canonicalString, credent.getSecretKey());
-        String auth = new StringBuilder(this.getAuthPrefix()).append(" ").append(credent.getAccessKey()).append(":").append(signedCanonical).toString();
+
+        BasicSecurityKey securityKey = credent.getSecurityKey();
+        String accessKey = securityKey.getAccessKey();
+        String secretKey = securityKey.getSecretKey();
+        String signedCanonical = AbstractAuthentication.caculateSignature(canonicalString, secretKey);
+        String auth = new StringBuilder(this.getAuthPrefix()).append(" ").append(accessKey).append(":").append(signedCanonical).toString();
         return new DefaultAuthentication(canonicalString, canonicalString, auth);
     }
     

@@ -23,22 +23,72 @@ import com.oef.services.model.PutExtensionPolicyRequest;
 import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
 
+/**
+ * OEF value-added service interface
+ *
+ */
 public interface IOefClient {
-
+	/**
+     * Close OEF client and release connection resources.
+     * @throws IOException I/O exception. This exception is thrown when resources fail to be closed.
+     */
 	void close() throws IOException;
 	
+	/**
+	 * Configure an asynchronous policy.
+	 * @param bucketName 
+	 *         Bucket name
+	 * @param request
+	 *         Asynchronous policy
+	 * @return Common response headers
+	 * @throws ObsException
+	 *         OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	HeaderResponse putExtensionPolicy(final String bucketName, final PutExtensionPolicyRequest request)
 			throws ObsException;
 
+	/**
+	 * Query an asynchronous policy
+	 * @param bucketName
+	 *         Bucket name
+	 * @return ExtensionPolicyResult
+	 * @throws ObsException
+	 *         OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	QueryExtensionPolicyResult queryExtensionPolicy(final String bucketName)
 			throws ObsException;
 	
+	/**
+	 * Delete an asynchronous policy
+	 * @param bucketName
+	 *          Bucket name
+	 * @return Common response headers
+	 * @throws ObsException
+	 *          OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	HeaderResponse deleteExtensionPolicy(final String bucketName)
 			throws ObsException;
-	
+	/**
+	 * Create an asynchronous fetch job
+	 * @param request
+	 *         Asynchronous fetch job   
+	 * @return CreateAsynchFetchJobsResult
+	 * @throws ObsException
+	 *         OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	CreateAsynchFetchJobsResult createFetchJob(final CreateAsyncFetchJobsRequest request)
 			throws ObsException;
 	
+	/**
+	 * Query an asynchronous fetch job
+	 * @param bucketName
+	 *          Bucket name
+	 * @param jobId
+	 *          Job ID
+	 * @return QueryAsynchFetchJobsResult
+	 * @throws ObsException
+	 *          OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	QueryAsynchFetchJobsResult queryFetchJob(final String bucketName, final String jobId)
 			throws ObsException;
 }

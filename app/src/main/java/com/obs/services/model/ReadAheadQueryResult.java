@@ -15,6 +15,10 @@ package com.obs.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Response to the request for querying the progress of the read-ahead task
+ *
+ */
 public class ReadAheadQueryResult extends HeaderResponse {
 	@JsonProperty(value = "bucket")
 	private String bucketName;
@@ -34,10 +38,22 @@ public class ReadAheadQueryResult extends HeaderResponse {
 	@JsonProperty(value = "status")
 	private String status;
 	
+	/**
+	 * Constructor
+	 */
 	public ReadAheadQueryResult() {
 		
 	}
 	
+	/**
+	 * Constructor
+	 * @param bucketName Bucket name
+	 * @param prefix Name prefix of objects to be read ahead
+	 * @param consumedTime Consumed time (seconds)
+	 * @param finishedObjectNum Number of finished objects
+	 * @param finishedSize Size of finished objects
+	 * @param status Task status
+	 */
 	public ReadAheadQueryResult(String bucketName, String prefix, long consumedTime, 
 			long finishedObjectNum, long finishedSize, String status) {
 		this.bucketName = bucketName;
@@ -48,50 +64,98 @@ public class ReadAheadQueryResult extends HeaderResponse {
 		this.status = status;
 	}
 
+	/**
+	 * Obtain the bucket name.
+	 * @return Bucket name
+	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
+	/**
+	 * Set the bucket name.
+	 * @param bucketName Bucket name
+	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
+	/**
+	 * Obtain the name prefix of objects to be read ahead.
+	 * @return Name prefix of objects to be read ahead
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
+	/**
+	 * Set the name prefix of objects to be read ahead.
+	 * @param prefix Name prefix of objects to be read ahead
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
+	/**
+	 * Obtain the consumed time (seconds)
+	 * @return Consumed time (seconds)
+	 */
 	public long getConsumedTime() {
 		return consumedTime;
 	}
 
+	/**
+	 * Set the consumed time (seconds)
+	 * @param consumedTime Consumed time (seconds)
+	 */
 	public void setConsumedTime(long consumedTime) {
 		this.consumedTime = consumedTime;
 	}
 
+	/**
+	 * Obtain the number of finished objects.
+	 * @return Number of finished objects
+	 */
 	public long getFinishedObjectNum() {
 		return finishedObjectNum;
 	}
 
+	/**
+	 * Set the number of finished objects.
+	 * @param finishedObjectNum Number of finished objects
+	 */
 	public void setFinishedObjectNum(long finishedObjectNum) {
 		this.finishedObjectNum = finishedObjectNum;
 	}
 
+	/**
+	 * Obtain the size of finished objects.
+	 * @return Size of finished objects
+	 */
 	public long getFinishedSize() {
 		return finishedSize;
 	}
 
+	/**
+	 * Set the size of finished objects.
+	 * @param finishedSize Size of finished objects
+	 */
 	public void setFinishedSize(long finishedSize) {
 		this.finishedSize = finishedSize;
 	}
 
+	/**
+	 * Obtain the task status.
+	 * @return Task status
+	 */
 	public String getStatus() {
 		return status;
 	}
 
+	/**
+	 * Set the task status.
+	 * @param status Task status
+	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}

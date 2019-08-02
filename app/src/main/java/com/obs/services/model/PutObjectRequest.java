@@ -210,22 +210,34 @@ public class PutObjectRequest extends PutObjectBasicRequest
 		this.autoClose = autoClose;
 	}
 	
-
+	/**
+	 * Obtain the data transfer listener.
+	 * @return Data transfer listener
+	 */
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
-
+	/**
+	 * Set the data transfer listener.
+	 * @param progressListener Data transfer listener
+	 */
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
-
+	/**
+	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @return Callback threshold of the data transfer listener
+	 */
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
-
+	/**
+	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @param progressInterval Callback threshold of the data transfer listener
+	 */
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
 	}

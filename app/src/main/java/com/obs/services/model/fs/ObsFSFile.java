@@ -159,7 +159,11 @@ public class ObsFSFile extends ObsFSFolder{
 		return this.innerClient.truncateFile(request);
 	}
 	
-
+	/**
+	 * Delete a file.
+	 * @return Response to the request for deleting a file
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	public DropFileResult drop() throws ObsException {
 	    this.checkInternalClient();
 	    DropFileRequest request = new DropFileRequest(this.getBucketName(), this.getObjectKey(), this.getVersionId());

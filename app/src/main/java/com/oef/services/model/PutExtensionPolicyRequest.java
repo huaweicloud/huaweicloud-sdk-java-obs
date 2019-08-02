@@ -15,6 +15,10 @@ package com.oef.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Configure an asynchronous policy request in the JSON format.
+ *
+ */
 public class PutExtensionPolicyRequest {
 	@JsonProperty(value = "fetch")
 	private FetchBean fetch;
@@ -29,26 +33,50 @@ public class PutExtensionPolicyRequest {
 
 	}
 
+	/**
+	 * Obtain the content of the asynchronous fetch policy.
+	 * @return Content of the asynchronous fetch policy
+	 */
 	public FetchBean getFetch() {
 		return fetch;
 	}
 
+	/**
+	 * Set the content of the asynchronous fetch policy.
+	 * @param fetch Content of the asynchronous fetch policy
+	 */
 	public void setFetch(FetchBean fetch) {
 		this.fetch = fetch;
 	}
 
+	/**
+	 * Obtain the content of the asynchronous transcode policy.
+	 * @return Content of the asynchronous transcode policy
+	 */
 	public TranscodeBean getTranscode() {
 		return transcode;
 	}
 
+	/**
+	 * Set the content of the asynchronous transcode policy.
+	 * @param transcode Content of the asynchronous transcode policy
+	 */
 	public void setTranscode(TranscodeBean transcode) {
 		this.transcode = transcode;
 	}
 
+	/**
+	 * Obtain the content of the file compression policy.
+	 * @return Content of the file compression policy
+	 */
 	public CompressBean getCompress() {
 		return compress;
 	}
 
+	/**
+	 * Set the content of the file compression policy.
+	 * @param compress Content of the file compression policy
+	 */
 	public void setCompress(CompressBean compress) {
 		this.compress = compress;
 	}

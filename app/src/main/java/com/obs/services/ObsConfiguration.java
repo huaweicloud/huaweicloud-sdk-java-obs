@@ -173,39 +173,61 @@ public class ObsConfiguration implements Cloneable
         this.bufferSize = bufferSize;
     }
     
-    
+    /**
+     * Check whether path-style access to OBS is enabled. "true" indicates that path-style access is enabled while "false" (default) indicates virtual hosted-style access is enabled.
+     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 
+     * @return Whether to enable path-style access to OBS.
+     */
     @Deprecated
     public boolean isDisableDnsBucket()
     {
         return this.isPathStyle();
     }
     
-	
+	/**
+     * Specify whether to enable path-style access to OBS. "true" indicates that path-style access is enabled while "false" (default) indicates that virtual hosted-style access is enabled.
+     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 
+     * @param disableDns Whether to enable path-style access to OBS.
+     */
     @Deprecated
     public void setDisableDnsBucket(boolean disableDns)
     {
         this.setPathStyle(disableDns);
     }
     
-   
+    /**
+     * Obtain the size (bytes) of the socket receive buffer, corresponding to the "java.net.SocketOptions.SO_RVCBUF" parameter. The default value is "-1", indicating that the size is not set.
+     * @return Socket receive buffer size
+     */
     public int getSocketReadBufferSize()
     {
         return socketReadBufferSize;
     }
     
-    
+    /**
+     * Set the size (bytes) of the socket receive buffer, corresponding to the "java.net.SocketOptions.SO_RVCBUF" parameter. The default value is "-1", indicating that the size is not set.
+     * @param socketReadBufferSize Socket receive buffer size
+     */
     public void setSocketReadBufferSize(int socketReadBufferSize)
     {
         this.socketReadBufferSize = socketReadBufferSize;
     }
     
-   
+    /**
+     * Obtain the size (bytes) of the socket send buffer, corresponding to the "java.net.SocketOptions.SO_SNDBUF" parameter. The default value is "-1", indicating that the size is not set.
+     * @return socketSocket send buffer size 
+     */
     public int getSocketWriteBufferSize()
     {
         return socketWriteBufferSize;
     }
     
-
+    /**
+     * Set the size (bytes) of the socket send buffer (in bytes), corresponding to the "java.net.SocketOptions.SO_SNDBUF" parameter. The default value is "-1", indicating that the size is not set.
+     * @param socketWriteBufferSize socket Socket send buffer size 
+     */
     public void setSocketWriteBufferSize(int socketWriteBufferSize)
     {
         this.socketWriteBufferSize = socketWriteBufferSize;
@@ -307,10 +329,10 @@ public class ObsConfiguration implements Cloneable
     
     
     /**
-     * 判断是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
-     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
+     * Check whether path-style access to OBS is enabled. "true" indicates that path-style access is enabled while "false" (default) indicates virtual hosted-style access is enabled.
+     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
      * 
-     * @return 是否使用路径访问方式访问OBS服务
+     * @return Whether to enable path-style access to OBS.
      */
     @Deprecated
 	public boolean isPathStyle() {
@@ -318,10 +340,10 @@ public class ObsConfiguration implements Cloneable
 	}
     
 	/**
-     * 设置是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
-     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
+     * Specify whether to enable path-style access to OBS. "true" indicates that path-style access is enabled while "false" (default) indicates that virtual hosted-style access is enabled.
+     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
      * 
-     * @param pathStyle 是否使用路径访问方式访问OBS服务
+     * @param pathStyle Whether to enable path-style access to OBS.
      */
     @Deprecated
 	public void setPathStyle(boolean pathStyle) {
@@ -742,32 +764,50 @@ public class ObsConfiguration implements Cloneable
 		this.cname = cname;
 	}
 	
-
+	/**
+	 * Set the provider of SSLContext.
+	 * @return SSLContext provider
+	 */
 	public String getSslProvider() {
 		return sslProvider;
 	}
 	
-
+	/**
+	 * Obtain the provider of SSLContext.
+	 * @param sslProvider SSLContext provider
+	 */
 	public void setSslProvider(String sslProvider) {
 		this.sslProvider = sslProvider;
 	}
 
-
+	/**
+	 * Set the HTTP type used for accessing OBS servers.
+	 * @return HTTP type
+	 */
 	public HttpProtocolTypeEnum getHttpProtocolType() {
 		return httpProtocolType;
 	}
 	
-
+	/**
+	 * Obtain the HTTP type used for accessing OBS servers.
+	 * @param httpProtocolType HTTP type
+	 */
 	public void setHttpProtocolType(HttpProtocolTypeEnum httpProtocolType) {
 		this.httpProtocolType = httpProtocolType;
 	}
 	
-
+	/**
+	 * Set the customized dispatcher.
+	 * @return Customized dispatcher
+	 */
 	public Dispatcher getHttpDispatcher() {
 		return httpDispatcher;
 	}
 	
-
+	/**
+	 * Obtain the customized dispatcher.
+	 * @param httpDispatcher Customized dispatcher
+	 */
 	public void setHttpDispatcher(Dispatcher httpDispatcher) {
 		this.httpDispatcher = httpDispatcher;
 	}

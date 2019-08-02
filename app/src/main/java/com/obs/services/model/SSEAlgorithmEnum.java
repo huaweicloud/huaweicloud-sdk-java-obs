@@ -13,11 +13,19 @@
 **/
 package com.obs.services.model;
 
-
+/**
+ * Server-side encryption types
+ *
+ */
 public enum SSEAlgorithmEnum {
-
+    /**
+     * KMS encryption
+     */
     KMS("kms"),
     
+    /**
+     * AES256 encryption
+     */
     AES256("AES256");
     
     private String code;

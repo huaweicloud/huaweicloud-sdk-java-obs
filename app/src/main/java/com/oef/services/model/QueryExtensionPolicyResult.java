@@ -16,6 +16,10 @@ package com.oef.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.obs.services.model.HeaderResponse;
 
+/**
+ * Query an asynchronous fetch job response in the JSON format.
+ *
+ */
 public class QueryExtensionPolicyResult extends HeaderResponse {
 	@JsonProperty(value = "fetch")
 	private FetchBean fetch;
@@ -32,32 +36,62 @@ public class QueryExtensionPolicyResult extends HeaderResponse {
 		compress = new CompressBean();
 	}
 	
+	/**
+	 * Constructor
+	 * @param fetch Content of the asynchronous fetch policy
+	 * @param transcode Content of the asynchronous transcode policy
+	 * @param compress Content of the file compression policy
+	 */
 	public QueryExtensionPolicyResult(FetchBean fetch, TranscodeBean transcode, CompressBean compress) {
 		this.fetch = fetch;
 		this.transcode = transcode;
 		this.compress = compress;
 	}
 
+	/**
+	 * Obtain the content of the asynchronous fetch policy.
+	 * @return Content of the asynchronous fetch policy
+	 */
 	public FetchBean getFetch() {
 		return fetch;
 	}
 
+	/**
+	 * Set the content of the asynchronous fetch policy.
+	 * @param fetch Content of the asynchronous fetch policy
+	 */
 	public void setFetch(FetchBean fetch) {
 		this.fetch = fetch;
 	}
 
+	/**
+	 * Obtain the content of the asynchronous transcode policy.
+	 * @return Content of the asynchronous transcode policy
+	 */
 	public TranscodeBean getTranscode() {
 		return transcode;
 	}
 
+	/**
+	 * Set the content of the asynchronous transcode policy.
+	 * @param transcode Content of the asynchronous transcode policy
+	 */
 	public void setTranscode(TranscodeBean transcode) {
 		this.transcode = transcode;
 	}
 
+	/**
+	 * Obtain the content of the file compression policy.
+	 * @return Content of the file compression policy
+	 */
 	public CompressBean getCompress() {
 		return compress;
 	}
 
+	/**
+	 * Set the content of the file compression policy.
+	 * @param compress Content of the file compression policy
+	 */
 	public void setCompress(CompressBean compress) {
 		this.compress = compress;
 	}

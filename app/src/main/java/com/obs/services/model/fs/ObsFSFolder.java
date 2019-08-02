@@ -55,7 +55,10 @@ public class ObsFSFolder extends PutObjectResult{
 		return this.innerClient.renameFolder(request);
 	}
 	
-
+	/**
+	 * Delete a folder.
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	public TaskProgressStatus dropFolder() throws ObsException {
 	    this.checkInternalClient();
 	    DropFolderRequest request = new DropFolderRequest(this.getBucketName(), this.getObjectKey());

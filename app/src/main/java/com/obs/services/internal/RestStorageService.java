@@ -1,9 +1,10 @@
 /**
+ * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
- *
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -18,30 +19,6 @@
  */
 package com.obs.services.internal;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.lang.reflect.Method;
-import java.net.ConnectException;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManagerFactory;
-
 import com.obs.log.ILogger;
 import com.obs.log.InterfaceLogBean;
 import com.obs.log.LoggerBuilder;
@@ -52,23 +29,26 @@ import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.UnrecoverableIOException;
 import com.obs.services.internal.security.ProviderCredentialThreadContext;
 import com.obs.services.internal.security.ProviderCredentials;
-import com.obs.services.internal.utils.IAuthentication;
-import com.obs.services.internal.utils.JSONChange;
-import com.obs.services.internal.utils.Mimetypes;
-import com.obs.services.internal.utils.RestUtils;
-import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.internal.utils.V4Authentication;
+import com.obs.services.internal.utils.*;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpMethodEnum;
+import okhttp3.*;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Dispatcher;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.lang.reflect.Method;
+import java.net.ConnectException;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class RestStorageService {
 	private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
@@ -693,7 +673,8 @@ public abstract class RestStorageService {
 	}
 
 	private boolean isProviderCredentialsInValid(ProviderCredentials providerCredentials) {
-		return providerCredentials == null || !ServiceUtils.isValid(providerCredentials.getAccessKey()) || !ServiceUtils.isValid(providerCredentials.getSecretKey()) ;
+		return providerCredentials == null || providerCredentials.getObsCredentialsProvider().getSecurityKey() == null ||
+				!ServiceUtils.isValid(providerCredentials.getSecurityKey().getAccessKey()) || !ServiceUtils.isValid(providerCredentials.getSecurityKey().getSecretKey()) ;
 	}
 	
 	private URI setHost(Request.Builder builder, Request request, String url) {
@@ -757,7 +738,7 @@ public abstract class RestStorageService {
 		}
 		builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
 
-		String securityToken = providerCredentials.getSecurityToken();
+		String securityToken = providerCredentials.getSecurityKey().getSecurityToken();
 		if (ServiceUtils.isValid(securityToken)) {
 			builder.header(this.getIHeaders().securityTokenHeader(), securityToken);
 		}

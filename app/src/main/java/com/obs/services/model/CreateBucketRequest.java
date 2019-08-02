@@ -176,13 +176,19 @@ public class CreateBucketRequest {
         this.location = location;
     }
     
-
+    /**
+     * Obtain the enterprise ID of a bucket.
+     * @return Enterprise ID of the bucket
+     */
     public String getEpid()
     {
         return epid;
     }
     
-
+    /**
+     * Set the enterprise ID of a bucket.
+     * @param epid Enterprise ID
+     */
     public void setEpid(String epid)
     {
         this.epid = epid;
@@ -220,12 +226,18 @@ public class CreateBucketRequest {
         this.storageClass = storageClass;
     }
     
-
+    /**
+     * Obtain the bucket cluster type.
+     * @return Bucket cluster type
+     */
 	public AvailableZoneEnum getAvailableZone() {
 		return availableZone;
 	}
 
-
+	/**
+	 * Set bucket cluster type.
+	 * @param availableZone Bucket cluster type
+	 */
 	public void setAvailableZone(AvailableZoneEnum availableZone) {
 		this.availableZone = availableZone;
 	}

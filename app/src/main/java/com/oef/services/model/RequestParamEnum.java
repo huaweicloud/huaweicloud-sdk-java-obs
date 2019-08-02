@@ -16,9 +16,13 @@ package com.oef.services.model;
 import com.obs.services.model.SpecialParamEnum;
 
 public enum RequestParamEnum {
-	
+	/**
+     * Obtain, set, or delete an asynchronous policy.
+     */
     EXTENSION_POLICY("v1/extension_policy"),
-
+    /**
+     * Obtain, set, or delete an asynchronous job.
+     */
 	ASYNC_FETCH_JOBS("v1/async-fetch/jobs"),
 	
 	DIS_POLICIES("v1/dis_policies"); 

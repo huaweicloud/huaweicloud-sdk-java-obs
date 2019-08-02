@@ -13,12 +13,19 @@
 **/
 package com.obs.services.model;
 
-
+/**
+ * HTTP type
+ *
+ */
 public enum HttpProtocolTypeEnum{
 	
-
+	/**
+	 * HTTP 1.1
+	 */
 	HTTP1_1("http1.1"),
-
+	/**
+	 * HTTP 2.0
+	 */
 	HTTP2_0("http2.0");
 	
 	private String code;

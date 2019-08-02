@@ -13,7 +13,9 @@
 **/
 package com.obs.services.model.fs;
 
-
+/**
+ * Request parameters for deleting objects
+ */
 
 public class DropFileRequest {
     
@@ -26,45 +28,80 @@ public class DropFileRequest {
     public DropFileRequest() {
     }
 
-
+    /**
+     * Constructor
+     * 
+     * @param bucketName Bucket name
+     * @param objectKey  Object name
+     */
     public DropFileRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
-
+    /**
+     * Constructor
+     * 
+     * @param bucketName Bucket name
+     * @param objectKey  Object name
+     * @param versionId  Object version
+     */
     public DropFileRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.versionId = versionId;
     }
 
-
+    /**
+     * Obtain the bucket name.
+     * 
+     * @return Bucket name
+     */
     public String getBucketName() {
         return bucketName;
     }
 
-
+    /**
+     * Set the bucket name.
+     * 
+     * @param bucketName Bucket name
+     */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 
-
+    /**
+     * Obtain the object name.
+     * 
+     * @return Object name
+     */
     public String getObjectKey() {
         return objectKey;
     }
 
-
+    /**
+     * Set the object name.
+     * 
+     * @param objectKey Object name
+     */
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
 
-
+    /**
+     * Obtain the object version ID.
+     * 
+     * @return Object version
+     */
     public String getVersionId() {
         return versionId;
     }
 
-
+    /**
+     * Set the version ID of the object.
+     * 
+     * @param versionId
+     */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
     }

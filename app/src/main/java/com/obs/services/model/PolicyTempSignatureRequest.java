@@ -20,7 +20,10 @@ import java.util.List;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
-
+/**
+ * Request parameters of policy-based temporary access authorization
+ *
+ */
 public class PolicyTempSignatureRequest extends AbstractTemporarySignatureRequest{
     
     private Date expiryDate;
@@ -32,24 +35,44 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     public PolicyTempSignatureRequest() {
     }
     
-
+    /**
+     * Constructor
+     * @param method HTTP/HTTPS request method
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey) {
         super(method, bucketName, objectKey);
     }
 
-
+    /**
+     * Constructor
+     * @param method HTTP/HTTPS request method
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param expiryDate Expiration data
+     */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey, Date expiryDate) {
         super(method, bucketName, objectKey);
         this.expiryDate = expiryDate;
     }
     
-
+    /**
+     * Constructor
+     * @param method HTTP/HTTPS request method
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     * @param expires Validity period
+     */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey, long expires) {
         super(method, bucketName, objectKey);
         this.expires = expires;
     }
     
-
+    /**
+     * Generate a policy based on the validity period and policy condition.
+     * @return
+     */
     public String generatePolicy() {
         Date requestDate = new Date();
         SimpleDateFormat expirationDateFormat = ServiceUtils.getExpirationDateFormat();
@@ -68,36 +91,54 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
 
 
-
+    /**
+     * Set the expiration date.
+     * @return Expiration date
+     */
     public Date getExpiryDate()
     {
         return expiryDate;
     }
     
-
+    /**
+     * Obtain the expiration date.
+     * @param expiryDate Expiration date
+     */
     public void setExpiryDate(Date expiryDate)
     {
         this.expiryDate = expiryDate;
     }
     
-
+    /**
+     * Obtain the validity period. The default value is 5 minutes (300 seconds).
+     * @return Validity period
+     */
     public long getExpires()
     {
         return expires;
     }
     
-
+    /**
+     * Set the validity period (seconds).
+     * @param expires Validity period
+     */
     public void setExpires(long expires)
     {
         this.expires = expires;
     }
 
-
+    /**
+     * Obtain the condition set of the policy.
+     * @return Policy condition set
+     */
     public List<PolicyConditionItem> getConditions() {
         return conditions;
     }
 
-
+    /**
+     * Set the condition set of the policy.
+     * @param conditions Policy condition set
+     */
     public void setConditions(List<PolicyConditionItem> conditions) {
         this.conditions = conditions;
     }
