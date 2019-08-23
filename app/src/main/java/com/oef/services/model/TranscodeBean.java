@@ -16,7 +16,7 @@ package com.oef.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * 异步转码策略内容
+ * Content of the asynchronous transcode policy
  *
  */
 public class TranscodeBean {
@@ -30,23 +30,44 @@ public class TranscodeBean {
     	
     }
 	
+    /**
+	 * Constructor
+	 * @param status Policy status
+	 * @param agency IAM agency
+	 */
 	public TranscodeBean(String status, String agency) {
 		this.status = status;
 		this.agency = agency;
 	}
 	
+	/**
+	 * Obtain the policy status.
+	 * @return Policy status
+	 */
 	public String getStatus() {
 		return status;
 	}
 	
+	/**
+	 * Set the policy status.
+	 * @param status Policy status
+	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
 	
+	/**
+	 * Obtain the IAM agency.
+	 * @return IAM agency
+	 */
 	public String getAgency() {
 		return agency;
 	}
 	
+	/**
+	 * Set the IAM agency.
+	 * @param agency IAM agency
+	 */
 	public void setAgency(String agency) {
 		this.agency = agency;
 	}

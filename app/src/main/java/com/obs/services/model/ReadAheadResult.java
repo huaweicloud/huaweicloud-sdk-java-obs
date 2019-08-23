@@ -15,6 +15,10 @@ package com.obs.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Response to the request for reading ahead objects
+ *
+ */
 public class ReadAheadResult extends HeaderResponse {
 	@JsonProperty(value = "bucket")
 	private String bucketName;
@@ -25,36 +29,69 @@ public class ReadAheadResult extends HeaderResponse {
     @JsonProperty(value = "taskID")
 	private String taskId;
     
+    /**
+     * Constructor
+     */
     public ReadAheadResult() {
     	
     }
     
+    /**
+     * Constructor
+     * @param bucketName Bucket name
+     * @param prefix Name prefix of objects to be read ahead
+     * @param taskId ID of the read-ahead task
+     */
     public ReadAheadResult(String bucketName, String prefix, String taskId) {
     	this.bucketName = bucketName;
     	this.prefix = prefix;
     	this.taskId = taskId;
     }
     
+    /**
+                  * Obtain the bucket name. 
+     * @return Bucket name
+     */
     public String getBucketName() {
 		return bucketName;
 	}
 
+    /**
+                 * Set the bucket name.
+     * @param bucketName Bucket name
+     */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
+	/**
+	    * Obtain the name prefix of objects to be read ahead.
+	 * @return Name prefix of objects to be read ahead
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
+	/**
+	    * Set the name prefix of objects to be read ahead.
+	 * @param prefix Name prefix of objects to be read ahead
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
+	/**
+	 * Obtain the ID of the read-ahead task.
+	 * @return ID of the read-ahead task
+	 */
 	public String getTaskId() {
 		return taskId;
 	}
 
+	/**
+	 * Set the ID of the read-ahead task.
+	 * @param taskId ID of the read-ahead task
+	 */
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
 	}

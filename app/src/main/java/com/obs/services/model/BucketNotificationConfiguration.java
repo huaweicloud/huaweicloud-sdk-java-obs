@@ -39,15 +39,19 @@ public class BucketNotificationConfiguration extends HeaderResponse
         return this;
     }
     
-
+    /**
+     * Add FunctionGraph notification configuration.
+     * @param functionGraphConfiguration FunctionGraph notification configuration
+     * @return Event notification configuration of the bucket
+     */
     public BucketNotificationConfiguration addFunctionGraphConfiguration(FunctionGraphConfiguration functionGraphConfiguration){
         this.getFunctionGraphConfigurations().add(functionGraphConfiguration);
         return this;
     }
     
     /**
-     * Event notification configuration list
-     * @return Event notification configuration list
+     * Obtain the list of event notification configurations
+     * @return List of event notification configurations
      */
     public List<TopicConfiguration> getTopicConfigurations()
     {
@@ -57,7 +61,10 @@ public class BucketNotificationConfiguration extends HeaderResponse
         return topicConfigurations;
     }
     
-
+    /**
+     * Obtain the list of FunctionGraph notification configurations
+     * @return List of FunctionGraph notification configurations
+     */
     public List<FunctionGraphConfiguration> getFunctionGraphConfigurations()
     {
         if(this.functionGraphConfigurations == null){
@@ -75,7 +82,10 @@ public class BucketNotificationConfiguration extends HeaderResponse
         this.topicConfigurations = topicConfigurations;
     }
     
-
+    /**
+     * Set the list of FunctionGraph notification configurations.
+     * @param functionGraphConfigurations List of FunctionGraph notification configurations
+     */
     public void setFunctionGraphConfigurations(List<FunctionGraphConfiguration> functionGraphConfigurations)
     {
         this.functionGraphConfigurations = functionGraphConfigurations;

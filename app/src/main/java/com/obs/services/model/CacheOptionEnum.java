@@ -13,8 +13,15 @@
  */
 package com.obs.services.model;
 
+/**
+ * Control option of the read-ahead cache
+ *
+ */
 public enum CacheOptionEnum {
 
+	/**
+	 * Prioritize performance of the read-ahead cache, but the consistency is not ensured.
+	 */
 	 PERFORMANCE("cache-with-performance");
 	
 	private String code;

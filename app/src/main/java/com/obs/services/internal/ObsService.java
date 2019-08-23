@@ -13,178 +13,36 @@
  */
 package com.obs.services.internal;
 
-import java.io.BufferedInputStream;
-import java.io.Closeable;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.Set;
-import java.util.TreeMap;
-
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.AccessControlListHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketCorsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketDirectColdAccessHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketEncryptionHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLifecycleConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLocationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLoggingHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketNotificationConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketQuotaHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketReplicationConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketStorageInfoHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketStoragePolicyHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketTagInfoHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketVersioningHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketWebsiteConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CompleteMultipartUploadHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CopyObjectResultHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CopyPartResultHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.DeleteObjectsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.InitiateMultipartUploadHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListBucketsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListMultipartUploadsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListObjectsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListPartsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListVersionsHandler;
+import com.obs.services.internal.handler.XmlResponsesSaxParser.*;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.internal.task.BlockRejectedExecutionHandler;
 import com.obs.services.internal.task.DefaultTaskProgressStatus;
-import com.obs.services.internal.utils.AbstractAuthentication;
-import com.obs.services.internal.utils.JSONChange;
-import com.obs.services.internal.utils.Mimetypes;
-import com.obs.services.internal.utils.RestUtils;
-import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.internal.utils.V2Authentication;
-import com.obs.services.internal.utils.V4Authentication;
-import com.obs.services.model.AbstractBulkRequest;
-import com.obs.services.model.AccessControlList;
-import com.obs.services.model.AppendObjectRequest;
-import com.obs.services.model.AppendObjectResult;
-import com.obs.services.model.AuthTypeEnum;
-import com.obs.services.model.AvailableZoneEnum;
-import com.obs.services.model.BucketCors;
-import com.obs.services.model.BucketDirectColdAccess;
-import com.obs.services.model.BucketEncryption;
-import com.obs.services.model.BucketLocationResponse;
-import com.obs.services.model.BucketLoggingConfiguration;
-import com.obs.services.model.BucketMetadataInfoRequest;
-import com.obs.services.model.BucketMetadataInfoResult;
-import com.obs.services.model.BucketNotificationConfiguration;
-import com.obs.services.model.BucketPolicyResponse;
-import com.obs.services.model.BucketQuota;
-import com.obs.services.model.BucketStorageInfo;
-import com.obs.services.model.BucketStoragePolicyConfiguration;
-import com.obs.services.model.BucketTagInfo;
-import com.obs.services.model.BucketVersioningConfiguration;
-import com.obs.services.model.CompleteMultipartUploadRequest;
-import com.obs.services.model.CompleteMultipartUploadResult;
-import com.obs.services.model.CopyObjectRequest;
-import com.obs.services.model.CopyObjectResult;
-import com.obs.services.model.CopyPartRequest;
-import com.obs.services.model.CopyPartResult;
-import com.obs.services.model.CreateBucketRequest;
-import com.obs.services.model.DeleteObjectResult;
-import com.obs.services.model.DeleteObjectsRequest;
-import com.obs.services.model.DeleteObjectsResult;
-import com.obs.services.model.ExtensionBucketPermissionEnum;
-import com.obs.services.model.ExtensionObjectPermissionEnum;
-import com.obs.services.model.GetObjectMetadataRequest;
-import com.obs.services.model.GetObjectRequest;
-import com.obs.services.model.GrantAndPermission;
-import com.obs.services.model.GroupGrantee;
-import com.obs.services.model.HeaderResponse;
-import com.obs.services.model.InitiateMultipartUploadRequest;
-import com.obs.services.model.InitiateMultipartUploadResult;
-import com.obs.services.model.LifecycleConfiguration;
-import com.obs.services.model.ListBucketsRequest;
-import com.obs.services.model.ListBucketsResult;
-import com.obs.services.model.ListMultipartUploadsRequest;
-import com.obs.services.model.ListObjectsRequest;
-import com.obs.services.model.ListPartsRequest;
-import com.obs.services.model.ListPartsResult;
-import com.obs.services.model.ListVersionsRequest;
-import com.obs.services.model.ListVersionsResult;
-import com.obs.services.model.MultipartUploadListing;
-import com.obs.services.model.ObjectListing;
-import com.obs.services.model.ObjectMetadata;
-import com.obs.services.model.ObsBucket;
-import com.obs.services.model.ObsObject;
-import com.obs.services.model.OptionsInfoRequest;
-import com.obs.services.model.Permission;
-import com.obs.services.model.PolicyTempSignatureRequest;
-import com.obs.services.model.PostSignatureRequest;
-import com.obs.services.model.PostSignatureResponse;
-import com.obs.services.model.ProgressListener;
-import com.obs.services.model.PutObjectBasicRequest;
-import com.obs.services.model.PutObjectRequest;
-import com.obs.services.model.ReadAheadQueryResult;
-import com.obs.services.model.ReadAheadRequest;
-import com.obs.services.model.ReadAheadResult;
-import com.obs.services.model.AbstractTemporarySignatureRequest;
-import com.obs.services.model.ReplicationConfiguration;
-import com.obs.services.model.RestoreObjectRequest;
+import com.obs.services.internal.utils.*;
+import com.obs.services.model.*;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
-import com.obs.services.model.RestoreObjectResult;
-import com.obs.services.model.SetObjectMetadataRequest;
-import com.obs.services.model.SpecialParamEnum;
-import com.obs.services.model.SseCHeader;
-import com.obs.services.model.SseKmsHeader;
-import com.obs.services.model.StorageClassEnum;
-import com.obs.services.model.TaskCallback;
-import com.obs.services.model.TaskProgressListener;
-import com.obs.services.model.TemporarySignatureRequest;
-import com.obs.services.model.TemporarySignatureResponse;
-import com.obs.services.model.UploadPartRequest;
-import com.obs.services.model.UploadPartResult;
-import com.obs.services.model.V4PostSignatureResponse;
-import com.obs.services.model.VersionOrDeleteMarker;
-import com.obs.services.model.VersioningStatusEnum;
-import com.obs.services.model.WebsiteConfiguration;
-import com.obs.services.model.fs.DropFileResult;
-import com.obs.services.model.fs.FSStatusEnum;
-import com.obs.services.model.fs.GetBucketFSStatusResult;
-import com.obs.services.model.fs.NewBucketRequest;
-import com.obs.services.model.fs.ObsFSAttribute;
-import com.obs.services.model.fs.ObsFSFile;
-import com.obs.services.model.fs.ReadFileResult;
-import com.obs.services.model.fs.RenameRequest;
-import com.obs.services.model.fs.RenameResult;
-import com.obs.services.model.fs.SetBucketFSStatusRequest;
-import com.obs.services.model.fs.TruncateFileRequest;
-import com.obs.services.model.fs.TruncateFileResult;
-import com.obs.services.model.fs.WriteFileRequest;
-import com.oef.services.model.CreateAsynchFetchJobsResult;
-import com.oef.services.model.DisPolicy;
-import com.oef.services.model.GetDisPolicyResult;
-import com.oef.services.model.QueryExtensionPolicyResult;
-import com.oef.services.model.QueryAsynchFetchJobsResult;
-import com.oef.services.model.RequestParamEnum;
-
+import com.obs.services.model.fs.*;
+import com.oef.services.model.*;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import java.io.*;
+import java.lang.reflect.Method;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ObsService extends RestStorageService {
 
@@ -946,8 +804,11 @@ public class ObsService extends RestStorageService {
 	    
 		Map<String, Object> queryParams = new TreeMap<String, Object>();
 		queryParams.putAll(request.getQueryParams());
+		BasicSecurityKey securityKey =  this.getProviderCredentials().getSecurityKey();
+		String accessKey = securityKey.getAccessKey();
+		String secretKey = securityKey.getSecretKey();
+		String securityToken = securityKey.getSecurityToken();
 		if (!queryParams.containsKey(this.getIHeaders().securityTokenHeader())) {
-			String securityToken = this.getProviderCredentials().getSecurityToken();
 			if (ServiceUtils.isValid(securityToken)) {
 				queryParams.put(this.getIHeaders().securityTokenHeader(), securityToken);
 			}
@@ -985,7 +846,7 @@ public class ObsService extends RestStorageService {
 		}
 	 	
 		String accessKeyIdPrefix = this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? "AccessKeyId=" : "AWSAccessKeyId=";
-		uriPath += accessKeyIdPrefix + this.getProviderCredentials().getAccessKey();
+		uriPath += accessKeyIdPrefix + accessKey;
 		
 		String expiresOrPolicy = "";
 		String uriExpiresOrPolicy = "";
@@ -1054,7 +915,7 @@ public class ObsService extends RestStorageService {
 			log.debug("CanonicalString is :" + canonicalString);
 		}
 		
-		String signedCanonical = ServiceUtils.signWithHmacSha1(credentials.getSecretKey(), canonicalString);
+		String signedCanonical = ServiceUtils.signWithHmacSha1(secretKey, canonicalString);
 		String encodedCanonical = RestUtils.encodeUrlString(signedCanonical);
 		uriPath += "&Signature=" + encodedCanonical;
 		
@@ -1071,7 +932,10 @@ public class ObsService extends RestStorageService {
 	}
 	
 	protected PostSignatureResponse _createPostSignature(PostSignatureRequest request, boolean isV4) throws Exception {
-		
+		BasicSecurityKey securityKey =  this.getProviderCredentials().getSecurityKey();
+		String accessKey = securityKey.getAccessKey();
+		String secretKey = securityKey.getSecretKey();
+		String securityToken = securityKey.getSecurityToken();
 		Date requestDate = request.getRequestDate() != null ? request.getRequestDate() : new Date();
 		SimpleDateFormat expirationDateFormat = ServiceUtils.getExpirationDateFormat();
 		Date expiryDate = request.getExpiryDate() == null
@@ -1086,7 +950,7 @@ public class ObsService extends RestStorageService {
 		
 		String shortDate = ServiceUtils.getShortDateFormat().format(requestDate);
 		String longDate = ServiceUtils.getLongDateFormat().format(requestDate);
-		String credential = this.getCredential(shortDate);
+		String credential = this.getCredential(shortDate, accessKey);
 		if (request.getConditions() != null && !request.getConditions().isEmpty()) {
 			originPolicy.append(ServiceUtils.join(request.getConditions(), ",")).append(",");
 		} else {
@@ -1100,7 +964,6 @@ public class ObsService extends RestStorageService {
 			params.putAll(request.getFormParams());
 
 			if (!params.containsKey(this.getIHeaders().securityTokenHeader())) {
-				String securityToken = this.getProviderCredentials().getSecurityToken();
 				if (ServiceUtils.isValid(securityToken)) {
 					params.put(this.getIHeaders().securityTokenHeader(), securityToken);
 				}
@@ -1152,12 +1015,12 @@ public class ObsService extends RestStorageService {
 		String policy = ServiceUtils.toBase64(originPolicy.toString().getBytes(Constants.DEFAULT_ENCODING));
 		
 		if(isV4) {
-			String signature = V4Authentication.caculateSignature(policy, shortDate, this.getProviderCredentials().getSecretKey());
+			String signature = V4Authentication.caculateSignature(policy, shortDate, secretKey);
 			return new V4PostSignatureResponse(policy, originPolicy.toString(),
 					Constants.V4_ALGORITHM, credential, longDate, signature, expiration);
 		}else {
-			String signature = AbstractAuthentication.caculateSignature(policy, this.getProviderCredentials().getSecretKey());
-			return new PostSignatureResponse(policy, originPolicy.toString(), signature, expiration, this.getProviderCredentials().getAccessKey());
+			String signature = AbstractAuthentication.caculateSignature(policy, secretKey);
+			return new PostSignatureResponse(policy, originPolicy.toString(), signature, expiration, accessKey);
 		}
 		
 	}
@@ -1167,7 +1030,7 @@ public class ObsService extends RestStorageService {
 		String bucketName = request.getBucketName();
 		String endpoint = this.getEndpoint();
 		String objectKey = request.getObjectKey();
-		
+
 		if (!this.isCname()) {
 		    if (ServiceUtils.isValid(bucketName)) {
 	            if (this.isPathStyle() || !ServiceUtils.isBucketNameValidDNSName(bucketName)) {
@@ -1204,8 +1067,12 @@ public class ObsService extends RestStorageService {
 		}else {
 			headers.put(CommonHeaders.HOST, endpoint +  ":" + (this.getHttpsOnly() ? this.getHttpsPort() : this.getHttpPort()));
 		}
+
+		BasicSecurityKey securityKey =  this.getProviderCredentials().getSecurityKey();
+		String accessKey = securityKey.getAccessKey();
+		String secretKey = securityKey.getSecretKey();
+		String securityToken = securityKey.getSecurityToken();
 		if (!queryParams.containsKey(this.getIHeaders().securityTokenHeader())) {
-			String securityToken = this.getProviderCredentials().getSecurityToken();
 			if (ServiceUtils.isValid(securityToken)) {
 				queryParams.put(this.getIHeaders().securityTokenHeader(), securityToken);
 			}
@@ -1247,7 +1114,7 @@ public class ObsService extends RestStorageService {
 		String longDate = ServiceUtils.getLongDateFormat().format(requestDate);
 
 		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "Algorithm", Constants.V4_ALGORITHM);
-		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "Credential", this.getCredential(shortDate));
+		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "Credential", this.getCredential(shortDate, accessKey));
 		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "Date", longDate);
 		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "Expires", request.getExpires() <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS : request.getExpires());
 		queryParams.put(Constants.V2_HEADER_PREFIX_CAMEL + "SignedHeaders", signedHeaders.toString());
@@ -1302,14 +1169,14 @@ public class ObsService extends RestStorageService {
 				.append("/").append(Constants.SERVICE).append("/").append(Constants.REQUEST_TAG).append("\n")
 				.append(V4Authentication.byteToHex((V4Authentication.sha256encode(canonicalRequest.toString()))));
 		signedUrl.append("&").append(Constants.V2_HEADER_PREFIX_CAMEL).append("Signature=")
-				.append(V4Authentication.caculateSignature(stringToSign.toString(), shortDate, this.getProviderCredentials().getSecretKey()));
+				.append(V4Authentication.caculateSignature(stringToSign.toString(), shortDate, secretKey));
 		TemporarySignatureResponse response = new TemporarySignatureResponse(signedUrl.toString());
 		response.getActualSignedRequestHeaders().putAll(actualSignedRequestHeaders);
 		return response;
 	}
 
-	protected String getCredential(String shortDate) {
-		return new StringBuilder(this.getProviderCredentials().getAccessKey()).append("/").append(shortDate).append("/")
+	protected String getCredential(String shortDate, String accessKey) {
+		return new StringBuilder(accessKey).append("/").append(shortDate).append("/")
 				.append(ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE).append("/").append(Constants.SERVICE).append("/")
 				.append(Constants.REQUEST_TAG).toString();
 	}
@@ -2247,6 +2114,29 @@ public class ObsService extends RestStorageService {
 		}
 		return (ObsFSAttribute) this.getObjectImpl(true, request.getBucketName(), request.getObjectKey(), headers,
 				params, null, -1);
+	}
+
+	protected boolean doesObjectExistImpl(GetObjectMetadataRequest request) throws ServiceException {
+		Map<String, String> headers = new HashMap<String, String>();
+		this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders());
+		Map<String, String> params = new HashMap<String, String>();
+		if (request.getVersionId() != null) {
+			params.put(ObsRequestParams.VERSION_ID, request.getVersionId());
+		}
+		boolean doesObjectExist = false;
+		try{
+			Response response = performRestHead(request.getBucketName(), request.getObjectKey(), params, headers);
+			if(200 == response.code()) {
+				doesObjectExist = true;
+			}
+		}catch (ServiceException ex){
+			if(404 == ex.getResponseCode()){
+				doesObjectExist = false;
+			}else {
+				throw ex;
+			}
+		}
+		return  doesObjectExist;
 	}
 	
 	TransResult transSetObjectMetadataRequest(SetObjectMetadataRequest request) throws ServiceException {

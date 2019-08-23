@@ -54,6 +54,12 @@ public class SseCHeader
         this.algorithm = algorithm;
     }
     
+    
+    /**
+     * Obtain the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey".
+     * 
+     * @return Encryption algorithm type
+     */
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }

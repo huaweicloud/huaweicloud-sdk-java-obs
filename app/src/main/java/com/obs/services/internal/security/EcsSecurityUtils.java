@@ -13,7 +13,6 @@
  */
 package com.obs.services.internal.security;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.obs.services.internal.utils.JSONChange;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -21,42 +20,34 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class EcsSecurityUtils {
-    /** Default root url for the openstack metadata apis. */
+    /**
+     * Default root url for the openstack metadata apis.
+     */
     private static final String OPENSTACK_METADATA_ROOT = "/openstack/latest";
 
-    /** Default endpoint for the ECS Instance Metadata Service. */
+    /**
+     * Default endpoint for the ECS Instance Metadata Service.
+     */
     private static final String ECS_METADATA_SERIVCE_URL = "http://169.254.169.254";
 
     private static final String EC2_METADATA_SERVICE_OVERRIDE_URL = "ecsMetadataServiceOverrideEndpoint";
 
-    private static OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false)
-            .retryOnConnectionFailure(false).cache(null).build();
+    private static final long HTTP_CONNECT_TIMEOUT_VALUE = 50 * 1000;
 
-    /**
-     * The temporary security credentials (access, secret, securitytoken,
-     * and expires_at) associated with the IAM role.
-     */
-    public static class SecurityKey {
-        @JsonProperty("access")
-        public String accessKey;
-        @JsonProperty("secret")
-        public String secretKey;
-        @JsonProperty("securitytoken")
-        public String securityToken;
-        @JsonProperty("expires_at")
-        public String expiresDate;
-    }
+    private static OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false)
+            .retryOnConnectionFailure(false).cache(null).connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
+            .writeTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).readTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).build();
 
     /**
      * Returns the temporary security credentials (access, secret, securitytoken,
      * and expires_at) associated with the IAM roles on the instance.
      */
     public static SecurityKey getSecurityKey() throws IOException {
-        String securityKeyInfo = getResource(OPENSTACK_METADATA_ROOT + "/securitykey");
-        return (SecurityKey)JSONChange.jsonToObj(new SecurityKey(), securityKeyInfo);
+        String securityKeyInfo = getResource(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
+        return (SecurityKey) JSONChange.jsonToObj(new SecurityKey(), securityKeyInfo);
     }
 
     /**
@@ -71,19 +62,23 @@ public class EcsSecurityUtils {
      * Get resource and return contents from metadata service
      * with the specify path.
      */
-    private static String getResource(String path) throws IOException {
+    private static String getResource(String endpoint) throws IOException {
         Request.Builder builder = new Request.Builder();
-        String endpoint = getEndpointForECSMetadataService();
         builder.header("Accept", "*/*");
         Request request = builder.url(endpoint).get().build();
         Call c = httpClient.newCall(request);
-        Response res = c.execute();
-        System.out.println("\tStatus:" + res.code());
+        Response res = null;
         String content = new String();
-        if (res.body() != null) {
-            content = res.body().string();
+        try {
+            res = c.execute();
+            if (res.body() != null) {
+                content = res.body().string();
+            }
+        } finally {
+            if(res != null){
+                res.close();
+            }
         }
-        res.close();
         return content;
     }
 }

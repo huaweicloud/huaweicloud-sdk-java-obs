@@ -92,12 +92,18 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 		return obsVersion;
 	}
 	
-
+	/**
+	 * Obtain the enterprise ID of a bucket.
+	 * @return Enterprise ID
+	 */
 	public String getEpid() {
 	    return epid;
 	}
 	
-
+	/**
+	 * Obtain the bucket cluster type.
+	 * @return Bucket cluster type
+	 */
 	public AvailableZoneEnum getAvailableZone() {
 		return this.availableZone;
 	}

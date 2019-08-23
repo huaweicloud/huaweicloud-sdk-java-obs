@@ -1,3 +1,40 @@
+Version 3.19.7
+
+New features:
+1. Added the IObsCredentialsProvider interface to provide methods for obtaining AK/SK methods and actively refreshing AK/SK.
+2. Added three implementations of the IObsCredentialsProvider interface:
+   a. User provide AK/SK: BasicObsCredentialsProvider;
+   b. Get AK/SK from the environment variable: EnvironmentVariableObsCredentialsProvider;
+   c. Get AK/SK from the ECS service: EcsObsCredentialsProvider.
+3. Support the content-type setting of the svp format file, and set the value to image/svg+xml.
+4. Update the third-party dependencies:
+   a. replace jackson-core 2.9.8 with jackson-core 2.9.9
+   b. replace jackson-databind 2.9.8 with jackson-databind 2.9.9
+   c. replace jackson-annotations 2.9.8 with jackson-core 2.9.9
+
+Resolved issues:
+
+-----------------------------------------------------------------------------------
+
+Version 3.19.5.3
+
+New features:
+
+
+Resolved issues:
+
+-----------------------------------------------------------------------------------
+
+Version 3.19.5.2
+
+New features:
+
+
+Resolved issues:
+1. Updated the copyright notice.
+
+-----------------------------------------------------------------------------------
+
 Version 3.19.5
 
 New features:

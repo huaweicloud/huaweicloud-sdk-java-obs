@@ -29,10 +29,18 @@ public class SseKmsHeader
     
     private String projectId;
     
+    /**
+     * Obtain the project ID.
+     * @return projectId Project ID
+     */
     public String getProjectId() {
 		return projectId;
 	}
 
+    /**
+     * Set the project ID.
+     * @param projectId Project ID
+     */
 	public void setProjectId(String projectId) {
 		this.projectId = projectId;
 	}
@@ -59,6 +67,11 @@ public class SseKmsHeader
         this.encryption = encryption;
     }
     
+    /**
+     * Obtain the encryption algorithm type. Only KMS is supported.
+     * 
+     * @return Encryption algorithm type
+     */
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }

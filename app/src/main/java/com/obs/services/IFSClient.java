@@ -147,10 +147,20 @@ public interface IFSClient {
 	 */
 	TruncateFileResult truncateFile(TruncateFileRequest request) throws ObsException;
 	
-
+	/**
+	 * Delete a file.
+	 * @param request Request parameters for deleting a file
+	 * @return Response to the request for deleting a file
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	DropFileResult dropFile(DropFileRequest request) throws ObsException;
 	
-
+	/**
+	 * Delete a folder.
+	 * @param request Request parameters for deleting a folder
+	 * @return Batch task execution status
+	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 */
 	TaskProgressStatus dropFolder(DropFolderRequest request) throws ObsException; 
 	
 }

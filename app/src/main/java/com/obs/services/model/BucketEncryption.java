@@ -13,6 +13,10 @@
 **/
 package com.obs.services.model;
 
+/**
+ * Bucket encryption information. Only the SSE-KMS encryption is supported.
+ *
+ */
 public class BucketEncryption extends HeaderResponse {
     
     private SSEAlgorithmEnum sseAlgorithm;
@@ -21,22 +25,44 @@ public class BucketEncryption extends HeaderResponse {
     
     public BucketEncryption() {}
 
+    /**
+     * Constructor
+     * @param sseAlgorithm Bucket encryption algorithm
+     */
     public BucketEncryption(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
     }
     
+    /**
+     * Obtain the bucket encryption algorithm.
+     * @return Bucket encryption algorithm
+     */
     public SSEAlgorithmEnum getSseAlgorithm() {
         return sseAlgorithm;
     }
 
+    /**
+     * Set the bucket encryption algorithm.
+     * @param sseAlgorithm Bucket encryption algorithm
+     */
     public void setSseAlgorithm(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
     }
 
+    /**
+     * Obtain the master key used in the SSE-KMS encryption. If the value is blank, the default master key is used.
+     * 
+     * @return Master key used in the SSE-KMS encryption
+     */
     public String getKmsKeyId() {
         return kmsKeyId;
     }
 
+    /**
+     * Set the master key used in the SSE-KMS encryption. If the value is blank, the default master key will be used.
+     * 
+     * @param kmsKeyId Master key used in the SSE-KMS encryption
+     */
     public void setKmsKeyId(String kmsKeyId) {
         this.kmsKeyId = kmsKeyId;
     }

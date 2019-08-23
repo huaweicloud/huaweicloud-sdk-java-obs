@@ -1,3 +1,40 @@
+Version 3.19.7
+
+新特性：
+
+1. 添加IObsCredentialsProvider接口，提供获取AK/SK方法和主动刷新AK/SK的方法；
+2. 添加IObsCredentialsProvider接口的三种实现方式：
+   a. 用户传入AK/SK：BasicObsCredentialsProvider；
+   b. 从环境变量读取AK/SK：EnvironmentVariableObsCredentialsProvider；
+   c. 从ECS服务获取AK/SK：EcsObsCredentialsProvider。
+3. 支持svp格式文件的content-type设置，设置值为image/svg+xml；
+4. 更新第三方依赖：
+   a. 使用 jackson-core 2.9.9 替代 jackson-core 2.9.8
+   b. 使用 jackson-databind 2.9.9 替代 jackson-databind 2.9.8
+   c. 使用 jackson-annotations 2.9.9 替代 jackson-core 2.9.8
+
+修复问题：
+
+-----------------------------------------------------------------------------------
+
+Version 3.19.5.3
+
+新特性：
+
+
+修复问题：
+
+-----------------------------------------------------------------------------------
+
+Version 3.19.5.2
+
+新特性：
+
+
+修复问题：
+1. 更新版本声明；
+
+-----------------------------------------------------------------------------------
 
 Version 3.19.5
 

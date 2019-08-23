@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -359,6 +358,7 @@ public class ResumableClient {
 		initiateUploadRequest.setSuccessRedirectLocation(uploadFileRequest.getSuccessRedirectLocation());
 		initiateUploadRequest.setSseCHeader(uploadFileRequest.getSseCHeader());
 		initiateUploadRequest.setSseKmsHeader(uploadFileRequest.getSseKmsHeader());
+		initiateUploadRequest.setMetadata(uploadFileRequest.getObjectMetadata());
 		
 		InitiateMultipartUploadResult initiateUploadResult = this.obsClient.initiateMultipartUpload(initiateUploadRequest);
 		uploadCheckPoint.uploadID = initiateUploadResult.getUploadId();

@@ -15,7 +15,10 @@ package com.obs.services.model;
 
 import java.util.List;
 
-
+/**
+ * FunctionGraph event notification configuration
+ *
+ */
 public class FunctionGraphConfiguration extends AbstractNotification {
 
     private String functionGraph;
@@ -24,19 +27,34 @@ public class FunctionGraphConfiguration extends AbstractNotification {
 
     }
 
-
+    /**
+     * Constructor
+     * 
+     * @param id            Event notification configuration ID
+     * @param filter        Filtering rules
+     * @param functionGraph FunctionGraph URN
+     * @param events        List of event types that need to be notified
+     */
     public FunctionGraphConfiguration(String id, Filter filter, String functionGraph, List<EventTypeEnum> events) {
         super(id, filter, events);
         this.functionGraph = functionGraph;
 
     }
 
-
+    /**
+     * Obtain the FunctionGraph URN.
+     * 
+     * @return FunctionGraph URN
+     */
     public String getFunctionGraph() {
         return functionGraph;
     }
 
-
+    /**
+     * Set the FunctionGraph URN.
+     * 
+     * @param functionGraph FunctionGraph URN
+     */
     public void setFunctionGraph(String functionGraph) {
         this.functionGraph = functionGraph;
     }

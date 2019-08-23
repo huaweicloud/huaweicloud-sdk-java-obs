@@ -16,7 +16,10 @@ package com.obs.services.model;
 import java.util.Map;
 import java.util.TreeMap;
 
-
+/**
+ * Abstract class for request parameters of signature-carrying queries
+ *
+ */
 public abstract class AbstractTemporarySignatureRequest {
     
     protected HttpMethodEnum method;
@@ -34,50 +37,76 @@ public abstract class AbstractTemporarySignatureRequest {
     public AbstractTemporarySignatureRequest() {
     }
 
-
+    /**
+     * Constructor
+     * @param method HTTP/HTTPS request method
+     * @param bucketName Bucket name
+     * @param objectKey Object name
+     */
     public AbstractTemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey) {
         this.method = method;
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
-
+    /**
+     * Obtain the HTTP/HTTPS request method.
+     * @return HTTP/HTTPS request method
+     */
     public HttpMethodEnum getMethod()
     {
         return method;
     }
     
-
+    /**
+     * Set the HTTP/HTTP request method.
+     * @param method HTTP/HTTPS request method
+     */
     public void setMethod(HttpMethodEnum method)
     {
         this.method = method;
     }
     
-
+    /**
+     * Obtain the bucket name.
+     * @return Bucket name
+     */
     public String getBucketName()
     {
         return bucketName;
     }
     
-
+    /**
+     * Set the bucket name.
+     * @param bucketName Bucket name
+     */
     public void setBucketName(String bucketName)
     {
         this.bucketName = bucketName;
     }
     
-
+    /**
+     * Obtain the object name.
+     * @return Object name
+     */
     public String getObjectKey()
     {
         return objectKey;
     }
     
-
+    /**
+     * Set the object name.
+     * @param objectKey Object name
+     */
     public void setObjectKey(String objectKey)
     {
         this.objectKey = objectKey;
     }
     
-
+    /**
+     * Obtain the request header information.
+     * @return Request header information
+     */
     public Map<String, String> getHeaders()
     {
         if (headers == null)
@@ -87,7 +116,10 @@ public abstract class AbstractTemporarySignatureRequest {
         return headers;
     }
     
-
+    /**
+     * Obtain the query parameters of the request.
+     * @return Query parameter information
+     */
     public Map<String, Object> getQueryParams()
     {
         if (queryParams == null)
@@ -97,25 +129,37 @@ public abstract class AbstractTemporarySignatureRequest {
         return queryParams;
     }
     
-
+    /**
+     * Obtain the special operator.
+     * @return Special operator
+     */
     public SpecialParamEnum getSpecialParam()
     {
         return specialParam;
     }
     
-
+    /**
+     * Set the special operator.
+     * @param specialParam Special operator
+     */
     public void setSpecialParam(SpecialParamEnum specialParam)
     {
         this.specialParam = specialParam;
     }
 
-
+    /**
+     * Set request header information.
+     * @param headers Request header information
+     */
     public void setHeaders(Map<String, String> headers)
     {
         this.headers = headers;
     }
 
-
+    /**
+     * Set request query parameters.
+     * @param queryParams Request query parameter
+     */
     public void setQueryParams(Map<String, Object> queryParams)
     {
         this.queryParams = queryParams;

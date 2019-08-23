@@ -22,7 +22,7 @@ package com.obs.services.model;
  */
 public class AppendObjectRequest extends PutObjectRequest{
 	
-	protected long position = -1L;
+	protected long position;
 	
 	/**
 	 * Obtain the position where data is to be appended.

@@ -18,7 +18,7 @@ import java.util.Date;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * 下载文件的请求参数
+ * Parameters in a request for downloading a file
  */
 public class DownloadFileRequest {
 
@@ -410,39 +410,66 @@ public class DownloadFileRequest {
         this.versionId = versionId;
     }
     
-
+    /**
+	 * Obtain the data transfer listener.
+	 * @return Data transfer listener
+	 */
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
-
+	/**
+	 * Set the data transfer listener.
+	 * @param progressListener Data transfer listener
+	 */
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
-
+	/**
+	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @return Callback threshold of the data transfer listener
+	 */
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
-
+	/**
+	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @param progressInterval Callback threshold of the data transfer listener
+	 */
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
 	}
-
+	
+	/**
+	 * Obtain the control option of the read-ahead cache.
+	 * @return Control option of the read-ahead cache
+	 */
 	public CacheOptionEnum getCacheOption() {
 		return cacheOption;
 	}
 
-
+	/**
+	 * Set the control option of the read-ahead cache.
+	 * @param cacheOption Control option of the read-ahead cache
+	 */
 	public void setCacheOption(CacheOptionEnum cacheOption) {
 		this.cacheOption = cacheOption;
 	}
 
+	/**
+	 * Obtain the cache data expiration time.
+	 * @return Cache data expiration time
+	 */
 	public long getTtl() {
 		return ttl;
 	}
 
+	/**
+	 * Set the cache data expiration time.
+	 * @param ttl Cache data expiration time
+	 */
 	public void setTtl(long ttl) {
 		if(ttl < 0 || ttl > 259200) {
 			ttl = 60 * 60 * 24L;

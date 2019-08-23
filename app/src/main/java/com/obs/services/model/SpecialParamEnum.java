@@ -132,8 +132,14 @@ public enum SpecialParamEnum
 	 */
 	METADATA("metadata"),
 	
+	/**
+	 * Set, obtain, or delete the encryption configuration of a bucket.
+	 */
 	ENCRYPTION("encryption"),
 	
+	/**
+	 * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
+	 */
 	DIRECTCOLDACCESS("directcoldaccess"); 
     
     /**

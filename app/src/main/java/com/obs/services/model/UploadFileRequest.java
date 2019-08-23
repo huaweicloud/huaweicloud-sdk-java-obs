@@ -21,7 +21,9 @@ import com.obs.services.model.ObjectMetadata;
  */
 public class UploadFileRequest extends PutObjectBasicRequest {
 	
+    // Part size, in bytes. The default value is 9 MB.
     private long partSize = 1024 * 1024 * 9l;
+    // Number of threads for uploading parts. The default value is 1.
     private int taskNum = 1;
    
     private String uploadFile;
@@ -142,6 +144,11 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 		this.enableCheckSum = enableCheckSum;
 	}
 	
+	/**
+	 * Obtain the part size set for uploading the object.
+	 * 
+	 * @return Part size
+	 */ 
 	public long getPartSize() {
 		return partSize;
 	}
@@ -275,15 +282,34 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 		this.enableCheckSum = enableCheckSum;
 	}
 	
+	/**
+	 * Obtain the data transfer listener.
+	 * @return Data transfer listener
+	 */
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
+
+	/**
+	 * Set the data transfer listener.
+	 * @param progressListener Data transfer listener
+	 */
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
+	
+	/**
+	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @return Callback threshold of the data transfer listener
+	 */
 	public long getProgressInterval() {
 		return progressInterval;
 	}
+	
+	/**
+	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
+	 * @param progressInterval Callback threshold of the data transfer listener
+	 */
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
 	}

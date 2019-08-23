@@ -13,7 +13,10 @@
 **/
 package com.obs.services.model;
 
-
+/**
+ *  Bucket cluster type
+ *
+ */
 public enum AvailableZoneEnum {
 	
 	MULTI_AZ("3az");

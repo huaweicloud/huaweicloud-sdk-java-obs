@@ -33,31 +33,96 @@ import com.oef.services.model.PutExtensionPolicyRequest;
 import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
 
+/**
+ * OEF client
+ */
 public class OefClient extends ObsClient implements IOefClient {
 
 	private static final ILogger ILOG = LoggerBuilder.getLogger(OefClient.class);
 
 
+	/**
+	 * Constructor
+	 * 
+	 * @param endPoint
+	 *            OEF service address
+	 * 
+	 */
 	public OefClient(String endPoint) {
 		super(endPoint);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param config
+	 *            Configuration parameters of OEF client
+	 * 
+	 */
 	public OefClient(ObsConfiguration config) {
 		super(config);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param accessKey
+	 *            Access key ID
+	 * @param secretKey
+	 *            Secret access key
+	 * @param endPoint
+	 *            OEF service address
+	 * 
+	 */
 	public OefClient(String accessKey, String secretKey, String endPoint) {
 		super(accessKey, secretKey, endPoint);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param accessKey
+	 *            Access key ID
+	 * @param secretKey
+	 *            Secret access key
+	 * @param config
+	 *            Configuration parameters of OEF client
+	 * 
+	 */
 	public OefClient(String accessKey, String secretKey, ObsConfiguration config) {
 		super(accessKey, secretKey, config);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param accessKey
+	 *            AK in the temporary access keys
+	 * @param secretKey
+	 *            SK in the temporary access keys
+	 * @param securityToken
+	 *            Security token
+	 * @param endPoint
+	 *            OEF service address
+	 * 
+	 */
 	public OefClient(String accessKey, String secretKey, String securityToken, String endPoint) {
 		super(accessKey, secretKey, securityToken, endPoint);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param accessKey
+	 *            AK in the temporary access keys
+	 * @param secretKey
+	 *            SK in the temporary access keys
+	 * @param securityToken
+	 *            Security Token
+	 * @param config
+	 *            Configuration parameters of OEF client
+	 * 
+	 */
 	public OefClient(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {
 		super(accessKey, secretKey, securityToken, config);
 	}

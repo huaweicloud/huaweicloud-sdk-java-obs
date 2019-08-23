@@ -13,7 +13,9 @@
 **/
 package com.obs.services.model;
 
-
+/**
+ * Response to the request for restoring Archive objects
+ */
 public class RestoreObjectResult extends HeaderResponse {
 
     private String bucketName;

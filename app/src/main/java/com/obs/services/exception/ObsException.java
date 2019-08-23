@@ -231,6 +231,10 @@ public class ObsException extends RuntimeException
         this.responseStatus = responseStatus;
     }
 
+	/**
+	 * Obtain the detailed error indicators returned by the OBS server.
+	 * @return OBS Detailed error indicators returned by the server
+	 */
 	public String getErrorIndicator() {
 		return errorIndicator;
 	}

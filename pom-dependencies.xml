@@ -4,7 +4,7 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-java</artifactId>
-	<version>3.19.5</version> 
+	<version>3.19.7</version> 
 	<packaging>jar</packaging>
 
 	<name>OBS SDK for Java</name>
