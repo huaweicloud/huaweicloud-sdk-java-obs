@@ -34,11 +34,11 @@ public class BasicSecurityProvider implements ISecurityProvider {
     }
 
     private static void checkSecurityKey(String accessKey, String secretKey) {
-        if (accessKey == null || accessKey.isEmpty()) {
+        if (accessKey == null) {
             throw new IllegalArgumentException("accessKey should not be null or empty.");
         }
 
-        if (secretKey == null || secretKey.isEmpty()) {
+        if (secretKey == null) {
             throw new IllegalArgumentException("secretKey should not be null or empty.");
         }
     }
