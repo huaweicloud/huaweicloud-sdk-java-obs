@@ -485,6 +485,7 @@ public abstract class RestStorageService {
 						Request.Builder builder = request.newBuilder();
 						builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
 						this.setHost(builder, request, null);
+						builder.header(CommonHeaders.USER_AGENT, Constants.USER_AGENT_VALUE);
 						request = builder.build();
 					}
 				} else {

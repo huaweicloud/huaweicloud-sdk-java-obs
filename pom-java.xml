@@ -143,7 +143,40 @@
 					</descriptors>
 				</configuration>
 			</plugin>
-
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<excludes>
+									<exclude>com.squareup.okhttp3:okhttp:jar:</exclude>
+									<exclude>com.squareup.okio:okio:jar:</exclude>
+									<exclude>com.fasterxml.jackson.core:jackson-core:jar:</exclude>
+									<exclude>com.fasterxml.jackson.core:jackson-databind:jar:</exclude>
+									<exclude>com.fasterxml.jackson.core:jackson-annotations:jar:</exclude>
+									<exclude>org.apache.logging.log4j:log4j-core:jar:</exclude>
+									<exclude>org.apache.logging.log4j:log4j-api:jar:</exclude>
+								</excludes>
+							</artifactSet>
+							<relocations>
+								<relocation>
+									<pattern>com.jamesmurty.utils</pattern>
+									<shadedPattern>com.obs.jamesmurty.utils</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 </project>
