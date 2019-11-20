@@ -232,14 +232,14 @@ Copyright (C) Alibaba Cloud Computing
 License: Apache License V2.0
 Please see above.
 
-Software: jackson-annotations-2.9.8
+Software: jackson-annotations-2.10.0
 Copyright notice:   
 Copyright 2007-2019 the FasterXML.com.  
 
 License: Apache License V2.0  
 Please see above.  
 
-Software: jackson-core-2.9.9
+Software: jackson-core-2.10.0
 Copyright notice:   
 Copyright 2007-2019 Tatu Saloranta (tatu.saloranta@iki.fi).   
 Copyright 2007-2019 the FasterXML.com.  
@@ -247,7 +247,7 @@ Copyright 2007-2019 the FasterXML.com.
 License: Apache License V2.0
 Please see above.
 
-Software: jackson-databind-2.9.8
+Software: jackson-databind-2.10.0
 Copyright notice:   
 Copyright 2007-2019 the FasterXML.com.  
 
@@ -282,7 +282,7 @@ License: Apache License V2.0
 Please see above.  
 
 
-Software: okhttp-3.10.0	
+Software: okhttp-3.11.0	
 Copyright notice:   
 Copyright (C) 2012 Google Inc.  
 Copyright (C) 2011 The Android Open Source Project  
