@@ -1,0 +1,1 @@
+239506dba0e801b708be1ee54ad4662419a549466d82b4e893a329a89ea3d34b *huaweicloud-obs-sdk-java_3.19.11.tar.gz
