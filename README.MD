@@ -1,3 +1,24 @@
+Version 3.19.11
+New features:
+1. Request authentication supports obtaining access keys by searching in sequence.
+2. Download requests are supported. If status code 302 Found is returned, authentication information is not required for redirection.
+
+Third-party dependence:
+1. Replace log4j-core 2.8.2 with log4j-core 2.12.0.
+2. Replace jackson-databind 2.8.2 with log4j-api 2.12.0.
+3. Replace java-xmlbuilder 1.1 with java-xmlbuilder 1.2.
+
+-----------------------------------------------------------------------------------
+
+Version 3.19.9
+
+Third-party dependencies:
+1. replace jackson-core 2.9.9 with jackson-core 2.9.10
+2. replace jackson-databind 2.9.9 with jackson-databind 2.9.10
+3. replace jackson-annotations 2.9.9 with jackson-core 2.9.10
+
+-----------------------------------------------------------------------------------
+
 Version 3.19.7
 
 New features:
