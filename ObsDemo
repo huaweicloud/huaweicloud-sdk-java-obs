@@ -1,0 +1,105 @@
+
+import com.obs.services.EcsObsCredentialsProvider;
+import com.obs.services.ObsClient;
+import com.obs.services.ObsConfiguration;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
+
+
+public class ObsDemo {
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Integer number = Integer.parseInt(args[0]);
+        Integer type = Integer.parseInt(args[1]);
+
+        if (type == 1) {
+            testAsyncByProvider1(number);
+        }
+        else {
+            testAsyncByProvider2(number);
+        }
+    }
+
+
+    public static void testAsync(Action action, String type, Integer threadNumber) throws
+            InterruptedException,
+            IOException {
+
+        ExecutorService executorService = Executors.newFixedThreadPool(threadNumber);
+        AtomicLong atomicLong = new AtomicLong(0);
+        CountDownLatch countDownLatch = new CountDownLatch(threadNumber);
+        List<Long> eachTimes = Collections.synchronizedList(new ArrayList());//Lists.newCopyOnWriteArrayList();
+
+        for (int i = 0; i < threadNumber; i++) {
+            executorService.execute(()-> {
+                    long beginTime = System.currentTimeMillis();
+//                    System.out.println("进入了" + Thread.currentThread() + "时间戳" + System.currentTimeMillis());
+                    try {
+                        action.doAction();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        // 访问obs
+                        long costTime = System.currentTimeMillis() - beginTime;
+//                        System.out.println(Thread.currentThread() + " cost " + costTime + "时间戳" + System
+// .currentTimeMillis());
+                        atomicLong.getAndAdd(costTime);
+                        eachTimes.add(costTime);
+                        countDownLatch.countDown();
+                    }
+                });
+        }
+
+        countDownLatch.await();
+        System.out.println(type + "并发" + threadNumber + "个总共耗时 " + atomicLong.get() + " ms. 平均耗时是 " + (atomicLong.get
+                () / (double) threadNumber) + " ms,分别耗时了 " + eachTimes.toString());
+
+        executorService.shutdown();
+    }
+
+    public static void testAsyncByProvider1(Integer threadNumber) throws IOException, InterruptedException {
+        ObsConfiguration config = new ObsConfiguration();
+        config.setEndPoint("obs.cn-east-2.myhuaweicloud.com");
+        config.setSocketTimeout(30000);
+        config.setMaxErrorRetry(1);
+
+        ObsClient obsClient = new ObsClient(new EcsObsCredentialsProvider(), config);
+        testAsync(new Action() {
+            public void doAction() {
+                obsClient.listObjects("obs-bigdata-hd-002");
+            }
+        }, "委托ObsClient", threadNumber);
+        obsClient.close();
+    }
+
+    public static void testAsyncByProvider2(Integer threadNumber) throws IOException, InterruptedException {
+        ObsConfiguration config = new ObsConfiguration();
+        config.setEndPoint("obs.cn-east-2.myhuaweicloud.com");
+        config.setSocketTimeout(30000);
+        config.setMaxErrorRetry(1);
+
+        testAsync(new Action() {
+            public void doAction() throws IOException {
+                ObsClient obsClient = new ObsClient(new EcsObsCredentialsProvider(), config);
+                obsClient.listObjects("obs-bigdata-hd-002");
+                obsClient.close();
+            }
+        }, "委托ObsClient", threadNumber);
+
+}
+
+}
+
+interface Action {
+    void doAction() throws Exception;
+}
+
+
+
