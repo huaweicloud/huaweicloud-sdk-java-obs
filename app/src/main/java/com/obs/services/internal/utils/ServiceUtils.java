@@ -1,9 +1,9 @@
 /**
- * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -101,6 +101,12 @@ public class ServiceUtils
 
 	public static void asserParameterNotNull(Object value, String errorMessage) {
 		if (value == null) {
+			throw new IllegalArgumentException(errorMessage);
+		}
+	}
+	
+	public static void assertParameterNotNegative(long value, String errorMessage) {
+		if (value < 0) {
 			throw new IllegalArgumentException(errorMessage);
 		}
 	}
@@ -359,8 +365,8 @@ public class ServiceUtils
                 String value = entry.getValue();
 
                 // Trim prefixes from keys.
-                String keyStr = key != null ? key.toString() : "";
-                if (keyStr.toLowerCase().startsWith(headerPrefix))
+                key = key != null ? key.toString() : "";
+                if (key.toLowerCase().startsWith(headerPrefix))
                 {
                     try
                     {	
@@ -409,9 +415,8 @@ public class ServiceUtils
                         }
                     }
 				}
-                else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES.contains(keyStr.toLowerCase(Locale.getDefault())))
+                else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase(Locale.getDefault())))
                 {
-                    key = keyStr;
                     if (log.isDebugEnabled())
                     {
                         log.debug("Leaving HTTP header item unchanged: " + key + "=" + value);
@@ -421,7 +426,7 @@ public class ServiceUtils
                 {
                     if (log.isDebugEnabled())
                     {
-                        log.debug("Ignoring metadata item: " + keyStr + "=" + value);
+                        log.debug("Ignoring metadata item: " + key + "=" + value);
                     }
                     continue;
                 }
@@ -880,5 +885,13 @@ public class ServiceUtils
         }
         
         return obsProperties;
+    }
+    
+    public static Date cloneDateIgnoreNull(Date date) {
+    	if(null == date) {
+    		return null;
+    	} else {
+    		return (Date) date.clone();
+    	}
     }
 }

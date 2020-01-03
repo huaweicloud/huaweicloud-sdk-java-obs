@@ -39,7 +39,7 @@ public class RepeatableRequestEntity extends RequestBody implements Closeable {
 	private volatile long bytesWritten = 0;
 	private InputStream inputStream;
 
-	private final int writeBufferSize = ObsConstraint.DEFAULT_CHUNK_SIZE;
+	private static final int writeBufferSize = ObsConstraint.DEFAULT_CHUNK_SIZE;
 
 	public RepeatableRequestEntity(InputStream is, String contentType, long contentLength,
 			ObsProperties obsProperties) {

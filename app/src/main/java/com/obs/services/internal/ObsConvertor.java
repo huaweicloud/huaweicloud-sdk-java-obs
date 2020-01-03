@@ -13,6 +13,10 @@
  */
 package com.obs.services.internal;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
@@ -31,6 +35,7 @@ import com.obs.services.model.Owner;
 import com.obs.services.model.Permission;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
+import com.obs.services.model.RestoreTierEnum;
 import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TopicConfiguration;
@@ -63,7 +68,7 @@ public class ObsConvertor extends V2Convertor {
 		
 		try {
 			XMLBuilder builder = XMLBuilder.create("RestoreRequest").elem("Days").t(String.valueOf(req.getDays())).up();
-			if (req.getRestoreTier() != null) {
+			if (req.getRestoreTier() != null && req.getRestoreTier() != RestoreTierEnum.BULK) {
 				builder.e("RestoreJob").e("Tier").t(req.getRestoreTier().getCode());
 			}
 			return builder.asString();
@@ -191,7 +196,7 @@ public class ObsConvertor extends V2Convertor {
 			}
 			
 			return builder.asString();
-		} catch (Exception e) {
+		} catch (ParserConfigurationException | FactoryConfigurationError | TransformerException e) {
 			throw new ServiceException("Failed to build XML document for ACL", e);
 		} 
 	}

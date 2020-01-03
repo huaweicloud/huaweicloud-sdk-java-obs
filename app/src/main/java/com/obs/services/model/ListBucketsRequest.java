@@ -21,6 +21,8 @@ package com.obs.services.model;
 public class ListBucketsRequest {
 	private boolean queryLocation = true;
 
+	private BucketTypeEnum bucketType;
+
 	public boolean isQueryLocation() {
 		return queryLocation;
 	}
@@ -38,6 +40,12 @@ public class ListBucketsRequest {
 		return "ListBucketsRequest [queryLocation=" + queryLocation + "]";
 	}
 
+	public BucketTypeEnum getBucketType() {
+		return bucketType;
+	}
+
+
+	public void setBucketType(BucketTypeEnum bucketType) {
+		this.bucketType = bucketType;
+	}
 }
-
-

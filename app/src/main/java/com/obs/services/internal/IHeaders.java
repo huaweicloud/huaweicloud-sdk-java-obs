@@ -73,4 +73,5 @@ public interface IHeaders{
 	String fsModeHeader();
 	
 	String azRedundancyHeader();
+	String bucketTypeHeader();
 }

@@ -31,6 +31,8 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
     private AvailableZoneEnum availableZone;
     
     private String epid;
+
+    private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
     
 	public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
 			List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
@@ -47,14 +49,15 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 		this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
 		this.availableZone = availableZone;
 	}
-	
+
 	public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
-            List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
-            String obsVersion, AvailableZoneEnum availableZone, String epid) {
-        this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
-        this.availableZone = availableZone;
-        this.epid = epid;
-    }
+			List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
+			String obsVersion, AvailableZoneEnum availableZone, String epid, BucketTypeEnum bucketType) {
+		this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
+		this.availableZone = availableZone;
+		this.epid = epid;
+		this.bucketType = bucketType;
+	}
 	
 	
 
@@ -111,9 +114,11 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 	@Override
 	public String toString() {
 		return "BucketMetadataInfoResult [storageClass=" + storageClass + ", location=" + location + ", obsVersion="
-				+ obsVersion + "]";
+				+ obsVersion + ", bucketType="+ bucketType.name() + "]";
 	}
-	
-	
-    
+
+
+	public BucketTypeEnum getBucketType() {
+		return bucketType;
+	}
 }

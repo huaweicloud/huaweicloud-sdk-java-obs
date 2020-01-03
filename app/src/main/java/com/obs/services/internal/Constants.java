@@ -121,22 +121,19 @@ public class Constants
 	}
 	
 	
-	public static final Map<AuthTypeEnum, IHeaders> HEADERS_MAP;
-	public static final Map<AuthTypeEnum, IConvertor> CONVERTOR_MAP;
-	public static final Map<AuthTypeEnum, AbstractAuthentication> AUTHTICATION_MAP;
+	public static final Map<AuthTypeEnum, IHeaders> HEADERS_MAP = new HashMap<AuthTypeEnum, IHeaders>();
+	public static final Map<AuthTypeEnum, IConvertor> CONVERTOR_MAP = new HashMap<AuthTypeEnum, IConvertor>();
+	public static final Map<AuthTypeEnum, AbstractAuthentication> AUTHTICATION_MAP = new HashMap<AuthTypeEnum, AbstractAuthentication>();
 	
 	static {
-		HEADERS_MAP = new HashMap<AuthTypeEnum, IHeaders>();
 		HEADERS_MAP.put(AuthTypeEnum.V2, V2Headers.getInstance());
 		HEADERS_MAP.put(AuthTypeEnum.V4, V2Headers.getInstance());
 		HEADERS_MAP.put(AuthTypeEnum.OBS, ObsHeaders.getInstance());
 		
-		CONVERTOR_MAP = new HashMap<AuthTypeEnum, IConvertor>();
 		CONVERTOR_MAP.put(AuthTypeEnum.V2, V2Convertor.getInstance());
 		CONVERTOR_MAP.put(AuthTypeEnum.V4, V2Convertor.getInstance());
 		CONVERTOR_MAP.put(AuthTypeEnum.OBS, ObsConvertor.getInstance());
 		
-		AUTHTICATION_MAP = new HashMap<AuthTypeEnum, AbstractAuthentication>();
 		AUTHTICATION_MAP.put(AuthTypeEnum.V2, V2Authentication.getInstance());
 		AUTHTICATION_MAP.put(AuthTypeEnum.OBS, ObsAuthentication.getInstance());
 	}
@@ -195,7 +192,7 @@ public class Constants
     
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
     
-    public static final String OBS_SDK_VERSION = "3.19.7.3";
+    public static final String OBS_SDK_VERSION = "3.19.12";
     
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
     
@@ -230,6 +227,12 @@ public class Constants
     public static final String DISABLED = "Disabled";
     
     public static final String YES = "yes";
+
+    public static final String OBJECT = "OBJECT";
+
+    public static final String PFS = "PFS";
+
+    public static final String POSIX = "POSIX";
     
     
     public static final List<String> ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -256,7 +259,8 @@ public class Constants
         "access-control-max-age",
         "access-control-allow-methods",
         "access-control-expose-headers",
-        "connection"
+        "connection",
+		"pragma"
         ));
     
     public static final List<String> ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(Arrays.asList(
@@ -284,7 +288,8 @@ public class Constants
         "if-none-match",
         "last-modified",
         "content-range",
-        "x-cache-control"));
+        "x-cache-control",
+        "x-obs-bucket-type"));
     
     
     public static final List<String> ALLOWED_RESOURCE_PARAMTER_NAMES = Collections.unmodifiableList(Arrays.asList(

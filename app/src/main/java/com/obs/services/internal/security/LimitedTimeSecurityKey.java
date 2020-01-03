@@ -16,13 +16,15 @@ package com.obs.services.internal.security;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 public class LimitedTimeSecurityKey extends BasicSecurityKey {
     protected String accessKey;
     protected String secretKey;
     protected String securityToken;
     protected Date expiryDate;
-    private final long expirySeconds = 5 * 60;
-    private final long willSoonExpireSeconds = 60;
+    private static final long expirySeconds = 5 * 60;
+    private static final long willSoonExpireSeconds = 60;
 
     public LimitedTimeSecurityKey(String accessKey, String secretKey, String securityToken) {
         super(accessKey, secretKey, securityToken);
@@ -37,14 +39,14 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.securityToken = securityToken;
-        this.expiryDate = expiryDate;
+        this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
     }
 
     public boolean aboutToExpire() {
         return (expiryDate.getTime() - getUtcTime().getTime()) >= willSoonExpireSeconds * 1000 && (expiryDate.getTime() - getUtcTime().getTime()) < expirySeconds * 1000;
     }
 
-    public boolean willSoonExpire(){
+    public boolean willSoonExpire() {
         return expiryDate.before(getUtcTime()) || (expiryDate.getTime() - getUtcTime().getTime()) < willSoonExpireSeconds * 1000;
     }
 
@@ -68,5 +70,9 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
     @Override
     public String getSecurityToken() {
         return securityToken;
+    }
+
+    public Date getExpiryDate() {
+        return ServiceUtils.cloneDateIgnoreNull(this.expiryDate);
     }
 }

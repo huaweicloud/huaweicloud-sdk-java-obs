@@ -3,14 +3,14 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * <p>
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
- **/
+ */
 package com.obs.services;
 
 import java.io.File;
@@ -63,6 +63,8 @@ import com.obs.services.model.ListPartsRequest;
 import com.obs.services.model.ListPartsResult;
 import com.obs.services.model.ListVersionsRequest;
 import com.obs.services.model.ListVersionsResult;
+import com.obs.services.model.ModifyObjectRequest;
+import com.obs.services.model.ModifyObjectResult;
 import com.obs.services.model.MultipartUploadListing;
 import com.obs.services.model.ObjectListing;
 import com.obs.services.model.ObjectMetadata;
@@ -76,6 +78,8 @@ import com.obs.services.model.PutObjectsRequest;
 import com.obs.services.model.ReadAheadQueryResult;
 import com.obs.services.model.ReadAheadRequest;
 import com.obs.services.model.ReadAheadResult;
+import com.obs.services.model.RenameObjectRequest;
+import com.obs.services.model.RenameObjectResult;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
@@ -85,6 +89,8 @@ import com.obs.services.model.SetObjectMetadataRequest;
 import com.obs.services.model.TaskProgressStatus;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
+import com.obs.services.model.TruncateObjectRequest;
+import com.obs.services.model.TruncateObjectResult;
 import com.obs.services.model.UploadFileRequest;
 import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
@@ -230,16 +236,29 @@ public interface IObsClient {
      */
     ObsBucket createBucket(CreateBucketRequest request) throws ObsException;
 
-    /**
-     * Obtain the bucket list.
-     *
-     * @param request
-     *            Obtain the request parameters for obtaining the bucket list.
-     * @return Bucket list
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
-    List<ObsBucket> listBuckets(ListBucketsRequest request) throws ObsException;
+
+	RenameObjectResult renameObject(String bucketName, String objectKey, String newObjectKey) throws ObsException;
+
+
+	RenameObjectResult renameObject(final RenameObjectRequest request) throws ObsException;
+
+
+	TruncateObjectResult truncateObject(String bucketName, String objectKey, long newLength) throws ObsException;
+
+
+	TruncateObjectResult truncateObject(final TruncateObjectRequest request) throws ObsException;
+
+
+	ModifyObjectResult modifyObject(String bucketName, String objectKey, long position, File file) throws ObsException;
+
+
+	ModifyObjectResult modifyObject(String bucketName, String objectKey, long position, InputStream input) throws ObsException;
+
+
+	ModifyObjectResult modifyObject(ModifyObjectRequest request) throws ObsException;
+
+
+	List<ObsBucket> listBuckets(ListBucketsRequest request) throws ObsException;
 
     /**
      * Obtain the bucket list.

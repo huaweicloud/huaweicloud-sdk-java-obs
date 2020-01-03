@@ -13,13 +13,14 @@
  */
 package com.obs.services.internal.security;
 
-import com.obs.services.internal.utils.JSONChange;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class EcsSecurityUtils {
@@ -38,16 +39,16 @@ public class EcsSecurityUtils {
     private static final long HTTP_CONNECT_TIMEOUT_VALUE = 50 * 1000;
 
     private static OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false)
-            .retryOnConnectionFailure(false).cache(null).connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
+            .retryOnConnectionFailure(true).cache(null).connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
             .writeTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).readTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).build();
 
     /**
      * Returns the temporary security credentials (access, secret, securitytoken,
      * and expires_at) associated with the IAM roles on the instance.
      */
-    public static SecurityKey getSecurityKey() throws IOException {
-        String securityKeyInfo = getResource(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
-        return (SecurityKey) JSONChange.jsonToObj(new SecurityKey(), securityKeyInfo);
+    public static List<String> getSecurityKeyInfoWithDetail() throws IOException {
+        List<String> list = getResourceWithDetail(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
+        return list;
     }
 
     /**
@@ -62,23 +63,37 @@ public class EcsSecurityUtils {
      * Get resource and return contents from metadata service
      * with the specify path.
      */
-    private static String getResource(String endpoint) throws IOException {
+    private static List<String> getResourceWithDetail(String endpoint) throws IOException {
         Request.Builder builder = new Request.Builder();
         builder.header("Accept", "*/*");
         Request request = builder.url(endpoint).get().build();
         Call c = httpClient.newCall(request);
         Response res = null;
-        String content = new String();
+        String content = "";
+        List<String> list = new ArrayList<String>();
         try {
             res = c.execute();
+            String header = "";
+            if (res.headers() != null) {
+                header = res.headers().toString();
+            }
             if (res.body() != null) {
                 content = res.body().string();
             }
+            String detail = "Get securityKey form ECS failed code:" + res.code() + " the headers : " + header + "the content : " + content;
+
+            if(!(res.code() >= 200 && res.code() < 300)){
+                String errorMessage = "Get securityKey form ECS failed the detail : " +detail;
+                throw new IllegalArgumentException(errorMessage);
+            }
+
+            list.add(content);
+            list.add(detail);
         } finally {
-            if(res != null){
+            if (res != null) {
                 res.close();
             }
         }
-        return content;
+        return list;
     }
 }

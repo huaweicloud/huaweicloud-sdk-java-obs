@@ -41,7 +41,9 @@ public class CreateBucketRequest {
 	private AvailableZoneEnum availableZone;
 	
 	private Map<String, String> extensionHeaderMap;
-	
+
+	private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
+
 	public CreateBucketRequest() {
 		
 	}
@@ -249,10 +251,6 @@ public class CreateBucketRequest {
 		return extensionPermissionMap;
 	}
 	
-	private void setExtensionHeaderMap(Map<String, String> extensionHeaderMap) {
-        this.extensionHeaderMap = extensionHeaderMap;
-    }
-	
 	public Map<String, String> getExtensionHeaderMap() {
         return extensionHeaderMap;
     }
@@ -264,5 +262,12 @@ public class CreateBucketRequest {
 				+ ", availableZone=" + availableZone + ",epid=" + epid + "]";
 	}
 
-	
+	public BucketTypeEnum getBucketType() {
+		return bucketType;
+	}
+
+
+	public void setBucketType(BucketTypeEnum bucketType) {
+		this.bucketType = bucketType;
+	}
 }

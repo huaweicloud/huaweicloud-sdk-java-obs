@@ -1,5 +1,4 @@
 /**
- * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
@@ -68,6 +67,7 @@ public abstract class SimpleHandler extends DefaultHandler{
 	}
 
 	public void controlReturned(SimpleHandler childHandler) {
+		return;
 	}
 
 	@Override

@@ -258,21 +258,21 @@ Please see above.
 License: Apache License V2.0
 Please see above.
 
-Software: java-xmlbuilder-1.1	
+Software: java-xmlbuilder-1.2	
 Copyright notice:   
 Copyright 2008-2014 James Murty (www.jamesmurty.com)  
 
 License: Apache License V2.0
 Please see above.
 
-Software: log4j-api-2.8.2	
+Software: log4j-api-2.12.0	
 Copyright notice:   
 Copyright 1999-2017 The Apache Software Foundation  
 Copyright 1999-2017 Apache Software Foundation  
 
 License: Apache License V2.0
 Please see above.  
-Software: log4j-core-2.8.2	  
+Software: log4j-core-2.12.0	  
 Copyright notice:   
 Copyright 1999-2017 The Apache Software Foundation  
 Copyright 1999-2012 Apache Software Foundation  
@@ -310,7 +310,7 @@ Copyright (C) 2018 Square, Inc.
 License: Apache License V2.0  
 Please see above.  
 
-Software: okio-1.14.0	  
+Software: okio-1.17.2  
 Copyright notice:   
 Copyright (C) 2014 Square, Inc.  
 Copyright 2014 Square Inc.  

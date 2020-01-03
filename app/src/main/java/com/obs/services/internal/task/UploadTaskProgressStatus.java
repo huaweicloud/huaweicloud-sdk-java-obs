@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.ProgressStatus;
 import com.obs.services.model.UploadProgressStatus;
 
@@ -39,7 +40,7 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
 
     public UploadTaskProgressStatus(long progressInterval, Date startDate) {
     	this.progressInterval = progressInterval;
-    	this.startDate = startDate;
+    	this.startDate = ServiceUtils.cloneDateIgnoreNull(startDate);
     }
 
     public void execTaskIncrement() {
@@ -208,7 +209,7 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
 	}
 
 	public Date getStartDate() {
-		return startDate;
+		return ServiceUtils.cloneDateIgnoreNull(this.startDate);
 	}
 
 }

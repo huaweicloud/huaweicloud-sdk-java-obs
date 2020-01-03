@@ -130,7 +130,7 @@ public class ResumableUploadTask implements Runnable {
                     progressListener.progressChanged(taskStatus);
                 }
             }
-
+            
         	final String key = taskRequest.getObjectKey();
         	ProgressStatus status = taskStatus.getTaskStatus(key);
         	if(status != null) {

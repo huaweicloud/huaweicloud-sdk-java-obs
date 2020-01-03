@@ -126,7 +126,7 @@ public class PutObjectTask implements Runnable {
                     progressListener.progressChanged(taskStatus);
                 }
             }
-
+        	//更新已完成任务的大小信息，移除不在线程中的任务进度信息
         	final String key = taskRequest.getObjectKey();
         	ProgressStatus status = taskStatus.getTaskStatus(key);
         	if(status != null) {

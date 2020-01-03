@@ -27,6 +27,7 @@ import com.obs.services.internal.consensus.CacheManager;
 import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.UnrecoverableIOException;
+import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.internal.security.ProviderCredentialThreadContext;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.utils.*;
@@ -81,8 +82,62 @@ public abstract class RestStorageService {
 	
 	protected Semaphore semaphore;
 
+	protected  ThreadLocal<HashMap<String,String>> userHeaders = new ThreadLocal<HashMap<String,String>>();
+
+	// switch of using standard http headers
+	protected ThreadLocal<Boolean> canUseStandardHTTPHeaders = new ThreadLocal<Boolean>();
+
 	protected RestStorageService() {
 		
+	}
+
+	/**
+	 * set switch of using standard http headers
+	 * @param canUseStandardHTTPHeaders A Boolean variable to control switch of using http standard headers
+	 */
+	public void setCanUseStandardHTTPHeaders(Boolean canUseStandardHTTPHeaders)
+	{
+		this.canUseStandardHTTPHeaders.set(canUseStandardHTTPHeaders);
+	}
+
+	/**
+	 * set user headers
+	 * @param userHeaders A HashMap<String,String></String,String>
+	 */
+	public void setUserHeaders(HashMap<String,String> userHeaders){
+		this.userHeaders.set(userHeaders);
+	}
+
+	/**
+	 * add user headers to Request
+	 * @param builder Request in OKHttp3.0
+	 */
+	private void addUserHeaderToRequest(Request.Builder builder){
+		HashMap<String,String> userHeaderMap = this.userHeaders.get();
+		//check headers
+		for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			if (!ServiceUtils.isValid(key)) {
+				continue;
+			}
+			key = key.trim();
+			if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
+				&& !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
+				.contains(key.toLowerCase(Locale.getDefault()))) {
+				key = this.getRestMetadataPrefix() + key;
+			}
+			try {
+				if(key.startsWith(this.getRestMetadataPrefix())) {
+					key = RestUtils.uriEncode(key, true);
+				}
+				builder.addHeader(key, RestUtils.uriEncode(value == null ? "" : value, true));
+			} catch (ServiceException e) {
+				if (log.isDebugEnabled()) {
+					log.debug("Ignore metadata key:" + key);
+				}
+			}
+		}
 	}
 
 	protected void initHttpClient(Dispatcher httpDispatcher) {
@@ -462,6 +517,16 @@ public abstract class RestStorageService {
 
 	protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName, boolean doSignature, boolean isOEF) throws ServiceException {
 		Response response = null;
+
+		if(this.userHeaders.get() != null && this.userHeaders.get().size() > 0){
+			// create a new Builder from current Request
+			Request.Builder builderTmp = request.newBuilder();
+			// add user header
+			addUserHeaderToRequest(builderTmp);
+			// build new request
+			request = builderTmp.build();
+		}
+
 		InterfaceLogBean reqBean = new InterfaceLogBean("performRequest", "", "");
 		Call call = null;
 		try {
@@ -597,10 +662,17 @@ public abstract class RestStorageService {
 							request = authorizeHttpRequest(request, bucketName, location);
 						}else {
 							Request.Builder builder = request.newBuilder();
+							
+							if(responseCode == 302 && HttpMethodEnum.GET.getOperationType().equalsIgnoreCase(request.method())) {
+								Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build();
+								builder.headers(headers);
+							}
+							
 							this.setHost(builder, request, location);
+							
 							request = builder.build();
 						}
-
+						
 						internalErrorCount++;
 						wasRecentlyRedirected = true;
 						if (internalErrorCount > retryMaxCount) {
@@ -739,7 +811,8 @@ public abstract class RestStorageService {
 		}
 		builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
 
-		String securityToken = providerCredentials.getSecurityKey().getSecurityToken();
+		BasicSecurityKey securityKey = providerCredentials.getSecurityKey();
+		String securityToken = securityKey.getSecurityToken();
 		if (ServiceUtils.isValid(securityToken)) {
 			builder.header(this.getIHeaders().securityTokenHeader(), securityToken);
 		}
@@ -768,14 +841,14 @@ public abstract class RestStorageService {
 		if (isV4) {
 			builder.header(this.getIHeaders().contentSha256Header(), V4Authentication.content_sha256);
 			iauthentication = V4Authentication.makeServiceCanonicalString(request.method(),
-					convertHeadersToMap(builder.build().headers()), fullUrl, providerCredentials, now);
+					convertHeadersToMap(builder.build().headers()), fullUrl, providerCredentials, now, securityKey);
 			if (log.isDebugEnabled()) {
 				log.debug("CanonicalRequest:" + iauthentication.getCanonicalRequest());
 			}
 		} else {
 			iauthentication = Constants.AUTHTICATION_MAP.get(providerCredentials.getAuthType()).makeAuthorizationString(
 					request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
-					Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, providerCredentials);
+					Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("StringToSign ('|' is a newline): " + iauthentication.getStringToSign().replace('\n', '|'));

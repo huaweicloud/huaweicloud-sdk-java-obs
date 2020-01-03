@@ -16,6 +16,8 @@ package com.obs.services.model;
 
 import java.util.Date;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 /**
  * Response to a request for copying a part
  */
@@ -31,7 +33,7 @@ public class CopyPartResult extends HeaderResponse
     public CopyPartResult(int partNumber, String etag, Date lastModified) {
 		this.partNumber = partNumber;
 		this.etag = etag;
-		this.lastModified = lastModified;
+		this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
 	}
 
 
@@ -64,7 +66,7 @@ public class CopyPartResult extends HeaderResponse
      */
     public Date getLastModified()
     {
-        return lastModified;
+        return ServiceUtils.cloneDateIgnoreNull(this.lastModified);
     }
     
 

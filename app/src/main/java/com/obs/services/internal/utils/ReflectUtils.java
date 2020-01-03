@@ -16,6 +16,7 @@ package com.obs.services.internal.utils;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,7 +71,7 @@ public class ReflectUtils {
 	    if(androidBase64Class != null){
 	        try{
 	            Method m = androidBase64Class.getMethod("encode", byte[].class, int.class);
-	            return new String((byte[])m.invoke(null, data, 2));
+	            return new String((byte[])m.invoke(null, data, 2), Charset.defaultCharset());
 	        }catch (Exception e) {
 	        	throw new ServiceException(e);
             }

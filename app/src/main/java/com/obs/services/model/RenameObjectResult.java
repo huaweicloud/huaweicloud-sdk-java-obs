@@ -3,23 +3,20 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services;
-
-import com.obs.services.model.ISecurityKey;
+package com.obs.services.model;
 
 /**
- * AK/SK管理接口
+ * 重命名文件/文件夹响应结果
+ *
  */
-public interface ISecurityProvider {
-    public void setSecurityKey(ISecurityKey securityKey);
+public class RenameObjectResult extends HeaderResponse{
 
-    public ISecurityKey getSecurityKey();
 }

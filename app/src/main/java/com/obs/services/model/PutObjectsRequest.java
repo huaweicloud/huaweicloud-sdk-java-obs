@@ -146,7 +146,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	 */
 	public void setBigfileThreshold(long bigfileThreshold) {
 		if(bigfileThreshold < 100 * 1024l) {
-			bigfileThreshold = 100 * 1024l;
+			this.bigfileThreshold = 100 * 1024l;
 		}else if (bigfileThreshold > 5 * 1024 * 1024 * 1024l) {
         	this.bigfileThreshold = 5 * 1024 * 1024 * 1024l;
 		}else {

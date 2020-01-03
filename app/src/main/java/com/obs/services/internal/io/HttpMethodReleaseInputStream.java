@@ -4,6 +4,7 @@
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -32,8 +33,8 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
     
     private InputStream inputStream = null;
     private Response httpResponse = null;
-    private boolean alreadyReleased = false;
-    private boolean underlyingStreamConsumed = false;
+    private boolean flag = false;
+    private boolean comsumed = false;
 
     public HttpMethodReleaseInputStream(Response response) {
         this.httpResponse = response;
@@ -45,7 +46,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             } catch (Exception ee){
                 // ignore
             }
-            this.inputStream = new ByteArrayInputStream(new byte[] {}); // Empty input stream;
+            this.inputStream = new ByteArrayInputStream(new byte[] {});
         }
     }
 
@@ -54,11 +55,11 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
     }
 
     protected void releaseConnection() throws IOException {
-        if (!alreadyReleased) {
-            if (!underlyingStreamConsumed && httpResponse != null) {
+        if (!flag) {
+            if (!comsumed && httpResponse != null) {
                 httpResponse.close();
             }
-            alreadyReleased = true;
+            flag = true;
         }
     }
 
@@ -67,8 +68,8 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         try {
             int read = inputStream.read();
             if (read == -1) {
-                underlyingStreamConsumed = true;
-                if (!alreadyReleased) {
+            	comsumed = true;
+                if (!flag) {
                     releaseConnection();
                 }
             }
@@ -87,8 +88,8 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         try {
             int read = inputStream.read(b, off, len);
             if (read == -1) {
-                underlyingStreamConsumed = true;
-                if (!alreadyReleased) {
+            	comsumed = true;
+                if (!flag) {
                     releaseConnection();
                 }
             }
@@ -119,7 +120,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
 
     @Override
     public void close() throws IOException {
-        if (!alreadyReleased) {
+        if (!flag) {
             releaseConnection();
         }
         inputStream.close();
@@ -127,16 +128,10 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
 
     @Override
     protected void finalize() throws Throwable {
-        if (!alreadyReleased) {
-            if (interfaceLog.isWarnEnabled()) {
-            	interfaceLog.warn("Attempting to release HttpMethod in finalize() as its response data stream has gone out of scope. "
-                + "This attempt will not always succeed and cannot be relied upon! Please ensure response data streams are "
-                + "always fully consumed or closed to avoid HTTP connection starvation.");
-            }
+        if (!flag) {
             releaseConnection();
             if (interfaceLog.isWarnEnabled()) {
-            	interfaceLog.warn("Successfully released HttpMethod in finalize(). You were lucky this time... "
-                + "Please ensure response data streams are always fully consumed or closed.");
+            	interfaceLog.warn("Successfully released HttpMethod in finalize().");
             }
         }
         super.finalize();
