@@ -1,9 +1,9 @@
 /**
- * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.obs.services.model.BucketTypeEnum;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -85,10 +86,10 @@ public class XmlResponsesSaxParser {
 	
 	private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.internal.RestStorageService");
 
-	private XMLReader xr;
+	private XMLReader xmlReader;
 
 	public XmlResponsesSaxParser() throws ServiceException {
-		this.xr = ServiceUtils.loadXMLReader();
+		this.xmlReader = ServiceUtils.loadXMLReader();
 	}
 
 	protected void parseXmlInputStream(DefaultHandler handler, InputStream inputStream) throws ServiceException {
@@ -96,12 +97,9 @@ public class XmlResponsesSaxParser {
 			return;
 		}
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Parsing XML response document with handler: " + handler.getClass());
-			}
-			xr.setContentHandler(handler);
-			xr.setErrorHandler(handler);
-			xr.parse(new InputSource(inputStream));
+			xmlReader.setErrorHandler(handler);
+			xmlReader.setContentHandler(handler);
+			xmlReader.parse(new InputSource(inputStream));
 		} catch (Exception t) {
 			throw new ServiceException("Failed to parse XML document with handler " + handler.getClass(), t);
 		} finally {
@@ -123,17 +121,14 @@ public class XmlResponsesSaxParser {
 			while ((read = br.read(buf)) != -1) {
 				listingDocBuffer.append(buf, 0, read);
 			}
-			// Replace any carriage return (\r) characters with explicit XML
-			// character entities, to prevent the SAX parser from
-			// misinterpreting 0x0D characters as 0x0A.
+			
 			String listingDoc = listingDocBuffer.toString().replaceAll("\r", "&#013;");
 			if(log.isTraceEnabled()) {
 				log.trace("Response entity: " + listingDoc);
 			}
 			return new ByteArrayInputStream(listingDoc.getBytes(Constants.DEFAULT_ENCODING));
 		} catch (Throwable t) {
-			throw new ServiceException("Failed to sanitize XML document destined",
-					t);
+			throw new ServiceException("Failed to sanitize XML document destined", t);
 		} finally {
 			ServiceUtils.closeStream(br);
 			ServiceUtils.closeStream(inputStream);
@@ -145,7 +140,7 @@ public class XmlResponsesSaxParser {
 			T handler = null;
 			if(SimpleHandler.class.isAssignableFrom(handlerClass)) {
 				Constructor<T> c = handlerClass.getConstructor(XMLReader.class);
-				handler = c.newInstance(this.xr);
+				handler = c.newInstance(this.xmlReader);
 			}else {
 				handler = handlerClass.getConstructor().newInstance();
 			}
@@ -351,6 +346,12 @@ public class XmlResponsesSaxParser {
 							log.warn("Non-ISO8601 date for CreationDate in list buckets output: " + elementText, e);
 						}
 					}
+				} else if (name.equals("BucketType")) {
+					if (Constants.POSIX.equals(elementText)) {
+						currentBucket.setBucketType(BucketTypeEnum.PFS);
+					} else {
+						currentBucket.setBucketType(BucketTypeEnum.OBJECT);
+					}
 				}
 			}catch (NullPointerException e) {
 				if(log.isErrorEnabled()) {
@@ -510,7 +511,7 @@ public class XmlResponsesSaxParser {
 		private Date lastModified;
 
 		public Date getLastModified() {
-			return lastModified;
+			return ServiceUtils.cloneDateIgnoreNull(lastModified);
 		}
 
 		public String getETag() {

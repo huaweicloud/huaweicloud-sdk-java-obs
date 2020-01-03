@@ -4,7 +4,7 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.19.7.3</version>
+	<version>3.19.12</version>
 
 	<name>OBS SDK for Android</name>
 	<description>The OBS SDK for Android used for accessing Object Storage Service</description>
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>com.jamesmurty.utils</groupId>
 			<artifactId>java-xmlbuilder</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>net.iharder</groupId>
@@ -30,12 +30,12 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>3.10.0</version>
+			<version>3.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okio</groupId>
 			<artifactId>okio</artifactId>
-			<version>1.14.0</version>
+			<version>1.17.2</version>
 		</dependency>
 		
 		<dependency>

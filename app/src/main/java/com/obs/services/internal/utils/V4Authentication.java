@@ -90,11 +90,10 @@ public class V4Authentication
 	}
     
     public static IAuthentication makeServiceCanonicalString(String method, Map<String, String> headers, String strURIPath,
-        ProviderCredentials credent, Date date)
+        ProviderCredentials credent, Date date, BasicSecurityKey securityKey)
         throws ServiceException
     {
         V4Authentication v4 = new V4Authentication();
-        BasicSecurityKey securityKey = credent.getSecurityKey();
         v4.setAk(securityKey.getAccessKey());
         v4.setSk(securityKey.getSecretKey());
         v4.setRegion(credent.getRegion());
@@ -178,7 +177,7 @@ public class V4Authentication
         throws ServiceException
     {
         String URI = "";
-        String Query = "";
+        String query = "";
         String[] pathStrings = fulPath.split("[?]");
         if (pathStrings.length > 0)
         {
@@ -200,22 +199,26 @@ public class V4Authentication
                 map.put(key, val);
             }
             int j = 0;
+            
+            StringBuilder tempStr = new StringBuilder(query);
             for (Map.Entry<String, String> entry : map.entrySet())
             {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
                 if (j != 0)
                 {
-                    Query += "&";
+                	tempStr.append("&");
                 }
                 j = 1;
-                Query += key.toString() + "=" + value.toString();
+                tempStr.append(key.toString()).append("=").append(value.toString());
             }
+            
+            query = tempStr.toString();
             
         }
         List<String> list = new ArrayList<String>();
         list.add(URI);
-        list.add(Query);
+        list.add(query);
         return list;
     }
     

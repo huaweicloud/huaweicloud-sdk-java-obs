@@ -18,15 +18,19 @@
  */
 package com.obs.services.internal.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.IHeaders;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.security.BasicSecurityKey;
-import com.obs.services.internal.security.ProviderCredentials;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
 
 public abstract class AbstractAuthentication{
 	
@@ -38,7 +42,7 @@ public abstract class AbstractAuthentication{
 		return ServiceUtils.signWithHmacSha1(sk, stringToSign);
 	}
 	
-	public final IAuthentication makeAuthorizationString(String method, Map<String, String> headers, String fullUrl, List<String> serviceResourceParameterNames,ProviderCredentials credent) throws ServiceException{
+	public final IAuthentication makeAuthorizationString(String method, Map<String, String> headers, String fullUrl, List<String> serviceResourceParameterNames,BasicSecurityKey securityKey) throws ServiceException{
         String canonicalString;
         try
         {
@@ -50,7 +54,6 @@ public abstract class AbstractAuthentication{
             throw new ServiceException(e);
         }
 
-        BasicSecurityKey securityKey = credent.getSecurityKey();
         String accessKey = securityKey.getAccessKey();
         String secretKey = securityKey.getSecretKey();
         String signedCanonical = AbstractAuthentication.caculateSignature(canonicalString, secretKey);
@@ -58,7 +61,8 @@ public abstract class AbstractAuthentication{
         return new DefaultAuthentication(canonicalString, canonicalString, auth);
     }
     
-    public final String makeServiceCanonicalString(String method, String resource, Map<String, String> headersMap, String expires, List<String> serviceResourceParameterNames)
+    @SuppressWarnings("unchecked")
+	public final String makeServiceCanonicalString(String method, String resource, Map<String, String> headersMap, String expires, List<String> serviceResourceParameterNames)
         throws UnsupportedEncodingException
     {
         StringBuilder canonicalStringBuf = new StringBuilder();

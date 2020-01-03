@@ -16,6 +16,8 @@ package com.obs.services.model;
 
 import java.util.Date;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 /**
  * Multipart upload
  */
@@ -40,7 +42,7 @@ public class MultipartUpload
 		super();
 		this.uploadId = uploadId;
 		this.objectKey = objectKey;
-		this.initiatedDate = initiatedDate;
+		this.initiatedDate = ServiceUtils.cloneDateIgnoreNull(initiatedDate);
 		this.storageClass = storageClass;
 		this.owner = owner;
 		this.initiator = initiator;
@@ -52,7 +54,7 @@ public class MultipartUpload
 		this.uploadId = uploadId;
 		this.bucketName = bucketName;
 		this.objectKey = objectKey;
-		this.initiatedDate = initiatedDate;
+		this.initiatedDate = ServiceUtils.cloneDateIgnoreNull(initiatedDate);
 		this.storageClass = storageClass;
 		this.owner = owner;
 		this.initiator = initiator;
@@ -148,7 +150,7 @@ public class MultipartUpload
      */
     public Date getInitiatedDate()
     {
-        return initiatedDate;
+        return ServiceUtils.cloneDateIgnoreNull(this.initiatedDate);
     }
     
     

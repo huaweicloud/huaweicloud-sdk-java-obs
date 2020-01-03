@@ -34,12 +34,12 @@ public class BasicObsCredentialsProvider implements IObsCredentialsProvider {
     }
 
     private static void checkSecurityKey(String accessKey, String secretKey) {
-        if (accessKey == null || accessKey.isEmpty()) {
-            throw new IllegalArgumentException("accessKey should not be null or empty.");
+        if (accessKey == null) {
+            throw new IllegalArgumentException("accessKey should not be null.");
         }
 
-        if (secretKey == null || secretKey.isEmpty()) {
-            throw new IllegalArgumentException("secretKey should not be null or empty.");
+        if (secretKey == null) {
+            throw new IllegalArgumentException("secretKey should not be null.");
         }
     }
 

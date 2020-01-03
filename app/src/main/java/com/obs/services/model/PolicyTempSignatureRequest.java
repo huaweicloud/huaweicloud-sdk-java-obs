@@ -54,7 +54,7 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
      */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey, Date expiryDate) {
         super(method, bucketName, objectKey);
-        this.expiryDate = expiryDate;
+        this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
     }
     
     /**
@@ -97,7 +97,7 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
      */
     public Date getExpiryDate()
     {
-        return expiryDate;
+    	return ServiceUtils.cloneDateIgnoreNull(this.expiryDate);
     }
     
     /**
@@ -106,7 +106,7 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
      */
     public void setExpiryDate(Date expiryDate)
     {
-        this.expiryDate = expiryDate;
+    	this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
     }
     
     /**

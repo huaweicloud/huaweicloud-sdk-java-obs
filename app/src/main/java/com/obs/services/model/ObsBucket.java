@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 /**
  * Buckets in OBS
  * 
@@ -87,7 +89,7 @@ public class ObsBucket extends S3Bucket
      */
     public Date getCreationDate()
     {
-        return creationDate;
+    	return ServiceUtils.cloneDateIgnoreNull(this.creationDate);
     }
     
     /**
@@ -97,7 +99,7 @@ public class ObsBucket extends S3Bucket
      */
     public void setCreationDate(Date bucketCreationDate)
     {
-        this.creationDate = bucketCreationDate;
+    	this.creationDate = ServiceUtils.cloneDateIgnoreNull(bucketCreationDate);
     }
     
     /**
@@ -179,10 +181,19 @@ public class ObsBucket extends S3Bucket
         this.storageClass = StorageClassEnum.getValueFromCode(storageClass);
     }
     
-    /**
-     * Obtain the bucket storage class. 
-     * @return Bucket storage class
-     */
+
+    public BucketTypeEnum getBucketType()
+    {
+        return bucketTypeEnum;
+    }
+
+
+    public void setBucketType(BucketTypeEnum bucketTypeEnum)
+    {
+        this.bucketTypeEnum = bucketTypeEnum;
+    }
+
+
     public StorageClassEnum getBucketStorageClass()
     {
         return storageClass;

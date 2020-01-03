@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 /**
  * Bucket lifecycle rules
  */
@@ -257,7 +259,7 @@ public class LifecycleConfiguration extends HeaderResponse
          */
         public Date getDate()
         {
-            return date;
+            return ServiceUtils.cloneDateIgnoreNull(this.date);
         }
         
         /**
@@ -266,7 +268,7 @@ public class LifecycleConfiguration extends HeaderResponse
          */
         public void setDate(Date date)
         {
-            this.date = date;
+            this.date = ServiceUtils.cloneDateIgnoreNull(date);
             this.days = null;
         }
 
@@ -391,7 +393,7 @@ public class LifecycleConfiguration extends HeaderResponse
          */
         public Date getDate()
         {
-            return date;
+            return ServiceUtils.cloneDateIgnoreNull(this.date);
         }
         
         /**
@@ -400,7 +402,7 @@ public class LifecycleConfiguration extends HeaderResponse
          */
         public void setDate(Date date)
         {
-            this.date = date;
+            this.date = ServiceUtils.cloneDateIgnoreNull(date);
             this.days = null;
         }
 

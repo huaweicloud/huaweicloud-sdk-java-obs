@@ -280,4 +280,9 @@ public class ObsHeaders implements IHeaders{
 	public String azRedundancyHeader() {
 		return this.headerPrefix() + "az-redundancy";
 	}
+
+	@Override
+	public String bucketTypeHeader() {
+		return this.headerPrefix() + "bucket-type";
+	}
 }

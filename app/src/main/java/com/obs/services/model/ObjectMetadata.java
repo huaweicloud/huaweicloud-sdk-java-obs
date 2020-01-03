@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.obs.services.internal.utils.ServiceUtils;
+
 /**
  * Object properties
  */
@@ -139,12 +141,12 @@ public class ObjectMetadata extends HeaderResponse
      */
     public Date getLastModified()
     {
-        return lastModified;
+        return ServiceUtils.cloneDateIgnoreNull(this.lastModified);
     }
     
     public void setLastModified(Date lastModified)
     {
-        this.lastModified = lastModified;
+        this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
     }
     
     /** 

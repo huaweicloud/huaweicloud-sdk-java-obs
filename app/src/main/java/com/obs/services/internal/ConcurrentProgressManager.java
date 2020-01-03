@@ -24,7 +24,6 @@ import com.obs.services.model.ProgressStatus;
 public class ConcurrentProgressManager extends ProgressManager {
 
 	private AtomicBoolean startFlag = new AtomicBoolean(false);
-	private AtomicBoolean endFlag = new AtomicBoolean(false);
 	protected AtomicLong transferredBytes;
 	protected AtomicLong newlyTransferredBytes;
 

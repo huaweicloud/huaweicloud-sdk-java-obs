@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.utils.ServiceUtils;
 
 /**
  * Parameters in a request for browser-based authorized access
@@ -69,7 +70,7 @@ public class PostSignatureRequest
      */
     public PostSignatureRequest(Date expiryDate, String bucketName, String objectKey)
     {
-        this.expiryDate = expiryDate;
+        this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
@@ -84,7 +85,7 @@ public class PostSignatureRequest
     public PostSignatureRequest(long expires, Date requestDate, String bucketName, String objectKey)
     {
         this.expires = expires;
-        this.requestDate = requestDate;
+        this.requestDate = ServiceUtils.cloneDateIgnoreNull(requestDate);
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
@@ -98,8 +99,8 @@ public class PostSignatureRequest
      */
     public PostSignatureRequest(Date expiryDate, Date requestDate, String bucketName, String objectKey)
     {
-        this.expiryDate = expiryDate;
-        this.requestDate = requestDate;
+        this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
+        this.requestDate = ServiceUtils.cloneDateIgnoreNull(requestDate);
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
@@ -110,7 +111,7 @@ public class PostSignatureRequest
      */
     public Date getRequestDate()
     {
-        return requestDate;
+    	return ServiceUtils.cloneDateIgnoreNull(this.requestDate);
     }
     
     /**
@@ -119,7 +120,7 @@ public class PostSignatureRequest
      */
     public void setRequestDate(Date requestDate)
     {
-        this.requestDate = requestDate;
+    	this.requestDate = ServiceUtils.cloneDateIgnoreNull(requestDate);
     }
     
     /**
@@ -128,7 +129,7 @@ public class PostSignatureRequest
      */
     public Date getExpiryDate()
     {
-        return expiryDate;
+    	return ServiceUtils.cloneDateIgnoreNull(this.expiryDate);
     }
     
     /**
@@ -137,7 +138,7 @@ public class PostSignatureRequest
      */
     public void setExpiryDate(Date expiryDate)
     {
-        this.expiryDate = expiryDate;
+    	this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
     }
     
     /**
@@ -244,5 +245,3 @@ public class PostSignatureRequest
     }
     
 }
-
-

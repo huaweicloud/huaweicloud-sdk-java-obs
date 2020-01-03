@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.utils.ServiceUtils;
 
 /**
  * Parameters in an object download request
@@ -235,7 +236,7 @@ public class GetObjectRequest
      */
     public Date getIfModifiedSince()
     {
-        return ifModifiedSince;
+        return ServiceUtils.cloneDateIgnoreNull(this.ifModifiedSince);
     }
     
     /**
@@ -245,7 +246,7 @@ public class GetObjectRequest
      */
     public void setIfModifiedSince(Date ifModifiedSince)
     {
-        this.ifModifiedSince = ifModifiedSince;
+        this.ifModifiedSince = ServiceUtils.cloneDateIgnoreNull(ifModifiedSince);
     }
     
     /**
@@ -255,7 +256,7 @@ public class GetObjectRequest
      */
     public Date getIfUnmodifiedSince()
     {
-        return ifUnmodifiedSince;
+    	return ServiceUtils.cloneDateIgnoreNull(this.ifUnmodifiedSince);
     }
     
     /**
@@ -265,7 +266,7 @@ public class GetObjectRequest
      */
     public void setIfUnmodifiedSince(Date ifUnmodifiedSince)
     {
-        this.ifUnmodifiedSince = ifUnmodifiedSince;
+        this.ifUnmodifiedSince = ServiceUtils.cloneDateIgnoreNull(ifUnmodifiedSince);
     }
     
     /**

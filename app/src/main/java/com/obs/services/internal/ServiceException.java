@@ -1,9 +1,9 @@
 /**
- * 
  * JetS3t : Java S3 Toolkit
  * Project hosted at http://bitbucket.org/jmurty/jets3t/
  *
  * Copyright 2006-2010 James Murty
+ * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -38,13 +38,11 @@ public class ServiceException extends RuntimeException {
 
     private String xmlMessage ;
 
-    // Fields from error messages.
     private String errorCode;
     private String errorMessage;
     private String errorRequestId;
     private String errorHostId;
 
-    // Map<String, String> - name => value pairs of response headers.
     private Map<String, String> responseHeaders;
 
     private int responseCode = -1;
@@ -86,7 +84,6 @@ public class ServiceException extends RuntimeException {
     public String toString() {
         String myString = super.toString();
 
-        // Add request-specific information, if it's available.
         if (requestVerb != null) {
             myString +=
                 " " + requestVerb
@@ -129,8 +126,6 @@ public class ServiceException extends RuntimeException {
         this.errorRequestId = findXmlElementText(xmlMessage, "RequestId");
         this.errorHostId = findXmlElementText(xmlMessage, "HostId");
 
-        // Add Details element present in some Google Storage error
-        // messages to Message field.
         String errorDetails = findXmlElementText(xmlMessage, "Details");
         if (errorDetails != null && errorDetails.length() > 0) {
             this.errorMessage += " " + errorDetails;
@@ -249,7 +244,7 @@ public class ServiceException extends RuntimeException {
     public void setResponseHeaders(Map<String, String> responseHeaders) {
         this.responseHeaders = responseHeaders;
     }
-
+    
 	public String getErrorIndicator() {
 		return errorIndicator;
 	}

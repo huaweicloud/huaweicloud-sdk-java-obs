@@ -1,21 +1,22 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.log;
 
-import com.obs.services.internal.utils.AccessLoggerUtils;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import com.obs.services.internal.utils.AccessLoggerUtils;
 
 public class Log4j2Logger implements ILogger
 {
@@ -52,8 +53,9 @@ public class Log4j2Logger implements ILogger
                     isTrace = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("isTraceEnabled");
                 }
             }
-            catch (Exception e)
+            catch (NoSuchMethodException | SecurityException e)
             {
+            	e.printStackTrace();
             }
         }
     }
@@ -75,7 +77,7 @@ public class Log4j2Logger implements ILogger
             {
     			isInfoE = (this.logger != null && LoggerMethodHolder.isInfo != null && (Boolean)(LoggerMethodHolder.isInfo.invoke(this.logger))) ? 1 : 0;
             }
-            catch (Exception e)
+    		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
             	isInfoE = 0;
             }
@@ -129,7 +131,7 @@ public class Log4j2Logger implements ILogger
     		{
     			isWarnE = (this.logger != null && LoggerMethodHolder.isWarn != null && (Boolean)(LoggerMethodHolder.isWarn.invoke(this.logger))) ? 1: 0;
     		}
-    		catch (Exception e)
+    		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
     		{
     			isWarnE = 0;
     		}
@@ -184,7 +186,7 @@ public class Log4j2Logger implements ILogger
     		{
     			isErrorE = (this.logger != null && LoggerMethodHolder.isError != null && (Boolean)(LoggerMethodHolder.isError.invoke(this.logger))) ? 1: 0;
     		}
-    		catch (Exception e)
+    		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
     		{
     			isErrorE = 0;
     		}
@@ -239,7 +241,7 @@ public class Log4j2Logger implements ILogger
     		{
     			isDebugE = (this.logger != null && LoggerMethodHolder.isDebug != null && (Boolean)(LoggerMethodHolder.isDebug.invoke(this.logger))) ? 1 : 0;
     		}
-    		catch (Exception e)
+    		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
     		{
     			isDebugE = 0;
     		}
@@ -294,7 +296,7 @@ public class Log4j2Logger implements ILogger
     		{
     			isTraceE = (this.logger != null && LoggerMethodHolder.isTrace != null && (Boolean)(LoggerMethodHolder.isTrace.invoke(this.logger))) ? 1: 0;
     		}
-    		catch (Exception e)
+    		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
     		{
     			isTraceE = 0;
     		}

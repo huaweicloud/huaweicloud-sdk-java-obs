@@ -155,21 +155,13 @@ public class AccessControlList extends HeaderResponse
      */
     public GrantAndPermission grantPermission(GranteeInterface grantee, Permission permission)
     {
-    	return grantPermission(grantee, permission, false);
+        return grantPermission(grantee, permission, false);
     }
-	
-	
-    /**
-     * Specify permissions {@link com.obs.services.model.Permission} in the ACL {@link com.obs.services.model.GranteeInterface}. 
-     * 
-     * @param grantee Authorized user
-     * @param permission Permissions defined in {@link com.obs.services.model.Permission}
-	 * @param delivered Whether to deliver the object ACL
-     * @return Permission information
-     */
+
+
     public GrantAndPermission grantPermission(GranteeInterface grantee, Permission permission, boolean delivered)
     {
-    	GrantAndPermission obj = new GrantAndPermission(grantee, permission);
+        GrantAndPermission obj = new GrantAndPermission(grantee, permission);
         obj.setDelivered(delivered);
         getGrants().add(obj);
         return obj;
@@ -185,7 +177,7 @@ public class AccessControlList extends HeaderResponse
         for (int i = 0; i < grantAndPermissions.length; i++)
         {
             GrantAndPermission gap = grantAndPermissions[i];
-            grantPermission(gap.getGrantee(), gap.getPermission());
+            grantPermission(gap.getGrantee(), gap.getPermission(), gap.isDelivered());
         }
     }
     

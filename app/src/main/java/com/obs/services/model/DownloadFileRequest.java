@@ -16,6 +16,7 @@ package com.obs.services.model;
 import java.util.Date;
 
 import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.utils.ServiceUtils;
 
 /**
  * Parameters in a request for downloading a file
@@ -28,7 +29,7 @@ public class DownloadFileRequest {
   
     private String downloadFile;
 
-    private long partSize = 100 * 1024l;
+    private long partSize = 1024 * 1024 * 9l;
 
     private int taskNum = 1;
 
@@ -315,7 +316,7 @@ public class DownloadFileRequest {
      */
     public Date getIfModifiedSince()
     {
-        return ifModifiedSince;
+    	return ServiceUtils.cloneDateIgnoreNull(this.ifModifiedSince);
     }
     
     /**
@@ -325,7 +326,7 @@ public class DownloadFileRequest {
      */
     public void setIfModifiedSince(Date ifModifiedSince)
     {
-        this.ifModifiedSince = ifModifiedSince;
+        this.ifModifiedSince = ServiceUtils.cloneDateIgnoreNull(ifModifiedSince);
     }
     
     /**
@@ -335,7 +336,7 @@ public class DownloadFileRequest {
      */
     public Date getIfUnmodifiedSince()
     {
-        return ifUnmodifiedSince;
+        return ServiceUtils.cloneDateIgnoreNull(this.ifUnmodifiedSince);
     }
     
     /**
@@ -345,7 +346,7 @@ public class DownloadFileRequest {
      */
     public void setIfUnmodifiedSince(Date ifUnmodifiedSince)
     {
-        this.ifUnmodifiedSince = ifUnmodifiedSince;
+        this.ifUnmodifiedSince = ServiceUtils.cloneDateIgnoreNull(ifUnmodifiedSince);
     }
     
     /**

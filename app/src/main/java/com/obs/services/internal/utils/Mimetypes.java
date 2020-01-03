@@ -21,6 +21,7 @@ package com.obs.services.internal.utils;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Mimetypes
@@ -448,6 +449,7 @@ public class Mimetypes
         if (lastPeriodIndex > 0 && lastPeriodIndex + 1 < fileName.length())
         {
             String ext = fileName.substring(lastPeriodIndex + 1);
+            ext = ext.toLowerCase(Locale.getDefault());
             if (extensionToMimetypeMap.keySet().contains(ext))
             {
                 mimetype = extensionToMimetypeMap.get(ext);

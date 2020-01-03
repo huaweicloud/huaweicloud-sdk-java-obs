@@ -56,6 +56,7 @@ import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
 
+@SuppressWarnings("deprecation")
 public class V2Convertor implements IConvertor {
 	
 	private static IConvertor instance = new V2Convertor();

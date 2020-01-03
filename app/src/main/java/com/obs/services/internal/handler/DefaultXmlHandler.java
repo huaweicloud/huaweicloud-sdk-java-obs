@@ -30,9 +30,11 @@ public abstract class DefaultXmlHandler extends DefaultHandler{
 	private final LinkedList<String> context = new LinkedList<String>();
 
 	public void startDocument() {
+		return;
 	}
 
 	public void endDocument() {
+		return;
 	}
 
 	public void startElement(String uri, String name, String qName, Attributes attrs) {

@@ -280,6 +280,11 @@ public class V2Headers implements IHeaders{
 	public String azRedundancyHeader() {
 		return "x-obs-az-redundancy";
 	}
+
+	@Override
+	public String bucketTypeHeader() {
+		return "x-obs-bucket-type";
+	}
 	
 }
 

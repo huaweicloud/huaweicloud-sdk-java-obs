@@ -33,13 +33,14 @@ public class JSONChange {
 	public static Object jsonToObj(Object obj,String jsonStr) throws ServiceException {	
 		MyObjectMapper mapper = ObjectMapperUtil.getInstance(); 
 	    try {
-			return obj = mapper.readValue(jsonStr, obj.getClass());
+			obj = mapper.readValue(jsonStr, obj.getClass());
+			return obj;
 		} catch (JsonParseException e) {
-			throw new ServiceException("conversion JSON failed", e);
+			throw new ServiceException(" conversion JSON failed ", e);
 		} catch (JsonMappingException e) {
-			throw new ServiceException("conversion JSON failed", e);
+			throw new ServiceException(" conversion JSON failed", e);
 		} catch (IOException e) {
-			throw new ServiceException("conversion JSON failed", e);
+			throw new ServiceException(" conversion JSON failed", e);
 		}
 	}
 	/*

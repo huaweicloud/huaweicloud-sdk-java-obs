@@ -1,22 +1,24 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -48,13 +50,24 @@ public class Log4j2Configurator {
 	
 	private static Object getLogContext(String configPath) {
 		Object ctx = null;
+		FileInputStream configInputStream = null;
 		try {
 			Class<?> configurationSource = Class.forName("org.apache.logging.log4j.core.config.ConfigurationSource");
 			Class<?> configurator = Class.forName("org.apache.logging.log4j.core.config.Configurator");
 			Constructor<?> con = configurationSource.getConstructor(InputStream.class);
 			Method m = configurator.getMethod("initialize", ClassLoader.class, configurationSource);
-			ctx = m.invoke(null, null, con.newInstance(new FileInputStream(configPath)));
-		}catch (Exception e) {
+			
+			configInputStream = new FileInputStream(configPath);
+			ctx = m.invoke(null, null, con.newInstance(configInputStream));
+		}catch (ClassNotFoundException | NoSuchMethodException | SecurityException 
+				| InvocationTargetException | IllegalAccessException | InstantiationException | FileNotFoundException e) {
+		}finally {
+			if(null != configInputStream) {
+				try {
+					configInputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 		return ctx;
 	}
@@ -83,7 +96,9 @@ public class Log4j2Configurator {
 					stop.invoke(ctx);
 					start.invoke(ctx, xmlConfigurationConstructor.newInstance(ctx, configurationSourceConstructor.newInstance(new FileInputStream(this.configPath))));
 				}
-			}catch (Exception e) {
+			}catch (ClassNotFoundException | FileNotFoundException | NoSuchMethodException | SecurityException 
+					| InterruptedException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+				e.printStackTrace();
 			}
 		}
 	}
