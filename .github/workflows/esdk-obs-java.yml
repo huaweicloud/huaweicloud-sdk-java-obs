@@ -1,4 +1,4 @@
-name: OBS Java SDK CI
+name: ci esdk-obs-java
 
 on: [push]
 
