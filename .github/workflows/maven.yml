@@ -22,4 +22,4 @@ jobs:
         # Artifact name
         name: esdk-obs-java-*.jar
         # Destination path
-        path: test/
+        path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
