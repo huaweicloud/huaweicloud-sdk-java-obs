@@ -19,6 +19,6 @@ jobs:
       uses: actions/download-artifact@v1.0.0
       with:
         # Artifact name
-        name: test.jar
+        name: esdk-obs-java-*.jar
         # Destination path
         path: test/
