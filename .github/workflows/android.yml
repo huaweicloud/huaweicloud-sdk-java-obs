@@ -14,4 +14,4 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: mvn -Dmaven.test.skip=true -U -e -X -B package --file pom-android.xml
+      run: mvn -U -e -X -B package --file pom-android.xml
