@@ -16,10 +16,10 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom-java.xml
     - name: Upload artifact
+      if: success()
       uses: actions/upload-artifact@v1.0.0
       with:
         # Artifact name
         name: esdk-obs-java-*.jar
-        if: success()
         # Destination path
         path: test/
