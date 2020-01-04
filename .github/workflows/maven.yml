@@ -20,6 +20,6 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         # Artifact name
-        name: test
+        name: esdk-obs-java
         # Destination path
         path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
