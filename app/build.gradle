@@ -1,6 +1,6 @@
-//apply plugin: 'com.android.library'
+apply plugin: 'com.android.library'
 
-// android.packageBuildConfig = false
+android.packageBuildConfig = false
 
 android {
 	
