@@ -23,5 +23,5 @@ jobs:
         name: esdk-obs-java
         # Destination path
         path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
-    - name: sbt to Maven Central
-      uses: cosmincatalin/sbt-to-maven-central@v1.0.6
+    #- name: sbt to Maven Central
+    #  uses: cosmincatalin/sbt-to-maven-central@v1.0.6
