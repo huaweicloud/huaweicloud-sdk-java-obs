@@ -1,4 +1,4 @@
-name: Android CI
+name: ci esdk-obs-android
 
 on: [push]
 
