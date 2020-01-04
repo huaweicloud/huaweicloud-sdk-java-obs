@@ -20,5 +20,6 @@ jobs:
       with:
         # Artifact name
         name: esdk-obs-java-*.jar
+        if: success()
         # Destination path
         path: test/
