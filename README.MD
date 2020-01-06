@@ -1,4 +1,4 @@
-Download : https://github.com/huaweicloud/huaweicloud-sdk-java-obs/tree/release
+Download : https://github.com/huaweicloud/huaweicloud-sdk-java-obs/tree/release/release
 
 -----------------------------------------------------------------------------------
 
