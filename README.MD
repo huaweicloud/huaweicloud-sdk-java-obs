@@ -1,3 +1,7 @@
+Download : https://github.com/huaweicloud/huaweicloud-sdk-java-obs/tree/release
+
+-----------------------------------------------------------------------------------
+
 Version 3.19.11
 New features:
 1. Request authentication supports obtaining access keys by searching in sequence.
