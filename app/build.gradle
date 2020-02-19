@@ -68,7 +68,7 @@ android {
 dependencies {
     //compile fileTree(include: ['*.jar'], dir: '../../third_party_libs_android/')
     compile 'com.jamesmurty.utils:java-xmlbuilder:1.2'
-    compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.squareup.okhttp3:okhttp:3.14.2'
     compile 'com.squareup.okio:okio:1.17.2'
     compile 'com.fasterxml.jackson.core:jackson-core:2.10.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
