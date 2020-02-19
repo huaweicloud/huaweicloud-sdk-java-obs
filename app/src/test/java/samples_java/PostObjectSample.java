@@ -44,6 +44,11 @@ import com.obs.services.model.PostSignatureResponse;
  */
 public class PostObjectSample
 {
+    private static final String protocol = "https://";
+    
+    /*
+     * Example：obs.cn-north-1.myhuaweicloud.com
+     */
     private static final String endPoint = "your-endpoint";
     
     private static final String ak = "*** Provide your Access Key ***";
@@ -114,7 +119,7 @@ public class PostObjectSample
             	formParams.put("AwsAccesskeyid", ak);
             }
             
-            String postUrl = bucketName + "." + endPoint;
+            String postUrl = protocol + bucketName + "." + endPoint;
             System.out.println("Creating object in browser-based way");
             System.out.println("\tpost url:" + postUrl);
             

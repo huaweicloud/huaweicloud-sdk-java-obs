@@ -16,6 +16,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal;
 
 import java.io.Serializable;
@@ -51,15 +52,16 @@ public class ObsProperties implements Serializable {
 
     public String getStringProperty(String propertyName, String defaultValue) {
         String stringValue = trim(properties.getProperty(propertyName, defaultValue));
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()
+                && !"httpclient.proxy-user".equals(propertyName)
+                && !"httpclient.proxy-password".equals(propertyName)) {
             log.debug(propertyName + "=" + stringValue);
         }
         return stringValue;
     }
 
     public long getLongProperty(String propertyName, long defaultValue)
-        throws NumberFormatException
-    {
+        throws NumberFormatException {
         String longValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
         if (log.isDebugEnabled()) {
             log.debug(propertyName + "=" + longValue);
@@ -68,8 +70,7 @@ public class ObsProperties implements Serializable {
     }
 
     public int getIntProperty(String propertyName, int defaultValue)
-        throws NumberFormatException
-    {
+        throws NumberFormatException {
         String intValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
         if (log.isDebugEnabled()) {
             log.debug(propertyName + "=" + intValue);
@@ -78,8 +79,7 @@ public class ObsProperties implements Serializable {
     }
 
     public boolean getBoolProperty(String propertyName, boolean defaultValue)
-        throws IllegalArgumentException
-    {
+        throws IllegalArgumentException {
         String boolValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
         if (log.isDebugEnabled()) {
             log.debug(propertyName + "=" + boolValue);

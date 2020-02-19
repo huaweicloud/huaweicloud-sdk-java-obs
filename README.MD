@@ -1,4 +1,6 @@
-Download : https://github.com/huaweicloud/huaweicloud-sdk-java-obs/tree/release/release
+Version 3.20.1
+Third-party dependence:
+1. Replace okhttp 3.11.0 with okhttp 3.14.2.
 
 -----------------------------------------------------------------------------------
 
