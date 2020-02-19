@@ -20,51 +20,46 @@ import java.util.List;
 /**
  * Bucket CORS rules
  */
-public class BucketCors extends S3BucketCors
-{
+public class BucketCors extends S3BucketCors {
     private List<BucketCorsRule> rules;
-    
-    public BucketCors()
-    {
+
+    public BucketCors() {
     }
-    
+
     /**
      * Constructor
-     * @param rules Bucket CORS rule list
+     * 
+     * @param rules
+     *            Bucket CORS rule list
      */
-    public BucketCors(List<BucketCorsRule> rules)
-    {
+    public BucketCors(List<BucketCorsRule> rules) {
         this.rules = rules;
     }
-    
+
     /**
      * Obtain the bucket CORS rule list.
+     * 
      * @return Bucket CORS rule list
      */
-    public List<BucketCorsRule> getRules()
-    {
-        if (null == rules)
-        {
+    public List<BucketCorsRule> getRules() {
+        if (null == rules) {
             rules = new ArrayList<BucketCorsRule>();
         }
         return rules;
     }
-    
+
     /**
      * Configure the bucket CORS rule list.
-     * @param rules Bucket CORS rule list
+     * 
+     * @param rules
+     *            Bucket CORS rule list
      */
-    public void setRules(List<BucketCorsRule> rules)
-    {
+    public void setRules(List<BucketCorsRule> rules) {
         this.rules = rules;
     }
-    
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ObsBucketCors [rules=" + rules + "]";
     }
 }
-
-
