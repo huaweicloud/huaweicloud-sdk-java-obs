@@ -58,7 +58,7 @@
 
 	<build>
 		<sourceDirectory>app/src/main/java</sourceDirectory>
-		<testSourceDirectory>app/src/test/java</testSourceDirectory>
+		<testSourceDirectory>app/src/test/java/samples_java</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
