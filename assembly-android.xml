@@ -12,16 +12,27 @@
     <file>
       <source>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</source>
       <outputDirectory>/</outputDirectory>
+      <destName>esdk-obs-android-${project.version}-javadoc.jar</destName>
     </file>
+	 <!--
 	<file>
 		<source>${project.basedir}/app/build/intermediates/bundles/release/classes.jar</source>
 		<outputDirectory>/</outputDirectory>
 		<destName>${project.artifactId}-${project.version}.jar</destName>  
-	</file>
+	</file> -->
     <file>
-      <source>${project.basedir}/README.MD</source>
+      <source>${project.basedir}/LICENSE</source>
       <outputDirectory>/</outputDirectory>
     </file>
+    <file>
+		<source>${project.basedir}/Notice.MD</source>
+		<outputDirectory>/</outputDirectory>
+	</file>
+    <file>
+      <source>${project.basedir}/Help on License</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+	  
   </files>
       <fileSets>
         <fileSet>
