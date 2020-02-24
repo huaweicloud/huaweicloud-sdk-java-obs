@@ -14,7 +14,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn -B package --file pom-java.xml
+      run: mvn clean install -f pom-java.xml
     - name: Upload artifact
       if: success()
       uses: actions/upload-artifact@v1.0.0
