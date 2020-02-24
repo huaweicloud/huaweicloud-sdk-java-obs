@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Grantee information in the ACL, {@link AccessControlList}
+ * ACL中被授权用户信息，{@link AccessControlList}
  */
 public class CanonicalGrantee implements GranteeInterface
 {
@@ -28,9 +27,9 @@ public class CanonicalGrantee implements GranteeInterface
     }
     
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param identifier ID of the domain to which the grantee belongs
+     * @param identifier 被授权用户的DomainId
      */
     public CanonicalGrantee(String identifier)
     {
@@ -38,9 +37,9 @@ public class CanonicalGrantee implements GranteeInterface
     }
     
     /**
-     * Set the ID of the domain to which the grantee belongs.
+     * 设置被授权用户的DomainId
      * 
-     * @param canonicalGrantId ID of the domain to which the grantee belongs
+     * @param canonicalGrantId 被授权用户的DomainId
      */
     public void setIdentifier(String canonicalGrantId)
     {
@@ -48,9 +47,9 @@ public class CanonicalGrantee implements GranteeInterface
     }
     
     /**
-     * Obtain the ID of the domain to which the grantee belongs.
+     * 获取被授权用户的DomainId
      * 
-     * @return ID of the domain to which the grantee belongs
+     * @return 被授权用户的DomainId
      */
     public String getIdentifier()
     {
@@ -58,9 +57,9 @@ public class CanonicalGrantee implements GranteeInterface
     }
     
     /**
-     * Set the username for the grantee.
+     * 设置被授权用户的用户名
      * 
-     * @param displayName Username of the grantee
+     * @param displayName 被授权用户的用户名
      */
     @Deprecated
     public void setDisplayName(String displayName)
@@ -69,9 +68,9 @@ public class CanonicalGrantee implements GranteeInterface
     }
     
     /**
-     * Obtain the username of the grantee.
+     * 获取被授权用户的用户名
      * 
-     * @return Username of the grantee
+     * @return 被授权用户的用户名
      */
     @Deprecated
     public String getDisplayName()
@@ -115,5 +114,3 @@ public class CanonicalGrantee implements GranteeInterface
         return "CanonicalGrantee [id=" + grantId + (displayName != null ? ", displayName=" + displayName : "") + "]";
     }
 }
-
-

@@ -31,7 +31,7 @@ import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Log configuration class that uses the standard JDK log library 
+ * 使用JDK标准日志库的日志配置类 
  *
  */
 public class LogConfigurator {
@@ -179,7 +179,7 @@ public class LogConfigurator {
     }
 
     /**
-     * Enable SDK logging.
+     * 开启SDK日志
      */
     public synchronized static void enableLog(){
     	if(logEnabled) {
@@ -189,13 +189,15 @@ public class LogConfigurator {
     }
 
     /**
-     * Disable SDK logging.
+     * 关闭SDK日志
      */
     protected synchronized static void disableLog(){
        logOff(logger);
     }
 
-
+    /**
+     * 开启SDK access日志
+     */
     public synchronized static void enableAccessLog()
     {
         if(accessLogEnabled)
@@ -211,8 +213,8 @@ public class LogConfigurator {
     }
 
     /**
-     * Set the log level.
-     * @param level Log level
+     * 设置日志级别
+     * @param level 日志级别
      */
     public synchronized static void setLogLevel(Level level){
         if(level != null){
@@ -221,8 +223,8 @@ public class LogConfigurator {
     }
 
     /**
-     * Set the number of retained log files.
-     * @param count Number of retained log files
+     * 设置保留日志文件的个数
+     * @param count 保留日志文件的个数
      */
     public synchronized static void setLogFileRolloverCount(int count){
         if(count > 0){
@@ -231,8 +233,8 @@ public class LogConfigurator {
     }
 
     /**
-     * Set the log file size (in bytes). 
-     * @param fileSize Log file size
+     * 设置每个日志文件的大小，单位：字节
+     * @param fileSize 日志文件大小
      */
     public synchronized static void setLogFileSize(int fileSize){
         if(fileSize >= 0){
@@ -241,8 +243,8 @@ public class LogConfigurator {
     }
 
     /**
-     * Set a directory for saving log files.
-     * @param dir Directory for saving log files
+     * 设置日志文件存放的目录
+     * @param dir 日志文件存放的目录
      */
     public synchronized static void setLogFileDir(String dir){
         if(ServiceUtils.isValid(dir)){

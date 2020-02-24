@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Response headers that can be rewritten during object download
+ * 下载对象时可重写的响应消息头信息
  */
 public class ObjectRepleaceMetadata
 {
@@ -33,8 +32,8 @@ public class ObjectRepleaceMetadata
     private String contentEncoding;
     
     /**
-     * Obtain the rewritten "Content-Type" header in the response.
-     * @return "Content-Type" header in the response
+     * 获取重写响应中的Content-Type头
+     * @return 响应中的Content-Type头
      */
     public String getContentType()
     {
@@ -42,8 +41,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Content-Type" header in the response.
-     * @param contentType "Content-Type" header in the response
+     * 设置重写响应中的Content-Type头
+     * @param contentType 响应中的Content-Type头
      */
     public void setContentType(String contentType)
     {
@@ -51,8 +50,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Obtain the rewritten "Content-Language" header in the response.
-     * @return "Content-Language" header in the response
+     * 获取重写响应中的Content-Language头
+     * @return 响应中的Content-Language头
      */
     public String getContentLanguage()
     {
@@ -60,8 +59,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Content-Language" header in the response.
-     * @param contentLanguage "Content-Language" header in the response
+     * 设置重写响应中的Content-Language头
+     * @param contentLanguage 响应中的Content-Language头
      */
     public void setContentLanguage(String contentLanguage)
     {
@@ -69,8 +68,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Obtain the rewritten "Expires" header in the response.
-     * @return "Expires" header in the response
+     * 获取重写响应中的Expires头
+     * @return 响应中的Expires头
      */
     public String getExpires()
     {
@@ -78,8 +77,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Expires" header in the response.
-     * @param expires Rewritten "Expires" header in the response
+     * 设置重写响应中的Expires头
+     * @param expires 响应中的Expires头
      */
     public void setExpires(String expires)
     {
@@ -87,8 +86,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Obtain the rewritten "Cache-Control" header in the response.
-     * @return "Cache-Control" header in the response
+     * 获取重写响应中的Cache-Control头
+     * @return 响应中的Cache-Control头
      */
     public String getCacheControl()
     {
@@ -96,8 +95,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Cache-Control" header in the response.
-     * @param cacheControl "Cache-Control" header in the response
+     * 设置重写响应中的Cache-Control头
+     * @param cacheControl 响应中的Cache-Control头
      */
     public void setCacheControl(String cacheControl)
     {
@@ -105,8 +104,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Obtain the rewritten "Content-Disposition" header in the response.
-     * @return "Content-Disposition" header in the response
+     * 获取重写响应中的Content-Disposition头
+     * @return 响应中的Content-Disposition头
      */
     public String getContentDisposition()
     {
@@ -114,8 +113,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Content-Disposition" header in the response.
-     * @param contentDisposition "Content-Disposition" header in the response
+     * 设置重写响应中的Content-Disposition头
+     * @param contentDisposition 响应中的Content-Disposition头
      */
     public void setContentDisposition(String contentDisposition)
     {
@@ -123,8 +122,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Obtain the rewritten "Content-Encoding" header in the response.
-     * @return "Content-Encoding" header in the response
+     * 获取重写响应中的Content-Encoding头
+     * @return 响应中的Content-Encoding头
      */
     public String getContentEncoding()
     {
@@ -132,8 +131,8 @@ public class ObjectRepleaceMetadata
     }
     
     /**
-     * Rewrite the "Content-Encoding" header in the response.
-     * @param contentEncoding "Content-Encoding" header in the response
+     * 设置重写响应中的Content-Encoding头
+     * @param contentEncoding 响应中的Content-Encoding头
      */
     public void setContentEncoding(String contentEncoding)
     {
@@ -149,5 +148,3 @@ public class ObjectRepleaceMetadata
     }
     
 }
-
-

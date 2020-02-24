@@ -15,7 +15,7 @@ package com.obs.services.model;
 
 /**
  * 
- * Response to a request for browser-based authorized access 
+ * 基于浏览器表单授权访问的响应结果
  *
  */
 public class V4PostSignatureResponse extends PostSignatureResponse
@@ -39,8 +39,8 @@ public class V4PostSignatureResponse extends PostSignatureResponse
     }
     
     /**
-     * Obtain the signature algorithm.
-     * @return Signature algorithm
+     * 获取签名算法
+     * @return 签名算法
      */
     public String getAlgorithm()
     {
@@ -48,8 +48,8 @@ public class V4PostSignatureResponse extends PostSignatureResponse
     }
     
     /**
-     * Obtain the credential information
-     * @return Credential information
+     * 获取Credential信息
+     * @return credential信息
      */
     public String getCredential()
     {
@@ -57,8 +57,8 @@ public class V4PostSignatureResponse extends PostSignatureResponse
     }
     
     /**
-     * Obtain the date in the ISO 8601 format.
-     * @return Date in the ISO 8601 format
+     * 获取ISO 8601格式日期
+     * @return ISO 8601格式日期
      */
     public String getDate()
     {

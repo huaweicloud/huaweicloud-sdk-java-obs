@@ -1,17 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Parameters in a request for browser-based authorized access
+ * 基于浏览器表单授权访问请求参数
  *
  */
 public class PostSignatureRequest
@@ -50,10 +49,10 @@ public class PostSignatureRequest
     }
     
     /**
-     * Constructor
-     * @param expires Expiration time (in seconds)
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param expires 有效时间，单位：秒
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public PostSignatureRequest(long expires, String bucketName, String objectKey)
     {
@@ -63,10 +62,10 @@ public class PostSignatureRequest
     }
     
     /**
-     * Constructor
-     * @param expiryDate Expiration date
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param expiryDate 有效截止日期
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public PostSignatureRequest(Date expiryDate, String bucketName, String objectKey)
     {
@@ -77,10 +76,10 @@ public class PostSignatureRequest
     
     /**
      * 
-     * @param expires Expiration time (in seconds)
-     * @param requestDate Request time
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * @param expires 有效时间，单位：秒
+     * @param requestDate 请求时间
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public PostSignatureRequest(long expires, Date requestDate, String bucketName, String objectKey)
     {
@@ -92,10 +91,10 @@ public class PostSignatureRequest
     
     /**
      * 
-     * @param expiryDate Expiration date
-     * @param requestDate Request time
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * @param expiryDate 有效截止日期
+     * @param requestDate 请求时间
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public PostSignatureRequest(Date expiryDate, Date requestDate, String bucketName, String objectKey)
     {
@@ -106,8 +105,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Set the request time.
-     * @return Request time
+     * 设置请求时间
+     * @return 请求时间
      */
     public Date getRequestDate()
     {
@@ -115,8 +114,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Set the request time.
-     * @param requestDate Request time
+     * 获取请求时间
+     * @param requestDate 请求时间
      */
     public void setRequestDate(Date requestDate)
     {
@@ -124,8 +123,8 @@ public class PostSignatureRequest
     }
     
     /**
-     Set the expiration date.
-     * @return Expiration date
+     * 设置有效截止日期
+     * @return 有效截止日期
      */
     public Date getExpiryDate()
     {
@@ -133,8 +132,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Obtain the expiration date.
-     * @param expiryDate Expiration date
+     * 获取有效截止日期
+     * @param expiryDate 有效截止日期
      */
     public void setExpiryDate(Date expiryDate)
     {
@@ -142,8 +141,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Obtain the validity period. The default value is 5 minutes (value "300").
-     * @return Validity period
+     * 获取有效时间，默认值为5分钟（300）
+     * @return 有效时间
      */
     public long getExpires()
     {
@@ -151,8 +150,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Set the validity period (in seconds).
-     * @param expires Validity period
+     * 设置有效时间，单位：秒
+     * @param expires 有效时间
      */
     public void setExpires(long expires)
     {
@@ -160,8 +159,8 @@ public class PostSignatureRequest
     }
     
     /**
-     * Obtain the form parameters of the request. 
-     * @return Form parameters of the request
+     * 获取请求的表单参数
+     * @return 请求的表单参数
      */
     public Map<String, Object> getFormParams()
     {
@@ -173,16 +172,16 @@ public class PostSignatureRequest
     }
     
     /**
-     * Set the form parameters of the request.
-     * @param formParams Form parameters of the request
+     * 设置请求的表单参数
+     * @param formParams 请求的表单参数
      */
     public void setFormParams(Map<String, Object> formParams){
         this.formParams = formParams;
     }
 
     /**
-     * Obtain the bucket name.
-     * @return Bucket name
+     * 获取桶名
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -190,8 +189,8 @@ public class PostSignatureRequest
     }
 
     /**
-     * Set the bucket name.
-     * @param bucketName Bucket name
+     * 设置桶名
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -199,8 +198,8 @@ public class PostSignatureRequest
     }
 
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -208,8 +207,8 @@ public class PostSignatureRequest
     }
 
     /**
-     * Set the object name.
-     * @param objectKey Object name
+     * 设置对象名
+     * @param objectKey 对象名
      */
     public void setObjectKey(String objectKey)
     {
@@ -217,8 +216,8 @@ public class PostSignatureRequest
     }
 
     /**
-     * Obtain the restrictions of the form. If the value is set, it will be used to calculate "policy", while the form parameter configuration of the request will be ignored. 
-     * @return Restrictions of the form
+     * 获取表单限制条件，如果设置了该值，将直接使用该值计算policy而忽略请求的表单参数中的设置
+     * @return 表单限制条件
      */
     public List<String> getConditions()
     {
@@ -229,8 +228,8 @@ public class PostSignatureRequest
     }
 
     /**
-     * Set the restrictions of the form. If the value is set, it will be used to calculate "policy", while the form parameter configuration of the request will be ignored. 
-     * @param conditions Restrictions of the form
+     * 设置表单限制条件，如果设置了该值，将直接使用该值计算policy而忽略请求的表单参数中的设置
+     * @param conditions 表单限制条件
      */
     public void setConditions(List<String> conditions)
     {

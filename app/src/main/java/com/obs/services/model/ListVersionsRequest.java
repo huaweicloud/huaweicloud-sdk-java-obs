@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for listing versioning objects in a bucket
+ * 列举桶内多版本对象的请求参数
  */
 public class ListVersionsRequest
 {
@@ -38,9 +37,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
+     *  @param bucketName 桶名
      */
     public ListVersionsRequest(String bucketName)
     {
@@ -49,9 +48,9 @@ public class ListVersionsRequest
     
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param maxKeys Maximum number of versioning objects to be listed
+     * 构造函数
+     * @param bucketName 桶名
+     * @param maxKeys 列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, int maxKeys)
     {
@@ -60,12 +59,12 @@ public class ListVersionsRequest
     }
 
     /**     
-     * Constructor 
-     *  @param bucketName Bucket name
-     *  @param prefix Oject name prefix used for listing versioning objects
-     *  @param keyMarker Start position for listing versioning objects
-     *  @param delimiter Character used for sorting versioning object names into groups
-     *  @param maxKeys Maximum number of versioning objects to be listed
+     *  构造函数 
+     *  @param bucketName 桶名
+     *  @param prefix 列举多版本对象对象时的对象名前缀
+     *  @param keyMarker 列举多版本对象时的起始位置
+     *  @param delimiter 用于对多版本对象名进行分组的字符
+     *  @param maxKeys 列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter, int maxKeys)
     {
@@ -77,9 +76,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -87,9 +86,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -97,9 +96,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Obtain the object name prefix used for listing versioning objects.
+     * 获取列举多版本对象时的对象名前缀
      * 
-     * @return Object name prefix
+     * @return 对象名前缀
      */
     public String getPrefix()
     {
@@ -107,9 +106,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Set the object name prefix used for listing versioning objects.
+     * 设置列举多版本对象时的对象名前缀
      * 
-     * @param prefix Object name prefix
+     * @param prefix 对象名前缀
      */
     public void setPrefix(String prefix)
     {
@@ -117,9 +116,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Obtain the maximum number of versioning objects to be listed. 
+     * 获取列举多版本对象的最大条目数
      * 
-     * @return Maximum number of versioning objects to be listed
+     * @return 列举多版本对象的最大条目数
      */
     public int getMaxKeys()
     {
@@ -127,9 +126,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Set the maximum number of versioning objects to be listed.
+     * 设置列举多版本对象的最大条目数
      * 
-     * @param maxKeys Maximum number of versioning objects to be listed
+     * @param maxKeys 列举多版本对象的最大条目数
      */
     public void setMaxKeys(int maxKeys)
     {
@@ -137,9 +136,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Character used for grouping versioning object names.
+     * 获取用于对多版本对象名进行分组的字符
      * 
-     * @return Character for grouping object names
+     * @return 分组字符
      */
     public String getDelimiter()
     {
@@ -147,9 +146,9 @@ public class ListVersionsRequest
     }
     
     /**
-     * Set the character used for grouping versioning object names.
+     * 设置用于对多版本对象名进行分组的字符
      * 
-     * @param delimiter Character for grouping objet names
+     * @param delimiter 分组字符
      */
     public void setDelimiter(String delimiter)
     {
@@ -157,32 +156,32 @@ public class ListVersionsRequest
     }
     
 	/**
-	 * Obtain the start position (versionId) for listing versioning objects.
-	 * @return Start position for listing versioning objects
+	 * 获取列举多版本对象的起始位置（versionId标识）
+	 * @return 列举多版本对象的起始位置
 	 */
 	public String getVersionIdMarker() {
 		return versionIdMarker;
 	}
 
 	/**
-	 * Set the start position (versionId) for listing versioning objects.
-	 * @param versionIdMarker Start position for listing versioning objects
+	 * 设置列举多版本对象的起始位置（versionId标识）
+	 * @param versionIdMarker 列举多版本对象的起始位置
 	 */
 	public void setVersionIdMarker(String versionIdMarker) {
 		this.versionIdMarker = versionIdMarker;
 	}
 
 	/**
-	 * Obtain the start position for listing versioning objects. 
-	 * @return Start position for listing versioning objects
+	 * 获取列举多版本对象的起始位置
+	 * @return 列举多版本对象的起始位置
 	 */
 	public String getKeyMarker() {
 		return keyMarker;
 	}
 
 	/**
-	 * Set the start position for listing versioning objects.
-	 * @param keyMarker Start position for listing versioning objects
+	 * 设置列举多版本对象的起始位置
+	 * @param keyMarker 列举多版本对象的起始位置
 	 */
 	public void setKeyMarker(String keyMarker) {
 		this.keyMarker = keyMarker;
@@ -205,5 +204,3 @@ public class ListVersionsRequest
 
 	
 }
-
-

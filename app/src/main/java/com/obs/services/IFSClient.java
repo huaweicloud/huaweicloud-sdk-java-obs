@@ -41,125 +41,126 @@ import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
 
 /**
- * Gateway interface for OBS files
+ * OBS文件网关接口
  */
 public interface IFSClient {
-	/**
-	 * Disable ObsClient and release connection resources. 
-	 * @throws IOException
-	 */
+	
+    /**
+     * 关闭OBS客户端，释放连接资源
+     * @throws IOException IO异常，当关闭资源失败时抛出该异常
+     */
 	void close() throws IOException;
 	
 	/**
-	 * Create a bucket.
-	 * @param request Request parameters for creating a bucket
-	 * @return Bucket supporting the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建桶
+	 * @param request 创建桶请求参数
+	 * @return 代表支持文件接口的桶
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	ObsFSBucket newBucket(NewBucketRequest request) throws ObsException;
 	
 	/**
-	 * Specify whether to enable the file gateway feature for the bucket. 
-	 * @param request Request parameters for specifying whether to enable the file gateway feature for the bucket
-	 * @return Common response headers
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 设置桶的文件网关特性状态
+	 * @param request 设置桶的文件网关特性状态的请求参数
+	 * @return 公共响应头信息
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	HeaderResponse setBucketFSStatus(SetBucketFSStatusRequest request) throws ObsException; 
 	
 	/**
-	 * Check whether the file gateway feature is enabled for the bucket. 
-	 * @param request Request parameters for checking whether the file gateway feature is enabled for the bucket 
-	 * @return Response to the check of whether the file gateway feature is enabled for the bucket
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 获取桶的文件网关特性状态
+	 * @param request 获取桶的文件网关特性状态的请求参数
+	 * @return 获取桶的文件网关特性状态的响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	GetBucketFSStatusResult getBucketFSStatus(GetBucketFSStatusRequest request) throws ObsException;
 	
 	/**
-	 * Create a file.
-	 * @param request Request parameters for creating a file
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件
+	 * @param request 创建文件请求参数
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	ObsFSFile newFile(NewFileRequest request) throws ObsException;
 	
 	/**
-	 * Create a folder.
-	 * @param request Request parameters for creating a folder
-	 * @return Folders in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件夹
+	 * @param request 创建文件夹请求参数
+	 * @return 代表支持文件接口的桶中的文件夹
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	ObsFSFolder newFolder(NewFolderRequest request) throws ObsException;
 	
 	/**
-	 * Obtain file or folder properties. 
-	 * @param request Request parameters for obtaining filer or folder properties
-	 * @return File or folder properties
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 获取文件/文件夹属性
+	 * @param request 获取文件/文件夹属性请求参数
+	 * @return 文件/文件夹属性
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	ObsFSAttribute getAttribute(GetAttributeRequest request) throws ObsException;
 	
 	
 	/**
-	 * Obtain the file content.
-	 * @param request Request parameters for obtaining the file content
-	 * @return Response to the request for obtaining file content
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 读取文件内容
+	 * @param request 读取文件内容的请求参数
+	 * @return 读取文件内容的响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	ReadFileResult readFile(ReadFileRequest request) throws ObsException;
 	
 	/**
-	 * Write data to a file.
-	 * @param request Request parameters for writing data to a file
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails 
+	 * 写文件内容
+	 * @param request 写文件内容的请求参数
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常 
 	 */
 	ObsFSFile writeFile(WriteFileRequest request) throws ObsException;
 	
 	/**
-	 * Append data to a file.
-	 * @param request Request parameters for writing data to a file
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails 
+	 * 在文件末尾追加内容
+	 * @param request 写文件内容的请求参数
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常 
 	 */
 	ObsFSFile appendFile(WriteFileRequest request) throws ObsException;
 	
 	/**
-	 * Rename a file.
-	 * @param request Request parameters for renaming a file
-	 * @return Response to the request for renaming a file
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 重命名文件
+	 * @param request 重命名文件请求参数
+	 * @return 重命名文件响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	RenameResult renameFile(RenameRequest request) throws ObsException;
 	
 	/**
-	 * Rename a folder.
-	 * @param request Request parameters for renaming a folder
-	 * @return Response to the request for renaming a folder
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 重命名文件夹
+	 * @param request 重命名文件夹请求参数
+	 * @return 重命名文件夹响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	RenameResult renameFolder(RenameRequest request) throws ObsException;
 	
 	/**
-	 * Truncate a file.
-	 * @param request Request parameters for truncating a file
-	 * @return Response to the request for truncating a file
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 截断文件
+	 * @param request 截断文件请求参数
+	 * @return 截断文件响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	TruncateFileResult truncateFile(TruncateFileRequest request) throws ObsException;
 	
 	/**
-	 * Delete a file.
-	 * @param request Request parameters for deleting a file
-	 * @return Response to the request for deleting a file
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 删除文件
+	 * @param request 删除文件请求
+	 * @return 删除文件响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	DropFileResult dropFile(DropFileRequest request) throws ObsException;
 	
 	/**
-	 * Delete a folder.
-	 * @param request Request parameters for deleting a folder
-	 * @return Batch task execution status
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 删除文件夹
+	 * @param request 删除文件夹请求参数
+	 * @return 批量任务执行状态
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	TaskProgressStatus dropFolder(DropFolderRequest request) throws ObsException; 
 	

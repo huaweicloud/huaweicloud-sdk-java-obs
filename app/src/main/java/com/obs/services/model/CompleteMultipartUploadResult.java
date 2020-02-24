@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Response to a request for combining parts
+ * 合并段的响应结果
  */
 public class CompleteMultipartUploadResult extends HeaderResponse
 {
@@ -41,9 +41,9 @@ public class CompleteMultipartUploadResult extends HeaderResponse
 	}
 
 	/**
-     * Obtain the name of the bucket to which the multipart upload belongs.
+     *获取分段上传任务所属的桶名
      * 
-     * @return Name of the bucket to which the multipart upload belongs
+     * @return 分段上传任务所属的桶名
      */
     public String getBucketName()
     {
@@ -51,9 +51,9 @@ public class CompleteMultipartUploadResult extends HeaderResponse
     }
     
     /**
-     * Obtain the name of the object involved in the multipart upload.
+     * 获取分段上传任务所属的对象名
      * 
-     * @return Name of the object involved in the multipart upload
+     * @return 分段上传任务所属的对象名
      */
     public String getObjectKey()
     {
@@ -61,9 +61,9 @@ public class CompleteMultipartUploadResult extends HeaderResponse
     }
     
     /**
-     * Obtain the ETag of the object involved in the multipart upload.
+     * 获取分段上传任务所属对象的etag值
      * 
-     * @return ETag of the object involved in the multipart upload
+     * @return 分段上传任务所属对象的etag值
      */
     public String getEtag()
     {
@@ -72,8 +72,8 @@ public class CompleteMultipartUploadResult extends HeaderResponse
     
 
     /**
-     * Obtain the URI of the object after part combination.
-     * @return URI of the object obtained after part combination
+     * 获取合并后得到的对象的uri
+     * @return 合并后得到的对象的uri
      */
 	public String getLocation() {
 		return location;
@@ -81,16 +81,16 @@ public class CompleteMultipartUploadResult extends HeaderResponse
 
 	
 	/**
-	 * Obtain the version ID of the object after part combination.
-	 * @return Version ID of the object after part combination
+	 * 获取合并得到的对象的版本号
+	 * @return 合并得到的对象的版本号
 	 */
 	public String getVersionId() {
 		return versionId;
 	}
 	
     /**
-     * Obtain the full path to the object after part combination.
-     * @return Full path to the object
+     * 获取合并段后得到的对象的全路径
+     * @return 对象的全路径
      */
 	public String getObjectUrl() {
 		return objectUrl;
@@ -106,5 +106,3 @@ public class CompleteMultipartUploadResult extends HeaderResponse
     
     
 }
-
-

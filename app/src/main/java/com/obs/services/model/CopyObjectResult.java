@@ -18,7 +18,7 @@ import java.util.Date;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Response to a request for copying an object
+ * 复制对象的响应结果
  */
 public class CopyObjectResult extends HeaderResponse
 {
@@ -44,9 +44,9 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * Obtain the ETag of the destination object.
+     * 获取目标对象的etag值
      * 
-     * @return ETag value of the destination object
+     * @return 目标对象的etag值
      */
     public String getEtag()
     {
@@ -55,9 +55,9 @@ public class CopyObjectResult extends HeaderResponse
     
     
     /**
-     * Last modification time of the destination object
+     * 获取目标对象的最后修改时间
      * 
-     * @return Last modification time of the destination object
+     * @return 目标对象的最后修改时间
      */
     public Date getLastModified()
     {
@@ -65,8 +65,8 @@ public class CopyObjectResult extends HeaderResponse
     }
     
     /**
-     * Obtain the version ID of the destination object. 
-     * @return Version ID of the object
+     * 获取目标对象的版本号
+     * @return 对象版本号
      */
 	public String getVersionId() {
 		return versionId;
@@ -74,8 +74,8 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * Obtain the version ID of the source object. 
-     * @return Version ID of the object
+     * 获取源对象的版本号
+     * @return 对象版本号
      */
 	public String getCopySourceVersionId() {
 		return copySourceVersionId;
@@ -83,8 +83,8 @@ public class CopyObjectResult extends HeaderResponse
 
 
 	/**
-     * Obtain the storage class of the destination object.
-     * @return Object storage class
+     * 获取目标对象的存储类型
+     * @return 对象的存储类型
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -100,5 +100,3 @@ public class CopyObjectResult extends HeaderResponse
 	
     
 }
-
-

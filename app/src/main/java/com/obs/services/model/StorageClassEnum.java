@@ -15,23 +15,23 @@ package com.obs.services.model;
 
 /**
  *
- * Storage class
+ * 存储类型
  *
  */
 public enum StorageClassEnum {
 	
 	/**
-	 * Standard
+	 * 标准存储
 	 */
 	STANDARD,
 
 	/**
-	 * Infrequent Access
+	 * 低频访问存储
 	 */
 	WARM,
 	
 	/**
-	 * Archive
+	 * 归档存储
 	 */
 	COLD;
 
@@ -51,5 +51,3 @@ public enum StorageClassEnum {
 		return null;
 	}
 }
-
-

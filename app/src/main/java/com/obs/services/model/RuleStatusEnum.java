@@ -15,18 +15,18 @@ package com.obs.services.model;
 
 /**
  *
- * Rule status
+ * 规则状态
  *
  */
 public enum RuleStatusEnum {
 	
 	/**
-	 * Enable a rule.
+	 * 启用规则
 	 */
 	ENABLED("Enabled"),
 
 	/**
-	 * Disable a rule.
+	 * 禁用规则
 	 */
 	DISABLED("Disabled");
 

@@ -15,18 +15,18 @@ package com.obs.services.model.fs;
 
 
 /**
- * File gateway feature of the bucket
+ * 桶的文件网关特性状态
  *
  */
 public enum FSStatusEnum {
 
 	/**
-	 * Enable the file gateway feature.
+	 * 启用文件网关特性
 	 */
 	ENABLED("Enabled"),
 
 	/**
-	 * Disable the file gateway feature.
+	 * 禁用文件网关特性
 	 */
 	DISABLED("Disabled");
 
@@ -49,5 +49,3 @@ public enum FSStatusEnum {
 		return null;
 	}
 }
-
-

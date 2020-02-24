@@ -1,17 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -21,15 +20,15 @@ import java.util.List;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Bucket lifecycle rules
+ * 桶的生命周期配置
  */
 public class LifecycleConfiguration extends HeaderResponse
 {
     private List<Rule> rules;
     
     /**
-     * Constructor
-     * @param rules List of bucket lifecycle rules
+     * 构造方法
+     * @param rules 桶的生命周期规则列表
      */
     public LifecycleConfiguration(List<Rule> rules)
     {
@@ -41,8 +40,8 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Obtain the list of bucket lifecycle rules.
-     * @return List of bucket lifecycle rules
+     * 获取桶的生命周期规则列表
+     * @return 生命周期规则列表
      */
     public List<Rule> getRules()
     {
@@ -53,8 +52,8 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Add a lifecycle rule.
-     *  @param rule Lifecycle rule
+     * 新增生命周期规则
+     * @param rule 生命周期规则
      */
     public void addRule(Rule rule)
     {
@@ -64,11 +63,11 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Create and add a lifecycle rule.
-     * @param id Rule ID
-     * @param prefix Object name prefix identifying one or more objects to which the rule applies
-     * @param enabled Identifier that specifies whether the rule is enabled 
-     * @return rule Lifecycle rule
+     * 创建并新增一条生命周期的规则
+     * @param id 规则ID号
+     * @param prefix 对象名前缀，用以标识哪些对象可以匹配当前规则
+     * @param enabled 规则是否启用标识
+     * @return rule 生命周期规则
      */
     public Rule newRule(String id, String prefix, Boolean enabled)
     {
@@ -161,7 +160,7 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Expiration time of a noncurrent object version
+     * 历史版本对象过期时间配置
      *
      */
     public class NoncurrentVersionExpiration extends TimeEvent
@@ -172,8 +171,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param days Expiration time of the noncurrent object version, which indicates the number of days after which the object expires since it becomes a noncurrent version
+         * 构造函数
+         * @param days 历史版本对象过期时间，表示对象在成为历史版本之后第几天时过期
          */
         public NoncurrentVersionExpiration(Integer days)
         {
@@ -181,8 +180,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Obtain the expiration time of a noncurrent object version.
-         * @return Expiration time of the noncurrent object version, which indicates the number of days after which the object expires since it becomes a noncurrent version
+         * 获取历史版本对象过期时间
+         * @return 历史版本对象过期时间，表示对象在成为历史版本之后第几天时过期
          */
         public Integer getDays()
         {
@@ -190,8 +189,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the expiration time of a noncurrent object version.
-         * @param days Expiration time of the noncurrent object version, which indicates the number of days after which the object expires since it becomes a noncurrent version
+         * 设置历史版本对象过期时间
+         * @param days 历史版本对象过期时间，表示对象在成为历史版本之后第几天时过期
          */
         public void setDays(Integer days)
         {
@@ -207,7 +206,7 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Expiration time of an object
+     * 对象过期时间配置
      */
     public class Expiration extends TimeEvent
     {
@@ -217,8 +216,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param date A specified date in which the object will expire
+         * 构造函数
+         * @param date 对象过期日期， 表示对象过期的具体日期
          */
         public Expiration(Date date)
         {
@@ -226,8 +225,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param days Object expiration time, specifying how many days after creation will the object expire
+         * 构造函数
+         * @param days 对象过期时间，表示在对象创建时间后第几天时过期
          */
         public Expiration(Integer days)
         {
@@ -235,8 +234,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the expiration time of the object.
-         * @return Object expiration time, specifying how many days after creation will the object expire
+         * 获取对象过期时间
+         * @return 对象过期时间，表示在对象创建时间后第几天时过期
          */
         public Integer getDays()
         {
@@ -244,8 +243,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the object expiration time.
-         * @param days Object expiration time, specifying how many days after creation will the object expire
+         * 设置对象过期时间
+         * @param days 对象过期时间，表示在对象创建时间后第几天时过期
          */
         public void setDays(Integer days)
         {
@@ -254,8 +253,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the object expiration date.
-         * @return A specified date in which the object will expire
+         * 获取对象过期日期
+         * @return 对象过期日期， 表示对象过期的具体日期
          */
         public Date getDate()
         {
@@ -263,8 +262,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the object expiration date.
-         * @param date A specified date in which the object will expire
+         * 获取对象过期日期
+         * @param date 对象过期日期， 表示对象过期的具体日期
          */
         public void setDate(Date date)
         {
@@ -281,7 +280,7 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Object transition policy
+     *  对象转换策略
      *
      */
     public class Transition extends TimeEvent {
@@ -291,9 +290,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param date Date when the object is transited
-         * @param storageClass Storage class of the object after it is transited. Possible values are "WARM" and "COLD". 
+         * 构造函数
+         * @param date 对象转换日期， 表示对象转换的具体日期
+         * @param storageClass 对象转换后的存储类别，支持WARM或COLD
          */
         @Deprecated
         public Transition(Date date, String storageClass) {
@@ -302,9 +301,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param date Date when the object is transited
-         * @param storageClass Storage class of the object after it is transited. Possible values are "WARM" and "COLD". 
+         * 构造函数
+         * @param date 对象转换日期， 表示对象转换的具体日期
+         * @param storageClass 对象转换后的存储类别，支持WARM或COLD
          */
         public Transition(Date date, StorageClassEnum storageClass) {
             super(date);
@@ -312,9 +311,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Constructor
-         * @param days Object transition time, which indicates the number of days when the object is automatically transited after being created.
-         * @param storageClass Storage class of the object after it is transited. Possible values are "WARM" and "COLD". 
+         * 构造函数
+         * @param days 对象转换时间，表示在对象创建时间后第几天时自动转换
+         * @param storageClass 对象转换后的存储类别，支持WARM或COLD
          */
         @Deprecated
         public Transition(Integer days, String storageClass) {
@@ -323,9 +322,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param days Object transition time, which indicates the number of days when the object is automatically transited after being created.
-         * @param storageClass Storage class of the object after it is transited. Possible values are "WARM" and "COLD". 
+         * 构造函数
+         * @param days 对象转换时间，表示在对象创建时间后第几天时自动转换
+         * @param storageClass 对象转换后的存储类别，支持WARM或COLD
          */
         public Transition(Integer days, StorageClassEnum storageClass) {
             super(days);
@@ -333,8 +332,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Obtain the storage class of the object after transition.
-         * @return Storage class of the object after transition
+         * 获取对象转换后的存储类别
+         * @return 对象转换后的存储类别
          * @see #getObjectStorageClass()
          */
         @Deprecated
@@ -343,8 +342,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the storage class of the object after transition.
-         * @param storageClass Storage class of the object after transition
+         * 设置对象转换后的存储类别
+         * @param storageClass 对象转换后的存储类别
          * @see #setObjectStorageClass(StorageClassEnum storageClass)
          */
         @Deprecated
@@ -353,24 +352,24 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the storage class of the object after transition.
-         * @return Storage class of the object after transition
+         * 获取对象转换后的存储类别
+         * @return 对象转换后的存储类别
          */
         public StorageClassEnum getObjectStorageClass() {
             return storageClass;
         }
 
         /**
-         * Set the storage class of the object after transition.
-         * @param storageClass Storage class of the object after transition
+         * 设置对象转换后的存储类别
+         * @param storageClass 对象转换后的存储类别
          */
         public void setObjectStorageClass(StorageClassEnum storageClass) {
             this.storageClass = storageClass;
         }
         
         /**
-         * Obtain the object transition time.
-         * @return Object transition time, which indicates the number of days when the object is automatically transited after being created.
+         * 获取对象转换时间
+         * @return 对象转换时间，表示在对象创建时间后第几天时自动转换
          */
         public Integer getDays()
         {
@@ -378,8 +377,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the object transition time.
-         * @param days Object transition time, which indicates the number of days when the object is automatically transited after being created.
+         * 设置对象转换时间
+         * @param days 对象转换时间，表示在对象创建时间后第几天时自动转换
          */
         public void setDays(Integer days)
         {
@@ -388,8 +387,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the object transition date. 
-         * @return Date when the object is transited
+         * 获取对象转换日期
+         * @return 对象转换日期， 表示对象转换的具体日期
          */
         public Date getDate()
         {
@@ -397,8 +396,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the object transition date.
-         * @param date Date when the object is transited
+         * 设置对象转换日期
+         * @param date 对象转换日期， 表示对象转换的具体日期
          */
         public void setDate(Date date)
         {
@@ -414,7 +413,7 @@ public class LifecycleConfiguration extends HeaderResponse
     }
     
     /**
-     * Transition policy for noncurrent versions
+     * 历史版本对象转换策略
      *
      */
     public class NoncurrentVersionTransition extends TimeEvent
@@ -424,9 +423,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param days Transition time of the noncurrent object version, which indicates the number of days after which the object will be transit since it becomes a noncurrent version
-         * @param storageClass Storage class of the noncurrent object version after transition
+         * 构造函数
+         * @param days 历史版本对象转换时间，表示对象在成为历史版本之后第几天时自动转换
+         * @param storageClass 历史版本对象转换后的存储类别
          */
         @Deprecated
         public NoncurrentVersionTransition(Integer days, String storageClass)
@@ -436,9 +435,9 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Constructor
-         * @param days Transition time of the noncurrent object version, which indicates the number of days after which the object will be transit since it becomes a noncurrent version
-         * @param storageClass Storage class of the noncurrent object version after transition
+         * 构造函数
+         * @param days 历史版本对象转换时间，表示对象在成为历史版本之后第几天时自动转换
+         * @param storageClass 历史版本对象转换后的存储类别
          */
         public NoncurrentVersionTransition(Integer days, StorageClassEnum storageClass)
         {
@@ -447,8 +446,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Obtain the transition time of a noncurrent object version.
-         * @return Transition time of the noncurrent object version, which indicates the number of days after which the object will be transit since it becomes a noncurrent version
+         * 获取历史版本对象转换时间
+         * @return 历史版本对象转换时间，表示对象在成为历史版本之后第几天时自动转换
          */
         public Integer getDays()
         {
@@ -456,8 +455,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the transition time of a noncurrent object version.
-         * @param days Transition time of the noncurrent object version, which indicates the number of days after which the object will be transit since it becomes a noncurrent version
+         * 设置历史版本对象转换时间
+         * @param days 历史版本对象转换时间，表示对象在成为历史版本之后第几天时自动转换
          */
         public void setDays(Integer days)
         {
@@ -465,8 +464,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the storage class of the noncurrent object version after transition.
-         * @return Storage class of the noncurrent object version after transition
+         * 获取历史版本对象转换后的存储类别
+         * @return 历史版本对象转换后的存储类别
          * @see #getObjectStorageClass()
          */
         @Deprecated
@@ -475,8 +474,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the storage class of the noncurrent object version after transition.
-         * @param storageClass Storage class of the noncurrent object version after transition
+         * 设置历史版本对象转换后的存储类别
+         * @param storageClass 历史版本对象转换后的存储类别
          * @see #setObjectStorageClass(StorageClassEnum storageClass)
          */
         @Deprecated
@@ -485,16 +484,16 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the storage class of the noncurrent object version after transition.
-         * @return Storage class of the noncurrent object version after transition
+         * 获取历史版本对象转换后的存储类别
+         * @return 历史版本对象转换后的存储类别
          */
         public StorageClassEnum getObjectStorageClass() {
             return storageClass;
         }
         
         /**
-         * Set the storage class of the noncurrent object version after transition.
-         * @param storageClass Storage class of the noncurrent object version after transition
+         * 设置历史版本对象转换后的存储类别
+         * @param storageClass 历史版本对象转换后的存储类别
          */
         public void setObjectStorageClass(StorageClassEnum storageClass) {
             this.storageClass = storageClass;
@@ -510,7 +509,7 @@ public class LifecycleConfiguration extends HeaderResponse
     
     
     /**
-     * Bucket lifecycle rule
+     * 桶的生命周期规则
      */
     public class Rule
     {
@@ -529,16 +528,16 @@ public class LifecycleConfiguration extends HeaderResponse
         protected List<NoncurrentVersionTransition> noncurrentVersionTransitions;
         
         /**
-         * No-argument constructor
+         * 无参构造方法
          */
         public Rule()
         {
         }
         
         /**
-         * @param id Rule ID
-         * @param prefix Object name prefix identifying one or more objects to which the rule applies
-         * @param enabled Identifier that specifies whether the rule is enabled 
+         * @param id 规则ID号
+         * @param prefix 对象名前缀，用以标识哪些对象可以匹配当前规则
+         * @param enabled 规则是否启用标识
          */
         public Rule(String id, String prefix, Boolean enabled)
         {
@@ -548,8 +547,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Expiration time of objects
-         * @return Instance of expiration time configuration
+         * 创建对象过期时间配置
+         * @return 过期时间配置实例
          */
         public Expiration newExpiration()
         {
@@ -558,8 +557,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Create the expiration time of a noncurrent object version.
-         * @return Expiration time of a noncurrent object version
+         * 创建历史版本对象过期时间配置
+         * @return 历史版本对象过期时间配置
          */
         public NoncurrentVersionExpiration newNoncurrentVersionExpiration()
         {
@@ -568,8 +567,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Create an object transition policy.
-         * @return Object transition policy
+         * 创建对象转换策略
+         * @return 对象转换策略
          */
         public Transition newTransition()
         {
@@ -582,8 +581,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Create the transition policy for noncurrent versions.
-         * @return Transition policy for noncurrent versions
+         * 创建历史版本对象转换策略
+         * @return 历史版本对象转换策略
          */
         public NoncurrentVersionTransition newNoncurrentVersionTransition()
         {
@@ -596,8 +595,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the rule ID.
-         * @return Rule ID
+         * 获取规则ID号
+         * @return 规则ID号
          */
         public String getId()
         {
@@ -605,8 +604,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the rule ID.
-         * @param id Rule ID
+         * 设置规则ID号
+         * @param id 规则ID号
          */
         public void setId(String id)
         {
@@ -614,8 +613,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the object name prefix used to identify one or more objects to which the rule applies.
-         * @return Object name prefix
+         * 获取对象名前缀，用以标识哪些对象可以匹配当前规则
+         * @return 对象名前缀
          */
         public String getPrefix()
         {
@@ -623,8 +622,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the object name used to identify one or more objects to which the rule applies.
-         * @param prefix Object name prefix
+         * 设置对象名前缀，用以标识哪些对象可以匹配当前规则
+         * @param prefix 对象名前缀
          */
         public void setPrefix(String prefix)
         {
@@ -632,8 +631,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Identify whether the rule is enabled.
-         * @return Identifier that specifies whether the rule is enabled
+         * 判断规则是否启用
+         * @return 规则是否启用标识
          */
         public Boolean getEnabled()
         {
@@ -641,8 +640,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Specify whether to enable the rule.
-         * @param enabled Identifier that specifies whether the rule is enabled 
+         * 设置规则是否启用
+         * @param enabled 规则是否启用标识
          */
         public void setEnabled(Boolean enabled)
         {
@@ -650,8 +649,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the expiration time of an object.
-         * @return Expiration time of the object
+         * 获取对象过期时间配置
+         * @return 对象过期时间配置
          */
         public Expiration getExpiration()
         {
@@ -659,8 +658,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Set the expiration time of an object.
-         * @param expiration Expiration time of an object
+         * 设置对象过期时间配置
+         * @param expiration 对象过期时间配置
          */
         public void setExpiration(Expiration expiration)
         {
@@ -668,8 +667,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the expiration time of a noncurrent object version.
-         * @return Expiration time of a noncurrent object version
+         * 获取历史版本对象过期时间配置
+         * @return 历史版本对象过期时间配置
          */
         public NoncurrentVersionExpiration getNoncurrentVersionExpiration()
         {
@@ -677,8 +676,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the expiration time of a noncurrent object version.
-         * @param noncurrentVersionExpiration Expiration time of a noncurrent object version
+         * 设置历史版本对象过期时间配置
+         * @param noncurrentVersionExpiration 历史版本对象过期时间配置
          */
         public void setNoncurrentVersionExpiration(NoncurrentVersionExpiration noncurrentVersionExpiration)
         {
@@ -686,8 +685,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
         
         /**
-         * Obtain the transition policy of an object.
-         * @return Object transition policy
+         * 获取对象转换策略
+         * @return 对象转换策略
          */
         public List<Transition> getTransitions() {
             if(this.transitions == null){
@@ -697,16 +696,16 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the object transition policy.
-         * @param transitions Object transition policy
+         * 设置对象转换策略
+         * @param transitions 对象转换策略
          */
         public void setTransitions(List<Transition> transitions) {
             this.transitions = transitions;
         }
         
         /**
-         * Obtain the transition policy of noncurrent versions.
-         * @return Transition policy for noncurrent versions
+         * 获取历史版本对象转换策略
+         * @return 历史版本对象转换策略
          */
         public List<NoncurrentVersionTransition> getNoncurrentVersionTransitions()
         {
@@ -717,8 +716,8 @@ public class LifecycleConfiguration extends HeaderResponse
         }
 
         /**
-         * Set the transition policy for noncurrent versions.
-         * @param noncurrentVersionTransitions Transition policy for noncurrent versions
+         * 设置历史版本对象转换策略
+         * @param noncurrentVersionTransitions 历史版本对象转换策略
          */
         public void setNoncurrentVersionTransitions(List<NoncurrentVersionTransition> noncurrentVersionTransitions)
         {
@@ -854,5 +853,3 @@ public class LifecycleConfiguration extends HeaderResponse
     
     
 }
-
-

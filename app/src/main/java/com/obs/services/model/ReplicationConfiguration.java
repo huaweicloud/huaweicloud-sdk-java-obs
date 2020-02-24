@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Cross-region replication configuration of a bucket
+ * 桶的跨Region复制配置
  *
  */
 public class ReplicationConfiguration extends HeaderResponse{
@@ -33,64 +33,64 @@ public class ReplicationConfiguration extends HeaderResponse{
 		private Destination destination;
 		
 		/**
-		 * Obtain the rule ID.
-		 * @return Rule ID
+		 * 获取规则ID
+		 * @return 规则ID
 		 */
 		public String getId() {
 			return id;
 		}
 
 		/**
-		 * Set the rule ID.
-		 * @param id Rule ID
+		 * 设置规则ID
+		 * @param id 规则ID
 		 */
 		public void setId(String id) {
 			this.id = id;
 		}
 		
 		/**
-		 * Obtain the rule status.
-		 * @return Rule status
+		 * 获取规则状态
+		 * @return 规则状态
 		 */
 		public RuleStatusEnum getStatus() {
 			return status;
 		}
 		
 		/**
-		 * Set the rule status.
-		 * @param status Rule status
+		 * 设置规则状态
+		 * @param status 规则状态
 		 */
 		public void setStatus(RuleStatusEnum status) {
 			this.status = status;
 		}
 		
 		/**
-		 * Obtain the object name prefix that identifies objects to which the rule applies.
-		 * @return Object name prefix
+		 * 获取规则匹配的对象名前缀
+		 * @return 对象名前缀
 		 */
 		public String getPrefix() {
 			return prefix;
 		}
 		
 		/**
-		 * Set the object name prefix that identifies objects to which the rule applies.
-		 * @param prefix Object name prefix
+		 * 设置规则匹配的对象名前缀
+		 * @param prefix 对象名前缀
 		 */
 		public void setPrefix(String prefix) {
 			this.prefix = prefix;
 		}
 		
 		/**
-		 * Obtain the information about the replication destination.
-		 * @return Destination information
+		 * 获取复制的目标信息
+		 * @return 目标信息
 		 */
 		public Destination getDestination() {
 			return destination;
 		}
 		
 		/**
-		 * Set the information about the replication target.
-		 * @param destination Destination information
+		 * 设置复制的目标信息
+		 * @param destination 目标信息
 		 */
 		public void setDestination(Destination destination) {
 			this.destination = destination;
@@ -108,32 +108,32 @@ public class ReplicationConfiguration extends HeaderResponse{
 		private StorageClassEnum storageClass;
 		
 		/**
-		 * Obtain the information about the destination bucket.
-		 * @return Destination bucket name
+		 * 获取复制的目标桶名
+		 * @return 目标桶名
 		 */
 		public String getBucket() {
 			return bucket;
 		}
 		
 		/**
-		 * Set the destination bucket name.
-		 * @param bucket Destination bucket name
+		 * 设置复制的目标桶名
+		 * @param bucket 目标桶名
 		 */
 		public void setBucket(String bucket) {
 			this.bucket = bucket;
 		}
 		
 		/**
-		 * Obtain the storage class of the object generated after the replication.
-		 * @return Object storage class
+		 * 获取复制后的对象的存储类型
+		 * @return 对象的存储类型
 		 */
 		public StorageClassEnum getObjectStorageClass() {
 			return storageClass;
 		}
 
 		/**
-		 * Set the storage class of the object generated after the replication.
-		 * @param storageClass Object storage class
+		 * 设置复制后的对象的存储类型
+		 * @param storageClass 对象的存储类型
 		 */
 		public void setObjectStorageClass(StorageClassEnum storageClass) {
 			this.storageClass = storageClass;
@@ -146,8 +146,8 @@ public class ReplicationConfiguration extends HeaderResponse{
 	}
 
 	/**
-	 * Obtain the replication rule list.
-	 * @return Replication rule list
+	 * 获取复制规则列表
+	 * @return 复制规则列表
 	 */
 	public List<Rule> getRules() {
 		if (rules == null) {
@@ -157,24 +157,24 @@ public class ReplicationConfiguration extends HeaderResponse{
 	}
 
 	/**
-	 * Set the replication rule list.
-	 * @param rules Replication rule list
+	 * 设置复制规则列表
+	 * @param rules 复制规则列表
 	 */
 	public void setRules(List<Rule> rules) {
 		this.rules = rules;
 	}
 	
 	/**
-	 * Set the agent name.
-	 * @return Agent name
+	 * 设置委托名字
+	 * @return 委托名字
 	 */
 	public String getAgency() {
 		return agency;
 	}
 
 	/**
-	 * Obtain the agent name
-	 * @param agency Agent name
+	 * 获取委托名字
+	 * @param agency 委托名字
 	 */
 	public void setAgency(String agency) {
 		this.agency = agency;
@@ -185,5 +185,3 @@ public class ReplicationConfiguration extends HeaderResponse{
 		return "ReplicationConfiguration [agency=" + agency + ", rules=" + rules + "]";
 	}
 }
-
-

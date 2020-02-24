@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for listing uploaded parts
+ * 列举已上传的段的请求参数
  */
 public class ListPartsRequest
 {
@@ -34,9 +33,9 @@ public class ListPartsRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     * @param key Name of the object involved in the multipart upload
+     * 构造函数
+     * @param bucketName 分段上传任务所属的桶名
+     * @param key 分段上传任务所属的对象名
      */
     public ListPartsRequest(String bucketName, String key){
         this.bucketName = bucketName;
@@ -44,10 +43,10 @@ public class ListPartsRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     * @param key Name of the object involved in the multipart upload
-     * @param uploadId Multipart upload ID
+     * 构造函数
+     * @param bucketName 分段上传任务所属的桶名
+     * @param key 分段上传任务所属的对象名
+     * @param uploadId 分段上传任务的ID号
      */
     public ListPartsRequest(String bucketName, String key, String uploadId)
     {
@@ -57,11 +56,11 @@ public class ListPartsRequest
     }
 
     /**
-     * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     * @param key Name of the object involved in the multipart upload
-     * @param uploadId Multipart upload ID
-     * @param maxParts Maximum number of uploaded parts that can be listed
+     * 构造函数
+     * @param bucketName 分段上传任务所属的桶名
+     * @param key 分段上传任务所属的对象名
+     * @param uploadId 分段上传任务的ID号
+     * @param maxParts 列举已上传的段返回结果最大段数目
      */
     public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts)
     {
@@ -73,12 +72,12 @@ public class ListPartsRequest
 
     
     /**
-     * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     * @param key Name of the object involved in the multipart upload
-     * @param uploadId Multipart upload ID
-     * @param maxParts Maximum number of uploaded parts that can be listed
-     * @param partNumberMarker Start position for listing parts
+     * 构造函数
+     * @param bucketName 分段上传任务所属的桶名
+     * @param key 分段上传任务所属的对象名
+     * @param uploadId 分段上传任务的ID号
+     * @param maxParts 列举已上传的段返回结果最大段数目
+     * @param partNumberMarker 待列出段的起始位置
      */
     public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts, Integer partNumberMarker)
     {
@@ -92,8 +91,8 @@ public class ListPartsRequest
 
 
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     * @return Name of the bucket to which the multipart upload belongs
+     * 获取分段上传任务所属的桶名
+     * @return 分段上传任务所属的桶名
      */
     public String getBucketName()
     {
@@ -101,8 +100,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * 设置分段上传任务所属的桶名
+     * @param bucketName 分段上传任务所属的桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -110,8 +109,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     * @return Name of the bucket to which the multipart upload belongs
+     * 获取分段上传任务所属的桶名
+     * @return 分段上传任务所属的桶名
      */
     public String getKey()
     {
@@ -119,8 +118,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     * @param key Name of the bucket to which the multipart upload belongs
+     * 设置分段上传任务所属的桶名
+     * @param key 分段上传任务所属的桶名
      */
     public void setKey(String key)
     {
@@ -128,8 +127,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Obtain the multipart upload ID.
-     * @return Multipart upload ID
+     * 获取分段上传任务的ID号
+     * @return 分段上传任务的ID号
      */
     public String getUploadId()
     {
@@ -137,8 +136,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Set the multipart upload ID.
-     * @param uploadId Multipart upload ID
+     * 设置分段上传任务的ID号
+     * @param uploadId 分段上传任务的ID号
      */
     public void setUploadId(String uploadId)
     {
@@ -146,8 +145,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Obtain the maximum number of uploaded parts that can be listed.
-     * @return Maximum number of uploaded parts that can be listed
+     * 获取列举已上传的段返回结果最大段数目
+     * @return 列举已上传的段返回结果最大段数目
      */
     public Integer getMaxParts()
     {
@@ -155,8 +154,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Set the maximum number of uploaded parts that can be listed.
-     * @param maxParts Maximum number of uploaded parts that can be listed
+     * 设置列举已上传的段返回结果最大段数目
+     * @param maxParts 列举已上传的段返回结果最大段数目
      */
     public void setMaxParts(Integer maxParts)
     {
@@ -164,8 +163,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Obtain the start position for listing parts.
-     * @return Start position for listing parts
+     * 获取待列出段的起始位置
+     * @return 待列出段的起始位置
      */
     public Integer getPartNumberMarker()
     {
@@ -173,8 +172,8 @@ public class ListPartsRequest
     }
     
     /**
-     * Set the start position for listing parts.
-     * @param partNumberMarker Start position for listing parts
+     * 设置待列出段的起始位置
+     * @param partNumberMarker 待列出段的起始位置
      */
     public void setPartNumberMarker(Integer partNumberMarker)
     {
@@ -188,5 +187,3 @@ public class ListPartsRequest
             + ", partNumberMarker=" + partNumberMarker + "]";
     }
 }
-
-

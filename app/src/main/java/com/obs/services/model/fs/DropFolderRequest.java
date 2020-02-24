@@ -18,8 +18,8 @@ import com.obs.services.model.DeleteObjectResult;
 import com.obs.services.model.TaskCallback;
 
 /**
- * Request parameters for deleting folders. Deleting a folder will delete all sub-folders and files in the folder.
- * This function does not support buckets with versioning enabled.
+ * 删除文件夹请求参数 同时删除文件夹下的文件和子文件夹
+ * 暂不支持多版本桶
  */
 public class DropFolderRequest extends AbstractBulkRequest {
 
@@ -31,9 +31,9 @@ public class DropFolderRequest extends AbstractBulkRequest {
     }
 
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public DropFolderRequest(String bucketName) {
         super(bucketName);
@@ -45,36 +45,36 @@ public class DropFolderRequest extends AbstractBulkRequest {
     }
 
     /**
-     * Obtain the folder name.
+     * 获取目录名
      * 
-     * @return Folder name
+     * @return 目录名
      */
     public String getFolderName() {
         return folderName;
     }
 
     /**
-     * Set the folder name.
+     * 设置目录名
      * 
-     * @param folderName Folder name
+     * @param folderName 目录名
      */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
 
     /**
-     * Obtain the callback object of a batch task.
+     * 获取批量任务的回调对象
      * 
-     * @return Callback object
+     * @return 回调对象
      */
     public TaskCallback<DeleteObjectResult, String> getCallback() {
         return callback;
     }
 
     /**
-     * Set the callback object of a batch task.
+     * 设置批量任务的回调对象
      * 
-     * @param callback Callback object
+     * @param callback 回调对象
      */
     public void setCallback(TaskCallback<DeleteObjectResult, String> callback) {
         this.callback = callback;

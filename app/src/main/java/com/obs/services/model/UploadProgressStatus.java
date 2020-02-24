@@ -16,44 +16,44 @@ package com.obs.services.model;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
- * Status information of the batch uploading of objects
+ * 批量上传对象状态信息
  */
 public interface UploadProgressStatus extends TaskProgressStatus {
     
     /**
-     * Obtain the total size of uploaded objects.
-     * @return Total size of uploaded objects. The value -1 indicates that the total size is still being calculated.
+     * 获取总上传对象大小
+     * @return 总上传对象大小 -1表示总大小还没计算完毕
      */
     public long getTotalSize();
     
     /**
-     * Obtain the size of transferred data in bytes.
-     * @return Size of data in bytes that have been transferred
+     * 获取已上传的字节数
+     * @return 已上传的字节数
      */
     public long getTransferredSize();
     
     /**
-	 * Obtain the instantaneous speed.
-	 * @return Instantaneous speed
+	 * 获取瞬时速率
+	 * @return 瞬时速率
 	 */
 	public double getInstantaneousSpeed();
 	
 	/**
-	 * Obtain the average speed.
-	 * @return Average speed
+	 * 获取平均速率
+	 * @return 平均速率
 	 */
 	public double getAverageSpeed();
 	
 	/**
-	 * Obtain the progress of the current uploading task.
-	 * @return taskTable Progress of the current uploading task
+	 * 获取正在上传的对象进度信息
+	 * @return taskTable 正在上传的对象进度信息
 	 */
 	public ConcurrentHashMap<String, ProgressStatus> getTaskTable();
 	
 	/**
-	 * Obtain the upload progress of a specified object.
-	 * @param key Object name
-	 * @return Upload progress of a specified object
+	 * 获取指定对象的上传进度信息
+	 * @param key 对象名
+	 * @return 指定对象的上传进度信息
 	 */
 	public ProgressStatus getTaskStatus(String key);
 }

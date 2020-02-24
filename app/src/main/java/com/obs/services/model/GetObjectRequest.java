@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Parameters in an object download request
+ * 下载对象的请求参数
  */
 public class GetObjectRequest
 {
@@ -63,9 +63,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public GetObjectRequest(String bucketName, String objectKey)
     {
@@ -74,10 +74,10 @@ public class GetObjectRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param versionId 对象的版本号
      */
     public GetObjectRequest(String bucketName, String objectKey, String versionId)
     {
@@ -87,8 +87,8 @@ public class GetObjectRequest
     }
 
     /**
-     * Obtain the request headers that need to be rewritten during object download.
-     * @return Rewritten response headers
+     * 获取下载对象时需要重写的响应头信息
+     * @return 重写的响应头信息
      */
     public ObjectRepleaceMetadata getReplaceMetadata()
     {
@@ -96,8 +96,8 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the request headers that need to be rewritten during object download.
-     * @param replaceMetadata Rewritten response headers
+     * 设置下载对象时需要重写的响应头信息
+     * @param replaceMetadata 重写的响应头信息
      */
     public void setReplaceMetadata(ObjectRepleaceMetadata replaceMetadata)
     {
@@ -105,9 +105,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain SSE-C decryption headers. 
+     * 获取SSE-C解密头域信息
      * 
-     * @return SSE-C decryption headers
+     * @return SSE-C解密头域信息
      */
     public SseCHeader getSseCHeader()
     {
@@ -115,9 +115,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set SSE-C decryption headers. 
+     * 设置SSE-C解密头域信息
      * 
-     * @param sseCHeader SSE-C decryption headers
+     * @param sseCHeader SSE-C解密头域信息
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -126,9 +126,9 @@ public class GetObjectRequest
     
     
     /**
-     * Obtain the start position for object download.
+     * 获取下载对象的起始位置
      * 
-     * @return Start position for object download
+     * @return 下载对象的起始位置
      */
     public Long getRangeStart()
     {
@@ -136,9 +136,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the start position for object download.
+     * 设置下载对象的起始位置
      * 
-     * @param rangeStart Start position for object download
+     * @param rangeStart 下载对象的起始位置
      */
     public void setRangeStart(Long rangeStart)
     {
@@ -146,9 +146,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the end position for object download.
+     * 获取下载对象的结束位置
      * 
-     * @return End position for object download
+     * @return 下载对象的结束位置
      */
     public Long getRangeEnd()
     {
@@ -156,9 +156,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the end position for object download.
+     * 设置下载对象的结束位置
      * 
-     * @param rangeEnd End position for object download
+     * @param rangeEnd 下载对象的结束位置
      * 
      */
     public void setRangeEnd(Long rangeEnd)
@@ -167,9 +167,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -177,9 +177,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      * 
      */
     public void setBucketName(String bucketName)
@@ -188,9 +188,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the object name.
+     * 获取对象名
      * 
-     * @return Object name
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -198,9 +198,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the object name.
+     * 设置对象名
      * 
-     * @param objectKey Object name
+     * @param objectKey 对象名
      * 
      */
     public void setObjectKey(String objectKey)
@@ -209,9 +209,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the object version ID.
+     * 获取对象的版本号
      * 
-     * @return Version ID of the object
+     * @return 对象的版本号
      */
     public String getVersionId()
     {
@@ -219,9 +219,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the version ID of the object. 
+     * 设置对象的版本号
      * 
-     * @param versionId Version ID of the object
+     * @param versionId 对象的版本号
      * 
      */
     public void setVersionId(String versionId)
@@ -230,9 +230,9 @@ public class GetObjectRequest
     }
 
     /**
-     * Obtain the time condition set for downloading the object. Only when the object is modified after the point in time specified by this parameter, it will be downloaded. Otherwise, "304 Not Modified" will be returned.
+     * 获取下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
      * 
-     * @return Time condition set for downloading the object
+     * @return 下载对象的时间条件
      */
     public Date getIfModifiedSince()
     {
@@ -240,9 +240,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the time condition set for downloading the object. Only when the object is modified after the point in time specified by this parameter, it will be downloaded. Otherwise, "304 Not Modified" will be returned.
+     * 设置下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
      * 
-     * @param ifModifiedSince Time condition set for downloading the object
+     * @param ifModifiedSince 下载对象的时间条件
      */
     public void setIfModifiedSince(Date ifModifiedSince)
     {
@@ -250,9 +250,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the time condition for downloading the object. Only when the object remains unchanged after the point in time specified by this parameter, it will be downloaded; otherwise, "412 Precondition Failed" will be returned.
+     * 获取下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
      * 
-     * @return Time condition set for downloading the object
+     * @return 下载对象的时间条件
      */
     public Date getIfUnmodifiedSince()
     {
@@ -260,9 +260,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the time condition for downloading the object. Only when the object remains unchanged after the point in time specified by this parameter, it will be downloaded; otherwise, "412 Precondition Failed" will be returned.
+     * 设置下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
      * 
-     * @param ifUnmodifiedSince Time condition set for downloading the object
+     * @param ifUnmodifiedSince 下载对象的时间条件
      */
     public void setIfUnmodifiedSince(Date ifUnmodifiedSince)
     {
@@ -270,9 +270,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the ETag verification condition for downloading the object. Only when the ETag of the object is the same as that specified by this parameter, the object will be downloaded. Otherwise, "412 Precondition Failed" will be returned.
+     * 获取下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
      * 
-     * @return ETag verification condition set for downloading the object
+     * @return 下载对象的校验值条件
      */
     public String getIfMatchTag()
     {
@@ -280,9 +280,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the ETag verification condition for downloading the object. Only when the ETag of the object is the same as that specified by this parameter, the object will be downloaded. Otherwise, "412 Precondition Failed" will be returned.
+     * 设置下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
      * 
-     * @param ifMatchTag ETag verification condition set for downloading the object
+     * @param ifMatchTag 下载对象的校验值条件
      */
     public void setIfMatchTag(String ifMatchTag)
     {
@@ -290,9 +290,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Obtain the ETag verification condition for downloading the object. Only when the ETag of the object is different from that specified by this parameter, the object will be downloaded. Otherwise, "304 Not Modified" will be returned.
+     * 获取下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
      * 
-     * @return ETag verification condition set for downloading the object
+     * @return 下载对象的校验值条件
      */
     public String getIfNoneMatchTag()
     {
@@ -300,9 +300,9 @@ public class GetObjectRequest
     }
     
     /**
-     * Set the ETag verification condition for downloading the object. Only when the ETag of the object is different from that specified by this parameter, the object will be downloaded. Otherwise, "304 Not Modified" will be returned.
+     * 设置下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
      * 
-     * @param ifNoneMatchTag ETag verification condition set for downloading the object
+     * @param ifNoneMatchTag 下载对象的校验值条件
      * 
      */
     public void setIfNoneMatchTag(String ifNoneMatchTag)
@@ -311,8 +311,8 @@ public class GetObjectRequest
     }
 
     /**
-     * Obtain image processing parameters.
-     * @return Image processing parameters
+     * 获取图片处理参数
+     * @return 图片处理参数
      */
     public String getImageProcess()
     {
@@ -320,8 +320,8 @@ public class GetObjectRequest
     }
 
     /**
-     * Set image processing parameters.
-     * @param imageProcess Image processing parameters
+     * 设置图片处理参数
+     * @param imageProcess 图片处理参数
      */
     public void setImageProcess(String imageProcess)
     {
@@ -329,32 +329,32 @@ public class GetObjectRequest
     }
     
     /**
-	 * Obtain the data transfer listener.
-	 * @return Data transfer listener
+	 * 获取数据传输监听器
+	 * @return 数据传输监听器
 	 */
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
 	/**
-	 * Set the data transfer listener.
-	 * @param progressListener Data transfer listener
+	 * 设置数据传输监听器
+	 * @param progressListener 数据传输监听器
 	 */
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
 	/**
-	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @return Callback threshold of the data transfer listener
+	 * 获取数据传输监听器回调的阈值，默认为100KB
+	 * @return 数据传输监听器回调的阈值
 	 */
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
 	/**
-	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @param progressInterval Callback threshold of the data transfer listener
+	 * 设置数据传输监听器回调的阈值，默认为100KB
+	 * @param progressInterval 数据传输监听器回调的阈值
 	 */
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;
@@ -365,32 +365,32 @@ public class GetObjectRequest
 	}
 	
 	/**
-	 * Obtain the control option of the read-ahead cache.
-	 * @return Control option of the read-ahead cache
+	 * 获取预读缓存的控制选项
+	 * @return 预读缓存的控制选项
 	 */
 	public CacheOptionEnum getCacheOption() {
 		return cacheOption;
 	}
 
 	/**
-	 * Set the control option of the read-ahead cache.
-	 * @param cacheOption Control option of the read-ahead cache
+	 * 设置预读缓存的控制选项
+	 * @param cacheOption 预读缓存的控制选项
 	 */
 	public void setCacheOption(CacheOptionEnum cacheOption) {
 		this.cacheOption = cacheOption;
 	}
 
 	/**
-	 * Obtain the cache data expiration time.
-	 * @return Cache data expiration time
+	 * 获取缓存数据过期时间
+	 * @return 缓存数据过期时间
 	 */
 	public long getTtl() {
 		return ttl;
 	}
 
 	/**
-	 * Set the cache data expiration time.
-	 * @param ttl Cache data expiration time
+	 * 设置缓存数据过期时间
+	 * @param ttl 缓存数据过期时间
 	 */
 	public void setTtl(long ttl) {
 		if(ttl < 0 || ttl > 259200) {

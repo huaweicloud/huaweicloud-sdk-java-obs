@@ -13,11 +13,21 @@
  */
 package com.obs.services.model;
 
-
+/**
+ *
+ * 存储类型
+ *
+ */
 public enum BucketTypeEnum {
 	
+	/**
+	 * 对象桶
+	 */
 	OBJECT("OBJECT"),
 
+	/**
+	 * 并行文件系统
+	 */
 	PFS("POSIX");
 
 	private String code;

@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Response to the request for restoring Archive objects
+ * 取回归档对象的响应结果
  */
 public class RestoreObjectResult extends HeaderResponse {
 

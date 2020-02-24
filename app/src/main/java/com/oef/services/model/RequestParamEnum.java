@@ -17,11 +17,11 @@ import com.obs.services.model.SpecialParamEnum;
 
 public enum RequestParamEnum {
 	/**
-     * Obtain, set, or delete an asynchronous policy.
+     * 获取/设置/删除异步策略
      */
     EXTENSION_POLICY("v1/extension_policy"),
     /**
-     * Obtain, set, or delete an asynchronous job.
+     * 获取/设置/删除异步任务
      */
 	ASYNC_FETCH_JOBS("v1/async-fetch/jobs"),
 	

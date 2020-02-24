@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Redirection condition 
+ * 重定向条件
  */
 public class RouteRuleCondition
 {
@@ -23,8 +23,8 @@ public class RouteRuleCondition
     private String httpErrorCodeReturnedEquals;
     
     /**
-     * Obtain the object name prefix when the redirection takes effect.
-     * @return Object name prefix when the redirection takes effect
+     * 获取当重定向生效时对象名的前缀
+     * @return 当重定向生效时对象名的前缀
      */
     public String getKeyPrefixEquals()
     {
@@ -32,8 +32,8 @@ public class RouteRuleCondition
     }
     
     /**
-     * Set the object name prefix when the redirection takes effect.
-     * @param keyPrefixEquals Object name prefix when the redirection takes effect
+     * 设置当重定向生效时对象名的前缀
+     * @param keyPrefixEquals 当重定向生效时对象名的前缀
      */
     public void setKeyPrefixEquals(String keyPrefixEquals)
     {
@@ -41,8 +41,8 @@ public class RouteRuleCondition
     }
     
     /**
-     * Obtain the HTTP error code configuration when the redirection takes effect.
-     * @return HTTP error code configuration when the redirection takes effect
+     * 获取重定向生效时的HTTP错误码配置
+     * @return 重定向生效时的HTTP错误码配置
      */
     public String getHttpErrorCodeReturnedEquals()
     {
@@ -50,8 +50,8 @@ public class RouteRuleCondition
     }
     
     /**
-     * Configure the HTTP error code when the redirection takes effect.
-     * @param httpErrorCodeReturnedEquals HTTP error code configuration when the redirection takes effect.
+     * 设置重定向生效时的HTTP错误码配置
+     * @param httpErrorCodeReturnedEquals 重定向生效时的HTTP错误码配置
      */
     public void setHttpErrorCodeReturnedEquals(String httpErrorCodeReturnedEquals)
     {

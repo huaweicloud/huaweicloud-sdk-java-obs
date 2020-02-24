@@ -14,7 +14,7 @@
 package com.obs.services.model.fs;
 
 /**
- * Parameters in a request for truncating a file
+ * 截断文件的请求参数
  *
  */
 public class TruncateFileRequest {
@@ -30,10 +30,10 @@ public class TruncateFileRequest {
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param newLength File size after the truncation
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件名
+	 * @param newLength 文件截断后的大小
 	 */
 	public TruncateFileRequest(String bucketName, String objectKey, long newLength) {
 		super();
@@ -45,38 +45,38 @@ public class TruncateFileRequest {
 
 
 	/**
-	 * Obtain the bucket name.
+	 * 获取桶名
 	 * 
-	 * @return Bucket name
+	 * @return 桶名
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * Set the bucket name.
+	 * 设置桶名
 	 * 
 	 * @param bucketName
-	 *            Bucket name
+	 *            桶名
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * Obtain the file name.
+	 * 获取文件名
 	 * 
-	 * @return File name
+	 * @return 文件名
 	 */
 	public String getObjectKey() {
 		return objectKey;
 	}
 
 	/**
-	 * Set the file name.
+	 * 设置文件名
 	 * 
 	 * @param objectKey
-	 *            File name
+	 *            文件名
 	 * 
 	 */
 	public void setObjectKey(String objectKey) {
@@ -84,20 +84,18 @@ public class TruncateFileRequest {
 	}
 	
 	/**
-	 * Obtain the file size after the truncation.
-	 * @return File size after the truncation
+	 * 获取文件截断后的大小
+	 * @return 文件截断后的大小
 	 */
 	public long getNewLength() {
 		return newLength;
 	}
 
 	/**
-	 * Set the post-truncation file size.
-	 * @param newLength File size after the truncation
+	 * 设置文件截断后的大小
+	 * @param newLength 文件截断后的大小
 	 */
 	public void setNewLength(long newLength) {
 		this.newLength = newLength;
 	}
 }
-
-

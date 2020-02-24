@@ -16,22 +16,22 @@ package com.obs.services.model;
 import com.obs.services.exception.ObsException;
 
 /**
- * Task execution callback
+ * 任务执行回调
  */
 public interface TaskCallback<K, V> {
 
     /**
-     * Callback when the task is executed successfully.
+     * 当任务执行成功时回调
      *
-     * @param result Callback parameter. Generally, the return type of a specific operation is used.
+     * @param result 回调参数，通常使用具体操作的返回类型
      */
     void onSuccess(K result);
 
     /**
-     * Callback when an exception is thrown during task execution.
+     * 当任务执行抛出异常时回调
      *
-     * @param exception     Exception information
-     * @param singleRequest The request that causes an exception
+     * @param exception     异常信息
+     * @param singleRequest 引发异常的单次请求
      * 
      */
     void onException(ObsException exception, V singleRequest);

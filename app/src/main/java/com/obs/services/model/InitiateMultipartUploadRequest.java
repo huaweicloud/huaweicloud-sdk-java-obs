@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for initializing a multipart upload
+ * 初始化分段上传任务的请求参数
  */
 public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
 {
@@ -28,9 +27,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     @param objectKey Name of the object involved in the multipart upload
+     * 构造函数
+     * @param bucketName 分段上传任务所属的桶名
+     * @param objectKey 分段上传任务所属的对象名
      */
     public InitiateMultipartUploadRequest(String bucketName, String objectKey)
     {
@@ -39,25 +38,25 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
 
     /**
-     * Obtain the expiration time of the object generated after the multipart upload is complete.
-     * @return Expiration time of the object
+     * 获取分段上传任务最终生成对象的过期时间
+     * @return 对象的过期时间
      */
 	public int getExpires() {
 		return expires;
 	}
 
 	/**
-	 * Set the expiration time of the object generated after the multipart upload is complete. The value must be an integer.
-	 * @param expires Expiration time of the object
+	 * 设置分段上传任务最终生成对象的过期时间，正整数
+	 * @param expires 对象的过期时间
 	 */
 	public void setExpires(int expires) {
 		this.expires = expires;
 	}
     
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
+     * 获取分段上传任务所属的桶名
      * 
-     * @return Name of the bucket to which the multipart upload belongs
+     * @return 分段上传任务所属的桶名
      */
     public String getBucketName()
     {
@@ -65,9 +64,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Set the name for the bucket to which the multipart upload belongs.
+     * 设置分段上传任务所属的桶名
      * 
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param bucketName 分段上传任务所属的桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -75,9 +74,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Obtain the name of the object involved in the multipart upload.
+     * 获取分段上传任务所属的对象名
      * 
-     * @return Name of the object involved in the multipart upload
+     * @return 分段上传任务所属的对象名
      */
     public String getObjectKey()
     {
@@ -85,9 +84,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Set the name for the object involved in the multipart upload.
+     * 设置分段上传任务所属的对象名
      * 
-     @param objectKey Name of the object involved in the multipart upload
+     * @param objectKey 分段上传任务所属的对象名
      */
     public void setObjectKey(String objectKey)
     {
@@ -95,9 +94,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Set the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * 设置重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
      * 
-     * @return Redirection link
+     * @return 重定向链接
      */
     @Deprecated
     public String getWebSiteRedirectLocation()
@@ -106,9 +105,9 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
     /**
-     * Obtain the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * 获取重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
      * 
-     * @param webSiteRedirectLocation Redirection link
+     * @param webSiteRedirectLocation 重定向链接
      */
     @Deprecated
     public void setWebSiteRedirectLocation(String webSiteRedirectLocation)
@@ -119,8 +118,8 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
     
 	/**
-     * Set object properties, including customized metadata. "content-type" is supported.
-     * @return Object properties
+     * 设置对象属性，支持content-type，用户自定义元数据
+     * @return 对象属性
      */
     public ObjectMetadata getMetadata()
     {
@@ -128,8 +127,8 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
     }
 
     /**
-     * Obtain object properties, including customized metadata. "content-type" is supported.
-     * @param metadata Object properties
+     * 获取对象属性，支持content-type，用户自定义元数据
+     * @param metadata 对象属性
      */
     public void setMetadata(ObjectMetadata metadata)
     {
@@ -144,5 +143,3 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
 	}
     
 }
-
-

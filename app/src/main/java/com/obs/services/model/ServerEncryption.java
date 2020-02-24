@@ -14,13 +14,13 @@
 package com.obs.services.model;
 
 /**
- * Encryption mode of SSE-KMS
+ * SSE-KMS的加密方式
  */
 @Deprecated
 public final class ServerEncryption
 {
     /**
-     * SSE-KMS supports kms only.
+     * SSE-KMS目前仅支持kms加密方式
      */
     public static final ServerEncryption OBS_KMS = new ServerEncryption("kms");
     

@@ -1,24 +1,23 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Bucket CORS rules
+ * 桶的跨域资源共享规则（CORS）
  */
 public class BucketCorsRule
 {
@@ -35,9 +34,9 @@ public class BucketCorsRule
     private List<String> exposeHeader;
     
     /**
-     * Obtain the CORS rule ID.
+     * 获取跨域规则ID
      * 
-     * @return CORS rule ID
+     * @return 跨域规则ID
      */
     public String getId()
     {
@@ -45,9 +44,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Set the CORS rule ID.
+     * 设置跨域规则ID
      * 
-     * @param id CORS rule ID
+     * @param id 跨域规则ID
      */
     public void setId(String id)
     {
@@ -55,9 +54,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Obtain the cache duration (in seconds) of the request result in the instance of ObsClient.
+     * 获取客户端对请求结果的缓存时间，单位：秒
      * 
-     * @return Cache duration
+     * @return 缓存时间
      */
     public int getMaxAgeSecond()
     {
@@ -68,9 +67,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Set the cache duration (in seconds) of the request result in the instance of ObsClient.
+     * 设置客户端对请求结果的缓存时间，单位：秒
      * 
-     * @param maxAgeSecond Cache duration
+     * @param maxAgeSecond 缓存时间
      */
     public void setMaxAgeSecond(int maxAgeSecond)
     {
@@ -78,9 +77,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Obtain the list of methods allowed by the CORS rules.
+     * 获取跨域规则中允许的方法列表
      * 
-     * @return Method list
+     * @return 方法列表
      */
     public List<String> getAllowedMethod()
     {
@@ -92,9 +91,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Set the methods allowed by the CORS rules. Possible values are GET, PUT, DELETE, POST, and HEAD.
+     * 设置跨域规则中允许的方法列表，允许值（GET/PUT/DELETE/POST/HEAD）
      * 
-     * @param allowedMethod Method list
+     * @param allowedMethod 方法列表
      */
     public void setAllowedMethod(List<String> allowedMethod)
     {
@@ -102,9 +101,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Obtain the list of origins (character strings representing domain names) allowed by the CORS rules.
+     * 获取跨域规则中允许的请求来源列表（表示域名的字符串）
      * 
-     * @return List of request origins
+     * @return 请求来源列表
      */
     public List<String> getAllowedOrigin()
     {
@@ -116,9 +115,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Set the list of origins (character strings representing domain names) allowed by the CORS rules.
+     * 设置跨域规则中允许的请求来源列表（表示域名的字符串）
      * 
-     * @param allowedOrigin List of request origins
+     * @param allowedOrigin 请求来源列表
      */
     public void setAllowedOrigin(List<String> allowedOrigin)
     {
@@ -126,9 +125,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Obtain the list of request headers allowed by the CORS rules.
+     * 获取跨域规则中允许携带的请求头域列表
      * 
-     * @return List of request headers
+     * @return 请求头域列表
      */
     public List<String> getAllowedHeader()
     {
@@ -140,9 +139,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Set the list of request headers allowed by the CORS rules.
+     * 设置跨域规则中允许携带的请求头域列表
      * 
-     * @param allowedHeader List of request headers
+     * @param allowedHeader 请求头域列表
      */
     public void setAllowedHeader(List<String> allowedHeader)
     {
@@ -150,9 +149,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Obtain the additional response headers allowed by the CORS rules.
+     * 获取跨域规则允许响应中带的附加头域列表
      * 
-     * @return List of additional headers
+     * @return 附加头域列表
      */
     public List<String> getExposeHeader()
     {
@@ -164,9 +163,9 @@ public class BucketCorsRule
     }
     
     /**
-     * Specify the additional response headers allowed by the CORS rules.
+     * 设置跨域规则允许响应中带的附加头域列表
      * 
-     * @param exposeHeader List of additional headers
+     * @param exposeHeader 附加头域列表
      */
     public void setExposeHeader(List<String> exposeHeader)
     {
@@ -182,5 +181,3 @@ public class BucketCorsRule
     }
     
 }
-
-

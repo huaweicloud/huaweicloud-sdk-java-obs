@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for listing multipart uploads
+ * 列举分段上传任务的请求参数
  */
 public class ListMultipartUploadsRequest
 {
@@ -36,8 +35,8 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
+     * 构造函数
+     * @param bucketName 桶名
      */
     public ListMultipartUploadsRequest(String bucketName)
     {
@@ -46,9 +45,9 @@ public class ListMultipartUploadsRequest
     
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param maxUploads Maximum number of listed multipart uploads
+     * 构造函数
+     * @param bucketName 桶名
+     * @param maxUploads 列举分段上传任务的最大数目
      */
     public ListMultipartUploadsRequest(String bucketName, Integer maxUploads)
     {
@@ -58,13 +57,13 @@ public class ListMultipartUploadsRequest
 
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param prefix Prefix of names of the returned objects involved in the multipart uploads
-     * @param delimiter Character used for sorting objects involved in the multipart uploads into different groups
-     * @param maxUploads Maximum number of listed multipart uploads
-     * @param keyMarker Start position for the query
-     * @param uploadIdMarker Start position of the return result. This parameter is valid only when used together with "keyMarker". Only multipart uploads after "uploadIdMarker" of the specified "keyMarker" will be returned.
+     * 构造函数
+     * @param bucketName 桶名
+     * @param prefix 限定返回的分段上传任务中的对象名必须带有的前缀
+     * @param delimiter 用于对分段上传任务中的对象名进行分组的字符
+     * @param maxUploads 列举分段上传任务的最大数目
+     * @param keyMarker 查询的起始位置
+     * @param uploadIdMarker 只有与keyMarker参数一起使用时才有意义，用于指定返回结果的起始位置，即列举时返回指定keyMarker的uploadIdMarker之后的分段上传任务
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads, String keyMarker,
         String uploadIdMarker)
@@ -79,9 +78,9 @@ public class ListMultipartUploadsRequest
 
 
     /**
-     * Obtain the prefix of names of the returned objects involved in the multipart uploads.
+     * 获取限定返回的分段上传任务中的对象名必须带有的前缀
      * 
-     * @return Object name prefix
+     * @return 对象名前缀
      */
     public String getPrefix()
     {
@@ -89,9 +88,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the prefix of names of the returned objects involved in the multipart uploads.
+     * 设置限定返回的分段上传任务中的对象名必须带有的前缀
      * 
-     * @param prefix Object name prefix
+     * @param prefix 对象名前缀
      */
     public void setPrefix(String prefix)
     {
@@ -99,9 +98,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Obtain the character used for sorting objects involved in the multipart uploads into different groups.
+     * 获取用于对分段上传任务中的对象名进行分组的字符
      * 
-     * @return Character for grouping object names
+     * @return 分组字符
      */
     public String getDelimiter()
     {
@@ -109,9 +108,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the character used for sorting objects involved in the multipart uploads into different groups
+     * 设置用于对分段上传任务中的对象名进行分组的字符
      * 
-     * @param delimiter Character for grouping object names
+     * @param delimiter 分组字符
      */
     public void setDelimiter(String delimiter)
     {
@@ -119,9 +118,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Obtain the start position for query (sorted by object name).
+     * 获取查询的起始位置（按对象名排序）
      * 
-     * @return Start position for query
+     * @return 查询的起始位置
      */
     public String getKeyMarker()
     {
@@ -129,9 +128,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the start position for query (sorted by object name).
+     * 设置查询的起始位置（按对象名排序）
      * 
-     * @param keyMarker Start position for query
+     * @param keyMarker 查询的起始位置
      */
     public void setKeyMarker(String keyMarker)
     {
@@ -139,9 +138,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Obtain the start position for query (sorted by multipart upload ID). This parameter is valid when used together with "keyMarker" and it specifies the start position of the returned result.
+     * 获取查询的起始位置（按分段上传任务的ID号排序），只有与keyMarker参数一起使用时才有意义，用于指定返回结果的起始位置
      * 
-     * @return Start position for query
+     * @return 查询的起始位置
      */
     public String getUploadIdMarker()
     {
@@ -149,9 +148,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the start position for query (sorted by multipart upload ID). This parameter is valid when used together with "keyMarker" and it specifies the start position of the returned result.
+     * 设置查询的起始位置（按分段上传任务的ID号排序），只有与keyMarker参数一起使用时才有意义，用于指定返回结果的起始位置
      * 
-     * @param uploadIdMarker Start position for query
+     * @param uploadIdMarker 查询的起始位置
      */
     public void setUploadIdMarker(String uploadIdMarker)
     {
@@ -159,9 +158,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
+     * 获取分段上传任务所属的桶
      * 
-     * @return Name of the bucket to which the multipart upload belongs
+     * @return 分段上传任务所属的桶
      */
     public String getBucketName()
     {
@@ -169,9 +168,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the name for the bucket to which the multipart upload belongs.
+     * 设置分段上传任务所属的桶
      * 
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param bucketName 分段上传任务所属的桶
      */
     public void setBucketName(String bucketName)
     {
@@ -179,9 +178,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Obtain the maximum number of listed multipart uploads.
+     * 获取列举分段上传任务的最大数目
      * 
-     * @return Maximum number of listed multipart uploads
+     * @return 列举分段上传任务的最大数目
      */
     public Integer getMaxUploads()
     {
@@ -189,9 +188,9 @@ public class ListMultipartUploadsRequest
     }
     
     /**
-     * Set the maximum number of listed multipart uploads.
+     * 设置列举分段上传任务的最大数目
      * 
-     * @param maxUploads Maximum number of listed multipart uploads
+     * @param maxUploads 列举分段上传任务的最大数目
      */
     public void setMaxUploads(Integer maxUploads)
     {
@@ -206,5 +205,3 @@ public class ListMultipartUploadsRequest
     }
     
 }
-
-

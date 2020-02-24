@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Request redirection configuration
+ * 请求重定向配置
  */
 public class Redirect
 {
@@ -29,8 +29,8 @@ public class Redirect
     private String httpRedirectCode;
     
     /**
-     * Obtain the protocol used for redirecting the request.
-     * @return Protocol used for redirecting the request
+     * 获取重定向请求时使用的协议
+     * @return 重定向请求时使用的协议
      * @see #getRedirectProtocol()
      */
     @Deprecated
@@ -40,8 +40,8 @@ public class Redirect
     }
     
     /**
-     * Set the protocol used for redirecting the request.
-     * @param protocol Protocol used for redirecting the request
+     * 设置重定向请求时使用的协议
+     * @param protocol 重定向请求时使用的协议
      * @see #setRedirectProtocol(ProtocolEnum protocol)
      */
     @Deprecated
@@ -51,8 +51,8 @@ public class Redirect
     }
     
     /**
-     * Obtain the protocol used for redirecting the request.
-     * @return Protocol used for redirecting the request
+     * 获取重定向请求时使用的协议
+     * @return 重定向请求时使用的协议
      */
     public ProtocolEnum getRedirectProtocol()
     {
@@ -60,8 +60,8 @@ public class Redirect
     }
     
     /**
-     * Set the protocol used for redirecting the request.
-     * @param protocol Protocol used for redirecting the request
+     * 设置重定向请求时使用的协议
+     * @param protocol 重定向请求时使用的协议
      */
     public void setRedirectProtocol(ProtocolEnum protocol)
     {
@@ -69,8 +69,8 @@ public class Redirect
     }
     
     /**
-     * Obtain the host name used for redirecting the request.
-     * @return Host name used for redirecting the request
+     * 获取重定向请求时使用的主机名
+     * @return 重定向请求时使用的主机名
      */
     public String getHostName()
     {
@@ -78,8 +78,8 @@ public class Redirect
     }
     
     /**
-     * Set the host name used for redirecting the request.
-     * @param hostName Host name used for redirecting the request
+     * 设置重定向请求时使用的主机名
+     * @param hostName 重定向请求时使用的主机名
      */
     public void setHostName(String hostName)
     {
@@ -87,8 +87,8 @@ public class Redirect
     }
     
     /**
-     * Obtain the object name prefix used for redirecting the request.
-     * @return Object name prefix used for redirecting the request
+     * 获取重定向请求时使用的对象名前缀
+     * @return 重定向请求时使用的对象名前缀
      */
     public String getReplaceKeyPrefixWith()
     {
@@ -96,8 +96,8 @@ public class Redirect
     }
     
     /**
-     * Set the object name prefix used for redirecting the request.
-     * @param replaceKeyPrefixWith Object name prefix used for redirecting the request
+     * 设置重定向请求时使用的对象名前缀
+     * @param replaceKeyPrefixWith 重定向请求时使用的对象名前缀
      */
     public void setReplaceKeyPrefixWith(String replaceKeyPrefixWith)
     {
@@ -105,8 +105,8 @@ public class Redirect
     }
     
     /**
-     * Obtain the object name used for redirecting the request.
-     * @return Object name used for redirecting the request
+     * 获取重定向请求时使用的对象名
+     * @return 重定向请求时使用的对象名
      */
     public String getReplaceKeyWith()
     {
@@ -114,8 +114,8 @@ public class Redirect
     }
     
     /**
-     * Set the object name used for redirecting the request.
-     * @param replaceKeyWith Object name used for redirecting the request
+     * 设置重定向请求时使用的对象名
+     * @param replaceKeyWith 重定向请求时使用的对象名
      */
     public void setReplaceKeyWith(String replaceKeyWith)
     {
@@ -123,8 +123,8 @@ public class Redirect
     }
     
     /**
-     * Obtain the configuration of the HTTP status code in the response.
-     * @return Configuration of the HTTP status code
+     * 获取响应中的HTTP状态码配置
+     * @return HTTP状态码配置
      */
     public String getHttpRedirectCode()
     {
@@ -132,8 +132,8 @@ public class Redirect
     }
     
     /**
-     * Configure the HTTP status code in the response.
-     * @param httpRedirectCode Configuration of the HTTP status code
+     * 设置响应中的HTTP状态码配置
+     * @param httpRedirectCode HTTP状态码配置
      */
     public void setHttpRedirectCode(String httpRedirectCode)
     {

@@ -1,24 +1,23 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Response to an object batch deletion request
+ * 批量删除对象的响应结果
  */
 public class DeleteObjectsResult extends HeaderResponse
 {
@@ -36,9 +35,9 @@ public class DeleteObjectsResult extends HeaderResponse
 	}
 
 	/**
-     * Obtain the list of objects that have been deleted successfully.
+     * 获取删除成功的对象信息列表
      * 
-     * @return List of successfully deleted objects
+     * @return 删除成功的对象信息列表
      */
     public List<DeleteObjectResult> getDeletedObjectResults()
     {
@@ -49,9 +48,9 @@ public class DeleteObjectsResult extends HeaderResponse
     }
     
     /**
-     * Obtain the list of objects failed to be deleted.
+     * 获取删除失败的对象信息列表
      * 
-     * @return List of objects failed to be deleted
+     * @return 删除失败的对象信息列表
      */
     public List<ErrorResult> getErrorResults()
     {
@@ -62,7 +61,7 @@ public class DeleteObjectsResult extends HeaderResponse
     }
     
     /**
-     * Results returned if the deletion succeeds
+     * 批量删除对象成功后的返回结果
      */
     public class DeleteObjectResult
     {
@@ -84,9 +83,9 @@ public class DeleteObjectsResult extends HeaderResponse
 		}
 
 		/**
-         * Obtain the object name.
+         * 获取对象名称
          * 
-         * @return Object name
+         * @return 对象名称
          */
         public String getObjectKey()
         {
@@ -94,9 +93,9 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Obtain the object version ID.
+         * 获取对象版本号
          * 
-         * @return Version ID of the object
+         * @return 对象版本号
          */
         public String getVersion()
         {
@@ -104,16 +103,16 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Check whether the deleted object is a delete marker
-         * @return Identifier specifying whether the object is a delete marker
+         * 判断删除的对象是否是删除标记
+         * @return 对象是否是删除标记
          */
 		public boolean isDeleteMarker() {
 			return deleteMarker;
 		}
 
 		/**
-		 * Obtain the version ID of the delete marker. 
-		 * @return Version ID of the delete marker
+		 * 获取删除标记的版本号
+		 * @return 删除标记的版本号
 		 */
 		public String getDeleteMarkerVersion() {
 			return deleteMarkerVersion;
@@ -129,7 +128,7 @@ public class DeleteObjectsResult extends HeaderResponse
     }
     
     /**
-     * Results returned if the deletion fails
+     * 批量删除对象失败的返回结果
      */
     public class ErrorResult
     {
@@ -142,12 +141,12 @@ public class DeleteObjectsResult extends HeaderResponse
         private String message;
         
         /**
-         * Constructor
+         * 构造函数
          *
-         * @param objectKey Name of the object that fails to be deleted
-         * @param version Version ID of the object that fails to be deleted
-         * @param errorCode Error code returned after a deletion failure
-         * @param message Error information returned after a deletion failure
+         * @param objectKey 删除失败的对象名称
+         * @param version 删除失败的对象版本号
+         * @param errorCode 删除失败的错误码
+         * @param message 删除失败的错误描述
          */
         public ErrorResult(String objectKey, String version, String errorCode, String message)
         {
@@ -158,9 +157,9 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Obtain the name of the object that fails to be deleted.
+         * 获取删除失败的对象名称
          * 
-         * @return Name of the object that fails to be deleted
+         * @return 删除失败的对象名称
          */
         public String getObjectKey()
         {
@@ -168,9 +167,9 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Obtain the version ID of the object that fails to be deleted.
+         * 获取删除失败的对象版本号
          * 
-         * @return Version ID of the object that fails to be deleted
+         * @return 删除失败的对象版本号
          */
         public String getVersion()
         {
@@ -178,9 +177,9 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Error code returned after a deletion failure
+         * 获取删除失败的错误码
          * 
-         * @return Error code returned after a deletion failure
+         * @return 删除失败的错误码
          */
         public String getErrorCode()
         {
@@ -188,9 +187,9 @@ public class DeleteObjectsResult extends HeaderResponse
         }
         
         /**
-         * Obtain the error description returned after a deletion failure.
+         * 获取删除失败的错误描述
          * 
-         * @return Error information returned after a deletion failure
+         * @return 删除失败的错误描述
          */
         public String getMessage()
         {
@@ -214,5 +213,3 @@ public class DeleteObjectsResult extends HeaderResponse
     
     
 }
-
-

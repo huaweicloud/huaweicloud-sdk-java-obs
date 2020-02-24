@@ -16,11 +16,9 @@ package com.obs.services.model.fs;
 import com.obs.services.model.ObsObject;
 
 /**
- * Response to a request for reading a file
+ * 读取文件内容响应结果
  *
  */
 public class ReadFileResult extends ObsObject{
 
 }
-
-

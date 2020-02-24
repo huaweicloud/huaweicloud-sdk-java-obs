@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.obs.services.model.HeaderResponse;
 
 /**
- * Query an asynchronous fetch job response in the JSON format.
+ * 查询异步策略响应json
  *
  */
 public class QueryExtensionPolicyResult extends HeaderResponse {
@@ -37,10 +37,10 @@ public class QueryExtensionPolicyResult extends HeaderResponse {
 	}
 	
 	/**
-	 * Constructor
-	 * @param fetch Content of the asynchronous fetch policy
-	 * @param transcode Content of the asynchronous transcode policy
-	 * @param compress Content of the file compression policy
+	 * 构造函数
+	 * @param fetch 异步抓取策略内容
+	 * @param transcode 异步转码策略内容
+	 * @param compress 文件压缩策略内容
 	 */
 	public QueryExtensionPolicyResult(FetchBean fetch, TranscodeBean transcode, CompressBean compress) {
 		this.fetch = fetch;
@@ -49,48 +49,48 @@ public class QueryExtensionPolicyResult extends HeaderResponse {
 	}
 
 	/**
-	 * Obtain the content of the asynchronous fetch policy.
-	 * @return Content of the asynchronous fetch policy
+	 * 获取异步抓取策略内容
+	 * @return 异步抓取策略内容
 	 */
 	public FetchBean getFetch() {
 		return fetch;
 	}
 
 	/**
-	 * Set the content of the asynchronous fetch policy.
-	 * @param fetch Content of the asynchronous fetch policy
+	 * 设置异步抓取策略内容
+	 * @param fetch 异步抓取策略内容
 	 */
 	public void setFetch(FetchBean fetch) {
 		this.fetch = fetch;
 	}
 
 	/**
-	 * Obtain the content of the asynchronous transcode policy.
-	 * @return Content of the asynchronous transcode policy
+	 * 获取异步转码策略内容
+	 * @return 异步转码策略内容
 	 */
 	public TranscodeBean getTranscode() {
 		return transcode;
 	}
 
 	/**
-	 * Set the content of the asynchronous transcode policy.
-	 * @param transcode Content of the asynchronous transcode policy
+	 * 设置异步转码策略内容
+	 * @param transcode 异步转码策略内容
 	 */
 	public void setTranscode(TranscodeBean transcode) {
 		this.transcode = transcode;
 	}
 
 	/**
-	 * Obtain the content of the file compression policy.
-	 * @return Content of the file compression policy
+	 * 获取文件压缩策略内容
+	 * @return 文件压缩策略内容
 	 */
 	public CompressBean getCompress() {
 		return compress;
 	}
 
 	/**
-	 * Set the content of the file compression policy.
-	 * @param compress Content of the file compression policy
+	 * 设置文件压缩策略内容
+	 * @param compress 文件压缩策略内容
 	 */
 	public void setCompress(CompressBean compress) {
 		this.compress = compress;

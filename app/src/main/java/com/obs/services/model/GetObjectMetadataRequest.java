@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for obtaining the properties of an object
+ * 获取对象属性的请求参数
  */
 public class GetObjectMetadataRequest
 {
@@ -32,9 +31,9 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public GetObjectMetadataRequest(String bucketName, String objectKey)
     {
@@ -43,10 +42,10 @@ public class GetObjectMetadataRequest
     }
 
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param versionId 对象的版本号
      */
     public GetObjectMetadataRequest(String bucketName, String objectKey, String versionId)
     {
@@ -58,9 +57,9 @@ public class GetObjectMetadataRequest
 
 
     /**
-     * Obtain SSE-C decryption headers. 
+     * 获取SSE-C解密头域信息
      * 
-     * @return SSE-C decryption headers
+     * @return SSE-C解密头域信息
      */
     public SseCHeader getSseCHeader()
     {
@@ -68,9 +67,9 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Set SSE-C decryption headers. 
+     * 设置SSE-C解密头域信息
      * 
-     * @param sseCHeader SSE-C decryption headers
+     * @param sseCHeader SSE-C解密头域信息
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -78,8 +77,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Obtain the bucket name.
-     * @return Bucket name
+     * 获取桶名
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -87,8 +86,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Set the bucket name.
-     * @param bucketName Bucket name 
+     * 设置桶名
+     * @param bucketName 桶名 
      */
     public void setBucketName(String bucketName)
     {
@@ -96,8 +95,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -105,8 +104,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Set the object name.
-     * @param objectKey Object name
+     * 设置对象名
+     * @param objectKey 对象名
      */
     public void setObjectKey(String objectKey)
     {
@@ -114,8 +113,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Obtain the object version ID.
-     * @return Version ID of the object
+     * 获取对象版本号
+     * @return 对象版本号
      */
     public String getVersionId()
     {
@@ -123,8 +122,8 @@ public class GetObjectMetadataRequest
     }
     
     /**
-     * Set the version ID of the object. 
-     * @param versionId Version ID of the object
+     * 设置对象版本号
+     * @param versionId 对象版本号
      */
     public void setVersionId(String versionId)
     {
@@ -139,5 +138,3 @@ public class GetObjectMetadataRequest
     }
     
 }
-
-

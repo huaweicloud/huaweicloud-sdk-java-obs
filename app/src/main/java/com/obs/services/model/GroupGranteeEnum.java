@@ -1,39 +1,38 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import com.obs.services.internal.Constants;
 
 /**
- * Type of the user group 
+ * 用户组类型 
  *
  */
 public enum GroupGranteeEnum {
     /**
-     * Anonymous user group, indicating all users
+     * 匿名用户组，代表所有用户
      */
     ALL_USERS,
 
     /**
-     * OBS authorized user group, indicating all users who own OBS accounts
+     * OBS授权用户组，代表任何拥有OBS账户的用户
      */
     @Deprecated
     AUTHENTICATED_USERS,
 
     /**
-     * Log delivery group, indicating common users who can configure access logs
+     * 日志投递用户组，一般用户配置访问日志
      */
     @Deprecated
     LOG_DELIVERY;
@@ -53,5 +52,3 @@ public enum GroupGranteeEnum {
 		return null;
 	}
 }
-
-

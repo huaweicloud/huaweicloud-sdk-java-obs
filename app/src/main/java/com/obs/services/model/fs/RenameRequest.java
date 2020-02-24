@@ -14,7 +14,7 @@
 package com.obs.services.model.fs;
 
 /**
- * Parameters in a request for renaming a file or folder
+ * 重命名文件/文件夹请求参数
  *
  */
 public class RenameRequest {
@@ -31,10 +31,10 @@ public class RenameRequest {
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File or folder name
-	 * @param newObjectKey New file or folder name
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件/文件夹名
+	 * @param newObjectKey  新的文件/文件夹名
 	 */
 	public RenameRequest(String bucketName, String objectKey, String newObjectKey) {
 		super();
@@ -44,9 +44,9 @@ public class RenameRequest {
 	}
 
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -54,9 +54,9 @@ public class RenameRequest {
     }
     
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -64,9 +64,9 @@ public class RenameRequest {
     }
     
     /**
-     * Obtain the file or folder name.
+     * 获取文件/文件夹名
      * 
-     * @return File or folder name
+     * @return 文件/文件夹名
      */
     public String getObjectKey()
     {
@@ -74,9 +74,9 @@ public class RenameRequest {
     }
     
     /**
-     * Set the file or folder name.
+     * 设置文件/文件夹名
      * 
-     * @param objectKey File or folder name
+     * @param objectKey 文件/文件夹名
      *           
      */
     public void setObjectKey(String objectKey)
@@ -85,16 +85,16 @@ public class RenameRequest {
     }
 
     /**
-     * Obtain the new file or folder name.
-     * @return New file or folder name
+     * 获取新的文件/文件夹名
+     * @return 新的文件/文件夹名
      */
 	public String getNewObjectKey() {
 		return newObjectKey;
 	}
 
 	 /**
-     * Set the new file or folder name.
-     * @param newObjectKey New file or folder name
+     * 设置新的文件/文件夹名
+     * @param newObjectKey  新的文件/文件夹名
      */
 	public void setNewObjectKey(String newObjectKey) {
 		this.newObjectKey = newObjectKey;
@@ -102,5 +102,3 @@ public class RenameRequest {
 	
 	
 }
-
-

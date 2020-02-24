@@ -14,7 +14,7 @@
 package com.obs.services.model.fs;
 
 /**
- * Request parameters for deleting objects
+ * 删除对象的请求参数
  */
 
 public class DropFileRequest {
@@ -29,10 +29,10 @@ public class DropFileRequest {
     }
 
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
-     * @param objectKey  Object name
+     * @param bucketName 桶名
+     * @param objectKey  对象名
      */
     public DropFileRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
@@ -40,11 +40,11 @@ public class DropFileRequest {
     }
 
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
-     * @param objectKey  Object name
-     * @param versionId  Object version
+     * @param bucketName 桶名
+     * @param objectKey  对象名
+     * @param versionId  对象版本号
      */
     public DropFileRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
@@ -53,52 +53,52 @@ public class DropFileRequest {
     }
 
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName() {
         return bucketName;
     }
 
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 
     /**
-     * Obtain the object name.
+     * 获取对象名
      * 
-     * @return Object name
+     * @return 对象名
      */
     public String getObjectKey() {
         return objectKey;
     }
 
     /**
-     * Set the object name.
+     * 设置对象名
      * 
-     * @param objectKey Object name
+     * @param objectKey 对象名
      */
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
 
     /**
-     * Obtain the object version ID.
+     * 获取对象版本号
      * 
-     * @return Object version
+     * @return 对象版本号
      */
     public String getVersionId() {
         return versionId;
     }
 
     /**
-     * Set the version ID of the object.
+     * 设置对象版本号
      * 
      * @param versionId
      */

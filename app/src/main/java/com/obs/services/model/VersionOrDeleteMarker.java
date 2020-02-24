@@ -16,7 +16,7 @@ package com.obs.services.model;
 import java.util.Date;
 
 /**
- * Versioning object information
+ * 多版本对象信息
  */
 public class VersionOrDeleteMarker
 {
@@ -45,18 +45,18 @@ public class VersionOrDeleteMarker
     
     /**
      * 
-     * Constructor
-     * @param bucketName Bucket name
-     * @param key Object name
-     * @param versionId Version ID
-     * @param isLatest Identifier indicating whether the object is of the current version
-     * @param lastModified Last modification date
-     * @param owner Owner
-     * @param etag ETag of the object 
-     * @param size Object size (in bytes)
-     * @param storageClass Storage class of the object
-     * @param isDeleteMarker Whether the versioning object has been deleted
-     * @param appendable Whether object is appendable
+     * 构造方法
+     * @param bucketName 桶名
+     * @param key 对象名称
+     * @param versionId 版本
+     * @param isLatest 是否最新版本标识
+     * @param lastModified 最后修改日期
+     * @param owner 所有者
+     * @param etag 对象的etag值
+     * @param size 对象大小，单位：字节
+     * @param storageClass 对象存储类型
+     * @param isDeleteMarker 多版本对象是否已被删除
+     * @param appendable 对象是否可被追加写
      */
     public VersionOrDeleteMarker(String bucketName, String key, String versionId, boolean isLatest, Date lastModified, Owner owner, String etag, long size,
             StorageClassEnum storageClass, boolean isDeleteMarker, boolean appendable)
@@ -79,8 +79,8 @@ public class VersionOrDeleteMarker
     }
 
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getKey()
     {
@@ -88,8 +88,8 @@ public class VersionOrDeleteMarker
     }
     
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -97,8 +97,8 @@ public class VersionOrDeleteMarker
     }
     
     /**
-     * Obtain the object version ID.
-     * @return Version ID of the object
+     * 获取对象版本号
+     * @return 对象版本号
      */
     public String getVersionId()
     {
@@ -106,8 +106,8 @@ public class VersionOrDeleteMarker
     }
     
     /**
-     * Check whether the object is of the current version.
-     * @return Identifier indicating whether the object is of the current version
+     * 判断对象是否是最新的版本
+     * @return 是否最新的版本标识
      */
     public boolean isLatest()
     {
@@ -116,8 +116,8 @@ public class VersionOrDeleteMarker
     
     
     /**
-     * Obtain the last modification date of the object.
-     * @return Last modification date of the object
+     * 获取对象最后修改日期
+     * @return 最后修改日期
      */
     public Date getLastModified()
     {
@@ -130,8 +130,8 @@ public class VersionOrDeleteMarker
     
     
     /**
-     * Obtain the owner of the object. 
-     * @return Owner of the object 
+     * 获取对象的所有者
+     * @return 对象的所有者
      */
     public Owner getOwner()
     {
@@ -139,8 +139,8 @@ public class VersionOrDeleteMarker
     }
     
     /**
-     * Obtain the storage class of the object.
-     * @return Storage class of the object
+     * 获取对象存储类型
+     * @return 对象存储类型
      */
     @Deprecated
     public String getStorageClass()
@@ -150,8 +150,8 @@ public class VersionOrDeleteMarker
     
 
     /**
-     * Obtain the storage class of the object.
-     * @return Storage class of the object
+     * 获取对象存储类型
+     * @return 对象存储类型
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -159,9 +159,9 @@ public class VersionOrDeleteMarker
     }
     
     /**
-     * Obtain ETag of the object.
+     * 获取对象的etag值
      * 
-     * @return Object ETag
+     * @return 对象的etag值
      */
     public String getEtag()
     {
@@ -170,8 +170,8 @@ public class VersionOrDeleteMarker
 
 
     /**
-     * Obtain the object size (in bytes). 
-     * @return Object size
+     * 获取对象大小，单位：字节
+     * @return 对象大小
      */
     public long getSize()
     {
@@ -180,8 +180,8 @@ public class VersionOrDeleteMarker
 
     
     /**
-     * Check whether the versioning object has been deleted.
-     * @return Identifier indicating whether the versioning object has been deleted
+     * 判断多版本对象是否已被删除
+     * @return 对象是否被删除标识
      */
     public boolean isDeleteMarker()
     {
@@ -190,16 +190,16 @@ public class VersionOrDeleteMarker
     
 
     /**
-     * Identify whether an object is appendable.
-     * @return Identifier specifying whether the object is an appendable object
+     * 判断对象是否可被追加写
+     * @return 对象是否可被追加写标识
      */
 	public boolean isAppendable() {
 		return appendable;
 	}
     
     /**
-     * Obtain the name of the bucket to which the versioning object belongs.
-     * @return Name of the versioning object-residing bucket
+     * 获取多版本对象所在的桶名
+     * @return 多版本对象所在的桶名
      */
 	public String getBucketName() {
 		return bucketName;
@@ -214,5 +214,3 @@ public class VersionOrDeleteMarker
 	}
 
 }
-
-

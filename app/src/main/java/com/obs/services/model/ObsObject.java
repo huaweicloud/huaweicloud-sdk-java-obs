@@ -1,68 +1,68 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.io.InputStream;
 
 /**
- * Objects in OBS
+ * OBS中的对象
  */
+@SuppressWarnings("deprecation")
 public class ObsObject extends S3Object{
 
 	/**
-	 * Obtain the name of the bucket to which the object belongs. 
+	 * 获取对象所属的桶
 	 * 
-	 * @return Name of the bucket to which the object belongs
+	 * @return 对象所属的桶
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * Set the bucket to which the object belongs. 
+	 * 设置对象所属的桶
 	 * 
 	 * @param bucketName
-	 *            Name of the bucket to which the object belongs
+	 *            对象所属的桶
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * Obtain the object name.
+	 * 获取对象名
 	 * 
-	 * @return Object name
+	 * @return 对象名
 	 */
 	public String getObjectKey() {
 		return objectKey;
 	}
 
 	/**
-	 * Set the object name.
+	 * 设置对象名
 	 * 
 	 * @param objectKey
-	 *            Object name
+	 *            对象名
 	 */
 	public void setObjectKey(String objectKey) {
 		this.objectKey = objectKey;
 	}
 
 	/**
-	 * Obtain the object properties, including "content-type", "content-length", and customized metadata.
+	 * 获取对象的属性，包括content-type，content-length，自定义元数据等
 	 * 
-	 * @return Object properties
+	 * @return 对象的属性
 	 */
 	public ObjectMetadata getMetadata() {
 		if (metadata == null) {
@@ -72,48 +72,48 @@ public class ObsObject extends S3Object{
 	}
 
 	/**
-	 * Set the object properties, including "content-type", "content-length", and customized metadata.
+	 * 设置对象的属性，包括content-type，content-length，自定义元数据等
 	 * 
 	 * @param metadata
-	 *            Object properties
+	 *            对象的属性
 	 */
 	public void setMetadata(ObjectMetadata metadata) {
 		this.metadata = metadata;
 	}
 
 	/**
-	 * Obtain the data stream of the object.
+	 * 获取对象的数据流
 	 * 
-	 * @return Data stream of the object
+	 * @return 对象的数据流
 	 */
 	public InputStream getObjectContent() {
 		return objectContent;
 	}
 
 	/**
-	 * Set the data stream of the object.
+	 * 设置对象的数据流
 	 * 
 	 * @param objectContent
-	 *            Object data stream
+	 *            对象的数据流
 	 */
 	public void setObjectContent(InputStream objectContent) {
 		this.objectContent = objectContent;
 	}
 
 	/**
-	 * Obtain the owner of the object. 
+	 * 获取对象的所有者
 	 * 
-	 * @return Owner of the object 
+	 * @return 对象的所有者
 	 */
 	public Owner getOwner() {
 		return owner;
 	}
 
 	/**
-	 * Set the owner of the object. 
+	 * 设置对象的所有者
 	 * 
 	 * @param owner
-	 *            Owner of the object
+	 *            对象的所有者
 	 */
 	public void setOwner(Owner owner) {
 		this.owner = owner;
@@ -125,5 +125,3 @@ public class ObsObject extends S3Object{
 				+ metadata + ", objectContent=" + objectContent + "]";
 	}
 }
-
-

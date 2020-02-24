@@ -16,7 +16,7 @@ package com.obs.services.model;
 import java.util.Map;
 
 /**
- * Response to an object upload request
+ * 上传对象的响应结果
  */
 public class PutObjectResult extends HeaderResponse
 {
@@ -58,9 +58,9 @@ public class PutObjectResult extends HeaderResponse
 
 
 	/**
-     * Obtain the ETag of the object.
+     * 获取对象的etag校验值
      * 
-     * @return ETag of the object
+     * @return 对象的etag校验值
      */
     public String getEtag()
     {
@@ -69,8 +69,8 @@ public class PutObjectResult extends HeaderResponse
     
 
     /**
-     * Obtain the name of the bucket to which the object belongs. 
-     * @return Name of the bucket to which the object belongs
+     * 获取对象所属的桶名
+     * @return 对象所属的桶名
      */
     public String getBucketName()
     {
@@ -79,8 +79,8 @@ public class PutObjectResult extends HeaderResponse
 
 
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -90,8 +90,8 @@ public class PutObjectResult extends HeaderResponse
 
    
     /**
-     * Obtain the object version ID.
-     * @return Version ID of the object
+     * 获取对象版本号
+     * @return 对象版本号
      */
     public String getVersionId()
     {
@@ -101,8 +101,8 @@ public class PutObjectResult extends HeaderResponse
 
 
     /**
-     * Obtain the object storage class. 
-     * @return Object storage class
+     * 获取对象的存储类型
+     * @return 对象的存储类型
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -111,8 +111,8 @@ public class PutObjectResult extends HeaderResponse
     
 
     /**
-     * Obtain the full path to the object.
-     * @return Full path to the object
+     * 获取对象的全路径
+     * @return 对象的全路径
      */
 	public String getObjectUrl() {
 		return objectUrl;

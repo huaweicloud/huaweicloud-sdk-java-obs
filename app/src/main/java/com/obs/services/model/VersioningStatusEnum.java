@@ -14,18 +14,18 @@
 package com.obs.services.model;
 
 /**
- * Versioning status
+ * 桶多版本状态
  *
  */
 public enum VersioningStatusEnum {
 	
 	/**
-	 * Suspended
+	 * 暂停多版本
 	 */
 	SUSPENDED("Suspended"),
 	
 	/**
-	 * Enabled
+	 * 启用多版本
 	 */
 	ENABLED("Enabled");
 	
@@ -49,5 +49,3 @@ public enum VersioningStatusEnum {
 	}
 
 }
-
-

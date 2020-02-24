@@ -14,13 +14,18 @@
 package com.obs.services.model;
 
 /**
- * Control option of the read-ahead cache
+ * 预读缓存的控制选项
  *
  */
 public enum CacheOptionEnum {
-
+	//联调版本暂不支持
+//	/**
+//	 * 保证预读缓存的一致性，低缓存性能 
+//	 */
+//	CONSISTENCY("cache-with-consistency"),
+	
 	/**
-	 * Prioritize performance of the read-ahead cache, but the consistency is not ensured.
+	 * 不保证预读缓存的一致性，高缓存性能
 	 */
 	 PERFORMANCE("cache-with-performance");
 	

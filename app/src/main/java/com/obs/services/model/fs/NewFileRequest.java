@@ -19,7 +19,7 @@ import java.io.InputStream;
 import com.obs.services.model.PutObjectRequest;
 
 /**
- * Parameters in a file creation request 
+ * 创建文件请求参数 
  *
  */
 public class NewFileRequest extends PutObjectRequest{
@@ -29,34 +29,32 @@ public class NewFileRequest extends PutObjectRequest{
 	}
 
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param file Local path to the file
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件名
+	 * @param file 本地文件路径
 	 */
 	public NewFileRequest(String bucketName, String objectKey, File file) {
 		super(bucketName, objectKey, file);
 	}
 
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param input Data stream to be uploaded
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件名
+	 * @param input 待上传的数据流
 	 */
 	public NewFileRequest(String bucketName, String objectKey, InputStream input) {
 		super(bucketName, objectKey, input);
 	}
 
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件名
 	 */
 	public NewFileRequest(String bucketName, String objectKey) {
 		super(bucketName, objectKey);
 	}
 	
 }
-
-

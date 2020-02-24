@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Response to a part upload request
+ * 上传段的响应结果
  */
 public class UploadPartResult extends HeaderResponse
 {
@@ -23,9 +23,9 @@ public class UploadPartResult extends HeaderResponse
     private String etag;
     
     /**
-     * Obtain the part number.
+     * 获取分段号
      * 
-     * @return Part number
+     * @return 分段号
      */
     public int getPartNumber()
     {
@@ -38,9 +38,9 @@ public class UploadPartResult extends HeaderResponse
     }
     
     /** 
-     * Obtain the ETag of the part.
+     * 获取段的etag校验值
      * 
-     * @return Part ETag
+     * @return 段的etag校验值
      */
     public String getEtag()
     {
@@ -58,5 +58,3 @@ public class UploadPartResult extends HeaderResponse
         return "UploadPartResult [partNumber=" + partNumber + ", etag=" + etag + "]";
     }
 }
-
-

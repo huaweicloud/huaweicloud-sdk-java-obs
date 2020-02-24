@@ -21,7 +21,7 @@ import com.obs.services.model.BucketTypeEnum;
 import com.obs.services.model.StorageClassEnum;
 
 /**
- * Response to a request of obtaining status of the file gateway feature of a bucket
+ * 获取桶的文件网关特性状态的响应结果
  *
  */
 public class GetBucketFSStatusResult extends BucketMetadataInfoResult{
@@ -53,8 +53,8 @@ public class GetBucketFSStatusResult extends BucketMetadataInfoResult{
 	}
 
 	/**
-	 * Obtain the status of the file gateway feature of a bucket. 
-	 * @return Status of the file gateway feature
+	 * 获取桶的文件网关特性状态
+	 * @return 桶的文件网关特性状态
 	 */
 	public FSStatusEnum getStatus() {
 		return status;

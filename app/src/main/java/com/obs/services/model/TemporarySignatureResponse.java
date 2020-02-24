@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * 
- * Response to a request for temporarily authorized access
+ * 临时授权访问的响应结果
  *
  */
 public class TemporarySignatureResponse
@@ -33,8 +33,8 @@ public class TemporarySignatureResponse
     }
     
     /**
-     * Obtain the URL of the temporarily authorized access.
-     * @return URL of the temporarily authorized access
+     * 获取临时授权访问的URL
+     * @return 临时授权访问的URL
      */
     public String getSignedUrl()
     {
@@ -42,8 +42,8 @@ public class TemporarySignatureResponse
     }
     
     /**
-     * Obtain the request headers.
-     * @return Request headers
+     * 获取临时授权访问请求的头信息
+     * @return 临时授权访问请求的头信息
      */
     public Map<String, String> getActualSignedRequestHeaders()
     {

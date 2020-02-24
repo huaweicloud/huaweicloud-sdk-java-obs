@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Parameters in a request for aborting an multipart upload
+ * 取消分段上传任务的请求参数
  */
 public class AbortMultipartUploadRequest
 {
@@ -30,10 +30,10 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param uploadId Multipart upload ID
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param uploadId 分段上传任务ID号
      */
     public AbortMultipartUploadRequest(String bucketName, String objectKey, String uploadId)
     {
@@ -43,9 +43,9 @@ public class AbortMultipartUploadRequest
     }
 
     /**
-     * Obtain the multipart upload ID.
+     * 获取分段上传任务的ID号
      * 
-     * @return Multipart upload ID
+     * @return 标识分段上传任务的ID号
      */
     public String getUploadId()
     {
@@ -53,9 +53,9 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Set the multipart upload ID.
+     * 设置分段上传任务的ID号
      * 
-     * @param uploadId Multipart upload ID
+     * @param uploadId 标识分段上传任务的ID号
      */
     public void setUploadId(String uploadId)
     {
@@ -63,9 +63,9 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
+     * 获取待取消的分段上传任务所属的桶名
      * 
-     * @return Name of the bucket to which the multipart upload belongs
+     * @return 待取消的分段上传任务所属的桶名
      */
     public String getBucketName()
     {
@@ -73,9 +73,9 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Name of the bucket to which the multipart upload belongs
+     * 设置待取消的分段上传任务所属的桶名
      * 
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param bucketName 待取消的分段上传任务所属的桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -83,9 +83,9 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Obtain the name of the object involved in the multipart upload.
+     * 获取待取消的分段上传任务所属的对象名
      * 
-     * @return Name of the object involved in the multipart upload
+     * @return 待取消的分段上传任务所属的对象名
      */
     public String getObjectKey()
     {
@@ -93,9 +93,9 @@ public class AbortMultipartUploadRequest
     }
     
     /**
-     * Set the name of the object involved in the multipart upload.
+     * 设置待取消的分段上传任务所属的对象名
      * 
-     @param objectKey Name of the object involved in the multipart upload
+     @param objectKey 待取消的分段上传任务所属的对象名
      */
     public void setObjectKey(String objectKey)
     {

@@ -16,7 +16,7 @@ package com.oef.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Content of the file compression policy
+ * 文件压缩策略内容
  *
  */
 public class CompressBean {
@@ -31,9 +31,9 @@ public class CompressBean {
     }
 	
     /**
-	 * Constructor
-	 * @param status Policy status
-	 * @param agency IAM agency
+	 * 构造函数
+	 * @param status 策略状态
+	 * @param agency IAM 委托名
 	 */
 	public CompressBean(String status, String agency) {
 		this.status = status;
@@ -41,32 +41,32 @@ public class CompressBean {
 	}
 	
 	/**
-	 * Obtain the policy status.
-	 * @return Policy status
+	 * 获取策略状态
+	 * @return 策略状态
 	 */
 	public String getStatus() {
 		return status;
 	}
 	
 	/**
-	 * Set the policy status.
-	 * @param status Policy status
+	 * 设置策略状态
+	 * @param status 策略状态
 	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
 	
 	/**
-	 * Obtain the IAM agency.
-	 * @return IAM agency
+	 * 获取IAM 委托名
+	 * @return IAM 委托名
 	 */
 	public String getAgency() {
 		return agency;
 	}
 	
 	/**
-	 * Set the IAM agency.
-	 * @param agency IAM agency
+	 * 设置IAM 委托名
+	 * @param agency IAM 委托名
 	 */
 	public void setAgency(String agency) {
 		this.agency = agency;

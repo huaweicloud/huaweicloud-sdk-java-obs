@@ -1,29 +1,28 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Bucket storage policy
+ * 桶的存储策略
  */
 public class BucketStoragePolicyConfiguration extends HeaderResponse {
 	
     private StorageClassEnum storageClass;
     
     /**
-     * Constructor
-     * @param storageClass Bucket storage class
+     * 构造函数
+     * @param storageClass 桶的存储类型
      */
     @Deprecated
     public BucketStoragePolicyConfiguration(String storageClass)
@@ -32,8 +31,8 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
     
     /**
-     * Constructor
-     * @param storageClass Bucket storage class
+     * 构造函数
+     * @param storageClass 桶的存储类型
      */
     public BucketStoragePolicyConfiguration(StorageClassEnum storageClass)
     {
@@ -51,8 +50,8 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
 
     /**
-     * Obtain the bucket storage class. 
-     * @return storageClass Bucket storage class
+     * 获取桶的存储类型
+     * @return storageClass 桶的存储类型
      * @see #getBucketStorageClass()
      */
     @Deprecated
@@ -62,8 +61,8 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
 
     /**
-     * Set the bucket storage class. 
-     * @param storageClass Bucket storage class
+     * 设置桶的存储类型
+     * @param storageClass 桶的存储类型
      * @see #setBucketStorageClass(StorageClassEnum storageClass)
      */
     @Deprecated
@@ -73,8 +72,8 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
     
     /**
-     * Obtain the bucket storage class. 
-     * @return storageClass Bucket storage class
+     * 获取桶的存储类型
+     * @return storageClass 桶的存储类型
      */
     public StorageClassEnum getBucketStorageClass()
     {
@@ -82,8 +81,8 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
 
     /**
-     * Set the bucket storage class. 
-     * @param storageClass Bucket storage class
+     * 设置桶的存储类型
+     * @param storageClass 桶的存储类型
      */
     public void setBucketStorageClass(StorageClassEnum storageClass)
     {
@@ -91,5 +90,3 @@ public class BucketStoragePolicyConfiguration extends HeaderResponse {
     }
     
 }
-
-

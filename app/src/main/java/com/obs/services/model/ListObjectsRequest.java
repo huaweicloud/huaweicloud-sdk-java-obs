@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Parameters in a request for listing objects in a bucket
+ * 列举桶内对象的请求参数
  */
 public class ListObjectsRequest
 {
@@ -36,9 +35,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
+     *  @param bucketName 桶名
      */
     public ListObjectsRequest(String bucketName)
     {
@@ -47,9 +46,9 @@ public class ListObjectsRequest
     
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param maxKeys Maximum number of objects to be listed
+     * 构造函数
+     * @param bucketName 桶名
+     * @param maxKeys 列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, int maxKeys)
     {
@@ -58,12 +57,12 @@ public class ListObjectsRequest
     }
 
     /**     
-     * Constructor 
-     * @param bucketName Bucket name
-     * @param prefix Object name prefix, used for filtering objects to be listed
-     * @param marker Start position for listing objects
-     * @param delimiter Character used for grouping object names
-     * @param maxKeys Maximum number of objects to be listed
+     *  构造函数 
+     *  @param bucketName 桶名
+     *  @param prefix 列举对象时的对象名前缀
+     *  @param marker 列举对象时的起始位置
+     *  @param delimiter 用于对对象名进行分组的字符
+     *  @param maxKeys 列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys)
     {
@@ -75,9 +74,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -85,9 +84,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -95,9 +94,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Obtain the object name prefix used for filtering objects to be listed.
+     * 获取列举对象时的对象名前缀
      * 
-     * @return Object name prefix
+     * @return 对象名前缀
      */
     public String getPrefix()
     {
@@ -105,9 +104,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Set the object name prefix used for filtering objects to be listed.
+     * 设置列举对象时的对象名前缀
      * 
-     * @param prefix Object name prefix
+     * @param prefix 对象名前缀
      */
     public void setPrefix(String prefix)
     {
@@ -115,9 +114,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Obtain the start position for listing objects.
+     * 获取列举对象时的起始位置
      * 
-     * @return Start position marker
+     * @return 起始位置标识
      */
     public String getMarker()
     {
@@ -125,9 +124,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Set the start position for listing objects.
+     * 设置列举对象时的起始位置
      * 
-     * @param marker Start position marker
+     * @param marker 起始位置标识
      */
     public void setMarker(String marker)
     {
@@ -135,9 +134,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Obtain the maximum number of objects to be listed.
+     * 获取列举对象的最大条目数
      * 
-     * @return Maximum number of objects to be listed
+     * @return 列举对象的最大条目数
      */
     public int getMaxKeys()
     {
@@ -145,9 +144,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Set the maximum number of objects to be listed.
+     * 设置列举对象的最大条目数
      * 
-     * @param maxKeys Maximum number of objects to be listed
+     * @param maxKeys 列举对象的最大条目数
      */
     public void setMaxKeys(int maxKeys)
     {
@@ -155,9 +154,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Obtain the character used for grouping object names.
+     * 获取用于对对象名进行分组的字符
      * 
-     * @return Character for grouping object names
+     * @return 分组字符
      */
     public String getDelimiter()
     {
@@ -165,9 +164,9 @@ public class ListObjectsRequest
     }
     
     /**
-     * Set the character used for grouping object names.
+     * 设置用于对对象名进行分组的字符
      * 
-     * @param delimiter Character for grouping object names
+     * @param delimiter 分组字符
      */
     public void setDelimiter(String delimiter)
     {
@@ -189,5 +188,3 @@ public class ListObjectsRequest
 	}
     
 }
-
-

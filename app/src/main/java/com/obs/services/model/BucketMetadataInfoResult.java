@@ -1,22 +1,22 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.List;
 
 /**
- * Response to a request for obtaining bucket metadata
+ * 获取桶元数据信息的响应结果buc
  *
  */
 public class BucketMetadataInfoResult extends OptionsInfoResult
@@ -59,11 +59,10 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 		this.bucketType = bucketType;
 	}
 	
-	
 
 	/**
-     * Obtain the bucket storage class. 
-     * @return Bucket storage class
+     * 获取桶的存储类型
+     * @return 桶的存储类型
      */
     @Deprecated
     public String getDefaultStorageClass()
@@ -72,40 +71,40 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
     }
     
     /**
-     * Obtain the bucket storage class. 
-     * @return Bucket storage class
+     * 获取桶的存储类型
+     * @return 桶的存储类型
      */
     public StorageClassEnum getBucketStorageClass() {
     	return this.storageClass;
     }
     
     /**
-     * Obtain the bucket location.
-     * @return Bucket location
+     * 获取桶的区域位置
+     * @return 桶的区域位置
      */
 	public String getLocation() {
 		return location;
 	}
 	
 	/**
-	 * Obtain the OBS version.
-	 * @return OBS version
+	 * 获取OBS服务的版本
+	 * @return OBS服务的版本
 	 */
 	public String getObsVersion() {
 		return obsVersion;
 	}
 	
 	/**
-	 * Obtain the enterprise ID of a bucket.
-	 * @return Enterprise ID
+	 * 获取桶的企业ID
+	 * @return 企业ID
 	 */
 	public String getEpid() {
 	    return epid;
 	}
 	
 	/**
-	 * Obtain the bucket cluster type.
-	 * @return Bucket cluster type
+	 * 获取桶的集群类型
+	 * @return 桶的集群类型
 	 */
 	public AvailableZoneEnum getAvailableZone() {
 		return this.availableZone;
@@ -117,7 +116,10 @@ public class BucketMetadataInfoResult extends OptionsInfoResult
 				+ obsVersion + ", bucketType="+ bucketType.name() + "]";
 	}
 
-
+	/**
+	 * 获取桶的类型
+	 * @return 桶的类型
+	 */
 	public BucketTypeEnum getBucketType() {
 		return bucketType;
 	}

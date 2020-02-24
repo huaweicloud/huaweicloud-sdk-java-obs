@@ -25,6 +25,10 @@ public class DisPolicy {
 		
 	}
 	
+	/**
+	 * 构造函数
+	 * @param rules DIS策略规则
+	 */
 	public DisPolicy(ArrayList<DisPolicyBean> rules) {
 		this.rules = rules;
 	}

@@ -70,86 +70,86 @@ import com.obs.services.model.UploadPartResult;
 import com.obs.services.model.WebsiteConfiguration;
 
 /**
- * ObsClient that supports transparent transfer of AK/SK, inherited from {@link com.obs.services.ObsClient}
+ * 支持透传AK/SK的OBS客户端，继承自{@link com.obs.services.ObsClient}
  *
  */
 public class SecretFlexibleObsClient extends ObsClient {
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param config
-	 *            Configuration parameters of ObsClient
+	 *            OBS客户端配置参数
 	 */
 	public SecretFlexibleObsClient(ObsConfiguration config) {
 		this(null, null, config);
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param endPoint
-	 *            OBS endpoint
+	 *            OBS服务地址
 	 */
 	public SecretFlexibleObsClient(String endPoint) {
 		this(null, null, endPoint);
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the access key
+	 *            访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the access key
+	 *            访问密钥中的SK
 	 * @param config
-	 *            Configuration parameters of ObsClient
+	 *            OBS客户端配置参数
 	 */
 	public SecretFlexibleObsClient(String accessKey, String secretKey, ObsConfiguration config) {
 		super(accessKey, secretKey, config);
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the access key
+	 *            访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the access key
+	 *            访问密钥中的SK
 	 * @param endPoint
-	 *            OBS endpoint
+	 *            OBS的服务地址
 	 */
 	public SecretFlexibleObsClient(String accessKey, String secretKey, String endPoint) {
 		super(accessKey, secretKey, endPoint);
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the temporary access key
+	 *            临时访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the temporary access key
+	 *            临时访问密钥中的SK
 	 * @param securityToken
-	 *            Security token
+	 *            安全令牌
 	 * @param config
-	 *            Configuration parameters of ObsClient
+	 *            OBS客户端配置参数
 	 */
 	public SecretFlexibleObsClient(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {
 		super(accessKey, secretKey, securityToken, config);
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the temporary access key
+	 *            临时访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the temporary access key
+	 *            临时访问密钥中的SK
 	 * @param securityToken
-	 *            Security token
+	 *            安全令牌
 	 * @param endPoint
-	 *            OBS endpoint
+	 *            OBS的服务地址
 	 */
 	public SecretFlexibleObsClient(String accessKey, String secretKey, String securityToken, String endPoint) {
 		super(accessKey, secretKey, securityToken, endPoint);
@@ -1733,5 +1733,3 @@ public class SecretFlexibleObsClient extends ObsClient {
 		}
 	}
 }
-
-

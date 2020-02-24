@@ -17,6 +17,10 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * DIS策略
+ *
+ */
 public class DisPolicyBean {
 	@JsonProperty(value = "id")
 	private String id;
@@ -43,6 +47,14 @@ public class DisPolicyBean {
 		
 	}
 	
+	/**
+	 * 构造函数
+	 * @param id 策略规则ID
+	 * @param stream DIS服务通道名称
+	 * @param project DIS服务通道所属的项目ID
+	 * @param events OBS事件列表
+	 * @param agency IAM委托名
+	 */
 	public DisPolicyBean(String id, String stream, String project, ArrayList<String> events, String agency) {
 		this.setId(id);
 		this.setStream(stream);

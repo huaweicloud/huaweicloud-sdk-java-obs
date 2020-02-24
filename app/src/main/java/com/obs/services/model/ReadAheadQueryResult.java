@@ -16,7 +16,7 @@ package com.obs.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Response to the request for querying the progress of the read-ahead task
+ * 查询预读任务进度的响应结果
  *
  */
 public class ReadAheadQueryResult extends HeaderResponse {
@@ -39,20 +39,20 @@ public class ReadAheadQueryResult extends HeaderResponse {
 	private String status;
 	
 	/**
-	 * Constructor
+	 * 构造函数
 	 */
 	public ReadAheadQueryResult() {
 		
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param prefix Name prefix of objects to be read ahead
-	 * @param consumedTime Consumed time (seconds)
-	 * @param finishedObjectNum Number of finished objects
-	 * @param finishedSize Size of finished objects
-	 * @param status Task status
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param prefix 预读对象的对象名前缀
+	 * @param consumedTime 消耗时间 单位：秒
+	 * @param finishedObjectNum 已完成的对象个数
+	 * @param finishedSize 已完成的对象大小
+	 * @param status 任务状态
 	 */
 	public ReadAheadQueryResult(String bucketName, String prefix, long consumedTime, 
 			long finishedObjectNum, long finishedSize, String status) {
@@ -65,96 +65,96 @@ public class ReadAheadQueryResult extends HeaderResponse {
 	}
 
 	/**
-	 * Obtain the bucket name.
-	 * @return Bucket name
+	 * 获取桶名
+	 * @return 桶名
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * Set the bucket name.
-	 * @param bucketName Bucket name
+	 * 设置桶名
+	 * @param bucketName 桶名
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * Obtain the name prefix of objects to be read ahead.
-	 * @return Name prefix of objects to be read ahead
+	 * 获取预读对象的对象名前缀
+	 * @return 预读对象的对象名前缀
 	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
 	/**
-	 * Set the name prefix of objects to be read ahead.
-	 * @param prefix Name prefix of objects to be read ahead
+	 * 设置预读对象的对象名前缀
+	 * @param prefix 预读对象的对象名前缀
 	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
 	/**
-	 * Obtain the consumed time (seconds)
-	 * @return Consumed time (seconds)
+	 * 获取消耗时间 单位：秒
+	 * @return 消耗时间 单位：秒
 	 */
 	public long getConsumedTime() {
 		return consumedTime;
 	}
 
 	/**
-	 * Set the consumed time (seconds)
-	 * @param consumedTime Consumed time (seconds)
+	 * 设置消耗时间 单位：秒
+	 * @param consumedTime 消耗时间 单位：秒
 	 */
 	public void setConsumedTime(long consumedTime) {
 		this.consumedTime = consumedTime;
 	}
 
 	/**
-	 * Obtain the number of finished objects.
-	 * @return Number of finished objects
+	 * 获取已完成的对象个数
+	 * @return 已完成的对象个数
 	 */
 	public long getFinishedObjectNum() {
 		return finishedObjectNum;
 	}
 
 	/**
-	 * Set the number of finished objects.
-	 * @param finishedObjectNum Number of finished objects
+	 * 设置已完成的对象个数
+	 * @param finishedObjectNum 已完成的对象个数
 	 */
 	public void setFinishedObjectNum(long finishedObjectNum) {
 		this.finishedObjectNum = finishedObjectNum;
 	}
 
 	/**
-	 * Obtain the size of finished objects.
-	 * @return Size of finished objects
+	 * 获取已完成的对象大小
+	 * @return 已完成的对象大小
 	 */
 	public long getFinishedSize() {
 		return finishedSize;
 	}
 
 	/**
-	 * Set the size of finished objects.
-	 * @param finishedSize Size of finished objects
+	 * 设置已完成的对象大小
+	 * @param finishedSize 已完成的对象大小
 	 */
 	public void setFinishedSize(long finishedSize) {
 		this.finishedSize = finishedSize;
 	}
 
 	/**
-	 * Obtain the task status.
-	 * @return Task status
+	 * 获取任务状态
+	 * @return 任务状态
 	 */
 	public String getStatus() {
 		return status;
 	}
 
 	/**
-	 * Set the task status.
-	 * @param status Task status
+	 * 设置任务状态
+	 * @param status 任务状态
 	 */
 	public void setStatus(String status) {
 		this.status = status;

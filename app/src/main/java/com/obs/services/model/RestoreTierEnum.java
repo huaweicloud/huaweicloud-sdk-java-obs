@@ -14,20 +14,20 @@
 package com.obs.services.model;
 
 /**
- * Restoration option
+ * 取回选项
  *
  */
 public enum RestoreTierEnum {
 	/**
-	 * Expedited restoration, which restores an object in 1 to 5 minutes
+	 * 快速取回，取回耗时1~5分钟
 	 */
 	EXPEDITED("Expedited"),
 	/**
-	 * Standard restoration, which restores the object in 3 to 5 hours
+	 * 标准取回，取回耗时3~5小时
 	 */
 	STANDARD("Standard"),
 	/**
-	 * Batch restoration, which restores objects in 5 to 12 hours
+	 * 批量取回，取回耗时5~12小时
 	 */
 	@Deprecated
 	BULK("Bulk");

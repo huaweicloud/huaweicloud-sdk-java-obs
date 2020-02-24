@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Website hosting configuration of a bucket
+ * 桶的website（托管）配置
  */
 public class WebsiteConfiguration extends HeaderResponse
 {
@@ -30,8 +30,8 @@ public class WebsiteConfiguration extends HeaderResponse
     private List<RouteRule> routeRules;
     
     /**
-     * Obtain the hosting homepage.
-     * @return Hosting homepage 
+     * 获取托管首页
+     * @return 托管首页 
      * 
      */
     public String getSuffix()
@@ -40,8 +40,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the hosting homepage.
-     * @param suffix Hosting homepage 
+     * 设置托管首页
+     * @param suffix 托管首页 
      * 
      */
     public void setSuffix(String suffix)
@@ -50,8 +50,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Obtain the error page of the hosting.
-     ** @return key Error page of the hosting.
+     * 获取托管错误页面
+     * @return key 托管错误页面
      */
     public String getKey()
     {
@@ -59,8 +59,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the error page of the hosting.
-     * @param key Error page of the hosting
+     * 设置托管错误页面
+     * @param key 托管错误页面
      */
     public void setKey(String key)
     {
@@ -68,8 +68,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the redirection route rules.
-     * @return routeRules Redirection route rule list
+     * 获取重定向路由规则列表
+     * @return routeRules 重定向路由规则列表
      */
     public List<RouteRule> getRouteRules()
     {
@@ -80,8 +80,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the redirection route rule list.
-     * @param routeRules Redirection route rule list
+     * 设置重定向路由规则列表
+     * @param routeRules 重定向路由规则列表
      */
     public void setRouteRules(List<RouteRule> routeRules)
     {
@@ -89,8 +89,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Obtain the redirection rules of all requests.
-     * @return Redirection rules of all requests
+     * 获取所有请求重定向规则
+     * @return 所有请求重定向规则
      */
     public RedirectAllRequest getRedirectAllRequestsTo()
     {
@@ -98,8 +98,8 @@ public class WebsiteConfiguration extends HeaderResponse
     }
     
     /**
-     * Set redirection rules of all requests.
-     * @param redirectAllRequestsTo Redirection rules of all requests
+     * 设置所有请求重定向规则
+     * @param redirectAllRequestsTo 所有请求重定向规则
      */
     public void setRedirectAllRequestsTo(RedirectAllRequest redirectAllRequestsTo)
     {
@@ -114,5 +114,3 @@ public class WebsiteConfiguration extends HeaderResponse
             + ", routeRules=" + routeRules + "]";
     }
 }
-
-

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.obs.services.model.HeaderResponse;
 
 /**
- * Query an asynchronous fetch job response.
+ * 查询异步抓取任务响应
  *
  */
 public class QueryAsynchFetchJobsResult extends HeaderResponse {
@@ -44,13 +44,13 @@ public class QueryAsynchFetchJobsResult extends HeaderResponse {
 	}
 	
 	/**
-	 * Constructor
-	 * @param requestId Unique ID of a request
-	 * @param err Error description
-	 * @param code Error code
-	 * @param status Job status
-	 * @param wait Number of queuing jobs before the current job. The value 0 indicates that the current job is being executed, and the value -1 indicates that the job has been executed at least once (the retry logic may be triggered).
-	 * @param job Job details
+	 * 构造函数
+	 * @param requestId 请求的唯一标示ID
+	 * @param err 错误描述
+	 * @param code 错误码
+	 * @param status 任务状态
+	 * @param wait 当前任务前面的排队任务数量。0表示当前任务正在进行，-1表示任务已经至少被处理过一次（可能会进入重试逻辑）。
+	 * @param job 任务详情
 	 */
 	public QueryAsynchFetchJobsResult(String requestId, String err, String code, String status, int wait, CreateAsyncFetchJobsRequest job) {
 		this.setRequestId(requestId);
@@ -62,96 +62,96 @@ public class QueryAsynchFetchJobsResult extends HeaderResponse {
 	}
 
 	/**
-	 * Obtain the unique ID of a request.
-	 * @return Unique ID of a request
+	 * 获取请求的唯一标示ID
+	 * @return 请求的唯一标示ID
 	 */
 	public String getRequestId() {
 		return requestId;
 	}
 
 	/**
-	 * Set the unique ID of a request.
-	 * @param requestId Unique ID of a request
+	 * 设置请求的唯一标示ID
+	 * @param requestId 请求的唯一标示ID
 	 */
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
 	}
 
 	/**
-	 * Obtain the error description.
-	 * @return Error description
+	 * 获取错误描述
+	 * @return 错误描述
 	 */
 	public String getErr() {
 		return err;
 	}
 
 	/**
-	 * Set the error description.
-	 * @param err Error description
+	 * 设置错误描述
+	 * @param err 错误描述
 	 */
 	public void setErr(String err) {
 		this.err = err;
 	}
 
 	/**
-	 * Obtain the error code.
-	 * @return Error code
+	 * 获取错误码
+	 * @return 错误码
 	 */
 	public String getCode() {
 		return code;
 	}
 
 	/**
-	 * Set the error code.
-	 * @param code Error code
+	 * 设置错误码
+	 * @param code 错误码
 	 */
 	public void setCode(String code) {
 		this.code = code;
 	}
 
 	/**
-	 * Obtain the job status.
-	 * @return Job status
+	 * 获取任务状态
+	 * @return 任务状态
 	 */
 	public String getStatus() {
 		return status;
 	}
 
 	/**
-	 * Set the job status.
-	 * @param status Job status
+	 * 设置任务状态
+	 * @param status 任务状态
 	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
 
 	/**
-	 * Obtain the number of queuing jobs.
-	 * @return Number of queuing jobs
+	 * 获取排队任务数量
+	 * @return 排队任务数量
 	 */
 	public int getWait() {
 		return wait;
 	}
 
 	/**
-	 * Set the number of queuing jobs.
-	 * @param wait Number of queuing jobs
+	 * 设置排队任务数量
+	 * @param wait 排队任务数量
 	 */
 	public void setWait(int wait) {
 		this.wait = wait;
 	}
 
 	/**
-	 * Obtain the job details.
-	 * @return Job details
+	 * 获取任务详情
+	 * @return 任务详情
 	 */
 	public CreateAsyncFetchJobsRequest getJob() {
 		return job;
 	}
 
 	/**
-	 * Set the job details.
-	 * @param job Job details
+	 * 设置任务详情
+	 * @param job 任务详情
 	 */
 	public void setJob(CreateAsyncFetchJobsRequest job) {
 		this.job = job;

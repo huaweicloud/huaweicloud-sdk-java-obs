@@ -1,51 +1,50 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
  * 
- * OBS Bucket extension permission 
+ * OBS桶扩展权限 
  *
  */
 public enum ExtensionBucketPermissionEnum{
 	/**
-	 * Grant the read permission to all users belonging to the specified "domainId" for listing objects, listing multipart uploads, listing bucket versions, and obtaining bucket metadata. 
+	 * 授予domainId下的所有用户读权限，列举对象、列举多段任务、列举桶多版本、获取桶元数据
 	 */
 	GRANT_READ("grantReadHeader"),
 	/**
-	 * Grant the write permission to all users belonging to the specified "domainId" so that the users can create, delete, overwrite objects in buckets, as well as initialize, upload, copy, and combine parts and cancel multipart uploads.
+	 * 授予domainId下的所有用户写权限，允许创建、删除、覆盖桶内所有对象，允许初始化段、上传段、拷贝段、合并段、取消多段上传任务
 	 */
 	GRANT_WRITE("grantWriteHeader"),
 	/**
-	 * Grant the "READ_ACP" permission to all users belonging to the specified "domainId" to obtain ACLs of objects. 
+	 * 授予domainId下的所有用户读ACP权限，允许读桶的ACL信息
 	 */
 	GRANT_READ_ACP("grantReadAcpHeader"),
 	/**
-	 * Grant the "WRITE_ACP" permission to all users belonging to the specified "domainId" to modify bucket ACLs.
+	 * 授予domainId下的所有用户写ACP权限，允许修改桶的ACL信息
 	 */
 	GRANT_WRITE_ACP("grantWriteAcpHeader"),
 	/**
-	 * Grant full control permissions to users in the domain of the specified ID. 
+	 * 授予domainId下的所有用户完全控制权限
 	 */
 	GRANT_FULL_CONTROL("grantFullControlHeader"),
 	/**
-	 * Grant the read permission to all users belonging to the specified "domainId". By default, these users have the read permission on all objects in the bucket. 
+	 * 授予domainId下的所有用户读权限，且在默认情况下，该读权限将传递给桶内所有对象
 	 */
 	GRANT_READ_DELIVERED("grantReadDeliveredHeader"),
 	/**
-	 * Grant the full control permission to all users belonging to the specified "domainId". By default, these users have the full control permission on all objects in the bucket. 
+	 * 授予domainId下的所有用户完全控制权限，且在默认情况下，该完全控制权限将传递给桶内所有对象
 	 */
 	GRANT_FULL_CONTROL_DELIVERED("grantFullControlDeliveredHeader");
 	
@@ -59,4 +58,3 @@ public enum ExtensionBucketPermissionEnum{
 		return this.code;
 	}
 }
-

@@ -16,7 +16,7 @@ package com.obs.services.model.fs;
 import com.obs.services.model.PutObjectBasicRequest;
 
 /**
- * Parameters in a folder creation request
+ * 创建文件夹请求参数
  *
  */
 public class NewFolderRequest extends PutObjectBasicRequest{
@@ -26,9 +26,9 @@ public class NewFolderRequest extends PutObjectBasicRequest{
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey Folder name
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param objectKey 文件夹名
 	 */
 	public NewFolderRequest(String bucketName, String objectKey) {
 		super();
@@ -37,5 +37,3 @@ public class NewFolderRequest extends PutObjectBasicRequest{
 	}
 	
 }	
-
-

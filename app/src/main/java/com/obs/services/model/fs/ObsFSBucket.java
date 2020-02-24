@@ -23,7 +23,7 @@ import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ObjectMetadata;
 
 /**
- * Buckets that support the file interface
+ * 支持文件接口的桶
  *
  */
 public class ObsFSBucket{
@@ -40,11 +40,15 @@ public class ObsFSBucket{
 		this.location = location;
 	}
 	
+	public void setInnerClient(ObsClient innerClient) {
+		this.innerClient = innerClient;
+	}
+	
 	/**
-	 * Set status of the file gateway feature for a bucket. 
-	 * @param status Status of the file gateway feature
-	 * @return Response to the request for setting status of the file gateway feature for the bucket
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 设置桶的文件网关特性状态
+	 * @param status 桶的文件网关特性状态
+	 * @return 设置桶的文件网关特性状态的响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public HeaderResponse setFSStatus(FSStatusEnum status) throws ObsException{
 		this.checkInternalClient();
@@ -52,10 +56,10 @@ public class ObsFSBucket{
 	}
 	
 	/**
-	 * Create a folder.
-	 * @param folderName Folder name
-	 * @return Folders in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件夹
+	 * @param folderName 文件夹名
+	 * @return 代表支持文件接口的桶中的文件夹
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSFolder newFolder(String folderName) throws ObsException{
 		this.checkInternalClient();
@@ -63,12 +67,12 @@ public class ObsFSBucket{
 	}
 	
 	/**
-	 * Create a file.
-	 * @param fileName File name
-	 * @param input File input stream
-	 * @param metadata File properties
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件
+	 * @param fileName 文件名
+	 * @param input 文件输入流
+	 * @param metadata 文件的属性
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSFile newFile(String fileName, InputStream input, ObjectMetadata metadata) throws ObsException{
 		this.checkInternalClient();
@@ -78,23 +82,23 @@ public class ObsFSBucket{
 	}
 	
 	/**
-	 * Create a file.
-	 * @param fileName File name
-	 * @param input File input stream
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件
+	 * @param fileName 文件名
+	 * @param input 文件输入流
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSFile newFile(String fileName, InputStream input) throws ObsException{
 		return this.newFile(fileName, input, null);
 	}
 	
 	/**
-	 * Create a file.
-	 * @param fileName File name
-	 * @param file Local path to the file
-	 * @param metadata File properties
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件
+	 * @param fileName 文件名
+	 * @param file 本地文件路径
+	 * @param metadata 文件的属性
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSFile newFile(String fileName, File file, ObjectMetadata metadata) throws ObsException{
 		this.checkInternalClient();
@@ -104,20 +108,20 @@ public class ObsFSBucket{
 	}
 	
 	/**
-	 * Create a file.
-	 * @param fileName File name
-	 * @param file Local path to the file
-	 * @return Files in the bucket that supports the file interface
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 创建文件
+	 * @param fileName 文件名
+	 * @param file 本地文件路径
+	 * @return 代表支持文件接口的桶中的文件
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSFile newFile(String fileName, File file) throws ObsException{
 		return this.newFile(fileName, file, null);
 	}
 
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -125,8 +129,8 @@ public class ObsFSBucket{
     }
 
     /**
-     * Obtain the bucket location.
-     * @return Bucket location
+     * 获取桶的区域位置
+     * @return 桶的区域位置
      */
     public String getLocation()
     {

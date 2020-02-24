@@ -34,7 +34,7 @@ import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
 
 /**
- * OEF client
+ * OEF客户端
  */
 public class OefClient extends ObsClient implements IOefClient {
 
@@ -42,10 +42,10 @@ public class OefClient extends ObsClient implements IOefClient {
 
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param endPoint
-	 *            OEF service address
+	 *            OEF服务地址
 	 * 
 	 */
 	public OefClient(String endPoint) {
@@ -53,10 +53,10 @@ public class OefClient extends ObsClient implements IOefClient {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param config
-	 *            Configuration parameters of OEF client
+	 *            OEF客户端配置参数
 	 * 
 	 */
 	public OefClient(ObsConfiguration config) {
@@ -64,14 +64,14 @@ public class OefClient extends ObsClient implements IOefClient {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            Access key ID
+	 *            访问密钥中的AK
 	 * @param secretKey
-	 *            Secret access key
+	 *            访问密钥中的SK
 	 * @param endPoint
-	 *            OEF service address
+	 *            OEF服务地址
 	 * 
 	 */
 	public OefClient(String accessKey, String secretKey, String endPoint) {
@@ -79,14 +79,14 @@ public class OefClient extends ObsClient implements IOefClient {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            Access key ID
+	 *            访问密钥中的AK
 	 * @param secretKey
-	 *            Secret access key
+	 *            访问密钥中的SK
 	 * @param config
-	 *            Configuration parameters of OEF client
+	 *            OEF客户端配置参数
 	 * 
 	 */
 	public OefClient(String accessKey, String secretKey, ObsConfiguration config) {
@@ -94,16 +94,16 @@ public class OefClient extends ObsClient implements IOefClient {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the temporary access keys
+	 *            临时访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the temporary access keys
+	 *            临时访问密钥中的SK
 	 * @param securityToken
-	 *            Security token
+	 *            安全令牌
 	 * @param endPoint
-	 *            OEF service address
+	 *            OEF的服务地址
 	 * 
 	 */
 	public OefClient(String accessKey, String secretKey, String securityToken, String endPoint) {
@@ -111,16 +111,16 @@ public class OefClient extends ObsClient implements IOefClient {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
 	 * @param accessKey
-	 *            AK in the temporary access keys
+	 *            临时访问密钥中的AK
 	 * @param secretKey
-	 *            SK in the temporary access keys
+	 *            临时访问密钥中的SK
 	 * @param securityToken
-	 *            Security Token
+	 *            安全令牌
 	 * @param config
-	 *            Configuration parameters of OEF client
+	 *            OEF客户端配置参数
 	 * 
 	 */
 	public OefClient(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {

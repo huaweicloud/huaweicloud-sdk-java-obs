@@ -16,22 +16,22 @@ package com.obs.services.model;
 import com.obs.services.model.ObjectMetadata;
 
 /**
- * Response to a file download request
+ * 下载文件的响应结果
  */
 public class DownloadFileResult {
 	/**
-     * Obtain object properties.
+     * 获取对象的属性
      * 
-     * @return Object properties
+     * @return 对象的属性
      */
     public ObjectMetadata getObjectMetadata() {
         return objectMetadata;
     }
 
     /**
-     * Set object properties.
+     * 设置对象的属性
      * 
-     * @param objectMetadata Object properties
+     * @param objectMetadata 对象的属性
      */
     public void setObjectMetadata(ObjectMetadata objectMetadata) {
         this.objectMetadata = objectMetadata;

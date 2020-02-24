@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.text.SimpleDateFormat;
@@ -21,7 +21,7 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Request parameters of policy-based temporary access authorization
+ * 带策略的临时授权访问的请求参数
  *
  */
 public class PolicyTempSignatureRequest extends AbstractTemporarySignatureRequest{
@@ -36,21 +36,21 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Constructor
-     * @param method HTTP/HTTPS request method
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造方法
+     * @param method HTTP/HTTPS请求方法
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey) {
         super(method, bucketName, objectKey);
     }
 
     /**
-     * Constructor
-     * @param method HTTP/HTTPS request method
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param expiryDate Expiration data
+     * 构造方法
+     * @param method HTTP/HTTPS请求方法
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param expiryDate 有效截止日期
      */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey, Date expiryDate) {
         super(method, bucketName, objectKey);
@@ -58,11 +58,11 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Constructor
-     * @param method HTTP/HTTPS request method
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param expires Validity period
+     * 构造方法
+     * @param method HTTP/HTTPS请求方法
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param expires 有效时间
      */
     public PolicyTempSignatureRequest(HttpMethodEnum method, String bucketName, String objectKey, long expires) {
         super(method, bucketName, objectKey);
@@ -70,7 +70,7 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Generate a policy based on the validity period and policy condition.
+     * 根据有效期和策略条件生成策略
      * @return
      */
     public String generatePolicy() {
@@ -92,8 +92,8 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
 
 
     /**
-     * Set the expiration date.
-     * @return Expiration date
+     * 设置有效截止日期
+     * @return 有效截止日期
      */
     public Date getExpiryDate()
     {
@@ -101,8 +101,8 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Obtain the expiration date.
-     * @param expiryDate Expiration date
+     * 获取有效截止日期
+     * @param expiryDate 有效截止日期
      */
     public void setExpiryDate(Date expiryDate)
     {
@@ -110,8 +110,8 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Obtain the validity period. The default value is 5 minutes (300 seconds).
-     * @return Validity period
+     * 获取有效时间，默认值为5分钟（300）
+     * @return 有效时间
      */
     public long getExpires()
     {
@@ -119,8 +119,8 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
     
     /**
-     * Set the validity period (seconds).
-     * @param expires Validity period
+     * 设置有效时间，单位：秒
+     * @param expires 有效时间
      */
     public void setExpires(long expires)
     {
@@ -128,16 +128,16 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     }
 
     /**
-     * Obtain the condition set of the policy.
-     * @return Policy condition set
+     * 获取策略的条件集合
+     * @return 策略条件集合
      */
     public List<PolicyConditionItem> getConditions() {
         return conditions;
     }
 
     /**
-     * Set the condition set of the policy.
-     * @param conditions Policy condition set
+     * 设置策略的条件集合
+     * @param conditions 策略条件集合
      */
     public void setConditions(List<PolicyConditionItem> conditions) {
         this.conditions = conditions;

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parameters in a request for setting object properties
+ * 设置对象属性的请求参数
  */
 public class SetObjectMetadataRequest{
 	
@@ -41,9 +41,9 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
     public SetObjectMetadataRequest(String bucketName, String objectKey)
     {
@@ -52,10 +52,10 @@ public class SetObjectMetadataRequest{
     }
 
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param versionId 对象的版本号
      */
     public SetObjectMetadataRequest(String bucketName, String objectKey, String versionId)
     {
@@ -67,8 +67,8 @@ public class SetObjectMetadataRequest{
 
     
     /**
-     * Obtain the bucket name.
-     * @return Bucket name
+     * 获取桶名
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -76,8 +76,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Set the bucket name.
-     * @param bucketName Bucket name 
+     * 设置桶名
+     * @param bucketName 桶名 
      */
     public void setBucketName(String bucketName)
     {
@@ -85,8 +85,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the object name.
-     * @return Object name
+     * 获取对象名
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -94,8 +94,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Set the object name.
-     * @param objectKey Object name
+     * 设置对象名
+     * @param objectKey 对象名
      */
     public void setObjectKey(String objectKey)
     {
@@ -103,8 +103,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the object version ID.
-     * @return Version ID of the object
+     * 获取对象版本号
+     * @return 对象版本号
      */
     public String getVersionId()
     {
@@ -112,8 +112,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Set the version ID of the object. 
-     * @param versionId Version ID of the object
+     * 设置对象版本号
+     * @param versionId 对象版本号
      */
     public void setVersionId(String versionId)
     {
@@ -121,9 +121,9 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Set the redirection link which can redirect the request to another object in the bucket or to an external URL.
+     * 设置对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
      * 
-     * @return Redirection link
+     * @return 重定向链接
      */
     public String getWebSiteRedirectLocation()
     {
@@ -131,9 +131,9 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * 获取对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
      * 
-     * @param webSiteRedirectLocation Redirection link
+     * @param webSiteRedirectLocation 重定向链接
      */
     public void setWebSiteRedirectLocation(String webSiteRedirectLocation)
     {
@@ -141,8 +141,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the object storage class. 
-     * @return Object storage class
+     * 获取对象的存储类型
+     * @return 对象的存储类型
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -150,8 +150,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Set the object storage class. 
-     * @param storageClass Object storage class
+     * 设置对象的存储类型
+     * @param storageClass 对象的存储类型
      */
     public void setObjectStorageClass(StorageClassEnum storageClass)
     {
@@ -159,35 +159,35 @@ public class SetObjectMetadataRequest{
     }
 
     /**
-     * Specify whether to delete not specified properties. The default value is "false." 
-     * true: Use properties set in the request parameters to overwrite the existing property values. Properties not specified in the request will be deleted.
-     * false: Use properties set in the request parameters to overwrite the existing property values. For properties not specified in the request, their existing values are retained.
-     * @return Identifier specifying whether to delete not specified properties
+     * 判断是否删除未指定属性， 默认为false
+     * true：       使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性删除
+     * false：   使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性保持不变
+     * @return 是否删除未指定属性标识
      */
 	public boolean isRemoveUnset() {
 		return removeUnset;
 	}
 
 	/**
-	 * Specify whether to delete not specified properties.
-	 * @param removeUnset Identifier specifying whether to delete not specified properties
+	 * 设置是否删除未指定属性
+	 * @param removeUnset 是否删除未指定属性标识
 	 */
 	public void setRemoveUnset(boolean removeUnset) {
 		this.removeUnset = removeUnset;
 	}
 	
     /**
-     * Add customized metadata for an object.
-     * @param key Keyword of the customized metadata
-     * @param value Value of the customized metadata
+     * 新增对象的自定义元数据
+     * @param key 自定义元数据的关键字
+     * @param value 自定义元数据的值
      */
     public void addUserMetadata(String key, String value){
         getMetadata().put(key, value);
     }
     
     /**
-     * Add customized metadata for a group of objects.
-     * @param userMetadata Customized metadata for a group of objects
+     * 新增一组对象的自定义元数据
+     * @param userMetadata 一组对象的自定义元数据
      */
     public void addAllUserMetadata(Map<String, String> userMetadata) {
     	if(userMetadata != null) {
@@ -196,17 +196,17 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the customized metadata of an object.
-     * @param key Keyword of the customized metadata
-     * @return Value of the customized metadata
+     * 获取对象的自定义元数据
+     * @param key 自定义元数据的关键字
+     * @return 自定义元数据的值
      */
     public Object getUserMetadata(String key){
         return getMetadata().get(key);
     }
     
     /**
-     * Obtain the rewritten "Content-Type" header in the response.
-     * @return "Content-Type" header in the response
+     * 获取重写响应中的Content-Type头
+     * @return 响应中的Content-Type头
      */
     public String getContentType()
     {
@@ -214,8 +214,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Content-Type" header in the response.
-     * @param contentType "Content-Type" header in the response
+     * 设置重写响应中的Content-Type头
+     * @param contentType 响应中的Content-Type头
      */
     public void setContentType(String contentType)
     {
@@ -223,8 +223,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the rewritten "Content-Language" header in the response.
-     * @return "Content-Language" header in the response
+     * 获取重写响应中的Content-Language头
+     * @return 响应中的Content-Language头
      */
     public String getContentLanguage()
     {
@@ -232,8 +232,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Content-Language" header in the response.
-     * @param contentLanguage "Content-Language" header in the response
+     * 设置重写响应中的Content-Language头
+     * @param contentLanguage 响应中的Content-Language头
      */
     public void setContentLanguage(String contentLanguage)
     {
@@ -241,8 +241,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the rewritten "Expires" header in the response.
-     * @return "Expires" header in the response
+     * 获取重写响应中的Expires头
+     * @return 响应中的Expires头
      */
     public String getExpires()
     {
@@ -250,8 +250,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Expires" header in the response.
-     * @param expires Rewritten "Expires" header in the response
+     * 设置重写响应中的Expires头
+     * @param expires 响应中的Expires头
      */
     public void setExpires(String expires)
     {
@@ -259,8 +259,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the rewritten "Cache-Control" header in the response.
-     * @return "Cache-Control" header in the response
+     * 获取重写响应中的Cache-Control头
+     * @return 响应中的Cache-Control头
      */
     public String getCacheControl()
     {
@@ -268,8 +268,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Cache-Control" header in the response.
-     * @param cacheControl "Cache-Control" header in the response
+     * 设置重写响应中的Cache-Control头
+     * @param cacheControl 响应中的Cache-Control头
      */
     public void setCacheControl(String cacheControl)
     {
@@ -277,8 +277,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the rewritten "Content-Disposition" header in the response.
-     * @return "Content-Disposition" header in the response
+     * 获取重写响应中的Content-Disposition头
+     * @return 响应中的Content-Disposition头
      */
     public String getContentDisposition()
     {
@@ -286,8 +286,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Content-Disposition" header in the response.
-     * @param contentDisposition "Content-Disposition" header in the response
+     * 设置重写响应中的Content-Disposition头
+     * @param contentDisposition 响应中的Content-Disposition头
      */
     public void setContentDisposition(String contentDisposition)
     {
@@ -295,8 +295,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Obtain the rewritten "Content-Encoding" header in the response.
-     * @return "Content-Encoding" header in the response
+     * 获取重写响应中的Content-Encoding头
+     * @return 响应中的Content-Encoding头
      */
     public String getContentEncoding()
     {
@@ -304,8 +304,8 @@ public class SetObjectMetadataRequest{
     }
     
     /**
-     * Rewrite the "Content-Encoding" header in the response.
-     * @param contentEncoding "Content-Encoding" header in the response
+     * 设置重写响应中的Content-Encoding头
+     * @param contentEncoding 响应中的Content-Encoding头
      */
     public void setContentEncoding(String contentEncoding)
     {
@@ -330,5 +330,3 @@ public class SetObjectMetadataRequest{
 	}
 
 }
-
-

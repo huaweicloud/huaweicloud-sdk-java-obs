@@ -16,23 +16,23 @@ package com.obs.services.model;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * Parameters in a file upload request
+ * 上传文件的请求参数
  */
 public class UploadFileRequest extends PutObjectBasicRequest {
 	
-    // Part size, in bytes. The default value is 9 MB.
+    // 分片大小，单位字节，默认9MB
     private long partSize = 1024 * 1024 * 9l;
-    // Number of threads for uploading parts. The default value is 1.
+    // 分片上传线程数，默认1
     private int taskNum = 1;
-   
+    // 需要上传的本地文件
     private String uploadFile;
-   
+    // 是否开启断点续传
     private boolean enableCheckpoint = false;
-    
+    // 断点续传时保存分片上传的信息的本地文件
     private String checkpointFile;
-    
+    // 上传对象的元数据
     private ObjectMetadata objectMetadata;
-    
+    // 是否checkSum 保证数据一致性
     private boolean enableCheckSum = false;
     
     private ProgressListener progressListener;
@@ -40,9 +40,9 @@ public class UploadFileRequest extends PutObjectBasicRequest {
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
      */
 	public UploadFileRequest(String bucketName, String objectKey) {
 		this.bucketName = bucketName;
@@ -50,11 +50,11 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 待上传的本地文件
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile) {
 		this(bucketName, objectKey);
@@ -62,12 +62,12 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
-	 * @param partSize Part size
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 待上传的本地文件
+	 * @param partSize 上传时的分段大小
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize) {
 		this(bucketName, objectKey, uploadFile);
@@ -75,13 +75,13 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
-	 * @param partSize Part size
-	 * @param taskNum Maximum number of threads used for processing upload tasks concurrently
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 待上传的本地文件
+	 * @param partSize 上传时的分段大小
+	 * @param taskNum 用于并发执行上传任务的最大线程数
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize,int taskNum) {
 		this(bucketName, objectKey, uploadFile, partSize);
@@ -89,14 +89,14 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
-     * @param partSize Part size
-     * @param taskNum Maximum number of threads used for processing upload tasks concurrently
-	 * @param enableCheckpoint Whether to enable the resumable mode
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 待上传的本地文件
+     * @param partSize 上传时的分段大小
+     * @param taskNum 用于并发执行上传任务的最大线程数
+	 * @param enableCheckpoint 是否开启断点续传模式
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize, int taskNum,
 			boolean enableCheckpoint) {
@@ -105,15 +105,15 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
-     * @param partSize Part size
-     * @param taskNum Maximum number of threads used for processing upload tasks concurrently
-     * @param enableCheckpoint Whether to enable the resumable mode
-	 * @param checkpointFile File used to record resumable upload progresses
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 待上传的本地文件
+     * @param partSize 上传时的分段大小
+     * @param taskNum 用于并发执行上传任务的最大线程数
+     * @param enableCheckpoint 是否开启断点续传模式
+	 * @param checkpointFile 断点续传模式下，记录上传进度的文件
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize, int taskNum,
 			boolean enableCheckpoint, String checkpointFile) {
@@ -126,16 +126,16 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 
 	/**
-	 * Constructor
+	 * 构造函数
 	 * 
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param uploadFile To-be-uploaded local file
-     * @param partSize Part size
-     * @param taskNum Maximum number of threads used for processing upload tasks concurrently
-     * @param enableCheckpoint Whether to enable the resumable mode
-     * @param checkpointFile File used to record resumable upload progresses
-	 * @param enableCheckSum Whether to verify the to-be-uploaded file upon non-initial uploads in resumable upload mode
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param uploadFile 需上传的本地文件
+     * @param partSize 上传时的分段大小
+     * @param taskNum 用于并发执行上传任务的最大线程数
+     * @param enableCheckpoint 是否开启断点续传模式
+     * @param checkpointFile 断点续传模式下，记录上传进度的文件
+	 * @param enableCheckSum 断点续传模式下，非首次上传时是否校验待上传文件的内容
 	 */
 	public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize, int taskNum,
 			boolean enableCheckpoint, String checkpointFile, boolean enableCheckSum) {
@@ -144,18 +144,18 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Obtain the part size set for uploading the object.
+	 * 获取上传时的分段大小
 	 * 
-	 * @return Part size
+	 * @return 上传时的分段大小
 	 */ 
 	public long getPartSize() {
 		return partSize;
 	}
 
 	/**
-	 * Set the part size for uploading the object.
+	 * 设置上传时的分段大小
 	 * 
-	 * @param partSize Part size
+	 * @param partSize 上传时的分段大小
 	 */
 	public void setPartSize(long partSize) {
 		if (partSize < 100 * 1024l) {
@@ -168,18 +168,18 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 
 	/**
-	 * Obtain the maximum number of threads used for processing upload tasks concurrently.
+	 * 获取用于并发执行上传任务的最大线程数
 	 * 
-	 * @return Maximum number of threads used for processing upload tasks concurrently
+	 * @return 用于并发执行上传任务的最大线程数
 	 */
 	public int getTaskNum() {
 		return taskNum;
 	}
 
 	/**
-	 * Set the maximum number of threads used for executing upload tasks concurrently.
+	 * 设置用于并发执行上传任务的最大线程数
 	 * 
-	 * @param taskNum Maximum number of threads used for processing upload tasks concurrently
+	 * @param taskNum 用于并发执行上传任务的最大线程数
 	 */
 	public void setTaskNum(int taskNum) {
 		if (taskNum < 1) {
@@ -192,122 +192,122 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Obtain the to-be-uploaded local file.
+	 * 获取待上传的本地文件
 	 * 
-	 * @return To-be-uploaded local file
+	 * @return 待上传的本地文件
 	 */
 	public String getUploadFile() {
 		return uploadFile;
 	}
 
 	/**
-	 * Specify the local file to be uploaded.
+	 * 设置待上传的本地文件
 	 * 
-	 * @param uploadFile To-be-uploaded local file
+	 * @param uploadFile 待上传的本地文件
 	 */
 	public void setUploadFile(String uploadFile) {
 		this.uploadFile = uploadFile;
 	}
 
 	/**
-	 * Identify whether the resumable mode is enabled.
+	 * 判断是否开启断点续传模式
 	 * 
-	 * @return Identifier specifying whether the resumable mode is enabled
+	 * @return 是否开启断点续传模式标识
 	 */
 	public boolean isEnableCheckpoint() {
 		return enableCheckpoint;
 	}
 
 	/**
-	 * Specify whether to enable the resumable mode.
+	 * 设置是否开启断点续传模式
 	 * 
-	 * @param enableCheckpoint Identifier specifying whether the resumable mode is enabled
+	 * @param enableCheckpoint 是否开启断点续传模式标识
 	 */
 	public void setEnableCheckpoint(boolean enableCheckpoint) {
 		this.enableCheckpoint = enableCheckpoint;
 	}
 
 	/**
-	 * Obtain the file used to record resumable upload progresses.
+	 * 获取断点续传模式下，记录上传进度的文件
 	 * 
-	 * @return File used to record upload progresses
+	 * @return 记录上传进度的文件
 	 */
 	public String getCheckpointFile() {
 		return checkpointFile;
 	}
 
 	/**
-	 * Specify a file used to record resumable upload progresses. 
+	 * 设置断点续传模式下，记录上传进度的文件
 	 * 
-	 * @param checkpointFile File used to record upload progresses
+	 * @param checkpointFile 记录上传进度的文件
 	 */
 	public void setCheckpointFile(String checkpointFile) {
 		this.checkpointFile = checkpointFile;
 	}
 
 	/**
-	 * Obtain object properties.
+	 * 获取对象的属性
 	 * 
-	 * @return Object properties
+	 * @return 对象的属性
 	 */
 	public ObjectMetadata getObjectMetadata() {
 		return objectMetadata;
 	}
 	
 	/**
-	 * Set object properties.
+	 * 设置对象的属性
 	 * 
-	 * @param objectMetadata Object properties
+	 * @param objectMetadata 对象的属性
 	 */
 	public void setObjectMetadata(ObjectMetadata objectMetadata) {
 		this.objectMetadata = objectMetadata;
 	}
 
 	/**
-	 * Identify whether the file to be uploaded in resumable mode will be verified.
+	 * 判断断点续传模式下，是否校验待上传文件的内容
 	 * 
-	 * @return Identifier specifying whether to verify the to-be-uploaded file
+	 * @return 是否校验待上传文件的内容标识
 	 */
 	public boolean isEnableCheckSum() {
 		return enableCheckSum;
 	}
 
 	/**
-	 * Specify whether to verify the file to be uploaded in resumable mode.
+	 * 设置断点续传模式下，是否校验待上传文件的内容
 	 * 
-	 * @param enableCheckSum Identifier specifying whether to verify the to-be-uploaded file
+	 * @param enableCheckSum 是否校验待上传文件的内容标识
 	 */
 	public void setEnableCheckSum(boolean enableCheckSum) {
 		this.enableCheckSum = enableCheckSum;
 	}
 	
 	/**
-	 * Obtain the data transfer listener.
-	 * @return Data transfer listener
+	 * 获取数据传输监听器
+	 * @return 数据传输监听器
 	 */
 	public ProgressListener getProgressListener() {
 		return progressListener;
 	}
 
 	/**
-	 * Set the data transfer listener.
-	 * @param progressListener Data transfer listener
+	 * 设置数据传输监听器
+	 * @param progressListener 数据传输监听器
 	 */
 	public void setProgressListener(ProgressListener progressListener) {
 		this.progressListener = progressListener;
 	}
 	
 	/**
-	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @return Callback threshold of the data transfer listener
+	 * 获取数据传输监听器回调的阈值，默认为100KB
+	 * @return 数据传输监听器回调的阈值
 	 */
 	public long getProgressInterval() {
 		return progressInterval;
 	}
 	
 	/**
-	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @param progressInterval Callback threshold of the data transfer listener
+	 * 设置数据传输监听器回调的阈值，默认为100KB
+	 * @param progressInterval 数据传输监听器回调的阈值
 	 */
 	public void setProgressInterval(long progressInterval) {
 		this.progressInterval = progressInterval;

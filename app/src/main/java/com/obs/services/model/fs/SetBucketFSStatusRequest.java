@@ -14,7 +14,7 @@
 package com.obs.services.model.fs;
 
 /**
- * Parameters in a request for setting status of the file gateway feature for a bucket 
+ * 设置桶的文件网关特性状态的请求参数
  *
  */
 public class SetBucketFSStatusRequest {
@@ -28,9 +28,9 @@ public class SetBucketFSStatusRequest {
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param status Status of the file gateway feature
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param status 桶的文件网关特性状态
 	 */
 	public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
 		super();
@@ -39,32 +39,32 @@ public class SetBucketFSStatusRequest {
 	}
 
 	/**
-	 * Obtain the bucket name.
-	 * @return Bucket name
+	 * 获取桶名
+	 * @return 桶名
 	 */
 	public String getBucketName() {
 		return bucketName;
 	}
 
 	/**
-	 * Set the bucket name.
-	 * @param bucketName Bucket name
+	 * 设置桶名
+	 * @param bucketName 桶名
 	 */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	 * Obtain the status of the file gateway feature of a bucket. 
-	 * @return Status of the file gateway feature 
+	 * 获取桶的文件网关特性状态
+	 * @return 桶的文件网关特性状态
 	 */
 	public FSStatusEnum getStatus() {
 		return status;
 	}
 
 	/**
-	 * Set status of the file gateway feature for a bucket. 
-	 * @param status Status of the file gateway feature
+	 * 设置桶的文件网关特性状态
+	 * @param status 桶的文件网关特性状态
 	 */
 	public void setStatus(FSStatusEnum status) {
 		this.status = status;
@@ -73,5 +73,3 @@ public class SetBucketFSStatusRequest {
 
 	
 }
-
-

@@ -16,11 +16,9 @@ package com.obs.services.model.fs;
 import com.obs.services.model.HeaderResponse;
 
 /**
- * Response to a request for truncating a file 
+ * 截断文件的响应结果 
  *
  */
 public class TruncateFileResult extends HeaderResponse{
 
 }
-
-

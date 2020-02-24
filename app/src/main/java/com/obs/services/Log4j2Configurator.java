@@ -22,7 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Log configuration class integrated with Log4j2 
+ * 集成Log4j2的日志配置类 
  *
  */
 public class Log4j2Configurator {
@@ -32,17 +32,17 @@ public class Log4j2Configurator {
 	private static volatile boolean log4j2Enabled = false;
 	
 	/**
-	 * Configure logs.
-	 * @param configPath Path to the log configuration file
+	 * 配置日志
+	 * @param configPath 日志配置文件路径
 	 */
 	public static synchronized void setLogConfig(String configPath) {
 		setLogConfig(configPath, false);
 	}
 	
 	/**
-	 * Configure logs.
-	 * @param configPath Path to the log configuration file
-	 * @param isWatchConfig Whether to monitor changes of the log configuration file
+	 * 配置日志
+	 * @param configPath 日志配置文件路径
+	 * @param isWatchConfig 是否监控日志配置文件变化
 	 */
 	public static synchronized void setLogConfig(String configPath, boolean isWatchConfig) {
 		setLogConfig(configPath, isWatchConfig, 60000);
@@ -104,10 +104,10 @@ public class Log4j2Configurator {
 	}
 	
 	/**
-	 * Configure logs.
-	 * @param configPath Path to the log configuration file
-	 * @param isWatchConfig Whether to monitor changes of the log configuration file
-	 * @param watchInterval Interval for monitoring changes of the log configuration file, in units of ms
+	 * 配置日志
+	 * @param configPath 日志配置文件路径
+	 * @param isWatchConfig 是否监控日志配置文件变化
+	 * @param watchInterval 监控日志配置文件变化的时间间隔，单位毫秒
 	 */
 	public static synchronized void setLogConfig(String configPath, boolean isWatchConfig, long watchInterval) {
 		if(log4j2Enabled) {
@@ -128,5 +128,3 @@ public class Log4j2Configurator {
 	}
 
 }
-
-

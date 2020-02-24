@@ -1,17 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.Date;
@@ -19,7 +18,7 @@ import java.util.Date;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Multipart upload
+ * 分段上传任务
  */
 public class MultipartUpload
 {
@@ -62,9 +61,9 @@ public class MultipartUpload
 
 
 	/**
-     * Creator of the multipart upload
+     * 获取分段上传任务的创建者
      * 
-     * @return Creator of the multipart upload
+     * @return 获取分段上传任务的创建者
      */
     public Owner getInitiator()
     {
@@ -73,9 +72,9 @@ public class MultipartUpload
     
     
     /**
-     * Query the creator of the multipart upload.
+     * 获取分段上传任务的所有者
      * 
-     * @return Owner of the multipart upload
+     * @return 分段上传任务的所有者
      */
     public Owner getOwner()
     {
@@ -84,9 +83,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the multipart upload ID.
+     * 获取分段上传任务的ID号
      * 
-     * @return Multipart upload ID
+     * @return 分段上传任务的ID号
      */
     public String getUploadId()
     {
@@ -95,9 +94,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
+     * 获取分段上传任务所属的桶名
      * 
-     * @return Name of the bucket to which the multipart upload belongs
+     * @return 分段上传任务所属的桶名
      */
     public String getBucketName()
     {
@@ -110,9 +109,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the name of the object involved in the multipart upload.
+     * 获取分段上传任务所属的对象名
      * 
-     * @return Name of the object involved in the multipart upload
+     * @return 分段上传任务所属的对象名
      */
     public String getObjectKey()
     {
@@ -121,9 +120,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the storage class of the object generated via the multipart upload.
+     * 获取分段上传任务最终生成对象的存储类别
      * 
-     * @return Storage class of the object generated via the multipart upload
+     * @return 分段上传任务最终生成对象的存储类别
      */
     @Deprecated
     public String getStorageClass()
@@ -133,9 +132,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the storage class of the object generated via the multipart upload.
+     * 获取分段上传任务最终生成对象的存储类别
      * 
-     * @return Storage class of the object generated via the multipart upload
+     * @return 分段上传任务最终生成对象的存储类别
      */
     public StorageClassEnum getObjectStorageClass()
     {
@@ -144,9 +143,9 @@ public class MultipartUpload
     
     
     /**
-     * Obtain the creation time of the multipart upload.
+     * 获取分段上传任务的创建时间
      * 
-     * @return Creation time of the multipart upload
+     * @return 分段上传任务的创建时间
      */
     public Date getInitiatedDate()
     {
@@ -155,5 +154,3 @@ public class MultipartUpload
     
     
 }
-
-

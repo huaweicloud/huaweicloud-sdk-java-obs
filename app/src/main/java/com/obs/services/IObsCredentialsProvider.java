@@ -16,7 +16,7 @@ package com.obs.services;
 import com.obs.services.model.ISecurityKey;
 
 /**
- * AK/SK Provider
+ * AK/SK管理接口
  */
 public interface IObsCredentialsProvider {
     public void setSecurityKey(ISecurityKey securityKey);

@@ -16,7 +16,7 @@ package com.obs.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Response to the request for reading ahead objects
+ * 预读对象请求的响应结果
  *
  */
 public class ReadAheadResult extends HeaderResponse {
@@ -30,17 +30,17 @@ public class ReadAheadResult extends HeaderResponse {
 	private String taskId;
     
     /**
-     * Constructor
+     * 构造函数
      */
     public ReadAheadResult() {
     	
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param prefix Name prefix of objects to be read ahead
-     * @param taskId ID of the read-ahead task
+     * 构造函数
+     * @param bucketName 桶名
+     * @param prefix 预读对象的对象名前缀
+     * @param taskId 预读任务ID
      */
     public ReadAheadResult(String bucketName, String prefix, String taskId) {
     	this.bucketName = bucketName;
@@ -49,48 +49,48 @@ public class ReadAheadResult extends HeaderResponse {
     }
     
     /**
-                  * Obtain the bucket name. 
-     * @return Bucket name
+                  * 获取桶名 
+     * @return 桶名
      */
     public String getBucketName() {
 		return bucketName;
 	}
 
     /**
-                 * Set the bucket name.
-     * @param bucketName Bucket name
+                 * 设置桶名
+     * @param bucketName 桶名
      */
 	public void setBucketName(String bucketName) {
 		this.bucketName = bucketName;
 	}
 
 	/**
-	    * Obtain the name prefix of objects to be read ahead.
-	 * @return Name prefix of objects to be read ahead
+	    * 获取预读对象的对象名前缀
+	 * @return 预读对象的对象名前缀
 	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
 	/**
-	    * Set the name prefix of objects to be read ahead.
-	 * @param prefix Name prefix of objects to be read ahead
+	    * 设置预读对象的对象名前缀
+	 * @param prefix 预读对象的对象名前缀
 	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
 	/**
-	 * Obtain the ID of the read-ahead task.
-	 * @return ID of the read-ahead task
+	 * 获取预读任务ID
+	 * @return 预读任务ID
 	 */
 	public String getTaskId() {
 		return taskId;
 	}
 
 	/**
-	 * Set the ID of the read-ahead task.
-	 * @param taskId ID of the read-ahead task
+	 * 设置预读任务ID
+	 * @param taskId 预读任务ID
 	 */
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;

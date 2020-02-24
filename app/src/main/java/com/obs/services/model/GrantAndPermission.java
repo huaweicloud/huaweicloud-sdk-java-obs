@@ -1,21 +1,20 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Grantee or grantee group and permission information, {@link AccessControlList}
+ * ACL中被授权的用户/用户组及其对应的权限信息，{@link AccessControlList}
  */
 public class GrantAndPermission
 {
@@ -27,10 +26,10 @@ public class GrantAndPermission
     private boolean delivered;
     
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param grantee Grantee (group) name
-     * @param permission Permission information
+     * @param grantee 被授权的用户/用户组
+     * @param permission 权限信息
      */
     public GrantAndPermission(GranteeInterface grantee, Permission permission)
     {
@@ -39,9 +38,9 @@ public class GrantAndPermission
     }
     
     /**
-     * Obtain the grantee (group) information.
+     * 获取被授权的用户/用户组
      * 
-     * @return Grantee (group) information
+     * @return 被授权的用户/用户组
      */
     public GranteeInterface getGrantee()
     {
@@ -49,9 +48,9 @@ public class GrantAndPermission
     }
     
     /**
-     * Obtain the permission information.
+     * 获取权限信息
      * 
-     * @return Permission information
+     * @return 权限信息
      */
     public Permission getPermission()
     {
@@ -59,16 +58,16 @@ public class GrantAndPermission
     }
     
     /**
-     * Check whether the bucket ACL is deliverable.
-     * @return Identifier specifying whether the ACL is delivered
+     * 获取桶的ACL传递标识
+     * @return ACL传递标识
      */
 	public boolean isDelivered() {
 		return delivered;
 	}
 	
 	/**
-	 * Specify whether to deliver the bucket ACL. (This is only applicable to bucket ACLs.)
-	 * @param delivered Whether to deliver the bucket ACL
+	 * 设置桶的ACL传递标识，只对桶权限有效
+	 * @param delivered ACL传递标识
 	 */
 	public void setDelivered(boolean delivered) {
 		this.delivered = delivered;
@@ -118,5 +117,3 @@ public class GrantAndPermission
 	
     
 }
-
-

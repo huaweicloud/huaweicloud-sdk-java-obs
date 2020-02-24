@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * SSE-KMS encryption headers
+ * SSE-KMS加密头域信息
  */
 public class SseKmsHeader
 {
@@ -30,36 +30,36 @@ public class SseKmsHeader
     private String projectId;
     
     /**
-     * Obtain the project ID.
-     * @return projectId Project ID
+     * 获取项目ID
+     * @return projectId 项目ID
      */
     public String getProjectId() {
 		return projectId;
 	}
 
     /**
-     * Set the project ID.
-     * @param projectId Project ID
+     * 设置项目ID
+     * @param projectId 项目ID
      */
 	public void setProjectId(String projectId) {
 		this.projectId = projectId;
 	}
     
     /**
-     * Obtain the encryption algorithm type. Only kms is supported.
+     * 获取加密算法类型，目前仅支持kms
      * 
-     * @return Encryption algorithm type
+     * @return 加密算法类型
      */
     @Deprecated
     public ServerEncryption getEncryption()
     {
         return encryption;
     }
-    
+     
     /**
-     * Set the encryption algorithm type. Only kms is supported.
+     * 设置加密算法类型，目前仅支持kms
      * 
-     * @param encryption Encryption algorithm type
+     * @param encryption 加密算法类型
      */
     @Deprecated
     public void setEncryption(ServerEncryption encryption)
@@ -68,18 +68,18 @@ public class SseKmsHeader
     }
     
     /**
-     * Obtain the encryption algorithm type. Only KMS is supported.
+     * 获取加密算法类型，目前仅支持kms
      * 
-     * @return Encryption algorithm type
+     * @return 加密算法类型
      */
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }
     
     /**
-     * Obtain the master key used in the SSE-KMS mode. If the value is blank, the default master key will be used. 
+     * 获取SSE-KMS方式下使用的主密钥，可为空，如果为空，那么默认的主密钥将会被使用
      * 
-     * @return Master key used in the SSE-KMS mode
+     * @return SSE-KMS方式下使用的主密钥
      */
     public String getKmsKeyId()
     {
@@ -87,9 +87,9 @@ public class SseKmsHeader
     }
     
     /**
-     * Set the master key used in the SSE-KMS mode. If the value is blank, the default master key will be used. 
+     * 设置SSE-KMS方式下使用的主密钥，可为空，如果为空，那么默认的主密钥将会被使用
      * 
-     * @param kmsKeyId Master key used in the SSE-KMS mode
+     * @param kmsKeyId SSE-KMS方式下使用的主密钥
      */
     public void setKmsKeyId(String kmsKeyId)
     {

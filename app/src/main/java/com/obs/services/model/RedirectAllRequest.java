@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Redirection configuration for all requests
+ * 所有请求重定向的配置
  */
 public class RedirectAllRequest
 {
@@ -23,8 +23,8 @@ public class RedirectAllRequest
     private String hostName;
     
     /**
-     * Obtain the protocol used for redirecting requests.
-     * @return Protocol used for redirecting requests
+     * 获取重定向请求时使用的协议
+     * @return 重定向请求时使用的协议
      * @see #getRedirectProtocol()
      */
     @Deprecated
@@ -34,8 +34,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * Set the protocol used for redirecting requests.
-     * @param protocol Protocol used for redirecting requests
+     * 设置重定向请求时使用的协议
+     * @param protocol 重定向请求时使用的协议
      * @see #setRedirectProtocol(ProtocolEnum protocol)
      */
     @Deprecated
@@ -45,8 +45,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * Obtain the protocol used for redirecting requests.
-     * @return Protocol used for redirecting requests
+     * 获取重定向请求时使用的协议
+     * @return 重定向请求时使用的协议
      */
     public ProtocolEnum getRedirectProtocol()
     {
@@ -54,8 +54,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * Set the protocol used for redirecting requests.
-     * @param protocol Protocol used for redirecting requests
+     * 设置重定向请求时使用的协议
+     * @param protocol 重定向请求时使用的协议
      */
     public void setRedirectProtocol(ProtocolEnum protocol)
     {
@@ -63,8 +63,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * Obtain the host name used for redirecting requests.
-     * @return Host name used for redirecting requests
+     * 获取重定向请求时使用的主机名
+     * @return 重定向请求时使用的主机名
      */
     public String getHostName()
     {
@@ -72,8 +72,8 @@ public class RedirectAllRequest
     }
     
     /**
-     * Set the host name used for redirecting requests.
-     * @param hostName Host name used for redirecting requests
+     * 设置重定向请求时使用的主机名
+     * @param hostName 重定向请求时使用的主机名
      */
     public void setHostName(String hostName)
     {
@@ -87,5 +87,3 @@ public class RedirectAllRequest
     }
     
 }
-
-

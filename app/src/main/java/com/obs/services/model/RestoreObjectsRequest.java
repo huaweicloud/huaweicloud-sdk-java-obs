@@ -16,9 +16,9 @@ package com.obs.services.model;
 import java.util.List;
 
 /**
- * Request parameters of restoring Archive objects in a batch.
- * The "prefix" and "keyAndVersions" parameters cannot be set in the same request.
- * If both parameters are empty, all Archive objects in the bucket are restored.
+ * 批量取回归档存储对象请求参数
+ * 在一个请求中不能同时设置prefix和keyAndVersions参数
+ * 如果两个参数都为空，则取回桶中的所有归档存储对象
  */
 public class RestoreObjectsRequest extends AbstractBulkRequest{
     
@@ -39,20 +39,20 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     }
 
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public RestoreObjectsRequest(String bucketName) {
         super(bucketName);
     }
 
     /**
-     * Constructor
+     * 构造函数
      * 
-     * @param bucketName     Bucket name
-     * @param days           Retention period of the restored objects
-     * @param tier           Restore option
+     * @param bucketName     桶名
+     * @param days           对象取回后保存时间
+     * @param tier           取回选项
      */
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier) {
         super(bucketName);
@@ -62,102 +62,102 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     
 
     /**
-     * Obtain the retention period of the restored objects. The value ranges from 1 to 30 (in days).
+     * 获取对象取回后保存时间，单位：天，最小值为1，最大值为30
      * 
-     * @return Retention period of the restored objects
+     * @return 对象取回后保存时间
      */
     public int getDays() {
         return days;
     }
 
     /**
-     * Set the retention period of the restored objects. The value ranges from 1 to 30 (in days).
+     * 设置对象取回后保存时间，单位：天，最小值为1，最大值为30
      * 
-     * @param days Retention period of the restored objects
+     * @param days 对象取回后保存时间
      */
     public void setDays(int days) {
         this.days = days;
     }
 
     /**
-     * Obtain the restore option.
+     * 获取取回选项.
      * 
-     * @return Restore option
+     * @return 取回选项
      */
     public RestoreTierEnum getRestoreTier() {
         return tier;
     }
 
     /**
-     * Set the restore option.
+     * 设置取回选项.
      * 
-     * @param tier Restore option
+     * @param tier 取回选项
      */
     public void setRestoreTier(RestoreTierEnum tier) {
         this.tier = tier;
     }
 
     /**
-     * Set the name prefix of the objects to be restored in a batch.
+     * 设置批量取回的对象名前缀
      * 
-     * @param prefix Object name prefix
+     * @param prefix 对象名前缀
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
     /**
-     * Obtain the name prefix of the objects to be restored in a batch.
+     * 获取批量取回的对象名前缀
      * 
-     * @return Object name prefix
+     * @return 对象名前缀
      */
     public String getPrefix() {
         return prefix;
     }
     
     /**
-     * Obtain whether to restore all versions of Archive objects.
-     * The default value is "false", indicating that only latest versions of Archive objects are restored.
+     * 是否取回多版本归档存储对象
+     * 默认为false，只取回最新版本的归档存储对象
      * 
-     * @return Identifier of version restore
+     * @return 多版本标志取回标记
      */
     public boolean isVersionRestored() {
         return versionRestored;
     }
 
     /**
-     * Set whether to restore all versions of Archive objects.
+     * 设置是否取回多版本归档存储对象
      *
-     * @param versionRestored Identifier of version restore
+     * @param versionRestored 多版本标志取回标记
      */
     public void setVersionRestored(boolean versionRestored) {
         this.versionRestored = versionRestored;
     }
 
     /**
-     * Set the list of objects to be restored.
+     * 设置待取回对象列表
      * 
-     * @param keyAndVersions List of objects to be restored
+     * @param keyAndVersions 待取回对象列表
      */
     public void setKeyAndVersions(List<KeyAndVersion> keyAndVersions) {
         this.keyAndVersions = keyAndVersions;
     }
 
     /**
-     * Obtain the list of objects to be restored.
+     * 获取待取回对象列表
      * 
-     * @return List of objects to be restored
+     * @return 待取回对象列表
      */
     public List<KeyAndVersion> getKeyAndVersions() {
         return this.keyAndVersions;
     }
 
     /**
-     * Add an object to be restored.
+     * 新增待取回的对象
      * 
-     * @param objectKey Object name
-     * @param versionId Object version
-     * @return Object that has been added to be restored
+     * @param objectKey 对象名
+     * @param versionId 对象版本号
+     * @return 新增的待取回对象
      */
     public KeyAndVersion addKeyAndVersion(String objectKey, String versionId) {
         KeyAndVersion kv = new KeyAndVersion(objectKey, versionId);
@@ -166,28 +166,28 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     }
 
     /**
-     * Add an object to be restored.
+     * 新增待取回的对象
      * 
-     * @param objectKey Object name
-     * @return Object that has been added to be restored
+     * @param objectKey 对象名
+     * @return 新增的待取回对象
      */
     public KeyAndVersion addKeyAndVersion(String objectKey) {
         return this.addKeyAndVersion(objectKey, null);
     }
 
     /**
-     * Obtain the callback object of a batch task.
+     * 获取批量任务的回调对象
      * 
-     * @return Callback object
+     * @return 回调对象
      */
     public TaskCallback<RestoreObjectResult, RestoreObjectRequest> getCallback() {
         return callback;
     }
 
     /**
-     * Set the callback object of a batch task.
+     * 设置批量任务的回调对象
      * 
-     * @param callback Callback object
+     * @param callback 回调对象
      */
     public void setCallback(TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback) {
         this.callback = callback;

@@ -14,17 +14,17 @@
 package com.obs.services.model;
 
 /**
- * Server-side encryption types
+ * 服务端加密类型
  *
  */
 public enum SSEAlgorithmEnum {
     /**
-     * KMS encryption
+     * KMS 加密方式
      */
     KMS("kms"),
     
     /**
-     * AES256 encryption
+     * AES256 加密方式
      */
     AES256("AES256");
     

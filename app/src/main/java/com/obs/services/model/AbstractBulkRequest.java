@@ -16,7 +16,7 @@ package com.obs.services.model;
 import com.obs.services.internal.ObsConstraint;
 
 /**
- * Abstract class for request parameters of bulk tasks
+ * 批量任务请求参数抽象类
  *
  */
 public abstract class AbstractBulkRequest {
@@ -40,90 +40,90 @@ public abstract class AbstractBulkRequest {
     
 
     /**
-     * Obtain the bucket name.
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName() {
         return bucketName;
     }
 
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 
     /**
-     * Obtain the progress listener of the bulk task.
+     * 获取批量任务的进度监听器
      * 
-     * @return Progress listener
+     * @return 进度监听器
      */
     public TaskProgressListener getProgressListener() {
         return listener;
     }
 
     /**
-     * Set the progress listener of the bulk task.
+     * 设置批量任务的进度监听器
      * 
-     * @param listener Progress listener
+     * @param listener 进度监听器
      */
     public void setProgressListener(TaskProgressListener listener) {
         this.listener = listener;
     }
 
     /**
-     * Obtain the maximum number of concurrent bulk tasks. The default value is 10.
+     * 获取批量任务的最大并发数，默认为10
      * 
-     * @return Maximum number of threads
+     * @return 最大线程数
      */
     public int getTaskThreadNum() {
         return taskThreadNum;
     }
 
     /**
-     * Set the maximum number of concurrent bulk tasks. The default value is 10.
+     * 设置批量任务的最大并发数，默认为10
      * 
-     * @param taskThreadNum Maximum number of threads
+     * @param taskThreadNum 最大线程数
      */
     public void setTaskThreadNum(int taskThreadNum) {
         this.taskThreadNum = taskThreadNum;
     }
 
     /**
-     * Obtain the queue length of the bulk task. The default value is 20000.
+     * 获取批量任务的队列长度，默认为20000
      * 
-     * @return Length of the task queue
+     * @return 工作队列长度
      */
     public int getTaskQueueNum() {
         return taskQueueNum;
     }
 
     /**
-     * Set the task queue length of the thread pool in the bulk task. The default value is 20000.
+     * 设置批量任务中线程池的工作队列长度，默认为20000
      * 
-     * @param taskQueueNum Length of the task queue
+     * @param taskQueueNum 工作队列长度
      */
     public void setTaskQueueNum(int taskQueueNum) {
         this.taskQueueNum = taskQueueNum;
     }
 
     /**
-     * Obtain the callback threshold of the task progress listener. The default value is 50.
+     * 获取任务进度监听器回调的阈值，默认为50
      * 
-     * @return Callback threshold of the task progress listener
+     * @return 进度监听器回调的阈值
      */
     public int getProgressInterval() {
         return taskProgressInterval;
     }
 
     /**
-     * Set the callback threshold of the task progress listener. The default value is 50.
+     * 设置任务进度监听器回调的阈值，默认为50
      * 
-     * @param taskProgressInterval Callback threshold of the task progress listener
+     * @param taskProgressInterval 进度监听器回调的阈值
      */
     public void setProgressInterval(int taskProgressInterval) {
         if (taskProgressInterval <= 0) {

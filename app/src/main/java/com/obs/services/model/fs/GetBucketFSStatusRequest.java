@@ -16,7 +16,7 @@ package com.obs.services.model.fs;
 import com.obs.services.model.BucketMetadataInfoRequest;
 
 /**
- * Parameters in a request for obtaining status of the file gateway feature of the bucket
+ * 获取桶的文件网关特性状态的请求参数
  *
  */
 public class GetBucketFSStatusRequest extends BucketMetadataInfoRequest{
@@ -26,12 +26,10 @@ public class GetBucketFSStatusRequest extends BucketMetadataInfoRequest{
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
+	 * 构造函数
+	 * @param bucketName 桶名
 	 */
 	public GetBucketFSStatusRequest(String bucketName) {
 		this.bucketName = bucketName;
 	}
 }
-
-

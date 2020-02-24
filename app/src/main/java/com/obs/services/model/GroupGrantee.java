@@ -1,38 +1,37 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 /**
- * Grantee group information in the ACL, {@link AccessControlList}
+ * ACL中被授权用户组信息，{@link AccessControlList}
  */
 public class GroupGrantee implements GranteeInterface
 {
     
     /**
-     * Anonymous user group, indicating all users
+     * 匿名用户组，代表所有用户
      */
     public static final GroupGrantee ALL_USERS = new GroupGrantee(GroupGranteeEnum.ALL_USERS);
 
     /**
-     * OBS authorized user group, indicating all users who own OBS accounts
+     * OBS授权用户组，代表任何拥有OBS账户的用户
      */
     @Deprecated
     public static final GroupGrantee AUTHENTICATED_USERS = new GroupGrantee(GroupGranteeEnum.AUTHENTICATED_USERS);
 
     /**
-     * Log delivery group, indicating common users who can configure access logs
+     * 日志投递用户组，一般用户配置访问日志
      */
     @Deprecated
     public static final GroupGrantee LOG_DELIVERY = new GroupGrantee(GroupGranteeEnum.LOG_DELIVERY);
@@ -45,8 +44,8 @@ public class GroupGrantee implements GranteeInterface
     }
     
     /**
-     * Constructor
-     * @param uri URI for the grantee group
+     * 构造函数
+     * @param uri 代表被授权用户组的URI
      */
     public GroupGrantee(String uri)
     {
@@ -59,8 +58,8 @@ public class GroupGrantee implements GranteeInterface
     }
     
     /**
-     * Set the URI for the grantee group.
-     * @param uri URI for the grantee group
+     * 设置代表被授权用户组的URI
+     * @param uri 代表被授权用户组的URI
      */
     @Override
     public void setIdentifier(String uri)
@@ -69,9 +68,9 @@ public class GroupGrantee implements GranteeInterface
     }
     
     /**
-     * Obtain the URI of the grantee group.
+     * 获取代表被授权用户组的URI
      * 
-     * @return URI of the grantee group.
+     * @return 代表被授权用户组的URI
      */
     @Override
     public String getIdentifier()
@@ -80,8 +79,8 @@ public class GroupGrantee implements GranteeInterface
     }
     
     /**
-     * Obtain type of the grantee group.
-     * @return Type of the grantee group
+     * 获取被授权用户组的类型
+     * @return 被授权用户组的类型
      */
     public GroupGranteeEnum getGroupGranteeType() {
     	return this.groupGranteeType;
@@ -111,9 +110,9 @@ public class GroupGrantee implements GranteeInterface
 	}
 
 	/**
-     * Return the object description. 
+     * 返回对象描述信息
      * 
-     * @return Object description
+     * @return 返回对象描述字符串
      */
     @Override
     public String toString()
@@ -121,5 +120,3 @@ public class GroupGrantee implements GranteeInterface
         return "GroupGrantee [" + groupGranteeType + "]";
     }
 }
-
-

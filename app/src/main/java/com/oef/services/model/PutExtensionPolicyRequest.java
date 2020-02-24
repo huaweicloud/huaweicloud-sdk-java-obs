@@ -16,7 +16,7 @@ package com.oef.services.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Configure an asynchronous policy request in the JSON format.
+ * 配置异步策略请求json
  *
  */
 public class PutExtensionPolicyRequest {
@@ -34,48 +34,48 @@ public class PutExtensionPolicyRequest {
 	}
 
 	/**
-	 * Obtain the content of the asynchronous fetch policy.
-	 * @return Content of the asynchronous fetch policy
+	 * 获取异步抓取策略内容
+	 * @return 异步抓取策略内容
 	 */
 	public FetchBean getFetch() {
 		return fetch;
 	}
 
 	/**
-	 * Set the content of the asynchronous fetch policy.
-	 * @param fetch Content of the asynchronous fetch policy
+	 * 设置异步抓取策略内容
+	 * @param fetch 异步抓取策略内容
 	 */
 	public void setFetch(FetchBean fetch) {
 		this.fetch = fetch;
 	}
 
 	/**
-	 * Obtain the content of the asynchronous transcode policy.
-	 * @return Content of the asynchronous transcode policy
+	 * 获取异步转码策略内容
+	 * @return 异步转码策略内容
 	 */
 	public TranscodeBean getTranscode() {
 		return transcode;
 	}
 
 	/**
-	 * Set the content of the asynchronous transcode policy.
-	 * @param transcode Content of the asynchronous transcode policy
+	 * 设置异步转码策略内容
+	 * @param transcode 异步转码策略内容
 	 */
 	public void setTranscode(TranscodeBean transcode) {
 		this.transcode = transcode;
 	}
 
 	/**
-	 * Obtain the content of the file compression policy.
-	 * @return Content of the file compression policy
+	 * 获取文件压缩策略内容
+	 * @return 文件压缩策略内容
 	 */
 	public CompressBean getCompress() {
 		return compress;
 	}
 
 	/**
-	 * Set the content of the file compression policy.
-	 * @param compress Content of the file compression policy
+	 * 设置文件压缩策略内容
+	 * @param compress 文件压缩策略内容
 	 */
 	public void setCompress(CompressBean compress) {
 		this.compress = compress;

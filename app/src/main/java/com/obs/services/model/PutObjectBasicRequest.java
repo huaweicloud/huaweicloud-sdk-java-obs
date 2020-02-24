@@ -1,17 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
-
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.HashMap;
@@ -37,12 +36,11 @@ public abstract class PutObjectBasicRequest {
     protected SseKmsHeader sseKmsHeader;
     
     protected SseCHeader sseCHeader;
-    
-    
-    /**
-     * Obtain the bucket name.
+
+	/**
+     * 获取桶名
      * 
-     * @return Bucket name
+     * @return 桶名
      */
     public String getBucketName()
     {
@@ -50,9 +48,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Set the bucket name.
+     * 设置桶名
      * 
-     * @param bucketName Bucket name
+     * @param bucketName 桶名
      */
     public void setBucketName(String bucketName)
     {
@@ -60,9 +58,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Obtain the object name.
+     * 获取对象名
      * 
-     * @return Object name
+     * @return 对象名
      */
     public String getObjectKey()
     {
@@ -70,9 +68,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Set the object name.
+     * 设置对象名
      * 
-     * @param objectKey Object name
+     * @param objectKey 对象名
      *           
      */
     public void setObjectKey(String objectKey)
@@ -81,9 +79,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Obtain SSE-KMS encryption headers of the object. 
+     * 获取对象SSE-KMS加密头域信息
      * 
-     * @return SSE-KMS encryption headers
+     * @return SSE-KMS加密头域信息
      */
     public SseKmsHeader getSseKmsHeader()
     {
@@ -91,9 +89,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Set SSE-KMS encryption headers of the object. 
+     * 设置对象SSE-KMS加密头域信息
      * 
-     * @param sseKmsHeader SSE-KMS encryption headers
+     * @param sseKmsHeader SSE-KMS加密头域信息
      */
     public void setSseKmsHeader(SseKmsHeader sseKmsHeader)
     {
@@ -101,9 +99,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Obtain SSE-C encryption headers of the object. 
+     * 获取对象SSE-C加密头域信息
      * 
-     * @return SSE-C encryption headers
+     * @return SSE-C加密头域信息
      */
     public SseCHeader getSseCHeader()
     {
@@ -111,9 +109,9 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Set SSE-C encryption headers of the object. 
+     * 设置对象SSE-C加密头域信息
      * 
-     * @param sseCHeader SSE-C encryption headers
+     * @param sseCHeader SSE-C加密头域信息
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -121,8 +119,8 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Obtain the ACL of the object.
-     * @return Object ACL
+     * 获取对象的访问权限
+     * @return 对象的访问权限
      */
     public AccessControlList getAcl()
     {
@@ -130,8 +128,8 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-     * Set the object ACL.
-     * @param acl Bucket ACL
+     * 设置对象的访问权限
+     * @param acl 对象的访问权限
      */
     public void setAcl(AccessControlList acl)
     {
@@ -139,25 +137,25 @@ public abstract class PutObjectBasicRequest {
     }
     
     /**
-	 * Obtain the redirection address after a successfully responded request. 
-	 * @return Redirection address
+	 * 获取请求操作响应成功后的重定向地址
+	 * @return 重定向地址
 	 */
 	public String getSuccessRedirectLocation() {
 		return successRedirectLocation;
 	}
 
 	/**
-	 * Set the redirection address after a successfully responded request. 
-	 * @param successRedirectLocation Redirection address
+	 * 设置请求操作响应成功后的重定向地址
+	 * @param successRedirectLocation 重定向地址
 	 */
 	public void setSuccessRedirectLocation(String successRedirectLocation) {
 		this.successRedirectLocation = successRedirectLocation;
 	}
     
     /**
-	 * Grant the OBS extension permission to users.
-	 * @param domainId ID of the domain to which the user belongs
-	 * @param extensionPermissionEnum OBS extension permission
+	 * 为用户授予OBS扩展权限
+	 * @param domainId 用户的domainId
+	 * @param extensionPermissionEnum OBS扩展权限
 	 */
 	public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -172,9 +170,9 @@ public abstract class PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Withdraw the OBS extension permission. 
-	 * @param domainId ID of the domain to which the user belongs
-	 * @param extensionPermissionEnum OBS extension permission
+	 * 撤回用户的OBS扩展权限
+	 * @param domainId 用户的domainId
+	 * @param extensionPermissionEnum OBS扩展权限
 	 */
 	public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -188,8 +186,8 @@ public abstract class PutObjectBasicRequest {
 	}
 	
 	/**
-	 * Withdraw all OBS extension permissions. 
-	 * @param domainId ID of the domain to which the user belongs
+	 * 撤回用户的所有OBS扩展权限
+	 * @param domainId 用户的domainId
 	 */
 	public void withdrawExtensionPermissions(String domainId) {
 		if(ServiceUtils.isValid(domainId)) {
@@ -227,7 +225,7 @@ public abstract class PutObjectBasicRequest {
 		return grantPermissions;
 	}
 	
-	public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
+    public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
 		if(extensionPermissionMap == null) {
 			extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
 		}
@@ -241,5 +239,3 @@ public abstract class PutObjectBasicRequest {
 		this.extensionPermissionMap = extensionPermissionMap;
 	}
 }
-
-

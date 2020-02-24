@@ -14,13 +14,13 @@
 package com.obs.services.model;
 
 /**
- * SSE-C encryption algorithm
+ * SSE-C加密算法
  */
 @Deprecated
 public final class ServerAlgorithm
 {
     /**
-     * SSE-C supports only AES256.
+     * SSE-C目前只支持AES256算法
      */
     public static final ServerAlgorithm AES256 = new ServerAlgorithm("AES256");
     

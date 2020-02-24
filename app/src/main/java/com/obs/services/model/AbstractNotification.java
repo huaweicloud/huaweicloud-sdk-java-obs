@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 import com.obs.services.internal.ObsConvertor;
 
 /**
- * Abstract class for event notification configuration
+ * 消息通知配置抽象类
  *
  */
 public class AbstractNotification extends HeaderResponse
@@ -30,10 +30,10 @@ public class AbstractNotification extends HeaderResponse
     }
     
     /**
-     * Constructor
-     * @param id Event notification configuration ID
-     * @param filter Filtering rules
-     * @param events List of event types that need to be notified
+     * 构造函数
+     * @param id 消息通知配置ID
+     * @param filter 过滤规则组
+     * @param events 需要发布通知消息的事件类型列表
      */
     public AbstractNotification(String id, Filter filter, List<EventTypeEnum> events)
     {
@@ -49,7 +49,7 @@ public class AbstractNotification extends HeaderResponse
     protected List<EventTypeEnum> events;
     
     /**
-     * List of filtering rules configured for event notification
+     * 表示消息通知配置的过滤规则列表
      *
      */
     public static class Filter{
@@ -57,7 +57,7 @@ public class AbstractNotification extends HeaderResponse
         private List<FilterRule> filterRules;
         
         /**
-         * Filtering rules configured for event notification 
+         * 表示消息通知配置的过滤规则 
          *
          */
         public static class FilterRule{
@@ -71,9 +71,9 @@ public class AbstractNotification extends HeaderResponse
             }
             
             /**
-             * Constructor
-             * @param name Prefix or suffix of object names for filtering
-             * @param value Object name keyword in the filtering rule
+             * 构造函数
+             * @param name 指定过滤规则按对象名的前缀或后缀进行过滤
+             * @param value 规律规则中对象名关键字
              */
             public FilterRule(String name, String value){
                 this.name = name;
@@ -81,8 +81,8 @@ public class AbstractNotification extends HeaderResponse
             }
             
             /**
-             * Obtain the identifier that specifies whether objects are filtered by object name prefix or suffix.
-             * @return Identifier specifying whether objects are filtered by object name prefix or suffix
+             * 获取按对象名的前缀或后缀进行过滤标识
+             * @return 按对象名前缀或后缀进行过滤标识
              */
             public String getName()
             {
@@ -90,8 +90,8 @@ public class AbstractNotification extends HeaderResponse
             }
 
             /**
-             * Set the identifier that specifies whether objects are filtered by object name prefix or suffix.
-             * @param name Identifier specifying whether objects are filtered by object name prefix or suffix
+             * 设置按对象名的前缀或后缀进行过滤标识
+             * @param name 按对象名前缀或后缀进行过滤标识
              */
             public void setName(String name)
             {
@@ -99,8 +99,8 @@ public class AbstractNotification extends HeaderResponse
             }
 
             /**
-             * Obtain keywords of the object name. 
-             * @return Keywords of the object name
+             * 获取对象名关键字 
+             * @return 对象名关键字
              */
             public String getValue()
             {
@@ -108,8 +108,8 @@ public class AbstractNotification extends HeaderResponse
             }
 
             /**
-             * Set keywords for the object name.
-             * @param value Keywords of the object name
+             * 设置对象名关键字
+             * @param value 对象名关键字
              */
             public void setValue(String value)
             {
@@ -162,8 +162,8 @@ public class AbstractNotification extends HeaderResponse
         }
         
         /**
-         * Obtain the list of filtering rules.
-         * @return Filtering rule list
+         * 获取过滤规则列表
+         * @return 过滤规则列表
          */
         public List<FilterRule> getFilterRules()
         {
@@ -174,8 +174,8 @@ public class AbstractNotification extends HeaderResponse
         }
 
         /**
-         * Set the list of filtering rules.
-         * @param filterRules Filtering rule list
+         * 设置过滤规则列表
+         * @param filterRules 过滤规则列表
          */
         public void setFilterRules(List<FilterRule> filterRules)
         {
@@ -183,9 +183,9 @@ public class AbstractNotification extends HeaderResponse
         }
         
         /**
-         * Add a filtering rule.
-         * @param name Prefix or suffix of object names for filtering
-         * @param value Object name keyword in the filtering rule
+         * 新增过滤规则
+         * @param name 指定过滤规则按对象名的前缀或后缀进行过滤
+         * @param value 过滤规则中对象名关键字
          */
         public void addFilterRule(String name, String value){
             this.getFilterRules().add(new FilterRule(name, value));
@@ -200,8 +200,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Obtain the event notification configuration ID.
-     * @return Event notification configuration ID
+     * 获取消息通知配置ID
+     * @return 消息通知配置ID
      */
     public String getId()
     {
@@ -209,8 +209,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Set the event notification configuration ID.
-     * @param id Event notification configuration ID
+     * 设置消息通知配置ID
+     * @param id 消息通知配置ID
      */
     public void setId(String id)
     {
@@ -242,8 +242,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Obtain the list of event types that need to be notified.
-     * @return List of event types
+     * 获取需要发布通知消息的消息类型列表
+     * @return 消息类型列表
      */
     public List<EventTypeEnum> getEventTypes()
     {
@@ -254,8 +254,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Set the list of event types that need to be notified.
-     * @param events List of event types
+     * 设置需要发布通知消息的消息类型列表
+     * @param events 消息类型列表
      */
     public void setEventTypes(List<EventTypeEnum> events)
     {
@@ -263,8 +263,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Obtain the filtering rule group.
-     * @return Filtering rules
+     * 获取过滤规则组
+     * @return 过滤规则组
      */
     public Filter getFilter()
     {
@@ -272,8 +272,8 @@ public class AbstractNotification extends HeaderResponse
     }
 
     /**
-     * Set the filtering rule group.
-     * @param filter Filtering rules
+     * 设置过滤规则组
+     * @param filter 过滤规则组
      */
     public void setFilter(Filter filter)
     {

@@ -23,7 +23,7 @@ import com.obs.services.model.HttpProtocolTypeEnum;
 import okhttp3.Dispatcher;
 
 /**
- * Configuration parameters of ObsClient
+ * OBS客户端配置参数
  */
 public class ObsConfiguration implements Cloneable
 {
@@ -92,7 +92,7 @@ public class ObsConfiguration implements Cloneable
     private Dispatcher httpDispatcher;
 
     /**
-     * Constructor
+     * 构造函数
      */
     public ObsConfiguration()
     {
@@ -130,8 +130,8 @@ public class ObsConfiguration implements Cloneable
 	}
 
 	/**
-	 * Set folder isolators to slashes.
-	 * @param delimiter Folder isolator
+	 * 设置文件夹分隔符
+	 * @param delimiter 文件夹分隔符
 	 */
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
@@ -174,10 +174,10 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Check whether path-style access to OBS is enabled. "true" indicates that path-style access is enabled while "false" (default) indicates virtual hosted-style access is enabled.
-     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 判断是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
+     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
      * 
-     * @return Whether to enable path-style access to OBS.
+     * @return 是否使用路径访问方式访问OBS服务
      */
     @Deprecated
     public boolean isDisableDnsBucket()
@@ -186,10 +186,10 @@ public class ObsConfiguration implements Cloneable
     }
     
 	/**
-     * Specify whether to enable path-style access to OBS. "true" indicates that path-style access is enabled while "false" (default) indicates that virtual hosted-style access is enabled.
-     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 设置是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
+     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
      * 
-     * @param disableDns Whether to enable path-style access to OBS.
+     * @param disableDns 是否使用路径访问方式访问OBS服务
      */
     @Deprecated
     public void setDisableDnsBucket(boolean disableDns)
@@ -198,8 +198,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the size (bytes) of the socket receive buffer, corresponding to the "java.net.SocketOptions.SO_RVCBUF" parameter. The default value is "-1", indicating that the size is not set.
-     * @return Socket receive buffer size
+     * 获取socket接收缓冲区大小，单位：字节，对应java.net.SocketOptions.SO_SNDBUF参数，默认值：-1，表示不设置
+     * @return socket接收缓冲区大小
      */
     public int getSocketReadBufferSize()
     {
@@ -207,8 +207,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the size (bytes) of the socket receive buffer, corresponding to the "java.net.SocketOptions.SO_RVCBUF" parameter. The default value is "-1", indicating that the size is not set.
-     * @param socketReadBufferSize Socket receive buffer size
+     * 设置socket接收缓冲区大小，单位：字节，对应java.net.SocketOptions.SO_SNDBUF参数，默认值：-1，表示不设置
+     * @param socketReadBufferSize socket接收缓冲区大小
      */
     public void setSocketReadBufferSize(int socketReadBufferSize)
     {
@@ -216,8 +216,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the size (bytes) of the socket send buffer, corresponding to the "java.net.SocketOptions.SO_SNDBUF" parameter. The default value is "-1", indicating that the size is not set.
-     * @return socketSocket send buffer size 
+     * 获取socket发送缓冲区大小，单位：字节，对应java.net.SocketOptions.SO_RCVBUF参数，默认值：-1，表示不设置
+     * @return socket发送缓冲区大小
      */
     public int getSocketWriteBufferSize()
     {
@@ -225,8 +225,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the size (bytes) of the socket send buffer (in bytes), corresponding to the "java.net.SocketOptions.SO_SNDBUF" parameter. The default value is "-1", indicating that the size is not set.
-     * @param socketWriteBufferSize socket Socket send buffer size 
+     * 设置socket发送缓冲区大小，单位：字节，对应java.net.SocketOptions.SO_RCVBUF参数，默认值：-1，表示不设置
+     * @param socketWriteBufferSize socket发送缓冲区大小
      */
     public void setSocketWriteBufferSize(int socketWriteBufferSize)
     {
@@ -274,8 +274,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the factory for generating the "KeyManager" array.
-     * @return Factory for generating the "KeyManager" array
+     * 获取生成KeyManager数组的工厂
+     * @return 生成KeyManager数组的工厂
      */
     public KeyManagerFactory getKeyManagerFactory()
     {
@@ -283,8 +283,8 @@ public class ObsConfiguration implements Cloneable
     }
 
     /**
-     * Set the factory for generating the "KeyManager" array.
-     * @param keyManagerFactory Factory for generating the "KeyManager" array
+     * 设置生成KeyManager数组的工厂
+     * @param keyManagerFactory 生成KeyManager数组的工厂
      */
     public void setKeyManagerFactory(KeyManagerFactory keyManagerFactory)
     {
@@ -292,8 +292,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the factory for generating the "TrustManager" array.
-     * @return Factory for generating the "TrustManager" array
+     * 获取生成TrustManager数组的工厂
+     * @return 生成TrustManager数组的工厂
      */
     public TrustManagerFactory getTrustManagerFactory()
     {
@@ -301,8 +301,8 @@ public class ObsConfiguration implements Cloneable
     }
 
     /**
-     * Set the factory for generating the "TrustManager" array.
-     * @param trustManagerFactory Factory for generating the "TrustManager" array
+     * 设置生成TrustManager数组的工厂
+     * @param trustManagerFactory 生成TrustManager数组的工厂
      */
     public void setTrustManagerFactory(TrustManagerFactory trustManagerFactory)
     {
@@ -310,8 +310,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the identifier specifying whether to verify the domain name ("false" by default).
-     * @return Identifier specifying whether to verify the domain name
+     * 获取是否验证域名标识，默认值：false
+     * @return 是否验证域名标识
      */
     public boolean isStrictHostnameVerification()
     {
@@ -319,8 +319,8 @@ public class ObsConfiguration implements Cloneable
     }
 
     /**
-     * Set the identifier specifying whether to verify the domain name.
-     * @param isStrictHostnameVerification Identifier specifying whether to verify the domain name
+     * 设置是否验证域名标识
+     * @param isStrictHostnameVerification 是否验证域名标识
      */
     public void setIsStrictHostnameVerification(boolean isStrictHostnameVerification)
     {
@@ -329,10 +329,10 @@ public class ObsConfiguration implements Cloneable
     
     
     /**
-     * Check whether path-style access to OBS is enabled. "true" indicates that path-style access is enabled while "false" (default) indicates virtual hosted-style access is enabled.
-     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 判断是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
+     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
      * 
-     * @return Whether to enable path-style access to OBS.
+     * @return 是否使用路径访问方式访问OBS服务
      */
     @Deprecated
 	public boolean isPathStyle() {
@@ -340,10 +340,10 @@ public class ObsConfiguration implements Cloneable
 	}
     
 	/**
-     * Specify whether to enable path-style access to OBS. "true" indicates that path-style access is enabled while "false" (default) indicates that virtual hosted-style access is enabled.
-     * Note: If the path-style access is enabled, new bucket features of OBS 3.0 are not supported.
+     * 设置是否使用路径访问方式访问OBS服务，true使用路径访问方式，false使用虚拟主机访问方式，默认值：false
+     * 注意：如果设置了路径方式，无法使用OBS 3.0版本桶的新特性
      * 
-     * @param pathStyle Whether to enable path-style access to OBS.
+     * @param pathStyle 是否使用路径访问方式访问OBS服务
      */
     @Deprecated
 	public void setPathStyle(boolean pathStyle) {
@@ -351,9 +351,9 @@ public class ObsConfiguration implements Cloneable
 	}
     
     /**
-     * Obtain the timeout interval for establishing HTTP/HTTPS connections (in milliseconds, 60,000 milliseconds by default).
+     * 获取建立HTTP/HTTPS连接的超时时间，单位：毫秒，默认值：60000
      * 
-     * @return Timeout interval for establishing HTTP/HTTPS connections
+     * @return 建立HTTP/HTTPS连接的超时时间
      */
     public int getConnectionTimeout()
     {
@@ -361,9 +361,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the timeout interval for establishing HTTP/HTTPS connections (in milliseconds, 60,000 milliseconds by default).
+     * 设置建立HTTP/HTTPS连接的超时时间，单位：毫秒，默认值：60000
      * 
-     * @param connectionTimeout Timeout interval for establishing HTTP/HTTPS connections
+     * @param connectionTimeout 建立HTTP/HTTPS连接的超时时间
      */
     public void setConnectionTimeout(int connectionTimeout)
     {
@@ -371,9 +371,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the maximum number of HTTP connections (1000 by default) that can be opened.
+     * 获取最大允许的HTTP并发请求数，默认值：1000
      * 
-     * @return Maximum number of concurrently opened HTTP connections
+     * @return 最大允许的HTTP并发请求数
      */
     public int getMaxConnections()
     {
@@ -381,9 +381,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the maximum number of HTTP connections (1000 by default) that can be opened.
+     * 设置最大允许的HTTP并发请求数，默认值：1000
      * 
-     * @param maxConnections Maximum number of concurrently opened HTTP connections
+     * @param maxConnections 最大允许的HTTP并发请求数
      */
     public void setMaxConnections(int maxConnections)
     {
@@ -391,9 +391,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the maximum number of retry attempts (5 by default) upon a request failure (request exception, or error 500 or 503 on the server).
+     * 获取请求失败(请求异常、服务端报500或503错误)后最大的重试次数，默认值：3
      * 
-     * @return Maximum number of retry attempts upon a request failure
+     * @return 请求失败后最大的重试次数
      */
     public int getMaxErrorRetry()
     {
@@ -401,9 +401,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the maximum number of retry attempts (5 by default) upon a request failure (request exception, or error 500 or 503 on the server).
+     * 设置请求失败(请求异常、服务端报500或503错误)后最大的重试次数，默认值：3
      * 
-     * @param maxErrorRetry Maximum number of retry attempts upon a request failure
+     * @param maxErrorRetry 请求失败后最大的重试次数
      */
     public void setMaxErrorRetry(int maxErrorRetry)
     {
@@ -411,9 +411,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the timeout interval for data transmission at the socket layer (in milliseconds, 60,000 milliseconds by default).
+     * 获取socket层传输数据的超时时间，单位：毫秒，默认值：60000
      * 
-     * @return Timeout interval for data transmission at the socket layer
+     * @return socket层传输数据的超时时间
      */
     public int getSocketTimeout()
     {
@@ -421,9 +421,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the timeout interval for data transmission at the socket layer (in milliseconds, 60,000 milliseconds by default).
+     * 设置socket层传输数据的超时时间，单位：毫秒，默认值：60000
      * 
-     * @param socketTimeout Timeout interval for data transmission at the socket layer
+     * @param socketTimeout socket层传输数据的超时时间
      */
     public void setSocketTimeout(int socketTimeout)
     {
@@ -431,9 +431,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the endpoint for accessing OBS.
+     * 获取连接OBS的服务地址。
      * 
-     * @return OBS endpoint
+     * @return 连接OBS的服务地址
      */
     public String getEndPoint()
     {
@@ -444,9 +444,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the endpoint for accessing OBS.
+     * 设置连接OBS的服务地址。
      * 
-     * @param endPoint OBS endpoint
+     * @param endPoint 连接OBS的服务地址
      */
     public void setEndPoint(String endPoint)
     {
@@ -454,9 +454,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the port number of the HTTP request (80 by default).
+     * 获取HTTP请求的端口号，默认值：80
      * 
-     * @return Port number of the HTTP request
+     * @return HTTP请求的端口号
      */
     @Deprecated
     public int getEndpointHttpPort()
@@ -465,9 +465,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the port number of the HTTP request (80 by default).
+     * 设置HTTP请求的端口号，默认值：80
      * 
-     * @param endpointHttpPort Port number of the HTTP request
+     * @param endpointHttpPort HTTP请求的端口号
      */
     @Deprecated
     public void setEndpointHttpPort(int endpointHttpPort)
@@ -476,9 +476,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the port number of the HTTPS request (443 by default).
+     * 获取HTTPS请求的端口号，默认值：443
      * 
-     * @return Port number of the HTTPS request
+     * @return HTTPS请求的端口号
      */
     @Deprecated
     public int getEndpointHttpsPort()
@@ -487,9 +487,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the port number of the HTTPS request (443 by default).
+     * 设置HTTPS请求的端口号，默认值：443
      * 
-     * @param endpointHttpsPort Port number of the HTTPS request
+     * @param endpointHttpsPort HTTPS请求的端口号
      */
     @Deprecated
     public void setEndpointHttpsPort(int endpointHttpsPort)
@@ -498,9 +498,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Specify whether to use HTTPS to connect OBS ("true" by default).
+     * 设置是否使用HTTPS连接OBS服务，默认值：true
      * 
-     * @param httpsOnly Identifier specifying whether to use HTTPS to connect OBS
+     * @param httpsOnly 是否使用HTTPS连接OBS服务标识
      */
     @Deprecated
     public void setHttpsOnly(boolean httpsOnly)
@@ -509,9 +509,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Check whether HTTPS is used to connect OBS ("true" by default).
+     * 获取是否使用HTTPS连接OBS服务，默认值：true
      * 
-     * @return Identifier specifying whether to use HTTPS to connect OBS
+     * @return 是否使用HTTPS连接OBS服务标识
      */
     @Deprecated
     public boolean isHttpsOnly()
@@ -527,9 +527,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the proxy configuration.
+     * 获取代理配置信息
      * 
-     * @return Proxy configuration
+     * @return 代理配置信息
      */
     public HttpProxyConfiguration getHttpProxy()
     {
@@ -537,9 +537,9 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Configure the proxy.
+     * 设置代理配置信息
      * 
-     * @param httpProxy HTTP proxy configuration
+     * @param httpProxy 代理配置信息
      */
     public void setHttpProxy(HttpProxyConfiguration httpProxy)
     {
@@ -547,13 +547,13 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Configure the proxy server.
+     * 设置代理服务器配置信息
      * 
-     * @param proxyAddr Proxy server address
-     * @param proxyPort Proxy server port
-     * @param userName Proxy username
-     * @param password Proxy password
-     * @param domain Proxy domain
+     * @param proxyAddr 代理服务器地址
+     * @param proxyPort 代理服务器端口
+     * @param userName 代理用户名
+     * @param password 代理密码
+     * @param domain 代理域
      */
     @Deprecated
     public void setHttpProxy(String proxyAddr, int proxyPort, String userName, String password, String domain)
@@ -562,12 +562,12 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Configure the proxy server.
+     * 设置代理服务器配置信息
      * 
-     * @param proxyAddr Proxy server address
-     * @param proxyPort Proxy server port
-     * @param userName Proxy username
-     * @param password Proxy password
+     * @param proxyAddr 代理服务器地址
+     * @param proxyPort 代理服务器端口
+     * @param userName 代理用户名
+     * @param password 代理密码
      */
     public void setHttpProxy(String proxyAddr, int proxyPort, String userName, String password)
     {
@@ -575,8 +575,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the buffer size used for uploading stream objects (in bytes). The default value is 512 KB.
-     * @param uploadStreamRetryBufferSize Buffer size used for uploading stream objects
+     * 设置上传流对象时使用的缓存大小，单位：字节，默认值：512KB
+     * @param uploadStreamRetryBufferSize 上传流对象时使用的缓存大小
      */
     @Deprecated
     public void setUploadStreamRetryBufferSize(int uploadStreamRetryBufferSize)
@@ -585,8 +585,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the buffer size used for uploading stream objects (in bytes). The default value is 512 KB.
-     * @return Buffer size used for uploading stream objects
+     * 获取上传流对象时使用的缓存大小，单位：字节，默认值：512KB
+     * @return 上传流对象时使用的缓存大小
      */
     @Deprecated
     public int getUploadStreamRetryBufferSize()
@@ -595,8 +595,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Check whether server-side verification is enabled. The default value is "false".
-     * @return Identifier specifying whether to enable server-side verification
+     * 获取是否验证服务端证书标识，默认值：false
+     * @return 是否验证服务端证书标识
      */
     public boolean isValidateCertificate()
     {
@@ -604,8 +604,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Specify whether to enable server-side certificate verification. The default value is "false".
-     ** @param validateCertificate Identifier specifying whether to enable server-side verification
+     * 设置是否验证服务端证书标识，默认值：false
+     * @param validateCertificate 是否验证服务端证书标识
      */
     public void setValidateCertificate(boolean validateCertificate)
     {
@@ -613,8 +613,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Check whether "ContentType" in the response is verified. The default value is "true". 
-     * @return Identifier specifying whether to verify "ContentType" in the response
+     * 获取是否验证响应头信息的ContentType，默认值：true
+     * @return 是否验证响应头信息的ContentType标识
      */
     public boolean isVerifyResponseContentType()
     {
@@ -622,8 +622,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Specify whether to verify "ContentType" in the response. The default value is "true". 
-     * @param verifyResponseContentType Identifier specifying whether to verify "ContentType" in the response
+     * 设置是否验证响应头信息的ContentType，默认值：true
+     * @param verifyResponseContentType 是否验证响应头信息的ContentType标识
      */
     public void setVerifyResponseContentType(boolean verifyResponseContentType)
     {
@@ -631,8 +631,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the read cache size used for uploading objects to socket streams (in bytes). The default value is 8192.
-     * @return Read cache size used for uploading objects to socket streams
+     * 获取从Socket流下载对象的缓存大小，-1表示不设置缓存，单位：字节，默认值：-1
+     * @return 从Socket流下载对象的缓存大小
      */
     public int getReadBufferSize()
     {
@@ -640,8 +640,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the read cache size used for uploading objects to socket streams (in bytes). The default value is 8192.
-     * @param readBufferSize Read cache size used for uploading objects to socket streams
+     * 设置从Socket流下载对象的缓存大小，-1表示不设置缓存，单位：字节，默认值：-1
+     * @param readBufferSize 从Socket流下载对象的缓存大小
      */
     public void setReadBufferSize(int readBufferSize)
     {
@@ -649,8 +649,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the write cache size used for uploading objects to socket streams (in bytes). The default value is 8192.
-     * @return Write cache size used for uploading objects to socket streams
+     * 获取上传对象到Socket流时的缓存大小，-1表示不设置缓存，单位：字节，默认为-1
+     * @return 上传对象到Socket流时的缓存大小
      */
     public int getWriteBufferSize()
     {
@@ -658,8 +658,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Set the write cache size used for uploading objects to socket streams (in bytes). The default value is 8192.
-     * @param writeBufferSize Write cache size used for uploading objects to socket streams
+     * 设置上传对象到Socket流时的缓存大小，-1表示不设置缓存，单位：字节，默认为-1
+     * @param writeBufferSize 上传对象到Socket流时的缓存大小
      */
     public void setWriteBufferSize(int writeBufferSize)
     {
@@ -667,8 +667,8 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the idle time for obtaining connections from the connection pool. The unit is millisecond and the default value is 30000.
-     * @return Maximum idle time for obtaining connections from the connection pool
+     * 获取连接池中连接的最大空闲时间，单位：毫秒，默认值：30000
+     * @return 连接池中连接的最大空闲时间
      */
     public int getIdleConnectionTime()
     {
@@ -676,8 +676,8 @@ public class ObsConfiguration implements Cloneable
     }
 
     /**
-     * Set the idle time for obtaining connections from the connection pool. The unit is millisecond and the default value is 30000.
-     * @param idleConnectionTime Maximum idle time for obtaining connections from the connection pool
+     * 设置连接池中连接的最大空闲时间，单位：毫秒，默认值：30000
+     * @param idleConnectionTime 连接池中连接的最大空闲时间
      */
     public void setIdleConnectionTime(int idleConnectionTime)
     {
@@ -685,128 +685,128 @@ public class ObsConfiguration implements Cloneable
     }
     
     /**
-     * Obtain the maximum number of idle connections in the connection pool. The default value is 1000.
-     * @return Maximum number of idle connections in the connection pool
+     * 获取连接池中最大空闲连接数，默认值：1000
+     * @return 连接池中最大空闲连接数
      */
 	public int getMaxIdleConnections() {
 		return maxIdleConnections;
 	}
 
 	/**
-	 * Set the maximum number of idle connections in the connection pool. The default value is 1000.
-	 * @param maxIdleConnections Maximum number of idle connections in the connection pool
+	 * 设置连接池中最大空闲连接数，默认值：1000
+	 * @param maxIdleConnections 连接池中最大空闲连接数
 	 */
 	public void setMaxIdleConnections(int maxIdleConnections) {
 		this.maxIdleConnections = maxIdleConnections;
 	}
     
     /**
-     * Obtain the authentication type.
-     * @return Authentication type
+     * 获取鉴权类型
+     * @return 鉴权类型
      */
 	public AuthTypeEnum getAuthType() {
 		return authType;
 	}
 
 	/**
-	 * Set the authentication type.
-	 * @param authType Authentication type
+	 * 设置鉴权类型
+	 * @param authType 鉴权类型
 	 */
 	public void setAuthType(AuthTypeEnum authType) {
 		this.authType = authType;
 	}
 
     /**
-     * Specify whether to use persistent connections.
-     * @return Identifier specifying whether to use the persistent connections
+     * 是否使用长连接
+     * @return 是否使用长连接标识
      */
 	public boolean isKeepAlive() {
 		return keepAlive;
 	}
 	
 	/**
-	 * Check whether persistent connections are used.
-	 * @param keepAlive Identifier specifying whether to use the persistent connections
+	 * 设置是否使用长连接
+	 * @param keepAlive 是否使用长连接标识
 	 */
 	public void setKeepAlive(boolean keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
     /**
-     * Check whether protocol negotiation is used.
-     * @return Identifier specifying whether to use protocol negotiation
+     * 是否进行协议协商
+     * @return 协议协商标识
      */
     public boolean isAuthTypeNegotiation() {
         return authTypeNegotiation;
     }
 
     /**
-     * Specify whether to use protocol negotiation. 
-     * @param authTypeNegotiation Identifier specifying whether to use protocol negotiation
+     * 设置协议协商标识
+     * @param authTypeNegotiation 协议协商标识
      */
     public void setAuthTypeNegotiation(boolean authTypeNegotiation) {
         this.authTypeNegotiation = authTypeNegotiation;
     }
 
     /**
-     * Check whether user-defined domain name is used.
-     * @return Identifier specifying whether to use user-defined domain name
+     * 是否是自定义域名
+     * @return 自定义域名标识
      */
 	public boolean isCname() {
 		return cname;
 	}
 
 	/**
-	 * Specify whether to use user-defined domain name.
-	 * @param cname Identifier specifying whether to use user-defined domain name
+	 * 设置自定义域名标识
+	 * @param cname 自定义域名标识
 	 */
 	public void setCname(boolean cname) {
 		this.cname = cname;
 	}
 	
 	/**
-	 * Set the provider of SSLContext.
-	 * @return SSLContext provider
+	 * 设置SSLContext的Provider
+	 * @return SSLContext的Provider
 	 */
 	public String getSslProvider() {
 		return sslProvider;
 	}
 	
 	/**
-	 * Obtain the provider of SSLContext.
-	 * @param sslProvider SSLContext provider
+	 * 获取SSLContext的Provider
+	 * @param sslProvider SSLContext的Provider
 	 */
 	public void setSslProvider(String sslProvider) {
 		this.sslProvider = sslProvider;
 	}
 
 	/**
-	 * Set the HTTP type used for accessing OBS servers.
-	 * @return HTTP type
+	 * 设置访问OBS服务端时使用的HTTP协议类型
+	 * @return HTTP协议类型
 	 */
 	public HttpProtocolTypeEnum getHttpProtocolType() {
 		return httpProtocolType;
 	}
 	
 	/**
-	 * Obtain the HTTP type used for accessing OBS servers.
-	 * @param httpProtocolType HTTP type
+	 * 获取访问OBS服务端时使用的HTTP协议类型
+	 * @param httpProtocolType HTTP协议类型
 	 */
 	public void setHttpProtocolType(HttpProtocolTypeEnum httpProtocolType) {
 		this.httpProtocolType = httpProtocolType;
 	}
 	
 	/**
-	 * Set the customized dispatcher.
-	 * @return Customized dispatcher
+	 * 设置自定义分发器
+	 * @return 自定义分发器
 	 */
 	public Dispatcher getHttpDispatcher() {
 		return httpDispatcher;
 	}
 	
 	/**
-	 * Obtain the customized dispatcher.
-	 * @param httpDispatcher Customized dispatcher
+	 * 获取自定义分发器
+	 * @param httpDispatcher 自定义分发器
 	 */
 	public void setHttpDispatcher(Dispatcher httpDispatcher) {
 		this.httpDispatcher = httpDispatcher;

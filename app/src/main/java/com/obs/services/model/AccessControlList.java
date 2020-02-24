@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -19,57 +19,57 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Bucket or object ACL 
- *Include a set of permissions ({@link com.obs.services.model.Permission}) authorized to specified grantee ({@link com.obs.services.model.GranteeInterface}).
+ * 桶或对象的访问权限（Access Control List， ACL）， 
+ * 包含了一组为指定被授权者（{@link com.obs.services.model.GranteeInterface}） 分配特定权限（{@link com.obs.services.model.Permission}）的集合。
  */
 public class AccessControlList extends HeaderResponse
 {
     /**
-     * Pre-defined access control policy: private
+     * 预定义访问策略 私有读写（private）
      */
     public static final AccessControlList REST_CANNED_PRIVATE = new AccessControlList();
 
     /**
-     * Pre-defined access control policy: public-read
+     * 预定义访问策略 公共读私有写（public-read）
      */
     public static final AccessControlList REST_CANNED_PUBLIC_READ = new AccessControlList();
 
     /**
-     * Pre-defined access control policy: public-read-write
+     * 预定义访问策略 公共读写（ public-read-write）
      */
     public static final AccessControlList REST_CANNED_PUBLIC_READ_WRITE = new AccessControlList();
     
     /**
-     * Pre-defined access control policy: public-read-delivered
+     * 预定义访问策略 桶公共读，桶内对象公共读（public-read-delivered）
      */
     public static final AccessControlList REST_CANNED_PUBLIC_READ_DELIVERED = new AccessControlList();
 
     /**
-     * Pre-defined access control policy: public-read-write-delivered
+     * 预定义访问策略 桶公共读写，桶内对象公共读写（public-read-write-delivered）
      */
     public static final AccessControlList REST_CANNED_PUBLIC_READ_WRITE_DELIVERED = new AccessControlList();
     
 
     /**
-     * Pre-defined access control policy: authenticated-read
+     * 预定义访问策略  授权用户读私有写（authenticated-read）
      */
     @Deprecated
     public static final AccessControlList REST_CANNED_AUTHENTICATED_READ = new AccessControlList();
     
     /**
-     * Pre-defined access control policy: bucket-owner-read
+     * 预定义访问策略 桶所有者读对象所有者读写（ bucket-owner-read）
      */
     @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_READ = new AccessControlList();
 
     /**
-     * Pre-defined access control policy: bucket-owner-full-control
+     * 预定义访问策略 桶所有者读写对象所有者读写（ bucket-owner-full-control）
      */
     @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_FULL_CONTROL = new AccessControlList();
 
     /**
-     * Pre-defined access control policy: log-delivery-write
+     * 预定义访问策略 日志投递组写（ log-delivery-write）
      */
     @Deprecated
     public static final AccessControlList REST_CANNED_LOG_DELIVERY_WRITE = new AccessControlList();
@@ -81,25 +81,25 @@ public class AccessControlList extends HeaderResponse
 	private boolean delivered;
 
 	/**
-     * Check whether the object ACL is delivered. 
-     * @return Identifier specifying whether the ACL is delivered
+     * 获取对象的ACL传递标识
+     * @return ACL传递标识
      */
 	public boolean isDelivered() {
 		return delivered;
 	}
 	
 	/**
-	 * Specify whether to deliver the object ACL. (This is only applicable to object ACLs.)
-	 * @param delivered Whether to deliver the object ACL
+	 * 设置对象的ACL传递标识，只对对象权限有效
+	 * @param delivered ACL传递标识
 	 */
 	public void setDelivered(boolean delivered) {
 		this.delivered = delivered;
 	}
     
     /**
-     * Obtain the owner. 
+     * 获取所有者
      * 
-     * @return Owner
+     * @return 所有者
      */
     public Owner getOwner()
     {
@@ -107,9 +107,9 @@ public class AccessControlList extends HeaderResponse
     }
     
     /**
-     * Set the owner. 
+     * 设置所有者
      * 
-     * @param owner Owner
+     * @param owner 所有者
      */
     public void setOwner(Owner owner)
     {
@@ -117,9 +117,9 @@ public class AccessControlList extends HeaderResponse
     }
     
     /**
-     * Obtain all permissions in the ACL.
+     * 获取ACL中的所有权限
      * 
-     * @return All grantee groups
+     * @return 所有的权限组
      */
 	public Set<GrantAndPermission> getGrants() {
 		if(grants == null) {
@@ -129,9 +129,9 @@ public class AccessControlList extends HeaderResponse
 	}
 
     /**
-     * Obtain the permission specified in the ACL {@link com.obs.services.model.GranteeInterface}. 
-     * @param grantee Authorized user
-     * @return Permission list of {@link com.obs.services.model.GranteeInterface}
+     * 获取ACL中指定{@link com.obs.services.model.GranteeInterface}的权限
+     * @param grantee 被授权者
+     * @return {@link com.obs.services.model.GranteeInterface}的权限列表
      */
     public List<Permission> getPermissionsForGrantee(GranteeInterface grantee)
     {
@@ -147,18 +147,25 @@ public class AccessControlList extends HeaderResponse
     }
     
     /**
-     * Specify permissions {@link com.obs.services.model.Permission} in the ACL {@link com.obs.services.model.GranteeInterface}. 
+     * 为ACL中指定{@link com.obs.services.model.GranteeInterface}授权特定权限{@link com.obs.services.model.Permission}。
      * 
-     * @param grantee Authorized user
-     * @param permission Permissions defined in {@link com.obs.services.model.Permission}
-     * @return Permission information
+     * @param grantee 被授权者
+     * @param permission {@link com.obs.services.model.Permission}中定义的权限
+     * @return 权限信息
      */
     public GrantAndPermission grantPermission(GranteeInterface grantee, Permission permission)
     {
         return grantPermission(grantee, permission, false);
     }
 
-
+    /**
+     * 为ACL中指定{@link com.obs.services.model.GranteeInterface}授权特定权限{@link com.obs.services.model.Permission}。
+     *
+     * @param grantee 被授权者
+     * @param permission {@link com.obs.services.model.Permission}中定义的权限
+     * @param delivered 桶的ACL是否向桶内对象传递
+     * @return 权限信息
+     */
     public GrantAndPermission grantPermission(GranteeInterface grantee, Permission permission, boolean delivered)
     {
         GrantAndPermission obj = new GrantAndPermission(grantee, permission);
@@ -166,11 +173,11 @@ public class AccessControlList extends HeaderResponse
         getGrants().add(obj);
         return obj;
     }
-    
+
     /**
-     * Add grantee groups to the ACL.
+     * 为ACL添加权限组
      * 
-     * @param grantAndPermissions Grantee group
+     * @param grantAndPermissions 权限组
      */
     public void grantAllPermissions(GrantAndPermission[] grantAndPermissions)
     {
@@ -182,9 +189,9 @@ public class AccessControlList extends HeaderResponse
     }
     
     /**
-     * Obtain all permissions in the ACL.
+     * 获取ACL中的所有权限
      * 
-     * @return All grantee groups
+     * @return 所有的权限组
      */
     public GrantAndPermission[] getGrantAndPermissions()
     {
@@ -203,5 +210,3 @@ public class AccessControlList extends HeaderResponse
 
     
 }
-
-

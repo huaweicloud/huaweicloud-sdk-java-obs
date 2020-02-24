@@ -21,7 +21,7 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Create an asynchronous fetch job request in the JSON format.
+ * 创建异步抓取任务请求json
  *
  */
 public class CreateAsyncFetchJobsRequest {
@@ -64,9 +64,9 @@ public class CreateAsyncFetchJobsRequest {
 	}
 	
 	/**
-	 * Constructor
-	 * @param url URL to be fetched. You can set multiple URLs and separate them with semicolons (;).
-	 * @param bucket Bucket name
+	 * 构造函数
+	 * @param url 需要抓取的url,支持设置多个，以';'分隔
+	 * @param bucket 桶名
 	 */
 	public CreateAsyncFetchJobsRequest(String url, String bucket){
 		this.setUrl(url);
@@ -74,7 +74,7 @@ public class CreateAsyncFetchJobsRequest {
 	}
 
 	/**
-	 * Obtain the URL.
+	 * 获取url
 	 * @return url
 	 */
 	public String getUrl() {
@@ -82,7 +82,7 @@ public class CreateAsyncFetchJobsRequest {
 	}
 
 	/**
-	 * Set the URL.
+	 * 设置url
 	 * @param url
 	 */
 	public void setUrl(String url) {
@@ -90,63 +90,63 @@ public class CreateAsyncFetchJobsRequest {
 	}
 
 	/**
-	 * Obtain the bucket name.
-	 * @return Bucket name
+	 * 获取桶名
+	 * @return 桶名
 	 */
 	public String getBucketName() {
 		return bucket;
 	}
 
 	/**
-	 * Set the bucket name.
-	 * @param bucket Bucket name
+	 * 设置桶名
+	 * @param bucket 桶名
 	 */
 	public void setBucketName(String bucket) {
 		this.bucket = bucket;
 	}
 
 	/**
-	 * Obtain the host used for downloading data from a specified URL.
-	 * @return Host used for downloading data from a specified URL
+	 * 获取从指定url下载数据时使用的Host
+	 * @return 从指定url下载数据时使用的Host
 	 */
 	public String getHost() {
 		return host;
 	}
 
 	/**
-	 * Set the host used for downloading data from a specified URL.
-	 * @param host Host used for downloading data from a specified URL
+	 * 设置从指定url下载数据时使用的Host
+	 * @param host 从指定url下载数据时使用的Host
 	 */
 	public void setHost(String host) {
 		this.host = host;
 	}
 
 	/**
-	 * Obtain the object name.
-	 * @return Object name
+	 * 获取对象名
+	 * @return 对象名
 	 */
 	public String getObjectKey() {
 		return key;
 	}
 
 	/**
-	 * Set the object name.
-	 * @param key Object name
+	 * 设置对象名
+	 * @param key 对象名
 	 */
 	public void setObjectKey(String key) {
 		this.key = key;
 	}
 
 	/**
-	 * Obtain the MD5 file.
-	 * @return File MD5
+	 * 获取文件md5
+	 * @return 文件md5
 	 */
 	public String getMd5() {
 		return md5;
 	}
 
 	/**
-	 * Set the MD5 file.
+	 * 设置文件md5
 	 * @param md5
 	 */
 	public void setMd5(String md5) {
@@ -154,32 +154,32 @@ public class CreateAsyncFetchJobsRequest {
 	}
 
 	/**
-	 * Obtain the callback URL.
-	 * @return Callback URL.
+	 * 获取回调url
+	 * @return 回调url
 	 */
 	public String getCallBackUrl() {
 		return callBackUrl;
 	}
 
 	/**
-	 * Set the callback URL.
-	 * @param callBackUrl Callback URL.
+	 * 设置回调url
+	 * @param callBackUrl 回调url
 	 */
 	public void setCallBackUrl(String callBackUrl) {
 		this.callBackUrl = callBackUrl;
 	}
 
 	/**
-	 * Obtain the callback body.
-	 * @return Callback body
+	 * 获取回调body
+	 * @return 回调body
 	 */
 	public String getCallBackBody() {
 		return callBackBody;
 	}
 
 	/**
-	 * Set the callback body (Base64 encoded).
-	 * @param callBackBody Callback body
+	 * 设置回调body(安全base64编码)
+	 * @param callBackBody 回调body
 	 * @throws ServiceException
 	 */
 	public void setCallBackBody(String callBackBody) throws ServiceException {
@@ -191,55 +191,55 @@ public class CreateAsyncFetchJobsRequest {
 	}
 	
 	/**
-	 * Obtain the content type of the callback body.
-	 * @return Content type of the callback body
+	 * 获取回调Body内容类型
+	 * @return 回调Body内容类型
 	 */
 	public String getCallbackBodyType() {
 		return callBackBodyType;
 	}
 
 	/**
-	 * Set the content type of the callback body.
-	 * @param callBackBodyType Content type of the callback body
+	 * 设置回调Body内容类型
+	 * @param callBackBodyType 回调Body内容类型
 	 */
 	public void setCallbackBodyType(String callBackBodyType) {
 		this.callBackBodyType = callBackBodyType;
 	}
 
 	/**
-	 * Obtain the host used for callback.
-	 * @return Host used for callback
+	 * 获取回调时使用的Host
+	 * @return 回调时使用的Host
 	 */
 	public String getCallBackHost() {
 		return callBackHost;
 	}
 
 	/**
-	 * Set the host used for callback.
-	 * @param callBackHost Host used for callback
+	 * 设置回调时使用的Host
+	 * @param callBackHost 回调时使用的Host
 	 */
 	public void setCallBackHost(String callBackHost) {
 		this.callBackHost = callBackHost;
 	}
 
 	/**
-	 * Obtain the storage file type
-	 * @return Storage file type
+	 * 获取存储文件类型
+	 * @return 存储文件类型
 	 */
 	public String getFileType() {
 		return fileType;
 	}
 
 	/**
-	 * Set the storage file type
-	 * @param fileType Storage file type
+	 * 设置存储文件类型
+	 * @param fileType 存储文件类型
 	 */
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
 
 	/**
-	 * If a file with the same name already exists in the namespace, the current fetch job is canceled.
+	 * 如果空间中已经存在同名文件则放弃本次抓取
 	 * @return ignoreSameKey
 	 */
 	public boolean isignoreSameKey() {

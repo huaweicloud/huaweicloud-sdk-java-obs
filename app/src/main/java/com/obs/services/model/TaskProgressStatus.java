@@ -16,32 +16,32 @@ package com.obs.services.model;
 public interface TaskProgressStatus {
     
 	/**
-	 * Obtain the upload progress in percentage.
-	 * @return Upload progress in percentage
+	 * 获取上传进度百分比
+	 * @return 上传进度百分比
 	 */
     public int getExecPercentage();
     
     /**
-	 * Obtain the number of objects being uploaded.
-	 * @return Number of objects being uploaded
+	 * 获取正在上传对象数量
+	 * @return 正在上传对象数量
 	 */
     public int getExecTaskNum();
     
     /**
-	 * Obtain the number of objects that have been successfully uploaded.
-	 * @return Number of objects that have been successfully uploaded
+	 * 获取上传成功的对象数量  
+	 * @return 上传成功的对象数量
 	 */
     public int getSucceedTaskNum();
     
     /**
-	 * Obtain the number of objects that fail to be uploaded.
-	 * @return Number of objects that fail to be uploaded
+	 * 获取上传失败的对象数量
+	 * @return 上传失败的对象数量
 	 */
     public int getFailTaskNum();
     
     /**
-	 * Obtain the total number of objects in the upload task.
-	 * @return Total number of objects in the upload task
+	 * 获取总上传对象数量
+	 * @return 总上传对象数量
 	 */
     public int getTotalTaskNum();
 }

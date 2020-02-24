@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This exception is thrown when the interface fails to be called or access to OBS fails. 
+ * 当调用接口失败、访问对象存储服务（OBS）失败时抛出该异常类实例
  */
 public class ObsException extends RuntimeException
 {
@@ -127,9 +127,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the error code returned by the OBS server. 
+     * 获取从OBS服务端返回的错误码
      * 
-     * @return Error code
+     * @return 错误码
      */
     public String getErrorCode()
     {
@@ -142,9 +142,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the error details returned by the OBS server. 
+     * 获取从OBS服务端返回的详细错误信息
      * 
-     * @return Error details
+     * @return 详细错误信息
      */
     public String getErrorMessage()
     {
@@ -157,9 +157,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the request ID returned by the OBS server.
+     * 获取OBS服务端返回的请求ID
      * 
-     * @return Request ID
+     * @return 请求ID
      */
     public String getErrorRequestId()
     {
@@ -172,9 +172,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the server ID.
+     * 获取服务端ID
      * 
-     * @return Server ID
+     * @return 服务端ID
      */
     public String getErrorHostId()
     {
@@ -187,9 +187,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the response headers of the HTTP request returned by the OBS server.
+     * 获取OBS服务端返回的HTTP请求的响应头信息
      * 
-     * @return HTTP response headers
+     * @return 响应头信息
      */
     public Map<String, String> getResponseHeaders()
     {
@@ -202,9 +202,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the HTTP status code returned by the OBS server.
+     * 获取OBS服务端返回的HTTP状态码
      * 
-     * @return HTTP status code
+     * @return HTTP状态码
      */
     public int getResponseCode()
     {
@@ -217,9 +217,9 @@ public class ObsException extends RuntimeException
     }
     
     /**
-     * Obtain the HTTP response description returned by the OBS server.
+     * 获取OBS服务端返回的HTTP响应描述
      * 
-     * @return HTTP response description
+     * @return HTTP响应描述
      */
     public String getResponseStatus()
     {
@@ -232,8 +232,8 @@ public class ObsException extends RuntimeException
     }
 
 	/**
-	 * Obtain the detailed error indicators returned by the OBS server.
-	 * @return OBS Detailed error indicators returned by the server
+	 * 获取OBS服务端返回的详细错误码标识
+	 * @return OBS服务端返回的详细错误码标识
 	 */
 	public String getErrorIndicator() {
 		return errorIndicator;

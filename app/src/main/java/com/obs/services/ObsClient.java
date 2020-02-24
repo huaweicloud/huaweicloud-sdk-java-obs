@@ -83,7 +83,7 @@ import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
 
 /**
- * ObsClient
+ * OBS客户端
  */
 public class ObsClient extends ObsService implements Closeable, IObsClient, IFSClient {
 
@@ -131,26 +131,26 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		}
 	}
 
-    /**
-     * Constructor
-     *
-     * @param endPoint
-     *            OBS endpoint
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param endPoint
+	 *            OBS服务地址
+	 * 
+	 */
 	public ObsClient(String endPoint) {
 		ObsConfiguration config = new ObsConfiguration();
 		config.setEndPoint(endPoint);
 		this.init("", "", null, config);
 	}
 
-    /**
-     * Constructor
-     *
-     * @param config
-     *            Configuration parameters of ObsClient
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param config
+	 *            OBS客户端配置参数
+	 * 
+	 */
 	public ObsClient(ObsConfiguration config) {
 		if (config == null) {
 			config = new ObsConfiguration();
@@ -158,34 +158,34 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		this.init("", "", null, config);
 	}
 
-    /**
-     * Constructor
-     *
-     * @param accessKey
-     *            AK in the access key
-     * @param secretKey
-     *            SK in the access key
-     * @param endPoint
-     *            OBS endpoint
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param accessKey
+	 *            访问密钥中的AK
+	 * @param secretKey
+	 *            访问密钥中的SK
+	 * @param endPoint
+	 *            OBS服务地址
+	 * 
+	 */
 	public ObsClient(String accessKey, String secretKey, String endPoint) {
 		ObsConfiguration config = new ObsConfiguration();
 		config.setEndPoint(endPoint);
 		this.init(accessKey, secretKey, null, config);
 	}
 
-    /**
-     * Constructor
-     *
-     * @param accessKey
-     *            AK in the access key
-     * @param secretKey
-     *            SK in the access key
-     * @param config
-     *            Configuration parameters of ObsClient
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param accessKey
+	 *            访问密钥中的AK
+	 * @param secretKey
+	 *            访问密钥中的SK
+	 * @param config
+	 *            OBS客户端配置参数
+	 * 
+	 */
 	public ObsClient(String accessKey, String secretKey, ObsConfiguration config) {
 		if (config == null) {
 			config = new ObsConfiguration();
@@ -193,38 +193,38 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		this.init(accessKey, secretKey, null, config);
 	}
 
-    /**
-     * Constructor
-     *
-     * @param accessKey
-     *            AK in the temporary access key
-     * @param secretKey
-     *            SK in the temporary access key
-     * @param securityToken
-     *            Security token
-     * @param endPoint
-     *            OBS endpoint
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param accessKey
+	 *            临时访问密钥中的AK
+	 * @param secretKey
+	 *            临时访问密钥中的SK
+	 * @param securityToken
+	 *            安全令牌
+	 * @param endPoint
+	 *            OBS的服务地址
+	 * 
+	 */
 	public ObsClient(String accessKey, String secretKey, String securityToken, String endPoint) {
 		ObsConfiguration config = new ObsConfiguration();
 		config.setEndPoint(endPoint);
 		this.init(accessKey, secretKey, securityToken, config);
 	}
 
-    /**
-     * Constructor
-     *
-     * @param accessKey
-     *            AK in the temporary access key
-     * @param secretKey
-     *            SK in the temporary access key
-     * @param securityToken
-     *            Security token
-     * @param config
-     *            Configuration parameters of ObsClient
-     *
-     */
+	/**
+	 * 构造函数
+	 * 
+	 * @param accessKey
+	 *            临时访问密钥中的AK
+	 * @param secretKey
+	 *            临时访问密钥中的SK
+	 * @param securityToken
+	 *            安全令牌
+	 * @param config
+	 *            OBS客户端配置参数
+	 * 
+	 */
 	public ObsClient(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {
 		if (config == null) {
 			config = new ObsConfiguration();
@@ -259,27 +259,27 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		this.setProviderCredentials(credentials);
 	}
 
-    /**
-     * Create a temporarily authorized URL.
-     *
-     * @param method
-     *            HTTP request method
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @param specialParam
-     *            Special operator
-     * @param expiryTime
-     *            Time when the temporary authentication expires
-     * @param headers
-     *            Header information
-     * @param queryParams
-     *            Query parameter information
-     * @return Temporarily authorized URL
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 创建临时授权URL
+	 * 
+	 * @param method
+	 *            Http请求方法
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @param specialParam
+	 *            特殊操作符
+	 * @param expiryTime
+	 *            临时授权的有效截止日期
+	 * @param headers
+	 *            头信息
+	 * @param queryParams
+	 *            查询参数信息
+	 * @return 临时授权URL
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
 			SpecialParamEnum specialParam, Date expiryTime, Map<String, String> headers,
@@ -290,27 +290,27 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 				headers, queryParams);
 	}
 
-    /**
-     * Create a temporarily authorized URL.
-     *
-     * @param method
-     *            HTTP request method
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @param specialParam
-     *            Special operator
-     * @param expires
-     *            Time when the temporary authentication expires. The unit is second and the default value is 300.
-     * @param headers
-     *            Header information
-     * @param queryParams
-     *            Query parameter information
-     * @return Temporarily authorized URL
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 创建临时授权URL
+	 * 
+	 * @param method
+	 *            Http请求方法
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @param specialParam
+	 *            特殊操作符
+	 * @param expires
+	 *            临时授权的有效时间，单位：秒，默认值：300
+	 * @param headers
+	 *            头信息
+	 * @param queryParams
+	 *            查询参数信息
+	 * @return 临时授权URL
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public String createSignedUrl(HttpMethodEnum method, String bucketName, String objectKey,
 			SpecialParamEnum specialParam, long expires, Map<String, String> headers, Map<String, Object> queryParams) {
@@ -404,15 +404,15 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 	
 	/**
-	 * Generate temporary authorization parameters for GET requests based on the object name prefix and validity period.
-	 * @param bucketName Bucket name
-	 * @param objectKey Object name
-	 * @param prefix Object name prefix
-	 * @param expiryDate Expiration date (ISO 8601 UTC)
-	 * @param headers Header information
-	 * @param queryParams Query parameter information
-	 * @return Response to the request for temporary access authorization
-     * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
+	 * @param bucketName 桶名
+	 * @param objectKey 对象名
+	 * @param prefix 对象名前缀
+	 * @param expiryDate 有效截止日期(ISO 8601 UTC)
+	 * @param headers 头信息
+	 * @param queryParams 查询参数信息
+	 * @return 临时授权访问的响应结果
+     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
 	        Date expiryDate, Map<String, String> headers, Map<String, Object> queryParams) {
@@ -427,15 +427,15 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 	}
 	
 	/**
-     * Generate temporary authorization parameters for GET requests based on the object name prefix and validity period.
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param prefix Object name prefix
-     * @param expires Validity period (seconds)
-     * @param headers Header information
-     * @param queryParams Query parameter information
-     * @return Response to the request for temporary access authorization
-     * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * 生成基于对象名前缀和有效期的Get请求临时授权访问参数
+     * @param bucketName 桶名
+     * @param objectKey 对象名
+     * @param prefix 对象名前缀
+     * @param expires 有效时间(单位：秒)
+     * @param headers 头信息
+     * @param queryParams 查询参数信息
+     * @return 临时授权访问的响应结果
+     * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     public TemporarySignatureResponse createGetTemporarySignature(String bucketName, String objectKey, String prefix, 
             long expires, Map<String, String> headers, Map<String, Object> queryParams) {
@@ -464,23 +464,23 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         return request;
     }
 
-    /**
-     * Generate parameters for browser-based authorized access.
-     *
-     * @param acl
-     *            Object ACL
-     * @param contentType
-     *            MIME type of the object
-     * @param expires
-     *            Validity period (in seconds)
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @return Response to the V4 browser-based authorized access
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 生成基于浏览器表单的授权访问参数
+	 * 
+	 * @param acl
+	 *            对象的访问权限
+	 * @param contentType
+	 *            对象的MIME类型
+	 * @param expires
+	 *            有效时间，单位：秒
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @return 基于浏览器表单授权访问的响应结果
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	public PostSignatureResponse createPostSignature(String acl, String contentType, long expires, String bucketName,
 			String objectKey) throws ObsException {
 		PostSignatureRequest request = new PostSignatureRequest(expires, new Date(), bucketName, objectKey);
@@ -491,19 +491,19 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		return this.createPostSignature(request);
 	}
 
-    /**
-     * Generate parameters for browser-based authorized access.
-     *
-     * @param expires
-     *            Validity period (in seconds)
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @return Response to the V4 browser-based authorized access
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 生成基于浏览器表单的授权访问参数
+	 * 
+	 * @param expires
+	 *            有效时间，单位：秒
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @return 基于浏览器表单授权访问的响应结果
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	public PostSignatureResponse createPostSignature(long expires, String bucketName, String objectKey)
 			throws ObsException {
 		PostSignatureRequest request = new PostSignatureRequest(expires, new Date(), bucketName, objectKey);
@@ -723,27 +723,27 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 
-    /**
-     * List versioning objects in a bucket.
-     *
-     * @param bucketName
-     *            Bucket name
-     * @param prefix
-     *            Object name prefix used for listing versioning objects
-     * @param delimiter
-     *            Character for grouping object names
-     * @param keyMarker
-     *            Start position for listing versioning objects (sorted by object name)
-     * @param versionIdMarker
-     *            Start position for listing versioning objects (sorted by version ID)
-     * @param maxKeys
-     *            Maximum number of versioning objects to be listed
-     * @param nextVersionIdMarker
-     *            Deprecated field
-     * @return Response to the request for listing versioning objects in the bucket
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 列举桶内多版本对象
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @param prefix
+	 *            列举多版本对象时的对象名前缀
+	 * @param delimiter
+	 *            对象名进行分组的字符
+	 * @param keyMarker
+	 *            列举多版本对象的起始位置（按对象名排序）
+	 * @param versionIdMarker
+	 *            列举多版本对象的起始位置（按对象版本号排序）
+	 * @param maxKeys
+	 *            列举多版本对象的最大条目数
+	 * @param nextVersionIdMarker
+	 *            废弃字段。
+	 * @return 列举桶内多版本对象响应结果
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public ListVersionsResult listVersions(final String bucketName, final String prefix, final String delimiter,
 			final String keyMarker, final String versionIdMarker, final long maxKeys, final String nextVersionIdMarker)
@@ -835,19 +835,19 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 
-    /**
-     * Set a bucket ACL. <br>
-     *
-     * @param bucketName
-     *            Bucket name
-     * @param cannedACL
-     *            Pre-defined access control policy
-     * @param acl
-     *            ACL ("acl" and "cannedACL" cannot be used together.)
-     * @return Common response headers
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 设置桶的访问权限<br>
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @param cannedACL
+	 *            预定义访问策略
+	 * @param acl
+	 *            访问权限 （ acl和cannedACL不能同时使用）
+	 * @return 公共响应头信息
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public HeaderResponse setBucketAcl(final String bucketName, final String cannedACL, final AccessControlList acl)
 			throws ObsException {
@@ -1024,17 +1024,17 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 
-    /**
-     * Pre-request a bucket.
-     *
-     * @param bucketName
-     *            Bucket name
-     * @param optionInfo
-     *            Parameters in a bucket preflight request
-     * @return Response to the bucket preflight request
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * OPTIONS桶
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @param optionInfo
+	 *            OPTIONS桶的请求参数
+	 * @return OPTIONS桶的响应结果
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public OptionsInfoResult optionsBucket(final String bucketName, final OptionsInfoRequest optionInfo)
 			throws ObsException {
@@ -1048,19 +1048,19 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 
-    /**
-     * Perform a preflight on a bucket.
-     *
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @param optionInfo
-     *            Parameters in an object preflight request
-     * @return Response to the object preflight request
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * OPTIONS对象
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @param optionInfo
+	 *            OPTIONS对象的请求参数
+	 * @return OPTIONS对象的响应结果
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public OptionsInfoResult optionsObject(final String bucketName, final String objectKey,
 			final OptionsInfoRequest optionInfo) throws ObsException {
@@ -1074,15 +1074,15 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		});
 	}
 
-    /**
-     * Obtain the logging settings of a bucket.
-     *
-     * @param bucketName
-     *            Bucket name
-     * @return Logging settings of the bucket
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 获取桶的日志管理配置
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @return 桶的日志管理配置
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public BucketLoggingConfiguration getBucketLoggingConfiguration(final String bucketName) throws ObsException {
 		return this.getBucketLogging(bucketName);
@@ -1898,7 +1898,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 				                		list.add(file);
 				                	}
 				                } else {
-				                	// File upload
+				                	//文件上传
 				                	String filePath = file.getCanonicalPath();
 					            	if(!file.exists()) {
 					        			ILOG.warn("putObjects: the file \"" + filePath + "\" dose not exist");
@@ -1929,7 +1929,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         			if(file.exists()) {
         				totalTasks ++;
         				String objectKey = prefix + file.getName();
-        				// File upload
+        				//文件上传
         				uploadObjectTask(request, filePath, objectKey, executor, progressStatus, callback, listener);
         			}else {
         				ILOG.warn("putObjects: the file \"" + filePath + "\" is not exist");
@@ -2224,23 +2224,23 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
 		return this.getObjectAcl(bucketName, objectKey, null);
 	}
 
-    /**
-     * Set an object ACL.
-     *
-     * @param bucketName
-     *            Bucket name
-     * @param objectKey
-     *            Object name
-     * @param cannedACL
-     *            Pre-defined access control policy
-     * @param acl
-     *            ACL ("acl" and "cannedACL" cannot be used together.)
-     * @param versionId
-     *            Object version ID
-     * @return Common response headers
-     * @throws ObsException
-     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-     */
+	/**
+	 * 设置对象访问权限
+	 * 
+	 * @param bucketName
+	 *            桶名
+	 * @param objectKey
+	 *            对象名
+	 * @param cannedACL
+	 *            预定义访问策略
+	 * @param acl
+	 *            访问权限（acl和cannedACL不能同时使用）
+	 * @param versionId
+	 *            对象版本号
+	 * @return 公共响应头信息
+	 * @throws ObsException
+	 *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
+	 */
 	@Deprecated
 	public HeaderResponse setObjectAcl(final String bucketName, final String objectKey, final String cannedACL,
 			final AccessControlList acl, final String versionId) throws ObsException {

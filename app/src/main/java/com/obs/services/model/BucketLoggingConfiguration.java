@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Logging settings of a bucket
+ * 桶的日志管理配置
  */
 public class BucketLoggingConfiguration extends HeaderResponse
 {
@@ -36,9 +36,9 @@ public class BucketLoggingConfiguration extends HeaderResponse
     
     
     /**
-     * Constructor
-     * @param targetBucketName Name of the bucket in which logs are saved
-     * @param logfilePrefix Name prefix of the logged objects
+     * 构造函数
+     * @param targetBucketName 日志目标桶
+     * @param logfilePrefix 日志对象名前缀
      */
     public BucketLoggingConfiguration(String targetBucketName, String logfilePrefix)
     {
@@ -48,8 +48,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
 
 
     /**
-     * Obtain the bucket in which logs are saved.
-     * @return Bucket in which logs are saved
+     * 获取日志目标桶
+     * @return 日志目标桶
      */
     public String getTargetBucketName()
     {
@@ -57,8 +57,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the bucket to write logs.
-     * @param targetBucketName Name of the bucket in which logs are saved
+     * 设置日志目标桶
+     * @param targetBucketName 日志目标桶
      */
     public void setTargetBucketName(String targetBucketName)
     {
@@ -66,8 +66,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Obtain the name prefix of the logged objects. 
-     * @return Name prefix of the logged objects
+     * 获取日志对象名前缀
+     * @return 日志对象名前缀
      */
     public String getLogfilePrefix()
     {
@@ -75,8 +75,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the name prefix of the logged objects.
-     * @param logfilePrefix Name prefix of the logged objects
+     * 设置日志对象名前缀
+     * @param logfilePrefix 日志对象名前缀
      */
     public void setLogfilePrefix(String logfilePrefix)
     {
@@ -84,8 +84,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Obtain the log delivery group.
-     * @return Log delivery group {@link GrantAndPermission}
+     * 获取日志对象权限组
+     * @return 日志对象权限组{@link GrantAndPermission}
      */
     public GrantAndPermission[] getTargetGrants()
     {
@@ -93,8 +93,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Set the log delivery group.
-     * @param targetGrants Log delivery group {@link GrantAndPermission}
+     * 设置日志对象权限组
+     * @param targetGrants 日志对象权限组 {@link GrantAndPermission}
      */
     public void setTargetGrants(GrantAndPermission[] targetGrants)
     {
@@ -103,8 +103,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Add permissions for logged objects
-     * @param targetGrant Permissions of the logged object
+     * 添加日志对象权限
+     * @param targetGrant 日志对象权限
      */
     public void addTargetGrant(GrantAndPermission targetGrant)
     {
@@ -112,8 +112,8 @@ public class BucketLoggingConfiguration extends HeaderResponse
     }
     
     /**
-     * Check whether bucket logging is enabled.
-     * @return Identifier specifying whether bucket logging is enabled
+     * 是否开启桶日志标识
+     * @return 是否开启标识
      */
     public boolean isLoggingEnabled()
     {
@@ -122,16 +122,16 @@ public class BucketLoggingConfiguration extends HeaderResponse
 
 
 	/**
-	 * Set the agent name.
-	 * @return Agent name
+	 * 设置委托名字
+	 * @return 委托名字
 	 */
 	public String getAgency() {
 		return agency;
 	}
 
 	/**
-	 * Obtain the agent name.
-	 * @param agency Agent name
+	 * 获取委托名字
+	 * @param agency 委托名字
 	 */
 	public void setAgency(String agency) {
 		this.agency = agency;
@@ -145,5 +145,3 @@ public class BucketLoggingConfiguration extends HeaderResponse
 	}
 	
 }
-
-

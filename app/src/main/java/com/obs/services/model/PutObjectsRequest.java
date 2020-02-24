@@ -23,7 +23,7 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
- * Request parameters for uploading objects in a batch.
+ * 批量上传对象的请求参数
  *
  */
 public class PutObjectsRequest extends AbstractBulkRequest {
@@ -35,21 +35,21 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 
 	private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
 
-	// Part size, in bytes, 5 MB by default.
+	// 分片大小，单位字节，默认5MB
     private long partSize = 1024 * 1024 * 5l;
     
-    // Threshold size of a file for multipart upload, in bytes, 100 MB by default.
+    // 启用分段上传的文件大小限制，单位字节，默认100MB
     private long bigfileThreshold = 1024 * 1024 * 100l;
     
-    // Number of threads for multipart upload, 1 by default.
+    //分片上传线程数，默认1
     private int taskNum = 1;
 	
     private UploadObjectsProgressListener listener;
     
-    // Interval for updating the detailed information, 500 KB by default.
+    //详细信息刷间隔，默认为500K
     private long taskProgressInterval = 5 * ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
     
-    // Callback threshold of the data transfer listener of each object, 100 KB by default
+    //各对象数据传输监听器回调的阈值，默认为100KB
     private long detailProgressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
     
     private Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap;
@@ -64,9 +64,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param folderPath Local path from which the folder is uploaded
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param folderPath 上传文件夹的本地路径
 	 */
 	public PutObjectsRequest(String bucketName, String folderPath) {
 		super(bucketName);
@@ -74,9 +74,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param filePaths List of local paths from which a batch of files are uploaded
+	 * 构造函数
+	 * @param bucketName 桶名
+	 * @param filePaths 批量上传文件的本地路径列表
 	 */
 	public PutObjectsRequest(String bucketName, List<String> filePaths) {
 		super(bucketName);
@@ -84,8 +84,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 
 	/**
-	 * Obtain the local path of the uploaded folder.
-	 * @return folderPath Local path from which the folder is uploaded
+	 * 获取上传文件夹的本地路径
+	 * @return folderPath 上传文件夹的本地路径
 	 */
 	public String getFolderPath() {
 		return folderPath;
@@ -93,56 +93,56 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 
 
 	/**
-	 * Obtain the list of local paths of the batch uploaded files.
-	 * @return filePaths List of local paths from which a batch of files are uploaded
+	 * 获取批量上传文件的本地路径列表
+	 * @return filePaths 批量上传文件的本地路径列表
 	 */
 	public List<String> getFilePaths() {
 		return filePaths;
 	}
 
 	/**
-	 * Obtain the callback object of an upload task.
-	 * @return callback Callback object
+	 * 获取文件上传任务的回调对象
+	 * @return callback 回调对象
 	 */
 	public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
 		return callback;
 	}
 
 	/**
-	 * Set the callback object of an upload task.
-	 * @param callback Callback object
+	 * 设置文件上传任务的回调对象
+	 * @param callback 回调对象
 	 */
 	public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
 		this.callback = callback;
 	}
 
 	/**
-	 * Obtain the part size set for uploading an object.
-	 * @return partSize Part size
+	 *  获取上传时的分段大小
+	 * @return partSize 上传时的分段大小
 	 */
 	public long getPartSize() {
 		return partSize;
 	}
 
 	/**
-	 * Set the part size for uploading the object.
-	 * @param partSize Part size
+	 * 设置上传时的分段大小
+	 * @param partSize 上传时的分段大小
 	 */
 	public void setPartSize(long partSize) {
 		this.partSize = partSize;
 	}
 
 	/**
-	 * Obtain the threshold size of a file for starting multipart upload.
-	 * @return bigfileThreshold Threshold size of a file for multipart upload
+	 * 获取启用分段上传的文件临界大小
+	 * @return bigfileThreshold 启用分段上传的文件临界大小
 	 */
 	public long getBigfileThreshold() {
 		return bigfileThreshold;
 	}
 
 	/**
-	 * Set the threshold size of a file for starting multipart upload.
-	 * @param bigfileThreshold Threshold size of a file for multipart upload
+	 * 设置启用分段上传的文件临界大小
+	 * @param bigfileThreshold 启用分段上传的文件临界大小
 	 */
 	public void setBigfileThreshold(long bigfileThreshold) {
 		if(bigfileThreshold < 100 * 1024l) {
@@ -155,18 +155,18 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Obtain the maximum number of threads used for processing upload tasks concurrently.
+	 * 获取用于并发执行上传任务的最大线程数
 	 * 
-	 * @return Maximum number of threads used for processing upload tasks concurrently
+	 * @return 用于并发执行上传任务的最大线程数
 	 */
 	public int getTaskNum() {
 		return taskNum;
 	}
 
 	/**
-	 * Set the maximum number of threads used for processing upload tasks concurrently.
+	 * 设置用于并发执行上传任务的最大线程数
 	 * 
-	 * @param taskNum Maximum number of threads used for processing upload tasks concurrently
+	 * @param taskNum 用于并发执行上传任务的最大线程数
 	 */
 	public void setTaskNum(int taskNum) {
 		if (taskNum < 1) {
@@ -179,16 +179,16 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 
 	/**
-	 * Obtain the specific folder to which the file is uploaded.
-	 * @return prefix Folder
+	 * 获取将文件上传到指定文件夹
+	 * @return prefix 文件夹名
 	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
 	/**
-	 * Set the specific folder to which the file is uploaded.
-	 * @param prefix Folder
+	 * 设置将文件上传到指定文件夹
+	 * @param prefix 文件夹名
 	 */
 	public void setPrefix(String prefix) {
 		if(null == prefix) {
@@ -202,34 +202,34 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-     * Obtain the progress listener of the bulk task.
+     * 获取批量任务的进度监听器
      * 
-     * @return Progress listener
+     * @return 进度监听器
      */
     public UploadObjectsProgressListener getUploadObjectsProgressListener() {
         return listener;
     }
 
     /**
-     * Set the progress listener of the bulk task.
+     * 设置批量任务的进度监听器
      * 
-     * @param listener Progress listener
+     * @param listener 进度监听器
      */
     public void setUploadObjectsProgressListener(UploadObjectsProgressListener listener) {
         this.listener = listener;
     }
 
 	/**
-	 * Obtain the interval for updating the task progress information.
-	 * @return taskProgressInterval Interval for updating the task progress
+	 * 获取详细信息刷间隔
+	 * @return taskProgressInterval 详细信息刷间隔
 	 */
 	public long getTaskProgressInterval() {
 		return taskProgressInterval;
 	}
 
 	/**
-	 * Set the interval for updating the task progress information.
-	 * @param taskProgressInterval Interval for updating the task progress
+	 * 设置详细信息刷间隔
+	 * @param taskProgressInterval 详细信息刷间隔
 	 */
 	public void setTaskProgressInterval(long taskProgressInterval) {
 		if(taskProgressInterval < this.detailProgressInterval)
@@ -241,25 +241,25 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @return Callback threshold of the data transfer listener
+	 * 获取数据传输监听器回调的阈值，默认为100KB
+	 * @return 数据传输监听器回调的阈值
 	 */
 	public long getDetailProgressInterval() {
 		return detailProgressInterval;
 	}
 	
 	/**
-	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @param detailProgressInterval Callback threshold of the data transfer listener
+	 * 设置数据传输监听器回调的阈值，默认为100KB
+	 * @param detailProgressInterval 数据传输监听器回调的阈值
 	 */
 	public void setDetailProgressInterval(long detailProgressInterval) {
 		this.detailProgressInterval = detailProgressInterval;
 	}
     
     /**
-     * Obtain SSE-KMS encryption headers of the object.
+     * 获取对象SSE-KMS加密头域信息
      * 
-     * @return SSE-KMS encryption headers
+     * @return SSE-KMS加密头域信息
      */
     public SseKmsHeader getSseKmsHeader()
     {
@@ -267,9 +267,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-     * Set SSE-KMS encryption headers of the object.
+     * 设置对象SSE-KMS加密头域信息
      * 
-     * @param sseKmsHeader SSE-KMS encryption headers
+     * @param sseKmsHeader SSE-KMS加密头域信息
      */
     public void setSseKmsHeader(SseKmsHeader sseKmsHeader)
     {
@@ -277,9 +277,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-     * Obtain SSE-C encryption headers of the object.
+     * 获取对象SSE-C加密头域信息
      * 
-     * @return SSE-C encryption headers
+     * @return SSE-C加密头域信息
      */
     public SseCHeader getSseCHeader()
     {
@@ -287,9 +287,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-     * Set SSE-C encryption headers of the object.
+     * 设置对象SSE-C加密头域信息
      * 
-     * @param sseCHeader SSE-C encryption headers
+     * @param sseCHeader SSE-C加密头域信息
      */
     public void setSseCHeader(SseCHeader sseCHeader)
     {
@@ -297,8 +297,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-     * Obtain the ACL of the object.
-     * @return Object ACL
+     * 获取对象的访问权限
+     * @return 对象的访问权限
      */
     public AccessControlList getAcl()
     {
@@ -306,8 +306,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-     * Set the object ACL.
-     * @param acl Object ACL
+     * 设置对象的访问权限
+     * @param acl 对象的访问权限
      */
     public void setAcl(AccessControlList acl)
     {
@@ -315,25 +315,25 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     }
     
     /**
-	 * Obtain the redirection address after a successfully responded request.
-	 * @return Redirection address
+	 * 获取请求操作响应成功后的重定向地址
+	 * @return 重定向地址
 	 */
 	public String getSuccessRedirectLocation() {
 		return successRedirectLocation;
 	}
 
 	/**
-	 * Set the redirection address after a successfully responded request.
-	 * @param successRedirectLocation Redirection address
+	 * 设置请求操作响应成功后的重定向地址
+	 * @param successRedirectLocation 重定向地址
 	 */
 	public void setSuccessRedirectLocation(String successRedirectLocation) {
 		this.successRedirectLocation = successRedirectLocation;
 	}
     
     /**
-	 * Grant the OBS extension permissions to a user.
-	 * @param domainId User's domain ID
-	 * @param extensionPermissionEnum OBS extension permissions
+	 * 为用户授予OBS扩展权限
+	 * @param domainId 用户的domainId
+	 * @param extensionPermissionEnum OBS扩展权限
 	 */
 	public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -348,9 +348,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Withdraw the OBS extension permissions from a user.
-	 * @param domainId User's domain ID
-	 * @param extensionPermissionEnum OBS extension permissions
+	 * 撤回用户的OBS扩展权限
+	 * @param domainId 用户的domainId
+	 * @param extensionPermissionEnum OBS扩展权限
 	 */
 	public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -364,8 +364,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Withdraw all OBS extension permissions from a user.
-	 * @param domainId User's domain ID
+	 * 撤回用户的所有OBS扩展权限
+	 * @param domainId 用户的domainId
 	 */
 	public void withdrawExtensionPermissions(String domainId) {
 		if(ServiceUtils.isValid(domainId)) {
@@ -378,17 +378,17 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Obtain all OBS extended permissions.
-	 * @return OBS List of extension permissions
+	 * 获取所有OBS扩展权限
+	 * @return OBS扩展权限列表
 	 */
 	public Set<ExtensionObjectPermissionEnum> getAllGrantPermissions(){
 		return this.getExtensionPermissionMap().keySet();
 	}
 	
 	/**
-	 * Obtain the list of user IDs with the specified OBS extension permissions.
-	 * @param extensionPermissionEnum OBS extension permissions
-	 * @return List of user IDs
+	 * 获取具有指定OBS扩展权限的用户ID集合
+	 * @param extensionPermissionEnum OBS扩展权限
+	 * @return 用户ID集合
 	 */
 	public Set<String> getDomainIdsByGrantPermission(ExtensionObjectPermissionEnum extensionPermissionEnum) {
 		Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
@@ -399,9 +399,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Obtain the OBS extension permissions of a specified user.
-	 * @param domainId User ID
-	 * @return OBS Extension permission set
+	 * 获取指定用户的OBS扩展权限
+	 * @param domainId 用户ID
+	 * @return OBS扩展权限集合
 	 */
 	public Set<ExtensionObjectPermissionEnum> getGrantPermissionsByDomainId(String domainId) {
 		Set<ExtensionObjectPermissionEnum> grantPermissions = new HashSet<ExtensionObjectPermissionEnum>();
@@ -417,8 +417,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 	
 	/**
-	 * Obtain the set of relationships between users and OBS extension permissions.
-	 * @return Set of relationships between users and OBS extended permissions
+	 * 获取用户与OBS扩展权限关系集合
+	 * @return 用户与OBS扩展权限关系集合
 	 */
     public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
 		if(extensionPermissionMap == null) {
@@ -428,8 +428,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
 	}
 
     /**
-     * Set the set of relationships between users and OBS extension permissions.
-     * @param extensionPermissionMap Set of relationships between users and OBS extended permissions
+     * 设置用户与OBS扩展权限关系集合
+     * @param extensionPermissionMap 用户与OBS扩展权限关系集合
      */
 	public void setExtensionPermissionMap(Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap) {
 		if(extensionPermissionMap == null) {

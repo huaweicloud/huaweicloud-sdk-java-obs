@@ -21,7 +21,7 @@ import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TaskProgressStatus;
 
 /**
- * Folders in a bucket that supports the file interface
+ * 支持文件接口的桶中的文件夹
  *
  */
 public class ObsFSFolder extends PutObjectResult{
@@ -34,9 +34,9 @@ public class ObsFSFolder extends PutObjectResult{
 	}
 
 	/**
-	 * Obtain folder properties.
-	 * @return Folder properties
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 获取文件夹的属性
+	 * @return 文件夹的属性
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public ObsFSAttribute attribute() throws ObsException{
 		this.checkInternalClient();
@@ -44,10 +44,10 @@ public class ObsFSFolder extends PutObjectResult{
 	}
 	
 	/**
-	 * Rename a folder.
-	 * @param newName New folder name
-	 * @return Response to the request for renaming a folder
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 重命名文件夹
+	 * @param newName 新的文件夹名
+	 * @return 重命名文件夹响应结果
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public RenameResult rename(String newName) throws ObsException{
 		this.checkInternalClient();
@@ -56,8 +56,8 @@ public class ObsFSFolder extends PutObjectResult{
 	}
 	
 	/**
-	 * Delete a folder.
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+	 * 删除文件夹
+	 * @throws ObsException OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
 	 */
 	public TaskProgressStatus dropFolder() throws ObsException {
 	    this.checkInternalClient();

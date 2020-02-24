@@ -19,11 +19,11 @@ import java.util.Arrays;
 import com.obs.services.internal.Constants;
 
 /**
- * SSE-C encryption/decryption headers
+ * SSE-C加解密头域信息
  */
 public class SseCHeader
 {
-   
+    
     private ServerAlgorithm algorithm;
     
     private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.AES256;
@@ -33,9 +33,9 @@ public class SseCHeader
     private String sseCKeyBase64;
     
     /**
-     * Obtain the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey."
+     * 获取加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
-     * @return Encryption algorithm type
+     * @return 加密算法类型
      */
     @Deprecated
     public ServerAlgorithm getAlgorithm()
@@ -44,9 +44,9 @@ public class SseCHeader
     }
     
     /**
-     * Set the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey."
+     * 设置加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
-     * @param algorithm Encryption algorithm type
+     * @param algorithm 加密算法类型
      */
     @Deprecated
     public void setAlgorithm(ServerAlgorithm algorithm)
@@ -56,18 +56,18 @@ public class SseCHeader
     
     
     /**
-     * Obtain the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey".
+     * 获取加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
-     * @return Encryption algorithm type
+     * @return 加密算法类型
      */
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }
     
     /**
-     * Obtain the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * 获取SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
-     * @return Key used in the SSE-C mode
+     * @return SSE-C方式下使用的密钥
      */
     public byte[] getSseCKey()
     {
@@ -75,9 +75,9 @@ public class SseCHeader
     }
     
     /**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
-     * @param sseCKey Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKey SSE-C方式下使用的密钥，用于加解密对象
      */
     @Deprecated
     public void setSseCKey(String sseCKey)
@@ -92,9 +92,9 @@ public class SseCHeader
     }
     
     /**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
-     * @param sseCKey Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKey SSE-C方式下使用的密钥，用于加解密对象
      */
     public void setSseCKey(byte[] sseCKey)
     {
@@ -102,18 +102,18 @@ public class SseCHeader
     }
     
     /**
-     * Obtain the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is a Base64-encoded value.
+     * 获取SSE-C方式下使用的密钥，用于加解密对象，该值是密钥进行base64encode后的值
      * 
-     * @return Key used in the SSE-C mode
+     * @return SSE-C方式下使用的密钥
      */
 	public String getSseCKeyBase64() {
 		return sseCKeyBase64;
 	}
 
 	/**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is a Base64-encoded value.
+     * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥进行base64encode后的值
      * 
-     * @param sseCKeyBase64 Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKeyBase64 SSE-C方式下使用的密钥，用于加解密对象
      */
 	public void setSseCKeyBase64(String sseCKeyBase64) {
 		this.sseCKeyBase64 = sseCKeyBase64;
@@ -126,5 +126,3 @@ public class SseCHeader
 	
 	
 }
-
-

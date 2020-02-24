@@ -2,6 +2,10 @@ package com.oef.services.model;
 
 import com.obs.services.model.HeaderResponse;
 
+/**
+ * 获取dis通知策略响应结果
+ *
+ */
 public class GetDisPolicyResult extends HeaderResponse {
 	private DisPolicy policy;
 	

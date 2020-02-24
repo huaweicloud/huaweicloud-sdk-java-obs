@@ -14,135 +14,135 @@
 package com.obs.services.model;
 
 /**
- * Special operator, which indicates the sub-resource to be operated
+ * 特殊操作符，代表要操作的子资源
  */
 public enum SpecialParamEnum
 {
     
     /**
-     * Obtain the bucket location information.
+     * 获取桶区域位置信息
      */
     LOCATION("location"),
     /**
-     * Obtain bucket storage information.
+     * 获取桶存量信息
      */
     STORAGEINFO("storageinfo"),
     /**
-     * Obtain or set the bucket quota.
+     * 获取/设置桶配额
      */
     QUOTA("quota"),
     /**
-     * Obtain or set the ACL of the bucket (object).
+     * 获取/设置桶（对象）设置访问权限
      */
     ACL("acl"),
     /**
-     * Obtain the logging settings of or configure logging for a bucket.
+     * 获取/设置桶日志管理配置
      */
     LOGGING("logging"),
     /**
-     * Obtain, set, or delete bucket policies.
+     * 获取/设置/删除桶策略
      */
     POLICY("policy"),
     /**
-     * Obtain, set, or delete bucket lifecycle rules.
+     * 获取/设置/删除桶的生命周期规则
      */
     LIFECYCLE("lifecycle"),
     /**
-     * Obtain or delete website hosting settings of or configure website hosting for a bucket.
+     * 获取/设置/删除桶的托管配置
      */
     WEBSITE("website"),
     /**
-     * Obtain or set the versioning status of a bucket.
+     * 获取/设置桶的多版本状态
      */
     VERSIONING("versioning"),
     /**
-     * Obtain or set bucket storage policies.
+     * 获取/设置桶的存储策略
      */
     @Deprecated
     STORAGEPOLICY("storagePolicy"),
     /**
-     * Obtain or set the bucket storage class. 
+     * 获取/设置桶的存储类型
      */
     STORAGECLASS("storageClass"),
     /**
-     * Obtain, set, or delete the CORS rules of a bucket.
+     * 获取/设置/删除桶的跨域资源共享配置
      */
     CORS("cors"),
     /**
-     * List or initialize multipart uploads.
+     * 列举/初始化分段上传任务
      */
     UPLOADS("uploads"),
     /**
-     * List versioning objects in a bucket.
+     * 列举桶内多版本对象
      */
     VERSIONS("versions"),
     /**
-     * Delete objects in a batch.
+     * 批量删除对象
      */
     DELETE("delete"),
     
     /**
-     * Restore an Archive object.
+     * 取回归档存储对象
      */
     RESTORE("restore"),
     
     /**
-     * Obtain, set, or delete bucket tags.
+     * 设置/获取/删除桶标签
      */
     TAGGING("tagging"),
     
     /**
-     * Configure bucket notification or obtain bucket notification configuration.
+     * 设置/获取桶的通知配置
      */
     NOTIFICATION("notification"),
 	
 	/**
-     * Set, obtain, or delete the cross-region replication configuration of a bucket.
+     * 设置/获取/删除桶的跨Region复制配置
      */
     REPLICATION("replication"),
     
     /**
-     * Perform an appendable upload.
+     * 追加上传对象
      */
     APPEND("append"),
     
     /**
-     * Rename a file or folder.
+     * 重命名文件/文件夹
      */
     RENAME("rename"),
     
     /**
-     * Truncate a file.
+     * 截断文件
      */
     TRUNCATE("truncate"),
     
     /**
-     * Modify a file.
+     * 修改文件
      */
 	MODIFY("modify"),
 	
 	/**
-	 * Configure the file gateway feature.
+	 * 设置文件网关特性
 	 */
 	FILEINTERFACE("fileinterface"),
 	
 	/**
-	 * Set or delete object properties.
+	 * 设置/删除对象属性
 	 */
 	METADATA("metadata"),
 	
 	/**
-	 * Set, obtain, or delete the encryption configuration of a bucket.
+	 * 设置/获取/删除桶的加密配置
 	 */
 	ENCRYPTION("encryption"),
 	
 	/**
-	 * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
+	 * 设置/获取/删除桶归档对象直读策略
 	 */
 	DIRECTCOLDACCESS("directcoldaccess"); 
     
     /**
-     * Specify the corresponding code in the database and the external code.
+     * stringCode对应数据库中和外部的Code
      */
     private String stringCode;
     

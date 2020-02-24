@@ -19,7 +19,7 @@ import java.io.InputStream;
 import com.obs.services.model.AppendObjectRequest;
 
 /**
- * Parameters in a request for writing data to a file
+ * 写文件内容的请求参数
  *
  */
 public class WriteFileRequest extends AppendObjectRequest{
@@ -29,9 +29,9 @@ public class WriteFileRequest extends AppendObjectRequest{
 	}
 	
 	 /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 文件名
      */
     public WriteFileRequest(String bucketName, String objectKey)
     {
@@ -40,10 +40,10 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param file Local path to the file
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 文件名
+     * @param file 本地文件路径
      */
     public WriteFileRequest(String bucketName, String objectKey, File file)
     {
@@ -52,11 +52,11 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param file Local path to the file
-     * @param position Start position for writing data to a file
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 文件名
+     * @param file 本地文件路径
+     * @param position 写文件的起始位置
      */
     public WriteFileRequest(String bucketName, String objectKey, File file, long position)
     {
@@ -65,10 +65,10 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param input Data stream to be uploaded
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 文件名
+     * @param input 待上传的数据流
      */
     public WriteFileRequest(String bucketName, String objectKey, InputStream input)
     {
@@ -77,11 +77,11 @@ public class WriteFileRequest extends AppendObjectRequest{
     }
     
     /**
-     * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param input Data stream to be uploaded
-     * @param position Start position for writing data to a file
+     * 构造函数
+     * @param bucketName 桶名
+     * @param objectKey 文件名
+     * @param input 待上传的数据流
+     * @param position 写文件的起始位置
      */
     public WriteFileRequest(String bucketName, String objectKey, InputStream input, long position)
     {
@@ -89,5 +89,3 @@ public class WriteFileRequest extends AppendObjectRequest{
     	this.position = position;
     }
 }
-
-

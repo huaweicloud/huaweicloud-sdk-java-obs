@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * Route rules for redirection
+ * 重定向时的路由规则配置
  */
 public class RouteRule
 {
@@ -23,8 +23,8 @@ public class RouteRule
     private Redirect redirect;
     
     /**
-     * Obtain the redirection condition.
-     * @return Redirection condition 
+     * 获取重定向条件
+     * @return 重定向条件
      */
     public RouteRuleCondition getCondition()
     {
@@ -32,8 +32,8 @@ public class RouteRule
     }
     
     /**
-     * Set the redirection condition
-     * @param condition Redirection condition
+     * 设置重定向条件
+     * @param condition 重定向条件
      */
     public void setCondition(RouteRuleCondition condition)
     {
@@ -41,8 +41,8 @@ public class RouteRule
     }
     
     /**
-     * Obtain the redirection configuration.
-     * @return Redirection configuration 
+     * 获取重定向配置
+     * @return 重定向配置
      */
     public Redirect getRedirect()
     {
@@ -50,8 +50,8 @@ public class RouteRule
     }
     
     /**
-     * Configure the redirection.
-     * @param redirect Redirection configuration
+     * 设置重定向配置
+     * @param redirect 重定向配置
      */
     public void setRedirect(Redirect redirect)
     {
