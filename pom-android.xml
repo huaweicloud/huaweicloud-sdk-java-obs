@@ -4,7 +4,7 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.19.12</version>
+	<version>3.20.1</version>
 
 	<name>OBS SDK for Android</name>
 	<description>The OBS SDK for Android used for accessing Object Storage Service</description>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>3.11.0</version>
+			<version>3.14.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okio</groupId>
@@ -58,7 +58,7 @@
 
 	<build>
 		<sourceDirectory>app/src/main/java</sourceDirectory>
-		<testSourceDirectory>app/src/test/java</testSourceDirectory>
+		<testSourceDirectory>app/src/test/java/samples_java</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -116,7 +116,7 @@
 					<target>1.7</target>
 					<docencoding>UTF-8</docencoding>
 					<charset>UTF-8</charset>
-					<excludePackageNames>*.internal.*:*.log:*.proxy</excludePackageNames>
+					<excludePackageNames>*.internal.*:*.log:*.proxy:okio</excludePackageNames>
 					<destDir>${project.build.directory}/doc</destDir>
 				</configuration>
 				<executions>

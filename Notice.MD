@@ -282,7 +282,7 @@ License: Apache License V2.0
 Please see above.  
 
 
-Software: okhttp-3.11.0	
+Software: okhttp-3.14.2	
 Copyright notice:   
 Copyright (C) 2012 Google Inc.  
 Copyright (C) 2011 The Android Open Source Project  
