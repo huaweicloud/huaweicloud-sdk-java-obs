@@ -28,10 +28,6 @@
 		<source>${project.basedir}/Notice.MD</source>
 		<outputDirectory>/</outputDirectory>
 	</file>
-    <file>
-      <source>${project.basedir}/Help on License</source>
-      <outputDirectory>/</outputDirectory>
-    </file>
 	  
   </files>
       <fileSets>
