@@ -8,18 +8,28 @@
   </formats>
   <!-- 无需wrapp -->
   <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+       <dependencySet>
+           <useProjectArtifact>true</useProjectArtifact>
+           <outputDirectory>/libs</outputDirectory>
+           <unpack>false</unpack>
+           <scope>runtime</scope>
+		    <excludes>
+           		<!--<exclude>com.jamesmurty.utils:java-xmlbuilder</exclude>-->
+           </excludes>
+       </dependencySet>
+  </dependencySets>
   <files>
     <file>
       <source>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</source>
       <outputDirectory>/</outputDirectory>
       <destName>esdk-obs-android-${project.version}-javadoc.jar</destName>
     </file>
-	 <!--
 	<file>
-		<source>${project.basedir}/app/build/intermediates/bundles/release/classes.jar</source>
+		<source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
 		<outputDirectory>/</outputDirectory>
-		<destName>${project.artifactId}-${project.version}.jar</destName>  
-	</file> -->
+		<destName>esdk-obs-android-${project.version}.jar</destName>
+	</file>
     <file>
       <source>${project.basedir}/LICENSE</source>
       <outputDirectory>/</outputDirectory>
@@ -38,6 +48,17 @@
         <fileSet>
             <directory>${project.build.directory}/doc</directory>
             <outputDirectory>/doc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/app</directory>
+            <outputDirectory>/source</outputDirectory>
+            <excludes>
+            	<exclude>src/test/**</exclude>
+            	<exclude>build/**</exclude>
+            	<exclude>.gitignore</exclude>
+            	<exclude>build.gradle</exclude>
+            	<exclude>proguard-rules.pro</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 </assembly>
