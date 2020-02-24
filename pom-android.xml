@@ -116,7 +116,7 @@
 					<target>1.7</target>
 					<docencoding>UTF-8</docencoding>
 					<charset>UTF-8</charset>
-					<excludePackageNames>*.internal.*:*.log:*.proxy</excludePackageNames>
+					<excludePackageNames>*.internal.*:*.log:*.proxy:okio</excludePackageNames>
 					<destDir>${project.build.directory}/doc</destDir>
 				</configuration>
 				<executions>
