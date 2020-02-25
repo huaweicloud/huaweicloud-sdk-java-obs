@@ -71,7 +71,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>${basedir}/gradlew</executable>
+							<executable>${basedir}/gradlew.bat</executable>
 							<arguments>
 								<argument>build</argument>
 							</arguments>
