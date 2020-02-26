@@ -17,11 +17,15 @@ jobs:
       run: mvn clean install -f pom-java.xml
     - name: Upload artifact
       if: success()
-      uses: actions/upload-artifact@v1.0.0
+    - run: mkdir esdk-obs-java-cn-on-github
+    - uses: montudor/action-zip@v0.1.0
+      with:
+          args: zip -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-*
+    - uses: actions/upload-artifact@master
       with:
         # Artifact name
         name: esdk-obs-java-cn-on-github
         # Destination path
-        path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
+        path: ./esdk-obs-java-cn-on-github/
     #- name: sbt to Maven Central
     #  uses: cosmincatalin/sbt-to-maven-central@v1.0.6
