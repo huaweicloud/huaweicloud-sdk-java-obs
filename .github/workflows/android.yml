@@ -13,5 +13,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.7
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: "Run test suite"
+      uses: msfjarvis/setup-android@1.0
+      with:
+        entrypoint: ./gradlew
+        args: build
