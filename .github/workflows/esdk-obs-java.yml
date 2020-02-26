@@ -13,23 +13,13 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.7
-    - name: Build with Maven
+    - name: Build Java SDK - CN
       run: mvn clean install -f pom-java.xml
-    - name: mk dir 
+    - name: Mkdir For Java SDK 
       run: mkdir esdk-obs-java-cn-on-github
-    - name: cp files
+    - name: cp file java sdk into output directory
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-cn-on-github
-    #- name: Build Zip File
-    #  uses: thedoctor0/zip-release@master
-    #  with:
-    #    filename: 'test.zip'
-    #    path:  /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
-    #    exclusions: '*.git* /*node_modules/* .editorconfig'
-    #    
-    #  #uses: montudor/action-zip@v0.1.0
-    #  #with:
-    #  #    args: zip -qq -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
-    - name: Upload artifact
+    - name: Upload Java SDK - CN
       if: success()
       uses: actions/upload-artifact@master
       with:
@@ -37,5 +27,18 @@ jobs:
         name: esdk-obs-java-cn-on-github
         # Destination path
         path: ./esdk-obs-java-cn-on-github/
-    #- name: sbt to Maven Central
-    #  uses: cosmincatalin/sbt-to-maven-central@v1.0.6
+    
+    - name: Build Android SDK - CN
+      run: mvn clean install -f pom-android.xml
+    - name: Mkdir For Android SDK
+      run: mkdir esdk-obs-android-cn-on-github
+    - name: cp file android sdk into output directory
+      run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-android-* ./esdk-obs-android-cn-on-github
+    - name: Upload Android SDK - CN
+      if: success()
+      uses: actions/upload-artifact@master
+      with:
+        # Artifact name
+        name: esdk-obs-android-cn-on-github
+        # Destination path
+        path: ./esdk-obs-android-cn-on-github/
