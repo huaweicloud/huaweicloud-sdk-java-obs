@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.7
-    - name: Build Java SDK - CN
+    - name: 编译中文版本Java SDK
       run: mvn clean install -f pom-java.xml
     - name: Mkdir For Java SDK 
       run: mkdir esdk-obs-java-cn-on-github
