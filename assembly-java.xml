@@ -8,6 +8,7 @@
   </formats>
   <!-- 无需wrapp -->
   <includeBaseDirectory>false</includeBaseDirectory>
+  
   <dependencySets>
        <dependencySet>
            <useProjectArtifact>true</useProjectArtifact>
@@ -19,6 +20,7 @@
            </excludes>
        </dependencySet>
   </dependencySets>
+  
   <files>
     <file>
       <source>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</source>
@@ -53,6 +55,10 @@
             <directory>${project.basedir}/app/src/test/java/samples_java</directory>
             <outputDirectory>/samples_java</outputDirectory>
         </fileSet>
+        <fileSet>
+			<directory>${project.basedir}/app/src/third_part</directory>
+			<outputDirectory>/third_part</outputDirectory>
+		</fileSet>
         <fileSet>
             <directory>${project.build.directory}/doc</directory>
             <outputDirectory>/doc</outputDirectory>
