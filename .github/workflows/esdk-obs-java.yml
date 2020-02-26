@@ -13,18 +13,18 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.7
-    - name: 编译中文版本Java SDK
+    - name: 编译常规的 Java SDK
       run: mvn clean install -f pom-java.xml
-    - name: Mkdir For Java SDK 
+    - name: 创建存放Java SDK的目录(esdk-obs-java-cn-on-github)
       run: mkdir esdk-obs-java-cn-on-github
-    - name: cp file java sdk into output directory
+    - name: 拷贝Java SDK的编译结果到目录(esdk-obs-java-cn-on-github)
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-cn-on-github
-    - name: Build Java Optimization SDK - CN
+    - name: 编译性能优化后的 Java SDK
       run: mvn clean install -f pom-java-optimization.xml
-    - name: cp file java optimization sdk into output directory
+    - name: 拷贝性能优化后的Java SDK的编译结果到目录(esdk-obs-java-cn-on-github)
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-optimization-*.jar ./esdk-obs-java-cn-on-github
       
-    - name: Upload Java SDK - CN
+    - name: 上传Java SDK输出件
       if: success()
       uses: actions/upload-artifact@master
       with:
@@ -33,13 +33,13 @@ jobs:
         # Destination path
         path: ./esdk-obs-java-cn-on-github/
       
-    - name: Build Android SDK - CN
+    - name: 编译常规的 Android SDK
       run: mvn clean install -f pom-android.xml
-    - name: Mkdir For Android SDK
+    - name: 创建存放Android SDK的目录(esdk-obs-android-cn-on-github)
       run: mkdir esdk-obs-android-cn-on-github
-    - name: cp file android sdk into output directory
+    - name: 拷贝Java SDK的编译结果到目录(esdk-obs-android-cn-on-github)
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-android-* ./esdk-obs-android-cn-on-github
-    - name: Upload Android SDK - CN
+    - name: 上传Android SDK输出件
       if: success()
       uses: actions/upload-artifact@master
       with:
