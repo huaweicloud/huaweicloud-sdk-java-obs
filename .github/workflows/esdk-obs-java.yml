@@ -22,6 +22,6 @@ jobs:
         # Artifact name
         name: esdk-obs-java-cn-on-github
         # Destination path
-        path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
+        path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-*
     #- name: sbt to Maven Central
     #  uses: cosmincatalin/sbt-to-maven-central@v1.0.6
