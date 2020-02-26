@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs.svg?branch=master)](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs)
 [![Coverage Status](https://coveralls.io/repos/github/huaweicloud/huaweicloud-sdk-java-obs/badge.svg?branch=master)](https://coveralls.io/github/huaweicloud/huaweicloud-sdk-java-obs?branch=master)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.huaweicloud/huaweicloud-sdk-java-obs/badge.svg)](https://search.maven.org/artifact/com.huaweicloud/esdk-obs-java) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.huaweicloud/huaweicloud-sdk-java-obs/badge.svg)](https://search.maven.org/search?q=g:com.huaweicloud%20AND%20a:esdk-obs-java) 
 -----------------------------------------------------------------------------------
 
 Version 3.20.1
