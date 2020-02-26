@@ -1,4 +1,4 @@
-Visit count: [![HitCount](http://hits.dwyl.io/chenliang613/huaweicloud/ModelArts-Lab.svg)](http://hits.dwyl.io/chenliang613/huaweicloud/ModelArts-Lab)
+Visit count: [![HitCount](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs.svg)](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs)
 -----------------------------------------------------------------------------------
 
 Version 3.20.1
