@@ -16,8 +16,9 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -f pom-java.xml
     - name: mk dir 
-    - run: mkdir esdk-obs-java-cn-on-github
-    - run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-cn-on-github
+      run: mkdir esdk-obs-java-cn-on-github
+    - name: cp files
+      run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-cn-on-github
     - name: Build Zip File
       uses: thedoctor0/zip-release@master
       with:
