@@ -19,16 +19,16 @@ jobs:
       run: mkdir esdk-obs-java-cn-on-github
     - name: cp files
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-cn-on-github
-    - name: Build Zip File
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: 'test.zip'
-        path:  /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
-        exclusions: '*.git* /*node_modules/* .editorconfig'
-        
-      #uses: montudor/action-zip@v0.1.0
-      #with:
-      #    args: zip -qq -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
+    #- name: Build Zip File
+    #  uses: thedoctor0/zip-release@master
+    #  with:
+    #    filename: 'test.zip'
+    #    path:  /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
+    #    exclusions: '*.git* /*node_modules/* .editorconfig'
+    #    
+    #  #uses: montudor/action-zip@v0.1.0
+    #  #with:
+    #  #    args: zip -qq -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
     - name: Upload artifact
       if: success()
       uses: actions/upload-artifact@master
