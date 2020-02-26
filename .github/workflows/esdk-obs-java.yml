@@ -9,19 +9,41 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up JDK 1.8
+    - name: Set up JDK 1.7
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
-    - name: Build with Maven
+        java-version: 1.7
+    - name: 编译常规的 Java SDK
       run: mvn clean install -f pom-java.xml
-    - name: Upload artifact
+    - name: 创建存放Java SDK的目录(esdk-obs-java-en-on-github)
+      run: mkdir esdk-obs-java-en-on-github
+    - name: 拷贝Java SDK的编译结果到目录(esdk-obs-java-en-on-github)
+      run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-en-on-github
+    - name: 编译性能优化后的 Java SDK
+      run: mvn clean install -f pom-java-optimization.xml
+    - name: 拷贝性能优化后的Java SDK的编译结果到目录(esdk-obs-java-cn-on-github)
+      run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-optimization-*.jar ./esdk-obs-java-en-on-github
+      
+    - name: 上传Java SDK输出件
       if: success()
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@master
       with:
         # Artifact name
         name: esdk-obs-java-en-on-github
         # Destination path
-        path: /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/
-    #- name: sbt to Maven Central
-    #  uses: cosmincatalin/sbt-to-maven-central@v1.0.6
+        path: ./esdk-obs-java-en-on-github/
+      
+    - name: 编译常规的 Android SDK
+      run: mvn clean install -f pom-android.xml
+    - name: 创建存放Android SDK的目录(esdk-obs-android-en-on-github)
+      run: mkdir esdk-obs-android-en-on-github
+    - name: 拷贝Java SDK的编译结果到目录(esdk-obs-android-en-on-github)
+      run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-android-* ./esdk-obs-android-en-on-github
+    - name: 上传Android SDK输出件
+      if: success()
+      uses: actions/upload-artifact@master
+      with:
+        # Artifact name
+        name: esdk-obs-android-en-on-github
+        # Destination path
+        path: ./esdk-obs-android-en-on-github/
