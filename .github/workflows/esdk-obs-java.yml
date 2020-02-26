@@ -20,7 +20,7 @@ jobs:
     - name: Build Zip File
       uses: montudor/action-zip@v0.1.0
       with:
-          args: zip -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-*
+          args: zip -qq -r ./esdk-obs-java-cn-on-github/huaweicloud-obs-sdk-java_3.20.1.zip /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-*
     - name: Upload artifact
       if: success()
       uses: actions/upload-artifact@master
