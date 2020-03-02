@@ -4,7 +4,8 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.20.1</version>
+	<version>3.20.2</version>
+	<packaging>jar</packaging>
 
 	<name>OBS SDK for Android</name>
 	<description>The OBS SDK for Android used for accessing Object Storage Service</description>
@@ -26,7 +27,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
@@ -97,9 +97,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<encoding>UTF-8</encoding>
 					<source>1.7</source>
 					<target>1.7</target>
-					<encoding>UTF-8</encoding>
 				</configuration>
 				<executions>
 					<execution>
@@ -129,6 +129,17 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>okio/*</exclude> 
+					</excludes>
+				</configuration>
+			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
