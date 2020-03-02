@@ -50,6 +50,7 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.consensus.CacheManager;
 import com.obs.services.internal.consensus.SegmentLock;
+import com.obs.services.internal.ext.ExtObsConstraint;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.UnrecoverableIOException;
 import com.obs.services.internal.security.BasicSecurityKey;
@@ -79,6 +80,9 @@ public abstract class RestStorageService {
     private static final Set<Class<? extends IOException>> nonRetriableClasses = new HashSet<Class<? extends IOException>>();
 
     private static final String REQUEST_TIMEOUT_CODE = "RequestTimeout";
+    
+    // for example:Caused by: java.io.IOException: unexpected end of stream on Connection{...}
+    private static final String UNEXPECTED_END_OF_STREAM_EXCEPTION = "unexpected end of stream";
 
     static {
         nonRetriableClasses.add(UnknownHostException.class);
@@ -241,6 +245,23 @@ public abstract class RestStorageService {
             }
         }
 
+        if (call.isCanceled()) {
+            return false;
+        }
+
+        return true;
+    }
+    
+    private boolean retryRequestForUnexpectedException(IOException exception, int executionCount, int retryMaxCount, Call call) {
+        if (null == exception
+                || executionCount > retryMaxCount) {
+            return false;
+        }
+        
+        if(!exception.getMessage().contains(UNEXPECTED_END_OF_STREAM_EXCEPTION)) {
+            return false;
+        }
+        
         if (call.isCanceled()) {
             return false;
         }
@@ -583,11 +604,14 @@ public abstract class RestStorageService {
 
             boolean completedWithoutRecoverableError = false;
             int internalErrorCount = 0;
+            int unexpectedErrorCount = 0;
             boolean wasRecentlyRedirected = false;
             Exception lastException = null;
             int responseCode = -1;
             int retryMaxCount = obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
                     ObsConstraint.HTTP_RETRY_MAX_VALUE);
+            int unexpectedRetryMaxCount = obsProperties.getIntProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
+                    ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION);
             do {
                 if (!wasRecentlyRedirected) {
                     if (doSignature) {
@@ -617,6 +641,15 @@ public abstract class RestStorageService {
                         }
                     }
                     lastException = e;
+                    
+                    // for example:Caused by: java.io.IOException: unexpected end of stream on Connection{...}
+                    if(retryRequestForUnexpectedException(e, ++unexpectedErrorCount, unexpectedRetryMaxCount, call)) {
+                        if (log.isErrorEnabled()) {
+                            log.error("unexpected end of stream excepiton.");
+                        }
+                        continue;
+                    }
+                    
                     if (retryRequest(e, ++internalErrorCount, retryMaxCount, request, call)) {
                         long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
                         Thread.sleep(delayMs);

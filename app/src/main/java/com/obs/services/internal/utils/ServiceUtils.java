@@ -59,6 +59,8 @@ import com.obs.services.internal.Constants;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ObsProperties;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.ext.ExtObsConfiguration;
+import com.obs.services.internal.ext.ExtObsConstraint;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpProtocolTypeEnum;
 
@@ -757,6 +759,14 @@ public class ServiceUtils {
             obsProperties.setProperty(ObsConstraint.PROXY_WORKSTATION, config.getHttpProxy().getWorkstation());
         }
 
+        if(config instanceof ExtObsConfiguration) {
+            // retry in okhttp
+            obsProperties.setProperty(ExtObsConstraint.IS_RETRY_ON_CONNECTION_FAILURE_IN_OKHTTP, String.valueOf(((ExtObsConfiguration)config).isRetryOnConnectionFailureInOkhttp()));
+            
+            // retry on unexpected end exception
+            obsProperties.setProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION, String.valueOf(((ExtObsConfiguration)config).getMaxRetryOnUnexpectedEndException()));
+        }
+        
         return obsProperties;
     }
 
