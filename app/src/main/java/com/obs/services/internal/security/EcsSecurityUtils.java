@@ -11,17 +11,16 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.security;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class EcsSecurityUtils {
     /**
@@ -36,7 +35,7 @@ public class EcsSecurityUtils {
 
     private static final String EC2_METADATA_SERVICE_OVERRIDE_URL = "ecsMetadataServiceOverrideEndpoint";
 
-    private static final long HTTP_CONNECT_TIMEOUT_VALUE = 50 * 1000;
+    private static final long HTTP_CONNECT_TIMEOUT_VALUE = 30 * 1000;
 
     private static OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false)
             .retryOnConnectionFailure(true).cache(null).connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
@@ -46,9 +45,8 @@ public class EcsSecurityUtils {
      * Returns the temporary security credentials (access, secret, securitytoken,
      * and expires_at) associated with the IAM roles on the instance.
      */
-    public static List<String> getSecurityKeyInfoWithDetail() throws IOException {
-        List<String> list = getResourceWithDetail(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
-        return list;
+    public static String getSecurityKeyInfoWithDetail() throws IOException {
+        return getResourceWithDetail(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
     }
 
     /**
@@ -63,14 +61,13 @@ public class EcsSecurityUtils {
      * Get resource and return contents from metadata service
      * with the specify path.
      */
-    private static List<String> getResourceWithDetail(String endpoint) throws IOException {
+    private static String getResourceWithDetail(String endpoint) throws IOException {
         Request.Builder builder = new Request.Builder();
         builder.header("Accept", "*/*");
         Request request = builder.url(endpoint).get().build();
         Call c = httpClient.newCall(request);
         Response res = null;
         String content = "";
-        List<String> list = new ArrayList<String>();
         try {
             res = c.execute();
             String header = "";
@@ -80,20 +77,17 @@ public class EcsSecurityUtils {
             if (res.body() != null) {
                 content = res.body().string();
             }
-            String detail = "Get securityKey form ECS failed code:" + res.code() + " the headers : " + header + "the content : " + content;
 
             if(!(res.code() >= 200 && res.code() < 300)){
-                String errorMessage = "Get securityKey form ECS failed the detail : " +detail;
+                String errorMessage = "Get securityKey form ECS failed, Code : " + res.code() + "; Headers : " + header + "; Content : " + content;
                 throw new IllegalArgumentException(errorMessage);
             }
 
-            list.add(content);
-            list.add(detail);
+            return content;
         } finally {
             if (res != null) {
                 res.close();
             }
         }
-        return list;
     }
 }

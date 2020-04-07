@@ -53,6 +53,7 @@ import com.obs.services.model.GetObjectRequest;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.InitiateMultipartUploadRequest;
 import com.obs.services.model.InitiateMultipartUploadResult;
+import com.obs.services.model.MonitorableProgressListener;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.PartEtag;
@@ -90,10 +91,10 @@ public class ResumableClient {
         }
     }
 
-    protected void abortMultipartUploadSilent(String uploadId, String bucketName, String objectKey) {
+    protected void abortMultipartUploadSilent(String uploadId, String bucketName, String objectKey,
+            boolean isRequesterPays) {
         try {
-            AbortMultipartUploadRequest request = new AbortMultipartUploadRequest(bucketName, objectKey, uploadId);
-            this.obsClient.abortMultipartUpload(request);
+            abortMultipartUpload(uploadId, bucketName, objectKey, isRequesterPays);
         } catch (Exception e) {
             if (log.isWarnEnabled()) {
                 log.warn("Abort multipart upload failed", e);
@@ -101,8 +102,10 @@ public class ResumableClient {
         }
     }
 
-    protected HeaderResponse abortMultipartUpload(String uploadId, String bucketName, String objectKey) {
+    protected HeaderResponse abortMultipartUpload(String uploadId, String bucketName, String objectKey,
+            boolean isRequesterPays) {
         AbortMultipartUploadRequest request = new AbortMultipartUploadRequest(bucketName, objectKey, uploadId);
+        request.setRequesterPays(isRequesterPays);
         return this.obsClient.abortMultipartUpload(request);
     }
 
@@ -130,7 +133,7 @@ public class ResumableClient {
                 if (uploadCheckPoint.bucketName != null && uploadCheckPoint.objectKey != null
                         && uploadCheckPoint.uploadID != null) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadCheckPoint.bucketName,
-                            uploadCheckPoint.objectKey);
+                            uploadCheckPoint.objectKey, uploadFileRequest.isRequesterPays());
                 }
                 ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
                 prepare(uploadFileRequest, uploadCheckPoint);
@@ -148,10 +151,10 @@ public class ResumableClient {
                 // 未开启，取消多段
                 if (!uploadFileRequest.isEnableCheckpoint()) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey());
+                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
                 } else if (uploadCheckPoint.isAbort) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey());
+                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
                     ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
                 }
                 throw partResult.getException();
@@ -162,6 +165,7 @@ public class ResumableClient {
         CompleteMultipartUploadRequest completeMultipartUploadRequest = new CompleteMultipartUploadRequest(
                 uploadFileRequest.getBucketName(), uploadFileRequest.getObjectKey(), uploadCheckPoint.uploadID,
                 uploadCheckPoint.partEtags);
+        completeMultipartUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
 
         try {
             CompleteMultipartUploadResult result = this.obsClient
@@ -173,11 +177,11 @@ public class ResumableClient {
         } catch (ObsException e) {
             if (!uploadFileRequest.isEnableCheckpoint()) {
                 this.abortMultipartUpload(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                        uploadFileRequest.getObjectKey());
+                        uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
             } else {
                 if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey());
+                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
                     ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
                 }
             }
@@ -238,7 +242,7 @@ public class ResumableClient {
             } catch (ExecutionException e) {
                 if (!uploadFileRequest.isEnableCheckpoint()) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey());
+                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
                 }
                 throw e;
             }
@@ -282,6 +286,7 @@ public class ResumableClient {
                     uploadPartRequest.setUploadId(uploadCheckPoint.uploadID);
                     uploadPartRequest.setPartSize(uploadPart.size);
                     uploadPartRequest.setPartNumber(uploadPart.partNumber);
+                    uploadPartRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
 
                     if (this.progressManager == null) {
                         uploadPartRequest.setFile(new File(uploadFileRequest.getUploadFile()));
@@ -358,6 +363,7 @@ public class ResumableClient {
         initiateUploadRequest.setSseCHeader(uploadFileRequest.getSseCHeader());
         initiateUploadRequest.setSseKmsHeader(uploadFileRequest.getSseKmsHeader());
         initiateUploadRequest.setMetadata(uploadFileRequest.getObjectMetadata());
+        initiateUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
 
         InitiateMultipartUploadResult initiateUploadResult = this.obsClient
                 .initiateMultipartUpload(initiateUploadRequest);
@@ -367,7 +373,7 @@ public class ResumableClient {
                 uploadCheckPoint.record(uploadFileRequest.getCheckpointFile());
             } catch (Exception e) {
                 this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadCheckPoint.bucketName,
-                        uploadCheckPoint.objectKey);
+                        uploadCheckPoint.objectKey, uploadFileRequest.isRequesterPays());
                 throw e;
             }
         }
@@ -720,6 +726,7 @@ public class ResumableClient {
         try {
             GetObjectMetadataRequest request = new GetObjectMetadataRequest(downloadFileRequest.getBucketName(),
                     downloadFileRequest.getObjectKey(), downloadFileRequest.getVersionId());
+            request.setRequesterPays(downloadFileRequest.isRequesterPays());
             objectMetadata = this.obsClient.getObjectMetadata(request);
         } catch (ObsException e) {
             if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
@@ -734,7 +741,7 @@ public class ResumableClient {
         if (objectMetadata.getContentLength() == 0) {
             ServiceUtils.deleteFileIgnoreException(downloadFileRequest.getTempDownloadFile());
             ServiceUtils.deleteFileIgnoreException(downloadFileRequest.getCheckpointFile());
-            
+
             File dfile = new File(downloadFileRequest.getDownloadFile());
             dfile.getParentFile().mkdirs();
             new RandomAccessFile(dfile, "rw").close();
@@ -771,9 +778,9 @@ public class ResumableClient {
                 if (downloadCheckPoint.tmpFileStatus != null) {
                     ServiceUtils.deleteFileIgnoreException(downloadCheckPoint.tmpFileStatus.tmpFilePath);
                 }
-                
+
                 ServiceUtils.deleteFileIgnoreException(downloadFileRequest.getCheckpointFile());
-                
+
                 prepare(downloadFileRequest, downloadCheckPoint, objectMetadata);
             }
         } else {
@@ -836,57 +843,64 @@ public class ResumableClient {
                 ServiceUtils.closeStream(output);
             }
             if (!tmpfile.delete()) {
+                if (log.isErrorEnabled()) {
+                    log.error("the tmpfile '" + tmpfile
+                            + "' can not delete, please delete it to ensure the download finish.");
+                }
                 throw new IOException("the tmpfile '" + tmpfile
                         + "' can not delete, please delete it to ensure the download finish.");
             }
         }
     }
 
-    private DownloadResult download(DownloadCheckPoint downloadCheckPoint, DownloadFileRequest downloadFileRequest)
-            throws Exception {
+    private DownloadResult download(final DownloadCheckPoint downloadCheckPoint,
+            final DownloadFileRequest downloadFileRequest) throws Exception {
         ArrayList<PartResultDown> taskResults = new ArrayList<PartResultDown>();
         DownloadResult downloadResult = new DownloadResult();
-        ExecutorService service = Executors.newFixedThreadPool(downloadFileRequest.getTaskNum());
         ArrayList<Future<PartResultDown>> futures = new ArrayList<Future<PartResultDown>>();
 
-        ProgressManager progressManager = null;
-        if (downloadFileRequest.getProgressListener() == null) {
-            for (int i = 0; i < downloadCheckPoint.downloadParts.size(); i++) {
-                DownloadPart downloadPart = downloadCheckPoint.downloadParts.get(i);
-                if (!downloadPart.isCompleted) {
-                    Task task = new Task(i, "download-" + i, downloadCheckPoint, i, downloadFileRequest,
-                            this.obsClient);
-                    futures.add(service.submit(task));
-                } else {
-                    taskResults.add(new PartResultDown(i + 1, downloadPart.offset, downloadPart.end));
-                }
-            }
-        } else {
-            List<Task> unfinishedTasks = new LinkedList<Task>();
-            long transferredBytes = 0L;
-            for (int i = 0; i < downloadCheckPoint.downloadParts.size(); i++) {
-                DownloadPart downloadPart = downloadCheckPoint.downloadParts.get(i);
-                if (!downloadPart.isCompleted) {
-                    Task task = new Task(i, "download-" + i, downloadCheckPoint, i, downloadFileRequest,
-                            this.obsClient);
-                    unfinishedTasks.add(task);
-                } else {
-                    transferredBytes += downloadPart.end - downloadPart.offset + 1;
-                    taskResults.add(new PartResultDown(i + 1, downloadPart.offset, downloadPart.end));
-                }
-            }
-
-            progressManager = new ConcurrentProgressManager(downloadCheckPoint.objectStatus.size, transferredBytes,
-                    downloadFileRequest.getProgressListener(), downloadFileRequest.getProgressInterval() > 0
-                            ? downloadFileRequest.getProgressInterval() : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-            for (Task task : unfinishedTasks) {
-                task.setProgressManager(progressManager);
-                futures.add(service.submit(task));
+        List<Task> unfinishedTasks = new LinkedList<Task>();
+        long transferredBytes = 0L;
+        for (int i = 0; i < downloadCheckPoint.downloadParts.size(); i++) {
+            DownloadPart downloadPart = downloadCheckPoint.downloadParts.get(i);
+            if (!downloadPart.isCompleted) {
+                Task task = new Task(i, "download-" + i, downloadCheckPoint, i, downloadFileRequest, this.obsClient);
+                unfinishedTasks.add(task);
+            } else {
+                transferredBytes += downloadPart.end - downloadPart.offset + 1;
+                taskResults.add(new PartResultDown(i + 1, downloadPart.offset, downloadPart.end));
             }
         }
 
+        ProgressManager progressManager = null;
+        if (null != downloadFileRequest.getProgressListener()) {
+            progressManager = new ConcurrentProgressManager(downloadCheckPoint.objectStatus.size, transferredBytes,
+                    downloadFileRequest.getProgressListener(), downloadFileRequest.getProgressInterval() > 0
+                            ? downloadFileRequest.getProgressInterval() : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
+        }
+
+        ExecutorService service = Executors.newFixedThreadPool(downloadFileRequest.getTaskNum());
+        for (Task task : unfinishedTasks) {
+            task.setProgressManager(progressManager);
+            futures.add(service.submit(task));
+        }
+
         service.shutdown();
-        service.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        List<Runnable> notStartTasks = null;
+        try {
+            service.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            notStartTasks = service.shutdownNow();
+            Thread.currentThread().interrupt();
+            throw ie;
+        } finally {
+            if (null != notStartTasks) {
+                if (log.isWarnEnabled()) {
+                    log.warn("there are still " + notStartTasks.size() + " tasks not started for request : "
+                            + downloadFileRequest);
+                }
+            }
+        }
 
         for (Future<PartResultDown> future : futures) {
             try {
@@ -911,7 +925,7 @@ public class ResumableClient {
         private String name;
         private DownloadCheckPoint downloadCheckPoint;
         private int partIndex;
-        private DownloadFileRequest downloadFileRequest;
+        private final DownloadFileRequest downloadFileRequest;
         private ObsClient obsClient;
         private ProgressManager progressManager;
 
@@ -933,12 +947,23 @@ public class ResumableClient {
             PartResultDown tr = new PartResultDown(partIndex + 1, downloadPart.offset, downloadPart.end);
             if (!downloadCheckPoint.isAbort) {
                 try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("start task : " + downloadPart.toString());
+                    }
+                    
+                    // 标记启动一个子任务
+                    if(null != downloadFileRequest.getProgressListener()
+                            && downloadFileRequest.getProgressListener() instanceof MonitorableProgressListener) {
+                        ((MonitorableProgressListener)downloadFileRequest.getProgressListener()).startOneTask();
+                    }
+                    
                     output = new RandomAccessFile(downloadFileRequest.getTempDownloadFile(), "rw");
                     output.seek(downloadPart.offset);
 
                     GetObjectRequest getObjectRequest = new GetObjectRequest(downloadFileRequest.getBucketName(),
                             downloadFileRequest.getObjectKey());
 
+                    getObjectRequest.setRequesterPays(downloadFileRequest.isRequesterPays());
                     getObjectRequest.setIfMatchTag(downloadFileRequest.getIfMatchTag());
                     getObjectRequest.setIfNoneMatchTag(downloadFileRequest.getIfNoneMatchTag());
                     getObjectRequest.setIfModifiedSince(downloadFileRequest.getIfModifiedSince());
@@ -977,8 +1002,18 @@ public class ResumableClient {
                         log.error(String.format("Task %d:%s download part %d failed: ", id, name, partIndex), e);
                     }
                 } finally {
+                    // 结束一个子任务
+                    if(null != this.downloadFileRequest.getProgressListener()
+                            && this.downloadFileRequest.getProgressListener() instanceof MonitorableProgressListener) {
+                        ((MonitorableProgressListener)this.downloadFileRequest.getProgressListener()).finishOneTask();
+                    }
+                    
                     ServiceUtils.closeStream(output);
                     ServiceUtils.closeStream(content);
+                    if (log.isDebugEnabled()) {
+                        log.debug("end task : " + downloadPart.toString());
+                    }
+
                     if (downloadFileRequest.isEnableCheckpoint()) {
                         downloadCheckPoint.updateTmpFile(downloadFileRequest.getTempDownloadFile());
                         downloadCheckPoint.record(downloadFileRequest.getCheckpointFile());
@@ -1009,7 +1044,9 @@ public class ResumableClient {
         downloadCheckPoint.downloadParts = splitObject(downloadCheckPoint.objectStatus.size,
                 downloadFileRequest.getPartSize());
         File tmpfile = new File(downloadFileRequest.getTempDownloadFile());
-        tmpfile.getParentFile().mkdirs();
+        if (null != tmpfile.getParentFile()) {
+            tmpfile.getParentFile().mkdirs();
+        }
         RandomAccessFile randomAccessFile = null;
         try {
             randomAccessFile = new RandomAccessFile(tmpfile, "rw");
@@ -1315,6 +1352,12 @@ public class ResumableClient {
             }
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "DownloadPart [partNumber=" + partNumber + ", offset=" + offset + ", end=" + end + ", isCompleted="
+                    + isCompleted + "]";
+        }
     }
 
     static class PartResultDown {
@@ -1414,7 +1457,6 @@ public class ResumableClient {
         public void setException(Exception exception) {
             this.exception = exception;
         }
-
     }
 
     static class DownloadResult {

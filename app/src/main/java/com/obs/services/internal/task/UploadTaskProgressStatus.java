@@ -74,7 +74,6 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
     	
     	long transferredSize = this.getTransferredSize();
     	long taskTagSize = this.getTaskTagSize();
-    	System.out.println("[UploadTaskProgressStatus]transferredSize:" + transferredSize + ", taskTagSize:" +taskTagSize + ", progressInterval" + progressInterval);
     	if(transferredSize - taskTagSize >= progressInterval) {
     		this.setTaskTagSize(transferredSize);
     		return true;

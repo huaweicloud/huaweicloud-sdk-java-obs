@@ -11,13 +11,13 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * 特殊操作符，代表要操作的子资源
  */
-public enum SpecialParamEnum
-{
+public enum SpecialParamEnum {
     
     /**
      * 获取桶区域位置信息
@@ -55,6 +55,10 @@ public enum SpecialParamEnum
      * 获取/设置桶的多版本状态
      */
     VERSIONING("versioning"),
+    /**
+     * 获取/设置桶的请求者付费状态
+     */
+    REQUEST_PAYMENT("requestPayment"),
     /**
      * 获取/设置桶的存储策略
      */
@@ -146,36 +150,28 @@ public enum SpecialParamEnum
      */
     private String stringCode;
     
-    private SpecialParamEnum(String stringCode)
-    {
-        if (stringCode == null)
-        {
+    private SpecialParamEnum(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("stringCode is null");
         }
         this.stringCode = stringCode;
     }
     
-    public String getStringCode()
-    {
+    public String getStringCode() {
         return this.stringCode.toLowerCase();
     }
     
-    public String getOriginalStringCode()
-    {
+    public String getOriginalStringCode() {
         return this.stringCode;
     }
     
-    public static SpecialParamEnum getValueFromStringCode(String stringCode)
-    {
-        if (stringCode == null)
-        {
+    public static SpecialParamEnum getValueFromStringCode(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("string code is null");
         }
         
-        for (SpecialParamEnum installMode : SpecialParamEnum.values())
-        {
-            if (installMode.getStringCode().equals(stringCode.toLowerCase()))
-            {
+        for (SpecialParamEnum installMode : SpecialParamEnum.values()) {
+            if (installMode.getStringCode().equals(stringCode.toLowerCase())) {
                 return installMode;
             }
         }

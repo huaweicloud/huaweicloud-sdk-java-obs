@@ -16,7 +16,7 @@ package com.obs.services.model;
 /**
  * 列举分段上传任务的请求参数
  */
-public class ListMultipartUploadsRequest
+public class ListMultipartUploadsRequest extends GenericRequest
 {
     private String bucketName;
     

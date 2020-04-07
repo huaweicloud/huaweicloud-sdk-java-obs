@@ -11,30 +11,40 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services;
 
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.security.EcsSecurityUtils;
-import com.obs.services.internal.security.SecurityKey;
-import com.obs.services.internal.security.SecurityKeyBean;
-import com.obs.services.internal.utils.JSONChange;
-import com.obs.services.model.ISecurityKey;
-import com.obs.services.internal.security.LimitedTimeSecurityKey;
+package com.obs.services;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.internal.security.EcsSecurityUtils;
+import com.obs.services.internal.security.LimitedTimeSecurityKey;
+import com.obs.services.internal.security.SecurityKey;
+import com.obs.services.internal.security.SecurityKeyBean;
+import com.obs.services.internal.utils.JSONChange;
+import com.obs.services.model.ISecurityKey;
 
 public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
     private volatile LimitedTimeSecurityKey securityKey;
     private AtomicBoolean getNewKeyFlag = new AtomicBoolean(false);
-    private static final ILogger ILOG = LoggerBuilder.getLogger(ObsClient.class);
+    private static final ILogger ILOG = LoggerBuilder.getLogger(EcsObsCredentialsProvider.class);
+
+    // default is -1, not retry
+    private int maxRetryTimes = -1;
+
+    public EcsObsCredentialsProvider() {
+        this.maxRetryTimes = 3;
+    }
+
+    public EcsObsCredentialsProvider(int maxRetryTimes) {
+        this.maxRetryTimes = maxRetryTimes;
+    }
 
     @Override
     public void setSecurityKey(ISecurityKey securityKey) {
@@ -43,51 +53,54 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
 
     @Override
     public ISecurityKey getSecurityKey() {
-        if (securityKey == null || securityKey.willSoonExpire()) {
-            synchronized (this) {
+        if (getNewKeyFlag.compareAndSet(false, true)) {
+            try {
                 if (securityKey == null || securityKey.willSoonExpire()) {
-                    securityKey = getNewSecurityKey();
+                    refresh(false);
+                } else if (securityKey.aboutToExpire()) {
+                    refresh(true);
                 }
+            } finally {
+                getNewKeyFlag.set(false);
             }
-        } else if (securityKey.aboutToExpire()) {
-            refresh();
+        } else {
+            if (ILOG.isDebugEnabled()) {
+                ILOG.debug("some other thread is refreshing.");
+            }
         }
 
         return securityKey;
     }
 
-    private void refresh() {
-        if (getNewKeyFlag.compareAndSet(false, true)) {
+    /**
+     * 刷新
+     * @param ignoreException  是否忽略异常
+     */
+    private void refresh(boolean ignoreException) {
+        int times = 0;
+        do {
             try {
                 securityKey = getNewSecurityKey();
-            } finally {
-                getNewKeyFlag.set(false);
+            } catch (IOException | RuntimeException e) {
+                ILOG.warn("refresh new security key failed. times : " + times + "; maxRetryTimes is : " + maxRetryTimes + "; ignoreException : " + ignoreException, e);
+
+                if (times >= this.maxRetryTimes) {
+                    ILOG.error("refresh new security key failed.", e);
+                    if (!ignoreException) {
+                        throw new IllegalArgumentException(e);
+                    }
+                }
             }
-        }
+        } while (times++ < maxRetryTimes && maxRetryTimes > 0);
     }
 
-    private LimitedTimeSecurityKey getNewSecurityKey() {
-        SecurityKey securityInfo = null;
-        String detail = null;
-        try {
-            List<String> list = EcsSecurityUtils.getSecurityKeyInfoWithDetail();
-            if (list != null && list.size() == 2) {
-            	String securityKeyInfo = list.get(0);
-                detail = list.get(1);
-                securityInfo = (SecurityKey) JSONChange.jsonToObj(new SecurityKey(), securityKeyInfo);
-            }
-        } catch (ServiceException se) {
-            String errorMessage = "Get securityKey form ECS failed :" + se.getMessage() + " \n the detail : " + detail;
-            ILOG.warn(errorMessage);
-            throw new IllegalArgumentException(errorMessage, se);
-        } catch (IOException e) {
-            String errorMessage = "Get securityKey form ECS failed :" + e.getMessage() + " \n the detail : " + detail;
-            ILOG.warn(errorMessage);
-            throw new IllegalArgumentException(errorMessage, e);
-        }
+    private LimitedTimeSecurityKey getNewSecurityKey() throws IOException, IllegalArgumentException {
+
+        String content = EcsSecurityUtils.getSecurityKeyInfoWithDetail();
+        SecurityKey securityInfo = (SecurityKey) JSONChange.jsonToObj(new SecurityKey(), content);
 
         if (securityInfo == null) {
-            throw new IllegalArgumentException("Invalid securityKey");
+            throw new IllegalArgumentException("Invalid securityKey : " + content);
         }
 
         Date expiryDate = null;

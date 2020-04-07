@@ -19,8 +19,8 @@ import com.obs.services.internal.ObsConstraint;
  * 批量任务请求参数抽象类
  *
  */
-public abstract class AbstractBulkRequest {
-   
+public abstract class AbstractBulkRequest extends GenericRequest {
+
     protected String bucketName;
 
     protected TaskProgressListener listener;
@@ -37,7 +37,6 @@ public abstract class AbstractBulkRequest {
     public AbstractBulkRequest(String bucketName) {
         this.bucketName = bucketName;
     }
-    
 
     /**
      * 获取桶名
@@ -51,7 +50,8 @@ public abstract class AbstractBulkRequest {
     /**
      * 设置桶名
      * 
-     * @param bucketName 桶名
+     * @param bucketName
+     *            桶名
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
@@ -69,7 +69,8 @@ public abstract class AbstractBulkRequest {
     /**
      * 设置批量任务的进度监听器
      * 
-     * @param listener 进度监听器
+     * @param listener
+     *            进度监听器
      */
     public void setProgressListener(TaskProgressListener listener) {
         this.listener = listener;
@@ -87,7 +88,8 @@ public abstract class AbstractBulkRequest {
     /**
      * 设置批量任务的最大并发数，默认为10
      * 
-     * @param taskThreadNum 最大线程数
+     * @param taskThreadNum
+     *            最大线程数
      */
     public void setTaskThreadNum(int taskThreadNum) {
         this.taskThreadNum = taskThreadNum;
@@ -105,7 +107,8 @@ public abstract class AbstractBulkRequest {
     /**
      * 设置批量任务中线程池的工作队列长度，默认为20000
      * 
-     * @param taskQueueNum 工作队列长度
+     * @param taskQueueNum
+     *            工作队列长度
      */
     public void setTaskQueueNum(int taskQueueNum) {
         this.taskQueueNum = taskQueueNum;
@@ -123,7 +126,8 @@ public abstract class AbstractBulkRequest {
     /**
      * 设置任务进度监听器回调的阈值，默认为50
      * 
-     * @param taskProgressInterval 进度监听器回调的阈值
+     * @param taskProgressInterval
+     *            进度监听器回调的阈值
      */
     public void setProgressInterval(int taskProgressInterval) {
         if (taskProgressInterval <= 0) {

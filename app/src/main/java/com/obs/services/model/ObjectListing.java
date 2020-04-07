@@ -24,6 +24,8 @@ public class ObjectListing extends HeaderResponse
     private List<ObsObject> objectSummaries;
     
     private List<String> commonPrefixes;
+
+    private List<ObsObject> extenedCommonPrefixes;
     
     private String bucketName;
     
@@ -43,8 +45,8 @@ public class ObjectListing extends HeaderResponse
     
     
     public ObjectListing(List<ObsObject> objectSummaries, List<String> commonPrefixes, String bucketName,
-			boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
-			String location) {
+                         boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
+                         String location) {
 		super();
 		this.objectSummaries = objectSummaries;
 		this.commonPrefixes = commonPrefixes;
@@ -58,6 +60,12 @@ public class ObjectListing extends HeaderResponse
 		this.location = location;
 	}
 
+    public ObjectListing(List<ObsObject> objectSummaries, List<String> commonPrefixes, String bucketName,
+                         boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
+                         String location, List<ObsObject> extenedCommonPrefixes) {
+        this(objectSummaries, commonPrefixes, bucketName, truncated, prefix, marker, maxKeys, delimiter, nextMarker, location);
+        this.extenedCommonPrefixes = extenedCommonPrefixes;
+    }
 	/**
      * 获取下次请求的起始位置
      * @return 下次请求的起始位置标识
@@ -100,8 +108,21 @@ public class ObjectListing extends HeaderResponse
     	}
         return commonPrefixes;
     }
-    
-    
+
+    /**
+     * 获取分组后的对象名前缀列表
+     *
+     * @return 分组后的对象名前缀列表
+     */
+    public List<ObsObject> getExtenedCommonPrefixes()
+    {
+        if(this.extenedCommonPrefixes == null) {
+            this.extenedCommonPrefixes = new ArrayList<ObsObject>();
+        }
+        return extenedCommonPrefixes;
+    }
+
+
     /**
      * 获取桶名
      * 

@@ -16,7 +16,7 @@ package com.obs.services.model;
 /**
  * 列举桶内多版本对象的请求参数
  */
-public class ListVersionsRequest
+public class ListVersionsRequest extends GenericRequest
 {
     private String bucketName;
     

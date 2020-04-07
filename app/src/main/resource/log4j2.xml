@@ -46,7 +46,7 @@
         </Logger>
 
         <!-- access log -->
-        <Logger name="com.obs.log.AccessLogger" level="INFO"
+        <Logger name="com.obs.log.AccessLogger" level="WARN"
                 additivity="false">
             <AppenderRef ref="AccessLogAppender" />
         </Logger>

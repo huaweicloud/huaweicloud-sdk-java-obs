@@ -1026,11 +1026,11 @@ public abstract class RestStorageService {
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
             Map<String, String> metadata) throws ServiceException {
-        return this.performRestDelete(bucketName, objectKey, requestParameters, metadata, false);
+        return this.performRestDelete(bucketName, objectKey, requestParameters, metadata, true, false);
     }
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> metadata, boolean isOEF) throws ServiceException {
+            Map<String, String> metadata, boolean autoRelease, boolean isOEF) throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters, null,
                 isOEF);
@@ -1039,7 +1039,9 @@ public abstract class RestStorageService {
 
         Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
 
-        result.close();
+        if (autoRelease) {
+            result.close();
+        }
 
         return result;
     }

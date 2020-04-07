@@ -24,7 +24,7 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
     protected String securityToken;
     protected Date expiryDate;
     private static final long expirySeconds = 5 * 60;
-    private static final long willSoonExpireSeconds = 60;
+    private static final long willSoonExpireSeconds = 2 * 60;
 
     public LimitedTimeSecurityKey(String accessKey, String secretKey, String securityToken) {
         super(accessKey, secretKey, securityToken);
@@ -42,10 +42,18 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
         this.expiryDate = ServiceUtils.cloneDateIgnoreNull(expiryDate);
     }
 
+    /**
+     * about 2~5 minutes
+     * @return
+     */
     public boolean aboutToExpire() {
         return (expiryDate.getTime() - getUtcTime().getTime()) >= willSoonExpireSeconds * 1000 && (expiryDate.getTime() - getUtcTime().getTime()) < expirySeconds * 1000;
     }
 
+    /**
+     * less than 2 minutes
+     * @return
+     */
     public boolean willSoonExpire() {
         return expiryDate.before(getUtcTime()) || (expiryDate.getTime() - getUtcTime().getTime()) < willSoonExpireSeconds * 1000;
     }

@@ -13,12 +13,14 @@
  */
 package com.obs.services.model.fs;
 
+import com.obs.services.model.GenericRequest;
+
 /**
  * 删除对象的请求参数
  */
 
-public class DropFileRequest {
-    
+public class DropFileRequest extends GenericRequest {
+
     private String bucketName;
 
     private String objectKey;
@@ -31,8 +33,10 @@ public class DropFileRequest {
     /**
      * 构造函数
      * 
-     * @param bucketName 桶名
-     * @param objectKey  对象名
+     * @param bucketName
+     *            桶名
+     * @param objectKey
+     *            对象名
      */
     public DropFileRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
@@ -42,9 +46,12 @@ public class DropFileRequest {
     /**
      * 构造函数
      * 
-     * @param bucketName 桶名
-     * @param objectKey  对象名
-     * @param versionId  对象版本号
+     * @param bucketName
+     *            桶名
+     * @param objectKey
+     *            对象名
+     * @param versionId
+     *            对象版本号
      */
     public DropFileRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
@@ -64,7 +71,8 @@ public class DropFileRequest {
     /**
      * 设置桶名
      * 
-     * @param bucketName 桶名
+     * @param bucketName
+     *            桶名
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
@@ -82,7 +90,8 @@ public class DropFileRequest {
     /**
      * 设置对象名
      * 
-     * @param objectKey 对象名
+     * @param objectKey
+     *            对象名
      */
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;

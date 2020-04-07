@@ -11,65 +11,58 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
+
+import com.obs.services.model.BaseBucketRequest;
 
 /**
  * 设置桶的文件网关特性状态的请求参数
  *
  */
-public class SetBucketFSStatusRequest {
-	
-	private String bucketName;
-	
-	private FSStatusEnum status;
-	
-	public SetBucketFSStatusRequest() {
-		
-	}
-	
-	/**
-	 * 构造函数
-	 * @param bucketName 桶名
-	 * @param status 桶的文件网关特性状态
-	 */
-	public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
-		super();
-		this.bucketName = bucketName;
-		this.setStatus(status);
-	}
+public class SetBucketFSStatusRequest extends BaseBucketRequest {
 
-	/**
-	 * 获取桶名
-	 * @return 桶名
-	 */
-	public String getBucketName() {
-		return bucketName;
-	}
+    private FSStatusEnum status;
 
-	/**
-	 * 设置桶名
-	 * @param bucketName 桶名
-	 */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    public SetBucketFSStatusRequest() {
 
-	/**
-	 * 获取桶的文件网关特性状态
-	 * @return 桶的文件网关特性状态
-	 */
-	public FSStatusEnum getStatus() {
-		return status;
-	}
+    }
 
-	/**
-	 * 设置桶的文件网关特性状态
-	 * @param status 桶的文件网关特性状态
-	 */
-	public void setStatus(FSStatusEnum status) {
-		this.status = status;
-	}
+    /**
+     * 构造函数
+     * 
+     * @param bucketName
+     *            桶名
+     * @param status
+     *            桶的文件网关特性状态
+     */
+    public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
+        super(bucketName);
+        this.setStatus(status);
+    }
 
+    /**
+     * 获取桶的文件网关特性状态
+     * 
+     * @return 桶的文件网关特性状态
+     */
+    public FSStatusEnum getStatus() {
+        return status;
+    }
 
-	
+    /**
+     * 设置桶的文件网关特性状态
+     * 
+     * @param status
+     *            桶的文件网关特性状态
+     */
+    public void setStatus(FSStatusEnum status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "SetBucketFSStatusRequest [status=" + status + ", getBucketName()=" + getBucketName()
+                + ", isRequesterPays()=" + isRequesterPays() + "]";
+    }
 }

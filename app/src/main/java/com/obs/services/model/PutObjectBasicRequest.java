@@ -20,7 +20,7 @@ import java.util.Set;
 
 import com.obs.services.internal.utils.ServiceUtils;
 
-public abstract class PutObjectBasicRequest {
+public abstract class PutObjectBasicRequest extends GenericRequest {
 
 	
     protected String bucketName;
