@@ -36,6 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -308,7 +309,10 @@ public class ServiceUtils {
         if (log.isDebugEnabled()) {
             log.debug("Cleaning up REST metadata items");
         }
-        Map<String, String> cleanMap = new IdentityHashMap<String, String>();
+        // FIXME
+//        Map<String, String> cleanMap = new IdentityHashMap<String, String>();
+        Map<String, String> cleanMap = new HashMap<String, String>();
+        
         if (metadata != null) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
                 String key = entry.getKey();
@@ -365,7 +369,9 @@ public class ServiceUtils {
                     continue;
                 }
 
-                cleanMap.put(new String(key), value);
+                // FIXME
+//                cleanMap.put(new String(key), value);
+                cleanMap.put(key, value);
             }
         }
         return cleanMap;

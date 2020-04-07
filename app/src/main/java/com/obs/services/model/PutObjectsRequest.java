@@ -27,181 +27,207 @@ import com.obs.services.internal.utils.ServiceUtils;
  *
  */
 public class PutObjectsRequest extends AbstractBulkRequest {
-	private String folderPath;
-	
-	private String prefix;
-	
-	private List<String> filePaths;
+    private String folderPath;
 
-	private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
+    private String prefix;
 
-	// Part size, in bytes, 5 MB by default.
+    private List<String> filePaths;
+
+    private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
+
+    // Part size, in bytes, 5 MB by default.
     private long partSize = 1024 * 1024 * 5l;
-    
-    // Threshold size of a file for multipart upload, in bytes, 100 MB by default.
+
+    // Threshold size of a file for multipart upload, in bytes, 100 MB by
+    // default.
     private long bigfileThreshold = 1024 * 1024 * 100l;
-    
+
     // Number of threads for multipart upload, 1 by default.
     private int taskNum = 1;
-	
+
     private UploadObjectsProgressListener listener;
-    
+
     // Interval for updating the detailed information, 500 KB by default.
     private long taskProgressInterval = 5 * ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
-    
-    // Callback threshold of the data transfer listener of each object, 100 KB by default
+
+    // Callback threshold of the data transfer listener of each object, 100 KB
+    // by default
     private long detailProgressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
-    
+
     private Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap;
-    
+
     private AccessControlList acl;
-    
+
     private String successRedirectLocation;
-    
+
     private SseKmsHeader sseKmsHeader;
-    
+
     private SseCHeader sseCHeader;
-    
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param folderPath Local path from which the folder is uploaded
-	 */
-	public PutObjectsRequest(String bucketName, String folderPath) {
-		super(bucketName);
-		this.folderPath = folderPath;
-	}
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param filePaths List of local paths from which a batch of files are uploaded
-	 */
-	public PutObjectsRequest(String bucketName, List<String> filePaths) {
-		super(bucketName);
-		this.filePaths = filePaths;
-	}
 
-	/**
-	 * Obtain the local path of the uploaded folder.
-	 * @return folderPath Local path from which the folder is uploaded
-	 */
-	public String getFolderPath() {
-		return folderPath;
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param folderPath
+     *            Local path from which the folder is uploaded
+     */
+    public PutObjectsRequest(String bucketName, String folderPath) {
+        super(bucketName);
+        this.folderPath = folderPath;
+    }
 
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param filePaths
+     *            List of local paths from which a batch of files are uploaded
+     */
+    public PutObjectsRequest(String bucketName, List<String> filePaths) {
+        super(bucketName);
+        this.filePaths = filePaths;
+    }
 
-	/**
-	 * Obtain the list of local paths of the batch uploaded files.
-	 * @return filePaths List of local paths from which a batch of files are uploaded
-	 */
-	public List<String> getFilePaths() {
-		return filePaths;
-	}
+    /**
+     * Obtain the local path of the uploaded folder.
+     * 
+     * @return folderPath Local path from which the folder is uploaded
+     */
+    public String getFolderPath() {
+        return folderPath;
+    }
 
-	/**
-	 * Obtain the callback object of an upload task.
-	 * @return callback Callback object
-	 */
-	public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
-		return callback;
-	}
+    /**
+     * Obtain the list of local paths of the batch uploaded files.
+     * 
+     * @return filePaths List of local paths from which a batch of files are
+     *         uploaded
+     */
+    public List<String> getFilePaths() {
+        return filePaths;
+    }
 
-	/**
-	 * Set the callback object of an upload task.
-	 * @param callback Callback object
-	 */
-	public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
-		this.callback = callback;
-	}
+    /**
+     * Obtain the callback object of an upload task.
+     * 
+     * @return callback Callback object
+     */
+    public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
+        return callback;
+    }
 
-	/**
-	 * Obtain the part size set for uploading an object.
-	 * @return partSize Part size
-	 */
-	public long getPartSize() {
-		return partSize;
-	}
+    /**
+     * Set the callback object of an upload task.
+     * 
+     * @param callback
+     *            Callback object
+     */
+    public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
+        this.callback = callback;
+    }
 
-	/**
-	 * Set the part size for uploading the object.
-	 * @param partSize Part size
-	 */
-	public void setPartSize(long partSize) {
-		this.partSize = partSize;
-	}
+    /**
+     * Obtain the part size set for uploading an object.
+     * 
+     * @return partSize Part size
+     */
+    public long getPartSize() {
+        return partSize;
+    }
 
-	/**
-	 * Obtain the threshold size of a file for starting multipart upload.
-	 * @return bigfileThreshold Threshold size of a file for multipart upload
-	 */
-	public long getBigfileThreshold() {
-		return bigfileThreshold;
-	}
+    /**
+     * Set the part size for uploading the object.
+     * 
+     * @param partSize
+     *            Part size
+     */
+    public void setPartSize(long partSize) {
+        this.partSize = partSize;
+    }
 
-	/**
-	 * Set the threshold size of a file for starting multipart upload.
-	 * @param bigfileThreshold Threshold size of a file for multipart upload
-	 */
-	public void setBigfileThreshold(long bigfileThreshold) {
-		if(bigfileThreshold < 100 * 1024l) {
-			this.bigfileThreshold = 100 * 1024l;
-		}else if (bigfileThreshold > 5 * 1024 * 1024 * 1024l) {
-        	this.bigfileThreshold = 5 * 1024 * 1024 * 1024l;
-		}else {
-			this.bigfileThreshold = bigfileThreshold;
-		}
-	}
-	
-	/**
-	 * Obtain the maximum number of threads used for processing upload tasks concurrently.
-	 * 
-	 * @return Maximum number of threads used for processing upload tasks concurrently
-	 */
-	public int getTaskNum() {
-		return taskNum;
-	}
+    /**
+     * Obtain the threshold size of a file for starting multipart upload.
+     * 
+     * @return bigfileThreshold Threshold size of a file for multipart upload
+     */
+    public long getBigfileThreshold() {
+        return bigfileThreshold;
+    }
 
-	/**
-	 * Set the maximum number of threads used for processing upload tasks concurrently.
-	 * 
-	 * @param taskNum Maximum number of threads used for processing upload tasks concurrently
-	 */
-	public void setTaskNum(int taskNum) {
-		if (taskNum < 1) {
-			this.taskNum = 1;
-		} else if (taskNum > 1000) {
-			this.taskNum = 1000;
-		} else {
-			this.taskNum = taskNum;
-		}
-	}
+    /**
+     * Set the threshold size of a file for starting multipart upload.
+     * 
+     * @param bigfileThreshold
+     *            Threshold size of a file for multipart upload
+     */
+    public void setBigfileThreshold(long bigfileThreshold) {
+        if (bigfileThreshold < 100 * 1024l) {
+            this.bigfileThreshold = 100 * 1024l;
+        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024l) {
+            this.bigfileThreshold = 5 * 1024 * 1024 * 1024l;
+        } else {
+            this.bigfileThreshold = bigfileThreshold;
+        }
+    }
 
-	/**
-	 * Obtain the specific folder to which the file is uploaded.
-	 * @return prefix Folder
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * Obtain the maximum number of threads used for processing upload tasks
+     * concurrently.
+     * 
+     * @return Maximum number of threads used for processing upload tasks
+     *         concurrently
+     */
+    public int getTaskNum() {
+        return taskNum;
+    }
 
-	/**
-	 * Set the specific folder to which the file is uploaded.
-	 * @param prefix Folder
-	 */
-	public void setPrefix(String prefix) {
-		if(null == prefix) {
-			return;
-		}else if(prefix.endsWith("/")) {
-			this.prefix = prefix;
-		}else {
-			this.prefix = prefix + "/";
-		}
-		
-	}
-	
-	/**
+    /**
+     * Set the maximum number of threads used for processing upload tasks
+     * concurrently.
+     * 
+     * @param taskNum
+     *            Maximum number of threads used for processing upload tasks
+     *            concurrently
+     */
+    public void setTaskNum(int taskNum) {
+        if (taskNum < 1) {
+            this.taskNum = 1;
+        } else if (taskNum > 1000) {
+            this.taskNum = 1000;
+        } else {
+            this.taskNum = taskNum;
+        }
+    }
+
+    /**
+     * Obtain the specific folder to which the file is uploaded.
+     * 
+     * @return prefix Folder
+     */
+    public String getPrefix() {
+        return prefix;
+    }
+
+    /**
+     * Set the specific folder to which the file is uploaded.
+     * 
+     * @param prefix
+     *            Folder
+     */
+    public void setPrefix(String prefix) {
+        if (null == prefix) {
+            return;
+        } else if (prefix.endsWith("/")) {
+            this.prefix = prefix;
+        } else {
+            this.prefix = prefix + "/";
+        }
+
+    }
+
+    /**
      * Obtain the progress listener of the bulk task.
      * 
      * @return Progress listener
@@ -213,247 +239,268 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     /**
      * Set the progress listener of the bulk task.
      * 
-     * @param listener Progress listener
+     * @param listener
+     *            Progress listener
      */
     public void setUploadObjectsProgressListener(UploadObjectsProgressListener listener) {
         this.listener = listener;
     }
 
-	/**
-	 * Obtain the interval for updating the task progress information.
-	 * @return taskProgressInterval Interval for updating the task progress
-	 */
-	public long getTaskProgressInterval() {
-		return taskProgressInterval;
-	}
+    /**
+     * Obtain the interval for updating the task progress information.
+     * 
+     * @return taskProgressInterval Interval for updating the task progress
+     */
+    public long getTaskProgressInterval() {
+        return taskProgressInterval;
+    }
 
-	/**
-	 * Set the interval for updating the task progress information.
-	 * @param taskProgressInterval Interval for updating the task progress
-	 */
-	public void setTaskProgressInterval(long taskProgressInterval) {
-		if(taskProgressInterval < this.detailProgressInterval)
-		{
-			this.taskProgressInterval = this.detailProgressInterval;
-		}else {
-			this.taskProgressInterval = taskProgressInterval;
-		}
-	}
-	
-	/**
-	 * Obtain the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @return Callback threshold of the data transfer listener
-	 */
-	public long getDetailProgressInterval() {
-		return detailProgressInterval;
-	}
-	
-	/**
-	 * Set the callback threshold of the data transfer listener. The default value is 100 KB.
-	 * @param detailProgressInterval Callback threshold of the data transfer listener
-	 */
-	public void setDetailProgressInterval(long detailProgressInterval) {
-		this.detailProgressInterval = detailProgressInterval;
-	}
-    
+    /**
+     * Set the interval for updating the task progress information.
+     * 
+     * @param taskProgressInterval
+     *            Interval for updating the task progress
+     */
+    public void setTaskProgressInterval(long taskProgressInterval) {
+        if (taskProgressInterval < this.detailProgressInterval) {
+            this.taskProgressInterval = this.detailProgressInterval;
+        } else {
+            this.taskProgressInterval = taskProgressInterval;
+        }
+    }
+
+    /**
+     * Obtain the callback threshold of the data transfer listener. The default
+     * value is 100 KB.
+     * 
+     * @return Callback threshold of the data transfer listener
+     */
+    public long getDetailProgressInterval() {
+        return detailProgressInterval;
+    }
+
+    /**
+     * Set the callback threshold of the data transfer listener. The default
+     * value is 100 KB.
+     * 
+     * @param detailProgressInterval
+     *            Callback threshold of the data transfer listener
+     */
+    public void setDetailProgressInterval(long detailProgressInterval) {
+        this.detailProgressInterval = detailProgressInterval;
+    }
+
     /**
      * Obtain SSE-KMS encryption headers of the object.
      * 
      * @return SSE-KMS encryption headers
      */
-    public SseKmsHeader getSseKmsHeader()
-    {
+    public SseKmsHeader getSseKmsHeader() {
         return sseKmsHeader;
     }
-    
+
     /**
      * Set SSE-KMS encryption headers of the object.
      * 
-     * @param sseKmsHeader SSE-KMS encryption headers
+     * @param sseKmsHeader
+     *            SSE-KMS encryption headers
      */
-    public void setSseKmsHeader(SseKmsHeader sseKmsHeader)
-    {
+    public void setSseKmsHeader(SseKmsHeader sseKmsHeader) {
         this.sseKmsHeader = sseKmsHeader;
     }
-    
+
     /**
      * Obtain SSE-C encryption headers of the object.
      * 
      * @return SSE-C encryption headers
      */
-    public SseCHeader getSseCHeader()
-    {
+    public SseCHeader getSseCHeader() {
         return sseCHeader;
     }
-    
+
     /**
      * Set SSE-C encryption headers of the object.
      * 
-     * @param sseCHeader SSE-C encryption headers
+     * @param sseCHeader
+     *            SSE-C encryption headers
      */
-    public void setSseCHeader(SseCHeader sseCHeader)
-    {
+    public void setSseCHeader(SseCHeader sseCHeader) {
         this.sseCHeader = sseCHeader;
     }
-    
+
     /**
      * Obtain the ACL of the object.
+     * 
      * @return Object ACL
      */
-    public AccessControlList getAcl()
-    {
+    public AccessControlList getAcl() {
         return acl;
     }
-    
+
     /**
      * Set the object ACL.
-     * @param acl Object ACL
+     * 
+     * @param acl
+     *            Object ACL
      */
-    public void setAcl(AccessControlList acl)
-    {
+    public void setAcl(AccessControlList acl) {
         this.acl = acl;
     }
-    
-    /**
-	 * Obtain the redirection address after a successfully responded request.
-	 * @return Redirection address
-	 */
-	public String getSuccessRedirectLocation() {
-		return successRedirectLocation;
-	}
 
-	/**
-	 * Set the redirection address after a successfully responded request.
-	 * @param successRedirectLocation Redirection address
-	 */
-	public void setSuccessRedirectLocation(String successRedirectLocation) {
-		this.successRedirectLocation = successRedirectLocation;
-	}
-    
     /**
-	 * Grant the OBS extension permissions to a user.
-	 * @param domainId User's domain ID
-	 * @param extensionPermissionEnum OBS extension permissions
-	 */
-	public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
-		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
-			return;
-		}
-		Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-		if(users == null) {
-			users = new HashSet<String>();
-			getExtensionPermissionMap().put(extensionPermissionEnum, users);
-		}
-		users.add(domainId.trim());
-	}
-	
-	/**
-	 * Withdraw the OBS extension permissions from a user.
-	 * @param domainId User's domain ID
-	 * @param extensionPermissionEnum OBS extension permissions
-	 */
-	public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
-		if(extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
-			return;
-		}
-		domainId = domainId.trim();
-		Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
-		if(domainIds != null && domainIds.contains(domainId)) {
-			domainIds.remove(domainId);
-		}
-	}
-	
-	/**
-	 * Withdraw all OBS extension permissions from a user.
-	 * @param domainId User's domain ID
-	 */
-	public void withdrawExtensionPermissions(String domainId) {
-		if(ServiceUtils.isValid(domainId)) {
-			for(Map.Entry<ExtensionObjectPermissionEnum, Set<String>> entry : this.getExtensionPermissionMap().entrySet()) {
-				if(entry.getValue().contains(domainId.trim())) {
-					entry.getValue().remove(domainId);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Obtain all OBS extended permissions.
-	 * @return OBS List of extension permissions
-	 */
-	public Set<ExtensionObjectPermissionEnum> getAllGrantPermissions(){
-		return this.getExtensionPermissionMap().keySet();
-	}
-	
-	/**
-	 * Obtain the list of user IDs with the specified OBS extension permissions.
-	 * @param extensionPermissionEnum OBS extension permissions
-	 * @return List of user IDs
-	 */
-	public Set<String> getDomainIdsByGrantPermission(ExtensionObjectPermissionEnum extensionPermissionEnum) {
-		Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
-		if(domainIds == null) {
-			domainIds = new HashSet<String>();
-		}
-		return domainIds;
-	}
-	
-	/**
-	 * Obtain the OBS extension permissions of a specified user.
-	 * @param domainId User ID
-	 * @return OBS Extension permission set
-	 */
-	public Set<ExtensionObjectPermissionEnum> getGrantPermissionsByDomainId(String domainId) {
-		Set<ExtensionObjectPermissionEnum> grantPermissions = new HashSet<ExtensionObjectPermissionEnum>();
-		if(ServiceUtils.isValid(domainId)) {
-			domainId = domainId.trim();
-			for(Map.Entry<ExtensionObjectPermissionEnum, Set<String>> entry : this.getExtensionPermissionMap().entrySet()) {
-				if(entry.getValue().contains(domainId)) {
-					grantPermissions.add(entry.getKey());
-				}
-			}
-		}
-		return grantPermissions;
-	}
-	
-	/**
-	 * Obtain the set of relationships between users and OBS extension permissions.
-	 * @return Set of relationships between users and OBS extended permissions
-	 */
+     * Obtain the redirection address after a successfully responded request.
+     * 
+     * @return Redirection address
+     */
+    public String getSuccessRedirectLocation() {
+        return successRedirectLocation;
+    }
+
+    /**
+     * Set the redirection address after a successfully responded request.
+     * 
+     * @param successRedirectLocation
+     *            Redirection address
+     */
+    public void setSuccessRedirectLocation(String successRedirectLocation) {
+        this.successRedirectLocation = successRedirectLocation;
+    }
+
+    /**
+     * Grant the OBS extension permissions to a user.
+     * 
+     * @param domainId
+     *            User's domain ID
+     * @param extensionPermissionEnum
+     *            OBS extension permissions
+     */
+    public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
+        if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
+            return;
+        }
+        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
+        if (users == null) {
+            users = new HashSet<String>();
+            getExtensionPermissionMap().put(extensionPermissionEnum, users);
+        }
+        users.add(domainId.trim());
+    }
+
+    /**
+     * Withdraw the OBS extension permissions from a user.
+     * 
+     * @param domainId
+     *            User's domain ID
+     * @param extensionPermissionEnum
+     *            OBS extension permissions
+     */
+    public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
+        if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
+            return;
+        }
+        domainId = domainId.trim();
+        Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
+        if (domainIds != null && domainIds.contains(domainId)) {
+            domainIds.remove(domainId);
+        }
+    }
+
+    /**
+     * Withdraw all OBS extension permissions from a user.
+     * 
+     * @param domainId
+     *            User's domain ID
+     */
+    public void withdrawExtensionPermissions(String domainId) {
+        if (ServiceUtils.isValid(domainId)) {
+            for (Map.Entry<ExtensionObjectPermissionEnum, Set<String>> entry : this.getExtensionPermissionMap()
+                    .entrySet()) {
+                if (entry.getValue().contains(domainId.trim())) {
+                    entry.getValue().remove(domainId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtain all OBS extended permissions.
+     * 
+     * @return OBS List of extension permissions
+     */
+    public Set<ExtensionObjectPermissionEnum> getAllGrantPermissions() {
+        return this.getExtensionPermissionMap().keySet();
+    }
+
+    /**
+     * Obtain the list of user IDs with the specified OBS extension permissions.
+     * 
+     * @param extensionPermissionEnum
+     *            OBS extension permissions
+     * @return List of user IDs
+     */
+    public Set<String> getDomainIdsByGrantPermission(ExtensionObjectPermissionEnum extensionPermissionEnum) {
+        Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
+        if (domainIds == null) {
+            domainIds = new HashSet<String>();
+        }
+        return domainIds;
+    }
+
+    /**
+     * Obtain the OBS extension permissions of a specified user.
+     * 
+     * @param domainId
+     *            User ID
+     * @return OBS Extension permission set
+     */
+    public Set<ExtensionObjectPermissionEnum> getGrantPermissionsByDomainId(String domainId) {
+        Set<ExtensionObjectPermissionEnum> grantPermissions = new HashSet<ExtensionObjectPermissionEnum>();
+        if (ServiceUtils.isValid(domainId)) {
+            domainId = domainId.trim();
+            for (Map.Entry<ExtensionObjectPermissionEnum, Set<String>> entry : this.getExtensionPermissionMap()
+                    .entrySet()) {
+                if (entry.getValue().contains(domainId)) {
+                    grantPermissions.add(entry.getKey());
+                }
+            }
+        }
+        return grantPermissions;
+    }
+
+    /**
+     * Obtain the set of relationships between users and OBS extension
+     * permissions.
+     * 
+     * @return Set of relationships between users and OBS extended permissions
+     */
     public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
-		if(extensionPermissionMap == null) {
-			extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
-		}
-		return extensionPermissionMap;
-	}
+        if (extensionPermissionMap == null) {
+            extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
+        }
+        return extensionPermissionMap;
+    }
 
     /**
      * Set the set of relationships between users and OBS extension permissions.
-     * @param extensionPermissionMap Set of relationships between users and OBS extended permissions
+     * 
+     * @param extensionPermissionMap
+     *            Set of relationships between users and OBS extended
+     *            permissions
      */
-	public void setExtensionPermissionMap(Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap) {
-		if(extensionPermissionMap == null) {
-			return;
-		}
-		this.extensionPermissionMap = extensionPermissionMap;
-	}
+    public void setExtensionPermissionMap(Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap) {
+        if (extensionPermissionMap == null) {
+            return;
+        }
+        this.extensionPermissionMap = extensionPermissionMap;
+    }
 
-	@Override
-	public String toString() {
-	        return "PutObjectsRequest [bucketName=" + bucketName + ", folderPath=" + folderPath + ", listFilePath=" + getFilePathsString() + "]";
-	}
-	
-	private String getFilePathsString() {
-		if(null == this.filePaths || this.filePaths.isEmpty()) {
-			return "";
-		}else {
-			final String SEPARATOR = ", ";
-			StringBuffer fileBuffer = new StringBuffer();
-			for(String filePatg: filePaths) {
-				fileBuffer.append(filePatg);
-				fileBuffer.append(SEPARATOR);
-			}
-			return fileBuffer.substring(0,  fileBuffer.length() - SEPARATOR.length());
-		}
-	}
+    @Override
+    public String toString() {
+        return "PutObjectsRequest [folderPath=" + folderPath + ", prefix=" + prefix + ", filePaths=" + filePaths
+                + ", callback=" + callback + ", partSize=" + partSize + ", bigfileThreshold=" + bigfileThreshold
+                + ", taskNum=" + taskNum + ", listener=" + listener + ", taskProgressInterval=" + taskProgressInterval
+                + ", detailProgressInterval=" + detailProgressInterval + ", extensionPermissionMap="
+                + extensionPermissionMap + ", acl=" + acl + ", getBucketName()=" + getBucketName()
+                + ", isRequesterPays()=" + isRequesterPays() + "]";
+    }
 }

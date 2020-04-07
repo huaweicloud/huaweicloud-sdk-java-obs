@@ -19,8 +19,8 @@ import com.obs.services.internal.ObsConstraint;
  * Abstract class for request parameters of bulk tasks
  *
  */
-public abstract class AbstractBulkRequest {
-   
+public abstract class AbstractBulkRequest extends GenericRequest {
+
     protected String bucketName;
 
     protected TaskProgressListener listener;
@@ -37,7 +37,6 @@ public abstract class AbstractBulkRequest {
     public AbstractBulkRequest(String bucketName) {
         this.bucketName = bucketName;
     }
-    
 
     /**
      * Obtain the bucket name.
@@ -51,7 +50,8 @@ public abstract class AbstractBulkRequest {
     /**
      * Set the bucket name.
      * 
-     * @param bucketName Bucket name
+     * @param bucketName
+     *            Bucket name
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
@@ -69,14 +69,16 @@ public abstract class AbstractBulkRequest {
     /**
      * Set the progress listener of the bulk task.
      * 
-     * @param listener Progress listener
+     * @param listener
+     *            Progress listener
      */
     public void setProgressListener(TaskProgressListener listener) {
         this.listener = listener;
     }
 
     /**
-     * Obtain the maximum number of concurrent bulk tasks. The default value is 10.
+     * Obtain the maximum number of concurrent bulk tasks. The default value is
+     * 10.
      * 
      * @return Maximum number of threads
      */
@@ -87,7 +89,8 @@ public abstract class AbstractBulkRequest {
     /**
      * Set the maximum number of concurrent bulk tasks. The default value is 10.
      * 
-     * @param taskThreadNum Maximum number of threads
+     * @param taskThreadNum
+     *            Maximum number of threads
      */
     public void setTaskThreadNum(int taskThreadNum) {
         this.taskThreadNum = taskThreadNum;
@@ -103,16 +106,19 @@ public abstract class AbstractBulkRequest {
     }
 
     /**
-     * Set the task queue length of the thread pool in the bulk task. The default value is 20000.
+     * Set the task queue length of the thread pool in the bulk task. The
+     * default value is 20000.
      * 
-     * @param taskQueueNum Length of the task queue
+     * @param taskQueueNum
+     *            Length of the task queue
      */
     public void setTaskQueueNum(int taskQueueNum) {
         this.taskQueueNum = taskQueueNum;
     }
 
     /**
-     * Obtain the callback threshold of the task progress listener. The default value is 50.
+     * Obtain the callback threshold of the task progress listener. The default
+     * value is 50.
      * 
      * @return Callback threshold of the task progress listener
      */
@@ -121,9 +127,11 @@ public abstract class AbstractBulkRequest {
     }
 
     /**
-     * Set the callback threshold of the task progress listener. The default value is 50.
+     * Set the callback threshold of the task progress listener. The default
+     * value is 50.
      * 
-     * @param taskProgressInterval Callback threshold of the task progress listener
+     * @param taskProgressInterval
+     *            Callback threshold of the task progress listener
      */
     public void setProgressInterval(int taskProgressInterval) {
         if (taskProgressInterval <= 0) {

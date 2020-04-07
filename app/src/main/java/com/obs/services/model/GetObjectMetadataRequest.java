@@ -17,127 +17,128 @@ package com.obs.services.model;
 /**
  * Parameters in a request for obtaining the properties of an object
  */
-public class GetObjectMetadataRequest
-{
+public class GetObjectMetadataRequest extends GenericRequest {
     private String bucketName;
-    
+
     private String objectKey;
-    
+
     private String versionId;
-    
+
     private SseCHeader sseCHeader;
-    
-    public GetObjectMetadataRequest(){
-        
+
+    public GetObjectMetadataRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
      */
-    public GetObjectMetadataRequest(String bucketName, String objectKey)
-    {
+    public GetObjectMetadataRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
      */
-    public GetObjectMetadataRequest(String bucketName, String objectKey, String versionId)
-    {
+    public GetObjectMetadataRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.versionId = versionId;
     }
 
-
-
     /**
-     * Obtain SSE-C decryption headers. 
+     * Obtain SSE-C decryption headers.
      * 
      * @return SSE-C decryption headers
      */
-    public SseCHeader getSseCHeader()
-    {
+    public SseCHeader getSseCHeader() {
         return sseCHeader;
     }
-    
+
     /**
-     * Set SSE-C decryption headers. 
+     * Set SSE-C decryption headers.
      * 
-     * @param sseCHeader SSE-C decryption headers
+     * @param sseCHeader
+     *            SSE-C decryption headers
      */
-    public void setSseCHeader(SseCHeader sseCHeader)
-    {
+    public void setSseCHeader(SseCHeader sseCHeader) {
         this.sseCHeader = sseCHeader;
     }
-    
+
     /**
      * Obtain the bucket name.
+     * 
      * @return Bucket name
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the bucket name.
-     * @param bucketName Bucket name 
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
      * Obtain the object name.
+     * 
      * @return Object name
      */
-    public String getObjectKey()
-    {
+    public String getObjectKey() {
         return objectKey;
     }
-    
+
     /**
      * Set the object name.
-     * @param objectKey Object name
+     * 
+     * @param objectKey
+     *            Object name
      */
-    public void setObjectKey(String objectKey)
-    {
+    public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
-    
+
     /**
      * Obtain the object version ID.
+     * 
      * @return Version ID of the object
      */
-    public String getVersionId()
-    {
+    public String getVersionId() {
         return versionId;
     }
-    
+
     /**
-     * Set the version ID of the object. 
-     * @param versionId Version ID of the object
+     * Set the version ID of the object.
+     * 
+     * @param versionId
+     *            Version ID of the object
      */
-    public void setVersionId(String versionId)
-    {
+    public void setVersionId(String versionId) {
         this.versionId = versionId;
     }
 
     @Override
-    public String toString()
-    {
-        return "GetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId=" + versionId
-            + ", sseCHeader=" + sseCHeader + "]";
+    public String toString() {
+        return "GetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
+                + versionId + ", sseCHeader=" + sseCHeader + "]";
     }
-    
+
 }
-
-

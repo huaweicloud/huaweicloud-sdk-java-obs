@@ -17,95 +17,95 @@ package com.obs.services.model;
 /**
  * Bucket versioning status
  */
-public class BucketVersioningConfiguration extends HeaderResponse
-{
+public class BucketVersioningConfiguration extends HeaderResponse {
     /**
      * Versioning is suspended.
      */
-	@Deprecated
+    @Deprecated
     public static final String SUSPENDED = "Suspended";
-    
+
     /**
      * Versioning is enabled.
      */
-	@Deprecated
+    @Deprecated
     public static final String ENABLED = "Enabled";
-    
+
     private VersioningStatusEnum status;
-    
+
     /**
-     * Constructor
-     * If versioning is enabled for a bucket, it cannot be disabled or changed to {@link #SUSPENDED}. 
-     * @param status Versioning status
+     * Constructor If versioning is enabled for a bucket, it cannot be disabled
+     * or changed to {@link #SUSPENDED}.
+     * 
+     * @param status
+     *            Versioning status
      * @see #ENABLED
      * @see #SUSPENDED
      */
     @Deprecated
-    public BucketVersioningConfiguration(String status)
-    {
+    public BucketVersioningConfiguration(String status) {
         this.status = VersioningStatusEnum.getValueFromCode(status);
     }
-    
+
     /**
-     * Constructor
-     * If versioning is enabled for a bucket, it cannot be disabled or changed to suspended. 
-     * @param status Versioning status
+     * Constructor If versioning is enabled for a bucket, it cannot be disabled
+     * or changed to suspended.
+     * 
+     * @param status
+     *            Versioning status
      */
-    public BucketVersioningConfiguration(VersioningStatusEnum status)
-    {
+    public BucketVersioningConfiguration(VersioningStatusEnum status) {
         this.status = status;
     }
-    
-    public BucketVersioningConfiguration(){
-        
+
+    public BucketVersioningConfiguration() {
+
     }
-    
+
     /**
      * Obtain the versioning status of a bucket.
+     * 
      * @return status Versioning status
      * @see #getVersioningStatus()
      */
     @Deprecated
-    public String getStatus()
-    {
+    public String getStatus() {
         return this.status != null ? this.status.getCode() : null;
     }
-    
+
     /**
      * Set the versioning status.
-     * @param status Versioning status
+     * 
+     * @param status
+     *            Versioning status
      * @see #setVersioningStatus(VersioningStatusEnum status)
      */
     @Deprecated
-    public void setStatus(String status)
-    {
+    public void setStatus(String status) {
         this.status = VersioningStatusEnum.getValueFromCode(status);
     }
-    
+
     /**
      * Obtain the versioning status.
+     * 
      * @return status Versioning status
      */
-    public VersioningStatusEnum getVersioningStatus()
-    {
+    public VersioningStatusEnum getVersioningStatus() {
         return status;
     }
-    
+
     /**
      * Set the versioning status.
-     * @param status Versioning status
+     * 
+     * @param status
+     *            Versioning status
      */
-    public void setVersioningStatus(VersioningStatusEnum status)
-    {
+    public void setVersioningStatus(VersioningStatusEnum status) {
         this.status = status;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketVersioningConfiguration [status=" + status + "]";
     }
-    
+
 }
-
-

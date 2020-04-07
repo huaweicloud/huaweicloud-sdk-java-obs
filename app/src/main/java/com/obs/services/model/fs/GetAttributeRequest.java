@@ -19,21 +19,22 @@ import com.obs.services.model.GetObjectMetadataRequest;
  * Parameters in a request for obtaining filer or folder properties
  *
  */
-public class GetAttributeRequest extends GetObjectMetadataRequest{
+public class GetAttributeRequest extends GetObjectMetadataRequest {
 
-	public GetAttributeRequest() {
-		super();
-	}
+    public GetAttributeRequest() {
+        super();
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File or folder name
-	 */
-	public GetAttributeRequest(String bucketName, String objectKey) {
-		super(bucketName, objectKey);
-	}
-	
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File or folder name
+     */
+    public GetAttributeRequest(String bucketName, String objectKey) {
+        super(bucketName, objectKey);
+    }
+
 }
-
-

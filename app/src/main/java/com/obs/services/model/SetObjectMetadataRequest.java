@@ -19,316 +19,340 @@ import java.util.Map;
 /**
  * Parameters in a request for setting object properties
  */
-public class SetObjectMetadataRequest{
-	
-	private String bucketName;
-	
+public class SetObjectMetadataRequest extends GenericRequest {
+
+    private String bucketName;
+
     private String objectKey;
-    
+
     private String versionId;
 
-	private StorageClassEnum storageClass;
-    
+    private StorageClassEnum storageClass;
+
     private String webSiteRedirectLocation;
-    
+
     private boolean removeUnset;
-    
+
     private Map<String, String> metadata;
-    
+
     private ObjectRepleaceMetadata replaceMetadata = new ObjectRepleaceMetadata();
-    
+
     public SetObjectMetadataRequest() {
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
      */
-    public SetObjectMetadataRequest(String bucketName, String objectKey)
-    {
+    public SetObjectMetadataRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
      */
-    public SetObjectMetadataRequest(String bucketName, String objectKey, String versionId)
-    {
+    public SetObjectMetadataRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.versionId = versionId;
     }
 
-
-    
     /**
      * Obtain the bucket name.
+     * 
      * @return Bucket name
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the bucket name.
-     * @param bucketName Bucket name 
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
      * Obtain the object name.
+     * 
      * @return Object name
      */
-    public String getObjectKey()
-    {
+    public String getObjectKey() {
         return objectKey;
     }
-    
+
     /**
      * Set the object name.
-     * @param objectKey Object name
+     * 
+     * @param objectKey
+     *            Object name
      */
-    public void setObjectKey(String objectKey)
-    {
+    public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
-    
+
     /**
      * Obtain the object version ID.
+     * 
      * @return Version ID of the object
      */
-    public String getVersionId()
-    {
+    public String getVersionId() {
         return versionId;
     }
-    
+
     /**
-     * Set the version ID of the object. 
-     * @param versionId Version ID of the object
+     * Set the version ID of the object.
+     * 
+     * @param versionId
+     *            Version ID of the object
      */
-    public void setVersionId(String versionId)
-    {
+    public void setVersionId(String versionId) {
         this.versionId = versionId;
     }
-    
+
     /**
-     * Set the redirection link which can redirect the request to another object in the bucket or to an external URL.
+     * Set the redirection link which can redirect the request to another object
+     * in the bucket or to an external URL.
      * 
      * @return Redirection link
      */
-    public String getWebSiteRedirectLocation()
-    {
+    public String getWebSiteRedirectLocation() {
         return webSiteRedirectLocation;
     }
-    
+
     /**
-     * Obtain the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * Obtain the redirection link which can redirect the request to another
+     * object in the bucket or to an external URL.
      * 
-     * @param webSiteRedirectLocation Redirection link
+     * @param webSiteRedirectLocation
+     *            Redirection link
      */
-    public void setWebSiteRedirectLocation(String webSiteRedirectLocation)
-    {
+    public void setWebSiteRedirectLocation(String webSiteRedirectLocation) {
         this.webSiteRedirectLocation = webSiteRedirectLocation;
     }
-    
+
     /**
-     * Obtain the object storage class. 
+     * Obtain the object storage class.
+     * 
      * @return Object storage class
      */
-    public StorageClassEnum getObjectStorageClass()
-    {
+    public StorageClassEnum getObjectStorageClass() {
         return storageClass;
     }
-    
+
     /**
-     * Set the object storage class. 
-     * @param storageClass Object storage class
+     * Set the object storage class.
+     * 
+     * @param storageClass
+     *            Object storage class
      */
-    public void setObjectStorageClass(StorageClassEnum storageClass)
-    {
+    public void setObjectStorageClass(StorageClassEnum storageClass) {
         this.storageClass = storageClass;
     }
 
     /**
-     * Specify whether to delete not specified properties. The default value is "false." 
-     * true: Use properties set in the request parameters to overwrite the existing property values. Properties not specified in the request will be deleted.
-     * false: Use properties set in the request parameters to overwrite the existing property values. For properties not specified in the request, their existing values are retained.
+     * Specify whether to delete not specified properties. The default value is
+     * "false." true: Use properties set in the request parameters to overwrite
+     * the existing property values. Properties not specified in the request
+     * will be deleted. false: Use properties set in the request parameters to
+     * overwrite the existing property values. For properties not specified in
+     * the request, their existing values are retained.
+     * 
      * @return Identifier specifying whether to delete not specified properties
      */
-	public boolean isRemoveUnset() {
-		return removeUnset;
-	}
+    public boolean isRemoveUnset() {
+        return removeUnset;
+    }
 
-	/**
-	 * Specify whether to delete not specified properties.
-	 * @param removeUnset Identifier specifying whether to delete not specified properties
-	 */
-	public void setRemoveUnset(boolean removeUnset) {
-		this.removeUnset = removeUnset;
-	}
-	
+    /**
+     * Specify whether to delete not specified properties.
+     * 
+     * @param removeUnset
+     *            Identifier specifying whether to delete not specified
+     *            properties
+     */
+    public void setRemoveUnset(boolean removeUnset) {
+        this.removeUnset = removeUnset;
+    }
+
     /**
      * Add customized metadata for an object.
-     * @param key Keyword of the customized metadata
-     * @param value Value of the customized metadata
+     * 
+     * @param key
+     *            Keyword of the customized metadata
+     * @param value
+     *            Value of the customized metadata
      */
-    public void addUserMetadata(String key, String value){
+    public void addUserMetadata(String key, String value) {
         getMetadata().put(key, value);
     }
-    
+
     /**
      * Add customized metadata for a group of objects.
-     * @param userMetadata Customized metadata for a group of objects
+     * 
+     * @param userMetadata
+     *            Customized metadata for a group of objects
      */
     public void addAllUserMetadata(Map<String, String> userMetadata) {
-    	if(userMetadata != null) {
-    		getMetadata().putAll(userMetadata);
-    	}
+        if (userMetadata != null) {
+            getMetadata().putAll(userMetadata);
+        }
     }
-    
+
     /**
      * Obtain the customized metadata of an object.
-     * @param key Keyword of the customized metadata
+     * 
+     * @param key
+     *            Keyword of the customized metadata
      * @return Value of the customized metadata
      */
-    public Object getUserMetadata(String key){
+    public Object getUserMetadata(String key) {
         return getMetadata().get(key);
     }
-    
+
     /**
      * Obtain the rewritten "Content-Type" header in the response.
+     * 
      * @return "Content-Type" header in the response
      */
-    public String getContentType()
-    {
+    public String getContentType() {
         return replaceMetadata.getContentType();
     }
-    
+
     /**
      * Rewrite the "Content-Type" header in the response.
-     * @param contentType "Content-Type" header in the response
+     * 
+     * @param contentType
+     *            "Content-Type" header in the response
      */
-    public void setContentType(String contentType)
-    {
-    	replaceMetadata.setContentType(contentType);
+    public void setContentType(String contentType) {
+        replaceMetadata.setContentType(contentType);
     }
-    
+
     /**
      * Obtain the rewritten "Content-Language" header in the response.
+     * 
      * @return "Content-Language" header in the response
      */
-    public String getContentLanguage()
-    {
+    public String getContentLanguage() {
         return replaceMetadata.getContentLanguage();
     }
-    
+
     /**
      * Rewrite the "Content-Language" header in the response.
-     * @param contentLanguage "Content-Language" header in the response
+     * 
+     * @param contentLanguage
+     *            "Content-Language" header in the response
      */
-    public void setContentLanguage(String contentLanguage)
-    {
-    	replaceMetadata.setContentLanguage(contentLanguage);
+    public void setContentLanguage(String contentLanguage) {
+        replaceMetadata.setContentLanguage(contentLanguage);
     }
-    
+
     /**
      * Obtain the rewritten "Expires" header in the response.
+     * 
      * @return "Expires" header in the response
      */
-    public String getExpires()
-    {
+    public String getExpires() {
         return replaceMetadata.getExpires();
     }
-    
+
     /**
      * Rewrite the "Expires" header in the response.
-     * @param expires Rewritten "Expires" header in the response
+     * 
+     * @param expires
+     *            Rewritten "Expires" header in the response
      */
-    public void setExpires(String expires)
-    {
-    	replaceMetadata.setExpires(expires);
+    public void setExpires(String expires) {
+        replaceMetadata.setExpires(expires);
     }
-    
+
     /**
      * Obtain the rewritten "Cache-Control" header in the response.
+     * 
      * @return "Cache-Control" header in the response
      */
-    public String getCacheControl()
-    {
+    public String getCacheControl() {
         return replaceMetadata.getCacheControl();
     }
-    
+
     /**
      * Rewrite the "Cache-Control" header in the response.
-     * @param cacheControl "Cache-Control" header in the response
+     * 
+     * @param cacheControl
+     *            "Cache-Control" header in the response
      */
-    public void setCacheControl(String cacheControl)
-    {
-    	replaceMetadata.setCacheControl(cacheControl);
+    public void setCacheControl(String cacheControl) {
+        replaceMetadata.setCacheControl(cacheControl);
     }
-    
+
     /**
      * Obtain the rewritten "Content-Disposition" header in the response.
+     * 
      * @return "Content-Disposition" header in the response
      */
-    public String getContentDisposition()
-    {
+    public String getContentDisposition() {
         return replaceMetadata.getContentDisposition();
     }
-    
+
     /**
      * Rewrite the "Content-Disposition" header in the response.
-     * @param contentDisposition "Content-Disposition" header in the response
+     * 
+     * @param contentDisposition
+     *            "Content-Disposition" header in the response
      */
-    public void setContentDisposition(String contentDisposition)
-    {
-    	replaceMetadata.setContentDisposition(contentDisposition);
+    public void setContentDisposition(String contentDisposition) {
+        replaceMetadata.setContentDisposition(contentDisposition);
     }
-    
+
     /**
      * Obtain the rewritten "Content-Encoding" header in the response.
+     * 
      * @return "Content-Encoding" header in the response
      */
-    public String getContentEncoding()
-    {
+    public String getContentEncoding() {
         return replaceMetadata.getContentEncoding();
     }
-    
+
     /**
      * Rewrite the "Content-Encoding" header in the response.
-     * @param contentEncoding "Content-Encoding" header in the response
+     * 
+     * @param contentEncoding
+     *            "Content-Encoding" header in the response
      */
-    public void setContentEncoding(String contentEncoding)
-    {
-    	replaceMetadata.setContentEncoding(contentEncoding);
+    public void setContentEncoding(String contentEncoding) {
+        replaceMetadata.setContentEncoding(contentEncoding);
     }
-    
-    public Map<String, String> getMetadata()
-    {
-    	if(metadata == null) {
-    		metadata = new HashMap<String, String>();
-    	}
-    	return this.metadata;
+
+    public Map<String, String> getMetadata() {
+        if (metadata == null) {
+            metadata = new HashMap<String, String>();
+        }
+        return this.metadata;
     }
-    
-    
+
     @Override
-	public String toString() {
-		return "SetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
-				+ versionId + ", storageClass=" + storageClass + ", webSiteRedirectLocation=" + webSiteRedirectLocation
-				+ ", removeUnset=" + removeUnset + ", metadata=" + metadata + ", replaceMetadata=" + replaceMetadata
-				+ "]";
-	}
+    public String toString() {
+        return "SetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
+                + versionId + ", storageClass=" + storageClass + ", webSiteRedirectLocation=" + webSiteRedirectLocation
+                + ", removeUnset=" + removeUnset + ", metadata=" + metadata + ", replaceMetadata=" + replaceMetadata
+                + "]";
+    }
 
 }
-
-

@@ -286,5 +286,9 @@ public class V2Headers implements IHeaders{
 		return "x-obs-bucket-type";
 	}
 	
+	@Override
+	public String requestPaymentHeader() {
+	    return this.headerPrefix() + "request-payer";
+	}
 }
 

@@ -14,90 +14,100 @@
 package com.obs.services.model;
 
 /**
- * 重命名文件/文件夹请求参数
- *
+ * Request parameters for renaming a file or folder <br>
+ * Only the parallel file system supports this interface.
+ * @since 3.20.3
  */
-public class RenameObjectRequest {
+public class RenameObjectRequest extends GenericRequest {
 
-	private String bucketName;
+    private String bucketName;
 
-	private String objectKey;
+    private String objectKey;
 
-	private String newObjectKey;
+    private String newObjectKey;
 
-	public RenameObjectRequest() {
+    public RenameObjectRequest() {
 
-	}
-
-	/**
-	 * 构造函数
-	 * @param bucketName 桶名
-	 * @param objectKey 文件/文件夹名
-	 * @param newObjectKey  新的文件/文件夹名
-	 */
-	public RenameObjectRequest(String bucketName, String objectKey, String newObjectKey) {
-		super();
-		this.bucketName = bucketName;
-		this.objectKey = objectKey;
-		this.newObjectKey = newObjectKey;
-	}
+    }
 
     /**
-     * 获取桶名
+     * Constructor
      * 
-     * @return 桶名
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File or folder name
+     * @param newObjectKey
+     *            Name of the new file or folder
      */
-    public String getBucketName()
-    {
+    public RenameObjectRequest(String bucketName, String objectKey, String newObjectKey) {
+        super();
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.newObjectKey = newObjectKey;
+    }
+
+    /**
+     * Obtain the bucket name.
+     * 
+     * @return Bucket name
+     */
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
-     * 设置桶名
+     * Set the bucket name.
      * 
-     * @param bucketName 桶名
+     * @param bucketName
+     *            Bucket name
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
-     * 获取文件/文件夹名
+     * Obtain the file or folder name.
      * 
-     * @return 文件/文件夹名
+     * @return File or folder name
      */
-    public String getObjectKey()
-    {
+    public String getObjectKey() {
         return objectKey;
     }
-    
+
     /**
-     * 设置文件/文件夹名
+     * Set the file or folder name.
      * 
-     * @param objectKey 文件/文件夹名
-     *           
+     * @param objectKey
+     *            File or folder name
+     * 
      */
-    public void setObjectKey(String objectKey)
-    {
+    public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
 
     /**
-     * 获取新的文件/文件夹名
-     * @return 新的文件/文件夹名
+     * Obtain the new file or folder name.
+     * 
+     * @return New file/folder name
      */
-	public String getNewObjectKey() {
-		return newObjectKey;
-	}
+    public String getNewObjectKey() {
+        return newObjectKey;
+    }
 
-	 /**
-     * 设置新的文件/文件夹名
-     * @param newObjectKey  新的文件/文件夹名
+    /**
+     * Set the new file or folder name.
+     * 
+     * @param newObjectKey
+     *            Name of the new file or folder
      */
-	public void setNewObjectKey(String newObjectKey) {
-		this.newObjectKey = newObjectKey;
-	}
-	
-	
+    public void setNewObjectKey(String newObjectKey) {
+        this.newObjectKey = newObjectKey;
+    }
+
+    @Override
+    public String toString() {
+        return "RenameObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", newObjectKey="
+                + newObjectKey + ", isRequesterPays()=" + isRequesterPays() + "]";
+    }
 }

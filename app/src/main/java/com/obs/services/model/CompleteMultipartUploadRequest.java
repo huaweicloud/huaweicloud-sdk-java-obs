@@ -20,127 +20,122 @@ import java.util.List;
 /**
  * Parameters in a request for combining parts
  */
-public class CompleteMultipartUploadRequest
-{
+public class CompleteMultipartUploadRequest extends GenericRequest {
     private String uploadId;
-    
+
     private String bucketName;
-    
+
     private String objectKey;
-    
+
     private List<PartEtag> partEtag;
-    
-    public CompleteMultipartUploadRequest(){
-        
+
+    public CompleteMultipartUploadRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param uploadId Multipart upload ID
-     * @param partEtag List of parts to be combined
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param uploadId
+     *            Multipart upload ID
+     * @param partEtag
+     *            List of parts to be combined
      */
-    public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId, List<PartEtag> partEtag)
-    {
+    public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId,
+            List<PartEtag> partEtag) {
         this.uploadId = uploadId;
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.partEtag = partEtag;
     }
 
-
-
     /**
      * Obtain the multipart upload ID.
      * 
      * @return Multipart upload ID
      */
-    public String getUploadId()
-    {
+    public String getUploadId() {
         return uploadId;
     }
-    
+
     /**
      * Set the multipart upload ID.
      * 
-     * @param uploadId Multipart upload ID
+     * @param uploadId
+     *            Multipart upload ID
      */
-    public void setUploadId(String uploadId)
-    {
+    public void setUploadId(String uploadId) {
         this.uploadId = uploadId;
     }
-    
+
     /**
      * Obtain the name of the bucket to which the multipart upload belongs.
      * 
      * @return Name of the bucket to which the multipart upload belongs
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the name for the bucket to which the multipart upload belongs.
      * 
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param bucketName
+     *            Name of the bucket to which the multipart upload belongs
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
      * Obtain the name of the object involved in the multipart upload.
      * 
      * @return Name of the object involved in the multipart upload
      */
-    public String getObjectKey()
-    {
+    public String getObjectKey() {
         return objectKey;
     }
-    
+
     /**
      * Set the name for the object involved in the multipart upload.
      * 
-     @param objectKey Name of the object involved in the multipart upload
+     * @param objectKey
+     *            Name of the object involved in the multipart upload
      */
-    public void setObjectKey(String objectKey)
-    {
+    public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
-    
+
     /**
      * Obtain the to-be-combined part list.
      * 
      * @return List of parts to be combined
      */
-    public List<PartEtag> getPartEtag()
-    {
-        if(this.partEtag == null){
+    public List<PartEtag> getPartEtag() {
+        if (this.partEtag == null) {
             this.partEtag = new ArrayList<PartEtag>();
         }
         return this.partEtag;
     }
-    
+
     /**
      * Set the to-be-combined part list.
      * 
-     * @param partEtags List of parts to be combined
+     * @param partEtags
+     *            List of parts to be combined
      */
-    public void setPartEtag(List<PartEtag> partEtags)
-    {
+    public void setPartEtag(List<PartEtag> partEtags) {
         this.partEtag = partEtags;
     }
 
     @Override
-    public String toString()
-    {
-        return "CompleteMultipartUploadRequest [uploadId=" + uploadId + ", bucketName=" + bucketName + ", objectKey=" + objectKey
-            + ", partEtag=" + partEtag + "]";
+    public String toString() {
+        return "CompleteMultipartUploadRequest [uploadId=" + uploadId + ", bucketName=" + bucketName + ", objectKey="
+                + objectKey + ", partEtag=" + partEtag + "]";
     }
-    
+
 }
-
-

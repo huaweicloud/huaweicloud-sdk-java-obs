@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * 重命名文件/文件夹响应结果
+ * Response to the request for renaming a file/folder
  *
  */
 public class RenameObjectResult extends HeaderResponse{

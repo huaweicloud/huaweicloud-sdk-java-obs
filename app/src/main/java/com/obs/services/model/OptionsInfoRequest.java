@@ -21,86 +21,80 @@ import java.util.List;
  * Parameters in a bucket or object preflight request
  * 
  */
-public class OptionsInfoRequest
-{
+public class OptionsInfoRequest extends GenericRequest {
     private String origin;
-    
+
     private List<String> requestMethod;
-    
+
     private List<String> requestHeaders;
-    
+
     /**
      * Obtain the origin of the preflight request.
      * 
      * @return Origin of the preflight request
      */
-    public String getOrigin()
-    {
+    public String getOrigin() {
         return origin;
     }
-    
+
     /**
      * Set the origin of the preflight request.
      * 
-     * @param origin Origin of the preflight request
+     * @param origin
+     *            Origin of the preflight request
      */
-    public void setOrigin(String origin)
-    {
+    public void setOrigin(String origin) {
         this.origin = origin;
     }
-    
+
     /**
      * Obtain the list of allowed cross-origin request methods.
      * 
      * @return List of allowed cross-origin request methods
      */
-    public List<String> getRequestMethod()
-    {
-        if(this.requestMethod == null){
+    public List<String> getRequestMethod() {
+        if (this.requestMethod == null) {
             this.requestMethod = new ArrayList<String>();
         }
         return requestMethod;
     }
-    
+
     /**
      * Set the list of allowed cross-origin request methods.
      * 
-     * @param requestMethod List of allowed cross-origin request methods
+     * @param requestMethod
+     *            List of allowed cross-origin request methods
      */
-    public void setRequestMethod(List<String> requestMethod)
-    {
+    public void setRequestMethod(List<String> requestMethod) {
         this.requestMethod = requestMethod;
     }
-    
+
     /**
      * Obtain the list of allowed request headers.
      * 
      * @return List of allowed request headers
      */
-    public List<String> getRequestHeaders()
-    {
-        if(this.requestHeaders == null){
+    public List<String> getRequestHeaders() {
+        if (this.requestHeaders == null) {
             this.requestHeaders = new ArrayList<String>();
         }
         return requestHeaders;
     }
-    
+
     /**
      * Set the list of allowed request headers.
      * 
-     * @param requestHeaders List of allowed request headers
+     * @param requestHeaders
+     *            List of allowed request headers
      */
-    public void setRequestHeaders(List<String> requestHeaders)
-    {
+    public void setRequestHeaders(List<String> requestHeaders) {
         this.requestHeaders = requestHeaders;
     }
 
     @Override
-    public String toString()
-    {
-        return "OptionsInfoRequest [origin=" + origin + ", requestMethod=" + requestMethod + ", requestHeaders=" + requestHeaders + "]";
+    public String toString() {
+        return "OptionsInfoRequest [origin=" + origin + ", requestMethod=" + requestMethod + ", requestHeaders="
+                + requestHeaders + "]";
     }
-    
+
 }
-
-

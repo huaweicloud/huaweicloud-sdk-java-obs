@@ -74,4 +74,6 @@ public interface IHeaders{
 	
 	String azRedundancyHeader();
 	String bucketTypeHeader();
+	
+	String requestPaymentHeader();
 }

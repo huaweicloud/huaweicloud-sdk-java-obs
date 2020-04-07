@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import java.io.File;
@@ -19,44 +20,53 @@ import java.io.InputStream;
 import com.obs.services.model.PutObjectRequest;
 
 /**
- * Parameters in a file creation request 
+ * Parameters in a file creation request
  *
  */
-public class NewFileRequest extends PutObjectRequest{
+public class NewFileRequest extends PutObjectRequest {
 
-	public NewFileRequest() {
-		super();
-	}
+    public NewFileRequest() {
+        super();
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param file Local path to the file
-	 */
-	public NewFileRequest(String bucketName, String objectKey, File file) {
-		super(bucketName, objectKey, file);
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param file
+     *            Local path to the file
+     */
+    public NewFileRequest(String bucketName, String objectKey, File file) {
+        super(bucketName, objectKey, file);
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param input Data stream to be uploaded
-	 */
-	public NewFileRequest(String bucketName, String objectKey, InputStream input) {
-		super(bucketName, objectKey, input);
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param input
+     *            Data stream to be uploaded
+     */
+    public NewFileRequest(String bucketName, String objectKey, InputStream input) {
+        super(bucketName, objectKey, input);
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 */
-	public NewFileRequest(String bucketName, String objectKey) {
-		super(bucketName, objectKey);
-	}
-	
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     */
+    public NewFileRequest(String bucketName, String objectKey) {
+        super(bucketName, objectKey);
+    }
+
 }
-
-

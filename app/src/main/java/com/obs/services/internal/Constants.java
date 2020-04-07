@@ -196,7 +196,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.20.2";
+    public static final String OBS_SDK_VERSION = "3.20.3";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -256,7 +256,7 @@ public class Constants {
             Arrays.asList("acl", "backtosource", "policy", "torrent", "logging", "location", "storageinfo", "quota",
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
-                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess",
+                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh", "mirrorbacktosource",
                     /**
                      * File System API
                      */

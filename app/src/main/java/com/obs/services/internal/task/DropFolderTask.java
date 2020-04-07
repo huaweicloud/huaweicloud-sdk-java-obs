@@ -14,6 +14,7 @@
 package com.obs.services.internal.task;
 
 import com.obs.services.ObsClient;
+import com.obs.services.model.DeleteObjectRequest;
 import com.obs.services.model.DeleteObjectResult;
 import com.obs.services.model.TaskCallback;
 import com.obs.services.model.TaskProgressListener;
@@ -23,6 +24,8 @@ public class DropFolderTask extends AbstractObsTask {
     private String objectKey;
 
     private TaskCallback<DeleteObjectResult, String> callback;
+    
+    boolean isRequesterPays; 
 
     public DropFolderTask(ObsClient obsClient, String bucketName) {
         super(obsClient, bucketName);
@@ -30,10 +33,11 @@ public class DropFolderTask extends AbstractObsTask {
 
     public DropFolderTask(ObsClient obsClient, String bucketName, String objectKey,
             DefaultTaskProgressStatus progressStatus, TaskProgressListener progressListener, int taskProgressInterval,
-            TaskCallback<DeleteObjectResult, String> callback) {
+            TaskCallback<DeleteObjectResult, String> callback, boolean isRequesterPays) {
         super(obsClient, bucketName, progressStatus, progressListener, taskProgressInterval);
         this.objectKey = objectKey;
         this.callback = callback;
+        this.isRequesterPays = isRequesterPays;
     }
 
     public String getObjectKey() {
@@ -53,7 +57,9 @@ public class DropFolderTask extends AbstractObsTask {
     }
 
     private void dropFolder() {
-        DeleteObjectResult result = obsClient.deleteObject(bucketName, objectKey);
+        DeleteObjectRequest request = new DeleteObjectRequest(bucketName, objectKey);
+        request.setRequesterPays(this.isRequesterPays);
+        DeleteObjectResult result = obsClient.deleteObject(request);
         progressStatus.succeedTaskIncrement();
         callback.onSuccess(result);
     }
