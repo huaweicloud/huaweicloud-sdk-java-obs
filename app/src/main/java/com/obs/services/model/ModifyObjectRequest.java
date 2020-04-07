@@ -17,73 +17,89 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * 写文件内容的请求参数
+ * Request parameters for writing data to a file
  *
  */
-public class ModifyObjectRequest extends AppendObjectRequest{
+public class ModifyObjectRequest extends AppendObjectRequest {
 
-	public ModifyObjectRequest() {
-		super();
-	}
+    public ModifyObjectRequest() {
+        super();
+    }
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
      */
-    public ModifyObjectRequest(String bucketName, String objectKey)
-    {
+    public ModifyObjectRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param file 本地文件路径
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param file
+     *            Local path to the file
      */
-    public ModifyObjectRequest(String bucketName, String objectKey, File file)
-    {
+    public ModifyObjectRequest(String bucketName, String objectKey, File file) {
         this(bucketName, objectKey);
         this.file = file;
     }
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param file 本地文件路径
-     * @param position 写文件的起始位置
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param file
+     *            Local path to the file
+     * @param position
+     *            Start position for writing data to a file
      */
-    public ModifyObjectRequest(String bucketName, String objectKey, File file, long position)
-    {
-    	 this(bucketName, objectKey, file);
-    	 this.position = position;
+    public ModifyObjectRequest(String bucketName, String objectKey, File file, long position) {
+        this(bucketName, objectKey, file);
+        this.position = position;
     }
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param input 待上传的数据流
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param input
+     *            Data stream to be uploaded
      */
-    public ModifyObjectRequest(String bucketName, String objectKey, InputStream input)
-    {
-    	this(bucketName, objectKey);
-    	this.input = input;
+    public ModifyObjectRequest(String bucketName, String objectKey, InputStream input) {
+        this(bucketName, objectKey);
+        this.input = input;
     }
 
     /**
-     * 构造函数
-     * @param bucketName 桶名
-     * @param objectKey 文件名
-     * @param input 待上传的数据流
-     * @param position 写文件的起始位置
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param input
+     *            Data stream to be uploaded
+     * @param position
+     *            Start position for writing data to a file
      */
-    public ModifyObjectRequest(String bucketName, String objectKey, InputStream input, long position)
-    {
-    	this(bucketName, objectKey, input);
-    	this.position = position;
+    public ModifyObjectRequest(String bucketName, String objectKey, InputStream input, long position) {
+        this(bucketName, objectKey, input);
+        this.position = position;
     }
 }

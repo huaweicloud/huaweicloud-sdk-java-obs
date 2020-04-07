@@ -97,9 +97,9 @@ public class PostObjectSample
             
             String contentType = "text/plain";
             if(authType == AuthTypeEnum.OBS) {
-            	formParams.put("x-obs-acl", "public-read");
+                formParams.put("x-obs-acl", "public-read");
             }else {
-            	formParams.put("acl", "public-read");
+                formParams.put("acl", "public-read");
             }
             formParams.put("content-type", contentType);
             
@@ -112,11 +112,11 @@ public class PostObjectSample
             formParams.put("policy", response.getPolicy());
             
             if(authType == AuthTypeEnum.OBS) {
-            	formParams.put("signature", response.getSignature());
-            	formParams.put("accesskeyid", ak);
+                formParams.put("signature", response.getSignature());
+                formParams.put("accesskeyid", ak);
             }else {
-            	formParams.put("signature", response.getSignature());
-            	formParams.put("AwsAccesskeyid", ak);
+                formParams.put("signature", response.getSignature());
+                formParams.put("AwsAccesskeyid", ak);
             }
             
             String postUrl = protocol + bucketName + "." + endPoint;
@@ -243,7 +243,7 @@ public class PostObjectSample
             out.write(endData);
             out.flush();
             
-            // 读取返回数据
+            // Read the returned data.
             strBuf = new StringBuffer();
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = null;

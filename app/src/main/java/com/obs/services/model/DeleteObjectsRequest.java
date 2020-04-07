@@ -21,145 +21,150 @@ import java.util.List;
 /**
  * Parameters in an object batch deletion request
  */
-public class DeleteObjectsRequest
-{
+public class DeleteObjectsRequest extends GenericRequest {
     private String bucketName;
-    
+
     private boolean quiet;
-    
+
     private List<KeyAndVersion> keyAndVersions;
-    
-    public DeleteObjectsRequest(){
-        
+
+    public DeleteObjectsRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-    public DeleteObjectsRequest(String bucketName)
-    {
+    public DeleteObjectsRequest(String bucketName) {
         this.bucketName = bucketName;
     }
 
-
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param quiet Deletion response mode. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used.
-     * @param keyAndVersions To-be-deleted object array
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param quiet
+     *            Deletion response mode. "false" indicates that the "verbose"
+     *            mode is used and "true" indicates that the "quiet" mode is
+     *            used.
+     * @param keyAndVersions
+     *            To-be-deleted object array
      */
-    public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions)
-    {
+    public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions) {
         this.bucketName = bucketName;
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
     }
-
-
 
     /**
      * Obtain the bucket name.
      * 
      * @return Bucket name
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the bucket name.
      * 
-     * @param bucketName Bucket name
+     * @param bucketName
+     *            Bucket name
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
-     * Obtain the response mode of the batch deletion. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used. 
+     * Obtain the response mode of the batch deletion. "false" indicates that
+     * the "verbose" mode is used and "true" indicates that the "quiet" mode is
+     * used.
      * 
      * @return Response mode of the object batch deletion request
      */
-    public boolean isQuiet()
-    {
+    public boolean isQuiet() {
         return quiet;
     }
-    
+
     /**
-     * Set the response mode for the batch deletion. "false" indicates that the "verbose" mode is used and "true" indicates that the "quiet" mode is used. 
+     * Set the response mode for the batch deletion. "false" indicates that the
+     * "verbose" mode is used and "true" indicates that the "quiet" mode is
+     * used.
      * 
-     * @param quiet Response mode of the object batch deletion request
+     * @param quiet
+     *            Response mode of the object batch deletion request
      */
-    public void setQuiet(boolean quiet)
-    {
+    public void setQuiet(boolean quiet) {
         this.quiet = quiet;
     }
-    
+
     /**
      * Obtain the list of to-be-deleted objects.
+     * 
      * @return List of to-be-deleted objects
      */
-    public List<KeyAndVersion> getKeyAndVersionsList(){
-    	if(this.keyAndVersions == null) {
-    		this.keyAndVersions = new ArrayList<KeyAndVersion>();
-    	}
-    	return this.keyAndVersions;
+    public List<KeyAndVersion> getKeyAndVersionsList() {
+        if (this.keyAndVersions == null) {
+            this.keyAndVersions = new ArrayList<KeyAndVersion>();
+        }
+        return this.keyAndVersions;
     }
-    
+
     /**
-     * Add an object to be deleted. 
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
-     * @return Object newly added to the deletion list 
+     * Add an object to be deleted.
+     * 
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
+     * @return Object newly added to the deletion list
      */
-    public KeyAndVersion addKeyAndVersion(String objectKey, String versionId)
-    {
-    	KeyAndVersion kv = new KeyAndVersion(objectKey, versionId);
-    	this.getKeyAndVersionsList().add(kv);
+    public KeyAndVersion addKeyAndVersion(String objectKey, String versionId) {
+        KeyAndVersion kv = new KeyAndVersion(objectKey, versionId);
+        this.getKeyAndVersionsList().add(kv);
         return kv;
     }
-    
+
     /**
-     * Add an object to be deleted. 
-     * @param objectKey Object name
-     * @return Object newly added to the deletion list 
+     * Add an object to be deleted.
+     * 
+     * @param objectKey
+     *            Object name
+     * @return Object newly added to the deletion list
      */
-    public KeyAndVersion addKeyAndVersion(String objectKey)
-    {
-    	return this.addKeyAndVersion(objectKey, null);
+    public KeyAndVersion addKeyAndVersion(String objectKey) {
+        return this.addKeyAndVersion(objectKey, null);
     }
-    
+
     /**
      * Obtain the to-be-deleted object array.
+     * 
      * @return To-be-deleted object array
      */
-    public KeyAndVersion[] getKeyAndVersions()
-    {
+    public KeyAndVersion[] getKeyAndVersions() {
         return this.getKeyAndVersionsList().toArray(new KeyAndVersion[this.getKeyAndVersionsList().size()]);
     }
-    
+
     /**
      * Specify the to-be-deleted object array.
-     * @param keyAndVersions To-be-deleted object array
+     * 
+     * @param keyAndVersions
+     *            To-be-deleted object array
      */
-    public void setKeyAndVersions(KeyAndVersion[] keyAndVersions)
-    {
-    	 if(keyAndVersions != null && keyAndVersions.length > 0) {
-         	this.keyAndVersions = new ArrayList<KeyAndVersion>(Arrays.asList(keyAndVersions));
-         }
+    public void setKeyAndVersions(KeyAndVersion[] keyAndVersions) {
+        if (keyAndVersions != null && keyAndVersions.length > 0) {
+            this.keyAndVersions = new ArrayList<KeyAndVersion>(Arrays.asList(keyAndVersions));
+        }
     }
 
     @Override
-    public String toString()
-    {
-        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", keyAndVersions=" + this.keyAndVersions
-            + "]";
+    public String toString() {
+        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", keyAndVersions="
+                + this.keyAndVersions + "]";
     }
-    
-    
+
 }
-
-

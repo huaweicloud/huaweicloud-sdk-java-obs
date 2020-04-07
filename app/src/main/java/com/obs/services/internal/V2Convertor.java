@@ -120,6 +120,17 @@ public class V2Convertor implements IConvertor {
 			throw new ServiceException("Failed to build XML document for versioning", e);
 		}
 	}
+	
+	@Override
+    public String transRequestPaymentConfiguration(String bucketName, String payer) throws ServiceException {
+        try {
+            XMLBuilder builder = XMLBuilder.create("RequestPaymentConfiguration")
+                    .elem("Payer").text(ServiceUtils.toValid(payer));
+            return builder.asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for requestPayment", e);
+        }
+    }
 
 	@Override
 	public String transLifecycleConfiguration(LifecycleConfiguration config) throws ServiceException {

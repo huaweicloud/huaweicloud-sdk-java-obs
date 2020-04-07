@@ -285,4 +285,9 @@ public class ObsHeaders implements IHeaders{
 	public String bucketTypeHeader() {
 		return this.headerPrefix() + "bucket-type";
 	}
+	
+	@Override
+    public String requestPaymentHeader() {
+        return this.headerPrefix() + "request-payer";
+    }
 }

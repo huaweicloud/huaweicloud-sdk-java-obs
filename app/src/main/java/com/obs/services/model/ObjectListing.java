@@ -25,6 +25,8 @@ public class ObjectListing extends HeaderResponse
     private List<ObsObject> objectSummaries;
     
     private List<String> commonPrefixes;
+
+    private List<ObsObject> extenedCommonPrefixes;
     
     private String bucketName;
     
@@ -58,6 +60,13 @@ public class ObjectListing extends HeaderResponse
 		this.nextMarker = nextMarker;
 		this.location = location;
 	}
+
+    public ObjectListing(List<ObsObject> objectSummaries, List<String> commonPrefixes, String bucketName,
+                         boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
+                         String location, List<ObsObject> extenedCommonPrefixes) {
+        this(objectSummaries, commonPrefixes, bucketName, truncated, prefix, marker, maxKeys, delimiter, nextMarker, location);
+        this.extenedCommonPrefixes = extenedCommonPrefixes;
+    }
 
 	/**
      * Obtain the start position for next listing.
@@ -101,8 +110,20 @@ public class ObjectListing extends HeaderResponse
     	}
         return commonPrefixes;
     }
-    
-    
+
+    /**
+     * Obtain the list of prefixes to the names of grouped objects.
+     *
+     * @return List of prefixes to the names of grouped objects
+     */
+    public List<ObsObject> getExtenedCommonPrefixes()
+    {
+        if(this.extenedCommonPrefixes == null) {
+            this.extenedCommonPrefixes = new ArrayList<ObsObject>();
+        }
+        return extenedCommonPrefixes;
+    }
+
     /**
      * Obtain the bucket name.
      * 

@@ -14,256 +14,211 @@
 package com.obs.services.model;
 
 /**
-*
-* Parameters in a request for restoring an Archive object
-*
-*/
-public class RestoreObjectRequest
-{
+ *
+ * Parameters in a request for restoring an Archive object
+ *
+ */
+public class RestoreObjectRequest extends BaseObjectRequest {
     /**
      * Expedited restoration, which restores an object in 1 to 5 minutes
      */
-	@Deprecated
+    @Deprecated
     public static final String EXPEDITED = "Expedited";
-    
+
     /**
      * Standard restoration, which restores the object in 3 to 5 hours
      */
-	@Deprecated
+    @Deprecated
     public static final String STANDARD = "Standard";
-    
+
     /**
      * Batch restoration, which restores objects in 5 to 12 hours
      */
-	@Deprecated
+    @Deprecated
     public static final String BULK = "Bulk";
-    
+
     /**
      * 
      * Status of the Archive object
      *
      */
-    public static class RestoreObjectStatus extends HeaderResponse
-    {   
-        
+    public static class RestoreObjectStatus extends HeaderResponse {
+
         private int code;
         /**
-         * The object has been restored and can be downloaded. 
+         * The object has been restored and can be downloaded.
          */
         public static final RestoreObjectStatus AVALIABLE = new RestoreObjectStatus(200);
         /**
-         * The object is being restored and cannot be downloaded. 
+         * The object is being restored and cannot be downloaded.
          */
         public static final RestoreObjectStatus INPROGRESS = new RestoreObjectStatus(202);
-        
-        private RestoreObjectStatus(int code)
-        {
+
+        private RestoreObjectStatus(int code) {
             this.code = code;
         }
-        
+
         /**
          * Obtain the status code of the object.
+         * 
          * @return Status code of the object
          */
-        public int getCode()
-        {
+        public int getCode() {
             return this.code;
         }
-        
-        public static RestoreObjectStatus valueOf(int retCode)
-        {
+
+        public static RestoreObjectStatus valueOf(int retCode) {
             return retCode == 200 ? AVALIABLE : retCode == 202 ? INPROGRESS : new RestoreObjectStatus(retCode);
         }
     }
-    
-    private String bucketName;
-    
-    private String objectKey;
-    
-    private String versionId;
-    
+
     private int days;
-    
+
     private RestoreTierEnum tier;
-    
-    public RestoreObjectRequest()
-    {
-        
+
+    public RestoreObjectRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param days Retention period of the restored object
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param days
+     *            Retention period of the restored object
      */
-    public RestoreObjectRequest(String bucketName, String objectKey, int days)
-    {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+    public RestoreObjectRequest(String bucketName, String objectKey, int days) {
+        super(bucketName, objectKey);
         this.days = days;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
-     * @param days Retention period of the restored object
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
+     * @param days
+     *            Retention period of the restored object
      */
-    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days)
-    {
-        this(bucketName, objectKey, days);
-        this.versionId = versionId;
+    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days) {
+        super(bucketName, objectKey, versionId);
+        this.days = days;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
-     * @param days Retention period of the restored object
-     * @param tier Restore option
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
+     * @param days
+     *            Retention period of the restored object
+     * @param tier
+     *            Restore option
      */
     @Deprecated
-    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, String tier)
-    {
+    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, String tier) {
         this(bucketName, objectKey, versionId, days);
         this.tier = RestoreTierEnum.getValueFromCode(tier);
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param versionId Version ID of the object
-     * @param days Retention period of the restored object
-     * @param tier Restore option
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Version ID of the object
+     * @param days
+     *            Retention period of the restored object
+     * @param tier
+     *            Restore option
      */
-    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, RestoreTierEnum tier)
-    {
+    public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, RestoreTierEnum tier) {
         this(bucketName, objectKey, versionId, days);
         this.tier = tier;
     }
-    
+
+
     /**
-     * Obtain the bucket name.
-     * @return Bucket name
-     */
-    public String getBucketName()
-    {
-        return bucketName;
-    }
-    
-    /**
-     * Set the bucket name.
-     * @param bucketName Bucket name
-     */
-    public void setBucketName(String bucketName)
-    {
-        this.bucketName = bucketName;
-    }
-    
-    /**
-     * Obtain the object name.
+     * Obtain the retention period of the restored object. The value ranges from
+     * 1 to 30 (in days).
      * 
-     * @return Object name
-     */
-    public String getObjectKey()
-    {
-        return objectKey;
-    }
-    
-    /**
-     * Set the object name.
-     * 
-     * @param objectKey Object name
-     */
-    public void setObjectKey(String objectKey)
-    {
-        this.objectKey = objectKey;
-    }
-    
-    /**
-     * Obtain the object version ID.
-     * @return Version ID of the object
-     */
-    public String getVersionId()
-    {
-        return versionId;
-    }
-    
-    /**
-     * Set the version ID of the object. 
-     * @param versionId Version ID of the object
-     */
-    public void setVersionId(String versionId)
-    {
-        this.versionId = versionId;
-    }
-    
-    /**
-     * Obtain the retention period of the restored object. The value ranges from 1 to 30 (in days).
      * @return Retention period of the restored object
      */
-    public int getDays()
-    {
+    public int getDays() {
         return days;
     }
-    
+
     /**
-     * Set the retention period of the restored object. The value ranges from 1 to 30 (in days).
-     * @param days Retention period of the restored object
+     * Set the retention period of the restored object. The value ranges from 1
+     * to 30 (in days).
+     * 
+     * @param days
+     *            Retention period of the restored object
      */
-    public void setDays(int days)
-    {
+    public void setDays(int days) {
         this.days = days;
     }
-    
+
     /**
      * Obtain the restore option.
+     * 
      * @see #getRestoreTier()
      * @return Restore option
      */
     @Deprecated
-    public String getTier()
-    {
+    public String getTier() {
         return this.tier != null ? this.tier.getCode() : null;
     }
-    
+
     /**
      * Set the restore option.
+     * 
      * @see #setRestoreTier(RestoreTierEnum tier)
-     * @param tier Restore option
+     * @param tier
+     *            Restore option
      */
     @Deprecated
-    public void setTier(String tier)
-    {
+    public void setTier(String tier) {
         this.tier = RestoreTierEnum.getValueFromCode(tier);
     }
-    
+
     /**
      * Obtain the restore option.
+     * 
      * @return Restore option
      */
-    public RestoreTierEnum getRestoreTier()
-    {
+    public RestoreTierEnum getRestoreTier() {
         return tier;
     }
-    
+
     /**
      * Set the restore option.
-     * @param tier Restore option
+     * 
+     * @param tier
+     *            Restore option
      */
-    public void setRestoreTier(RestoreTierEnum tier)
-    {
+    public void setRestoreTier(RestoreTierEnum tier) {
         this.tier = tier;
     }
 
     @Override
-    public String toString()
-    {
-        return "RestoreObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId=" + versionId + ", days=" + days
-            + ", tier=" + tier + "]";
+    public String toString() {
+        return "RestoreObjectRequest [days=" + days + ", tier=" + tier + ", getBucketName()=" + getBucketName()
+                + ", getObjectKey()=" + getObjectKey() + ", getVersionId()=" + getVersionId() + ", isRequesterPays()="
+                + isRequesterPays() + "]";
     }
 }

@@ -20,63 +20,63 @@ import java.util.List;
  * Parameters in a request for obtaining bucket metadata
  *
  */
-public class BucketMetadataInfoRequest extends OptionsInfoRequest
-{
+public class BucketMetadataInfoRequest extends OptionsInfoRequest {
     protected String bucketName;
-    
+
     private List<String> requestHeaders;
-    
-    public BucketMetadataInfoRequest()
-    {
-        
+
+    public BucketMetadataInfoRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-    public BucketMetadataInfoRequest(String bucketName)
-    {
+    public BucketMetadataInfoRequest(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param origin Origin allowed by the CORS rule
-     * @param requestHeaders Request headers allowed by the CORS rules
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param origin
+     *            Origin allowed by the CORS rule
+     * @param requestHeaders
+     *            Request headers allowed by the CORS rules
      */
-    public BucketMetadataInfoRequest(String bucketName, String origin, List<String> requestHeaders)
-    {
+    public BucketMetadataInfoRequest(String bucketName, String origin, List<String> requestHeaders) {
         this.bucketName = bucketName;
         this.setOrigin(origin);
         this.requestHeaders = requestHeaders;
     }
-    
+
     /**
      * Obtain the bucket name.
+     * 
      * @return Bucket name
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the bucket name.
-     * @param bucketName Bucket name
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketMetadataInfoRequest [bucketName=" + bucketName + ", requestHeaders=" + requestHeaders + "]";
     }
-    
+
 }
-
-

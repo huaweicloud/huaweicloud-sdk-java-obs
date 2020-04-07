@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * 截断文件的响应结果 
+ * Response to the request for truncating a file 
  *
  */
 public class TruncateObjectResult extends HeaderResponse{

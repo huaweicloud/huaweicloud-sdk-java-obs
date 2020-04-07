@@ -14,7 +14,7 @@
 package com.obs.services.model;
 
 /**
- * 修改写文件响应结果
+ * Response to the file writing request.
  *
  */
 public class ModifyObjectResult extends HeaderResponse {

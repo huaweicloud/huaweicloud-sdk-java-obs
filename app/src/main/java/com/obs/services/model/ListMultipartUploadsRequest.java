@@ -17,7 +17,7 @@ package com.obs.services.model;
 /**
  * Parameters in a request for listing multipart uploads
  */
-public class ListMultipartUploadsRequest
+public class ListMultipartUploadsRequest extends GenericRequest
 {
     private String bucketName;
     

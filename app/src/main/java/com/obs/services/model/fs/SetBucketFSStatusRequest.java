@@ -13,65 +13,56 @@
  */
 package com.obs.services.model.fs;
 
+import com.obs.services.model.BaseBucketRequest;
+
 /**
- * Parameters in a request for setting status of the file gateway feature for a bucket 
+ * Parameters in a request for setting status of the file gateway feature for a
+ * bucket
  *
  */
-public class SetBucketFSStatusRequest {
-	
-	private String bucketName;
-	
-	private FSStatusEnum status;
-	
-	public SetBucketFSStatusRequest() {
-		
-	}
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param status Status of the file gateway feature
-	 */
-	public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
-		super();
-		this.bucketName = bucketName;
-		this.setStatus(status);
-	}
+public class SetBucketFSStatusRequest extends BaseBucketRequest {
 
-	/**
-	 * Obtain the bucket name.
-	 * @return Bucket name
-	 */
-	public String getBucketName() {
-		return bucketName;
-	}
+    private FSStatusEnum status;
 
-	/**
-	 * Set the bucket name.
-	 * @param bucketName Bucket name
-	 */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    public SetBucketFSStatusRequest() {
 
-	/**
-	 * Obtain the status of the file gateway feature of a bucket. 
-	 * @return Status of the file gateway feature 
-	 */
-	public FSStatusEnum getStatus() {
-		return status;
-	}
+    }
 
-	/**
-	 * Set status of the file gateway feature for a bucket. 
-	 * @param status Status of the file gateway feature
-	 */
-	public void setStatus(FSStatusEnum status) {
-		this.status = status;
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param status
+     *            Status of the file gateway feature
+     */
+    public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
+        super(bucketName);
+        this.setStatus(status);
+    }
 
+    /**
+     * Obtain the status of the file gateway feature of a bucket.
+     * 
+     * @return Status of the file gateway feature
+     */
+    public FSStatusEnum getStatus() {
+        return status;
+    }
 
-	
+    /**
+     * Set status of the file gateway feature for a bucket.
+     * 
+     * @param status
+     *            Status of the file gateway feature
+     */
+    public void setStatus(FSStatusEnum status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "SetBucketFSStatusRequest [status=" + status + ", getBucketName()=" + getBucketName()
+                + ", isRequesterPays()=" + isRequesterPays() + "]";
+    }
 }
-
-

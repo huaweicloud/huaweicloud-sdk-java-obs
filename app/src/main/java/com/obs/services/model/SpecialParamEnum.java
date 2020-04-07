@@ -11,13 +11,13 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * Special operator, which indicates the sub-resource to be operated
  */
-public enum SpecialParamEnum
-{
+public enum SpecialParamEnum {
     
     /**
      * Obtain the bucket location information.
@@ -55,6 +55,10 @@ public enum SpecialParamEnum
      * Obtain or set the versioning status of a bucket.
      */
     VERSIONING("versioning"),
+    /**
+     * Obtain or set requester payment status of a bucket.
+     */
+    REQUEST_PAYMENT("requestPayment"),
     /**
      * Obtain or set bucket storage policies.
      */
@@ -95,8 +99,7 @@ public enum SpecialParamEnum
      * Configure bucket notification or obtain bucket notification configuration.
      */
     NOTIFICATION("notification"),
-	
-	/**
+    /**
      * Set, obtain, or delete the cross-region replication configuration of a bucket.
      */
     REPLICATION("replication"),
@@ -119,63 +122,55 @@ public enum SpecialParamEnum
     /**
      * Modify a file.
      */
-	MODIFY("modify"),
-	
-	/**
-	 * Configure the file gateway feature.
-	 */
-	FILEINTERFACE("fileinterface"),
-	
-	/**
-	 * Set or delete object properties.
-	 */
-	METADATA("metadata"),
-	
-	/**
-	 * Set, obtain, or delete the encryption configuration of a bucket.
-	 */
-	ENCRYPTION("encryption"),
-	
-	/**
-	 * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
-	 */
-	DIRECTCOLDACCESS("directcoldaccess"); 
+    MODIFY("modify"),
+    
+    /**
+     * Configure the file gateway feature.
+     */
+    FILEINTERFACE("fileinterface"),
+    
+    /**
+     * Set or delete object properties.
+     */
+    METADATA("metadata"),
+    
+    /**
+     * Set, obtain, or delete the encryption configuration of a bucket.
+     */
+    ENCRYPTION("encryption"),
+    
+    /**
+     * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
+     */
+    DIRECTCOLDACCESS("directcoldaccess"); 
     
     /**
      * Specify the corresponding code in the database and the external code.
      */
     private String stringCode;
     
-    private SpecialParamEnum(String stringCode)
-    {
-        if (stringCode == null)
-        {
+    private SpecialParamEnum(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("stringCode is null");
         }
         this.stringCode = stringCode;
     }
     
-    public String getStringCode()
-    {
+    public String getStringCode() {
         return this.stringCode.toLowerCase();
     }
     
-    public String getOriginalStringCode()
-    {
+    public String getOriginalStringCode() {
         return this.stringCode;
     }
     
-    public static SpecialParamEnum getValueFromStringCode(String stringCode)
-    {
-        if (stringCode == null)
-        {
+    public static SpecialParamEnum getValueFromStringCode(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("string code is null");
         }
         
-        for (SpecialParamEnum installMode : SpecialParamEnum.values())
-        {
-            if (installMode.getStringCode().equals(stringCode.toLowerCase()))
-            {
+        for (SpecialParamEnum installMode : SpecialParamEnum.values()) {
+            if (installMode.getStringCode().equals(stringCode.toLowerCase())) {
                 return installMode;
             }
         }

@@ -42,6 +42,8 @@ public interface IConvertor {
 	String transBucketLoction(String location) throws ServiceException;
 
 	String transVersioningConfiguration(String bucketName, String status) throws ServiceException;
+	
+	String transRequestPaymentConfiguration(String bucketName, String payer) throws ServiceException;
 
 	String transLifecycleConfiguration(LifecycleConfiguration config) throws ServiceException;
 

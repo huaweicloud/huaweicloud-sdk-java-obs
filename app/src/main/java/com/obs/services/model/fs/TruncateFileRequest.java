@@ -11,93 +11,99 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
+
+import com.obs.services.model.GenericRequest;
 
 /**
  * Parameters in a request for truncating a file
  *
  */
-public class TruncateFileRequest {
-	
-	private String bucketName;
+public class TruncateFileRequest extends GenericRequest {
 
-	private String objectKey;
-	
-	private long newLength;
-	
-	public TruncateFileRequest() {
-		
-	}
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 * @param newLength File size after the truncation
-	 */
-	public TruncateFileRequest(String bucketName, String objectKey, long newLength) {
-		super();
-		this.bucketName = bucketName;
-		this.objectKey = objectKey;
-		this.newLength = newLength;
-	}
+    private String bucketName;
 
+    private String objectKey;
 
+    private long newLength;
 
-	/**
-	 * Obtain the bucket name.
-	 * 
-	 * @return Bucket name
-	 */
-	public String getBucketName() {
-		return bucketName;
-	}
+    public TruncateFileRequest() {
 
-	/**
-	 * Set the bucket name.
-	 * 
-	 * @param bucketName
-	 *            Bucket name
-	 */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    }
 
-	/**
-	 * Obtain the file name.
-	 * 
-	 * @return File name
-	 */
-	public String getObjectKey() {
-		return objectKey;
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param newLength
+     *            File size after the truncation
+     */
+    public TruncateFileRequest(String bucketName, String objectKey, long newLength) {
+        super();
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.newLength = newLength;
+    }
 
-	/**
-	 * Set the file name.
-	 * 
-	 * @param objectKey
-	 *            File name
-	 * 
-	 */
-	public void setObjectKey(String objectKey) {
-		this.objectKey = objectKey;
-	}
-	
-	/**
-	 * Obtain the file size after the truncation.
-	 * @return File size after the truncation
-	 */
-	public long getNewLength() {
-		return newLength;
-	}
+    /**
+     * Obtain the bucket name.
+     * 
+     * @return Bucket name
+     */
+    public String getBucketName() {
+        return bucketName;
+    }
 
-	/**
-	 * Set the post-truncation file size.
-	 * @param newLength File size after the truncation
-	 */
-	public void setNewLength(long newLength) {
-		this.newLength = newLength;
-	}
+    /**
+     * Set the bucket name.
+     * 
+     * @param bucketName
+     *            Bucket name
+     */
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    /**
+     * Obtain the file name.
+     * 
+     * @return File name
+     */
+    public String getObjectKey() {
+        return objectKey;
+    }
+
+    /**
+     * Set the file name.
+     * 
+     * @param objectKey
+     *            File name
+     * 
+     */
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
+    }
+
+    /**
+     * Obtain the file size after the truncation.
+     * 
+     * @return File size after the truncation
+     */
+    public long getNewLength() {
+        return newLength;
+    }
+
+    /**
+     * Set the post-truncation file size.
+     * 
+     * @param newLength
+     *            File size after the truncation
+     */
+    public void setNewLength(long newLength) {
+        this.newLength = newLength;
+    }
 }
-
-

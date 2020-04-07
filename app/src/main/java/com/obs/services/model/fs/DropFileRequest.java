@@ -13,12 +13,14 @@
  */
 package com.obs.services.model.fs;
 
+import com.obs.services.model.GenericRequest;
+
 /**
  * Request parameters for deleting objects
  */
 
-public class DropFileRequest {
-    
+public class DropFileRequest extends GenericRequest {
+
     private String bucketName;
 
     private String objectKey;
@@ -31,8 +33,10 @@ public class DropFileRequest {
     /**
      * Constructor
      * 
-     * @param bucketName Bucket name
-     * @param objectKey  Object name
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
      */
     public DropFileRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
@@ -42,9 +46,12 @@ public class DropFileRequest {
     /**
      * Constructor
      * 
-     * @param bucketName Bucket name
-     * @param objectKey  Object name
-     * @param versionId  Object version
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param versionId
+     *            Object version
      */
     public DropFileRequest(String bucketName, String objectKey, String versionId) {
         this.bucketName = bucketName;
@@ -64,7 +71,8 @@ public class DropFileRequest {
     /**
      * Set the bucket name.
      * 
-     * @param bucketName Bucket name
+     * @param bucketName
+     *            Bucket name
      */
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
@@ -82,7 +90,8 @@ public class DropFileRequest {
     /**
      * Set the object name.
      * 
-     * @param objectKey Object name
+     * @param objectKey
+     *            Object name
      */
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
