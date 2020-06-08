@@ -157,7 +157,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <phase>install</phase>
+                        <!--<phase>install</phase>-->
                         <goals>
                             <goal>jar</goal>
                         </goals>
