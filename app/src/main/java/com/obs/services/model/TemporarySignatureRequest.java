@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.obs.services.internal.ObsConstraint;
@@ -34,8 +35,10 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     /**
      * 构造函数
      * 
-     * @param method  HTTP/HTTPS请求方法
-     * @param expires 有效时间，单位：秒
+     * @param method
+     *            HTTP/HTTPS请求方法
+     * @param expires
+     *            有效时间，单位：秒
      */
     public TemporarySignatureRequest(HttpMethodEnum method, long expires) {
         this(method, null, null, null, expires);
@@ -44,11 +47,16 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     /**
      * 构造函数
      * 
-     * @param method       HTTP/HTTPS请求方法
-     * @param bucketName   桶名
-     * @param objectKey    对象名
-     * @param specialParam 特殊操作符
-     * @param expires      有效时间，单位：秒
+     * @param method
+     *            HTTP/HTTPS请求方法
+     * @param bucketName
+     *            桶名
+     * @param objectKey
+     *            对象名
+     * @param specialParam
+     *            特殊操作符
+     * @param expires
+     *            有效时间，单位：秒
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires) {
@@ -58,12 +66,18 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     /**
      * 构造函数
      * 
-     * @param method       HTTP/HTTPS请求方法
-     * @param bucketName   桶名
-     * @param objectKey    对象名
-     * @param specialParam 特殊操作符
-     * @param expires      有效时间，单位：秒
-     * @param requestDate  请求日期
+     * @param method
+     *            HTTP/HTTPS请求方法
+     * @param bucketName
+     *            桶名
+     * @param objectKey
+     *            对象名
+     * @param specialParam
+     *            特殊操作符
+     * @param expires
+     *            有效时间，单位：秒
+     * @param requestDate
+     *            请求日期
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires, Date requestDate) {
@@ -87,7 +101,8 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     /**
      * 设置临时授权访问有效时间，单位：秒。默认值为5分钟（300），最大取值为7天（604800）
      * 
-     * @param expires 有效时间
+     * @param expires
+     *            有效时间
      */
     public void setExpires(long expires) {
         this.expires = expires;
@@ -99,20 +114,21 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
      * @return 请求时间
      */
     public Date getRequestDate() {
-    	return ServiceUtils.cloneDateIgnoreNull(requestDate);
+        return ServiceUtils.cloneDateIgnoreNull(requestDate);
     }
 
     /**
      * 设置请求时间
      * 
-     * @param requestDate 请求时间
+     * @param requestDate
+     *            请求时间
      */
     public void setRequestDate(Date requestDate) {
-    	if(null != requestDate) {
-    		this.requestDate = (Date) requestDate.clone();
-    	} else {
-    		this.requestDate = null;
-    	}
+        if (null != requestDate) {
+            this.requestDate = (Date) requestDate.clone();
+        } else {
+            this.requestDate = null;
+        }
     }
 
     @Override

@@ -11,40 +11,40 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * HTTP协议类型
  *
  */
-public enum HttpProtocolTypeEnum{
-	
-	/**
-	 * HTTP 1.1协议
-	 */
-	HTTP1_1("http1.1"),
-	/**
-	 * HTTP 2.0协议
-	 */
-	HTTP2_0("http2.0");
-	
-	private String code;
+public enum HttpProtocolTypeEnum {
 
-	private HttpProtocolTypeEnum(String code) {
-		this.code = code;
-	}
+    /**
+     * HTTP 1.1协议
+     */
+    HTTP1_1("http1.1"), /**
+                         * HTTP 2.0协议
+                         */
+    HTTP2_0("http2.0");
 
-	public String getCode() {
-		return code;
-	}
+    private String code;
 
-	public static HttpProtocolTypeEnum getValueFromCode(String code) {
-		for (HttpProtocolTypeEnum val : HttpProtocolTypeEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return HTTP1_1;
-	}
-	
+    private HttpProtocolTypeEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public static HttpProtocolTypeEnum getValueFromCode(String code) {
+        for (HttpProtocolTypeEnum val : HttpProtocolTypeEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return HTTP1_1;
+    }
+
 }

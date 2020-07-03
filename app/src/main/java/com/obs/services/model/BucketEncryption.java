@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -18,23 +19,27 @@ package com.obs.services.model;
  *
  */
 public class BucketEncryption extends HeaderResponse {
-    
+
     private SSEAlgorithmEnum sseAlgorithm;
-    
+
     private String kmsKeyId;
-    
-    public BucketEncryption() {}
+
+    public BucketEncryption() {
+    }
 
     /**
      * 构造方法
-     * @param sseAlgorithm 桶加密算法
+     * 
+     * @param sseAlgorithm
+     *            桶加密算法
      */
     public BucketEncryption(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
     }
-    
+
     /**
      * 获取桶加密算法
+     * 
      * @return 桶加密算法
      */
     public SSEAlgorithmEnum getSseAlgorithm() {
@@ -43,7 +48,9 @@ public class BucketEncryption extends HeaderResponse {
 
     /**
      * 设置桶加密算法
-     * @param sseAlgorithm 桶加密算法
+     * 
+     * @param sseAlgorithm
+     *            桶加密算法
      */
     public void setSseAlgorithm(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
@@ -61,7 +68,8 @@ public class BucketEncryption extends HeaderResponse {
     /**
      * 设置SSE-KMS方式下使用的主密钥，可为空，如果为空，那么默认的主密钥将会被使用
      * 
-     * @param kmsKeyId SSE-KMS方式下使用的主密钥
+     * @param kmsKeyId
+     *            SSE-KMS方式下使用的主密钥
      */
     public void setKmsKeyId(String kmsKeyId) {
         this.kmsKeyId = kmsKeyId;
@@ -71,5 +79,5 @@ public class BucketEncryption extends HeaderResponse {
     public String toString() {
         return "BucketEncryption [sseAlgorithm=" + sseAlgorithm + ", kmsKeyId=" + kmsKeyId + "]";
     }
-    
+
 }

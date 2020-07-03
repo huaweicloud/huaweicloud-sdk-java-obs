@@ -290,7 +290,7 @@ public class PostObjectSample extends Activity
                 out.write(endData);
                 out.flush();
                 
-                // 读取返回数据
+                // Read data returned.
                 strBuf = new StringBuffer();
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line = null;

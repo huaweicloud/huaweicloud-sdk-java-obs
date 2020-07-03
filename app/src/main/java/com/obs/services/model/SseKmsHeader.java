@@ -11,62 +11,64 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * SSE-KMS加密头域信息
  */
-public class SseKmsHeader
-{
+public class SseKmsHeader {
     @SuppressWarnings("deprecation")
-	private ServerEncryption encryption;
-    
+    private ServerEncryption encryption;
+
     private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.KMS;
-    
+
     private String kmsKeyId;
-    
+
     private String context;
-    
+
     private String projectId;
-    
+
     /**
      * 获取项目ID
+     * 
      * @return projectId 项目ID
      */
     public String getProjectId() {
-		return projectId;
-	}
+        return projectId;
+    }
 
     /**
      * 设置项目ID
-     * @param projectId 项目ID
+     * 
+     * @param projectId
+     *            项目ID
      */
-	public void setProjectId(String projectId) {
-		this.projectId = projectId;
-	}
-    
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
     /**
      * 获取加密算法类型，目前仅支持kms
      * 
      * @return 加密算法类型
      */
     @Deprecated
-    public ServerEncryption getEncryption()
-    {
+    public ServerEncryption getEncryption() {
         return encryption;
     }
-     
+
     /**
      * 设置加密算法类型，目前仅支持kms
      * 
-     * @param encryption 加密算法类型
+     * @param encryption
+     *            加密算法类型
      */
     @Deprecated
-    public void setEncryption(ServerEncryption encryption)
-    {
+    public void setEncryption(ServerEncryption encryption) {
         this.encryption = encryption;
     }
-    
+
     /**
      * 获取加密算法类型，目前仅支持kms
      * 
@@ -75,43 +77,39 @@ public class SseKmsHeader
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }
-    
+
     /**
      * 获取SSE-KMS方式下使用的主密钥，可为空，如果为空，那么默认的主密钥将会被使用
      * 
      * @return SSE-KMS方式下使用的主密钥
      */
-    public String getKmsKeyId()
-    {
+    public String getKmsKeyId() {
         return kmsKeyId;
     }
-    
+
     /**
      * 设置SSE-KMS方式下使用的主密钥，可为空，如果为空，那么默认的主密钥将会被使用
      * 
-     * @param kmsKeyId SSE-KMS方式下使用的主密钥
+     * @param kmsKeyId
+     *            SSE-KMS方式下使用的主密钥
      */
-    public void setKmsKeyId(String kmsKeyId)
-    {
+    public void setKmsKeyId(String kmsKeyId) {
         this.kmsKeyId = kmsKeyId;
     }
-    
+
     @Deprecated
-    public String getContext()
-    {
+    public String getContext() {
         return context;
     }
-    
+
     @Deprecated
-    public void setContext(String context)
-    {
+    public void setContext(String context) {
         this.context = context;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "SseKmsHeader [encryption=" + encryption + ", kmsKeyId=" + kmsKeyId + ", context=" + context + "]";
     }
-    
+
 }

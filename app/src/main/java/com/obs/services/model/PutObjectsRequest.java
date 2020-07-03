@@ -37,10 +37,10 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
 
     // 分片大小，单位字节，默认5MB
-    private long partSize = 1024 * 1024 * 5l;
+    private long partSize = 1024 * 1024 * 5L;
 
     // 启用分段上传的文件大小限制，单位字节，默认100MB
-    private long bigfileThreshold = 1024 * 1024 * 100l;
+    private long bigfileThreshold = 1024 * 1024 * 100L;
 
     // 分片上传线程数，默认1
     private int taskNum = 1;
@@ -161,10 +161,10 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            启用分段上传的文件临界大小
      */
     public void setBigfileThreshold(long bigfileThreshold) {
-        if (bigfileThreshold < 100 * 1024l) {
-            this.bigfileThreshold = 100 * 1024l;
-        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024l) {
-            this.bigfileThreshold = 5 * 1024 * 1024 * 1024l;
+        if (bigfileThreshold < 100 * 1024L) {
+            this.bigfileThreshold = 100 * 1024L;
+        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024L) {
+            this.bigfileThreshold = 5 * 1024 * 1024 * 1024L;
         } else {
             this.bigfileThreshold = bigfileThreshold;
         }

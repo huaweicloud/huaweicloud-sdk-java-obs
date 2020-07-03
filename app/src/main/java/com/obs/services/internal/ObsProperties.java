@@ -1,9 +1,4 @@
 /**
- * 
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -29,10 +24,9 @@ public class ObsProperties implements Serializable {
 
     private static final long serialVersionUID = -822234326095333142L;
 
-    private static final ILogger log = LoggerBuilder.getLogger(ObsProperties.class);
+    private static final ILogger LOG = LoggerBuilder.getLogger(ObsProperties.class);
 
     private final Properties properties = new Properties();
-
 
     public void setProperty(String propertyName, String propertyValue) {
         if (propertyValue == null) {
@@ -52,46 +46,33 @@ public class ObsProperties implements Serializable {
 
     public String getStringProperty(String propertyName, String defaultValue) {
         String stringValue = trim(properties.getProperty(propertyName, defaultValue));
-        if (log.isDebugEnabled()
-                && !"httpclient.proxy-user".equals(propertyName)
+        if (LOG.isDebugEnabled() && !"httpclient.proxy-user".equals(propertyName)
                 && !"httpclient.proxy-password".equals(propertyName)) {
-            log.debug(propertyName + "=" + stringValue);
+            LOG.debug(propertyName + "=" + stringValue);
         }
         return stringValue;
     }
 
-    public long getLongProperty(String propertyName, long defaultValue)
-        throws NumberFormatException {
-        String longValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
-        if (log.isDebugEnabled()) {
-            log.debug(propertyName + "=" + longValue);
+    public int getIntProperty(String propertyName, int defaultValue) throws NumberFormatException {
+        String value = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(propertyName + "=" + value);
         }
-        return Long.parseLong(longValue);
+        return Integer.parseInt(value);
     }
 
-    public int getIntProperty(String propertyName, int defaultValue)
-        throws NumberFormatException {
-        String intValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
-        if (log.isDebugEnabled()) {
-            log.debug(propertyName + "=" + intValue);
-        }
-        return Integer.parseInt(intValue);
-    }
-
-    public boolean getBoolProperty(String propertyName, boolean defaultValue)
-        throws IllegalArgumentException {
+    public boolean getBoolProperty(String propertyName, boolean defaultValue) throws IllegalArgumentException {
         String boolValue = trim(properties.getProperty(propertyName, String.valueOf(defaultValue)));
-        if (log.isDebugEnabled()) {
-            log.debug(propertyName + "=" + boolValue);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(propertyName + "=" + boolValue);
         }
-        if ("true".equalsIgnoreCase(boolValue)) {
-            return true;
-        } else if ("false".equalsIgnoreCase(boolValue)) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Boolean value '" + boolValue + "' for obs property '"
-                + propertyName + "' must be 'true' or 'false' (case-insensitive)");
+
+        if (!"true".equalsIgnoreCase(boolValue) && !"false".equalsIgnoreCase(boolValue)) {
+            throw new IllegalArgumentException("Boolean value '" + boolValue + "' for obs property '" + propertyName
+                    + "' must be 'true' or 'false' (case-insensitive)");
         }
+
+        return Boolean.parseBoolean(boolValue);
     }
 
     public boolean containsKey(String propertyName) {
@@ -99,11 +80,10 @@ public class ObsProperties implements Serializable {
     }
 
     private static String trim(String str) {
-        if (str != null) {
-            return str.trim();
-        } else {
+        if (null == str) {
             return null;
         }
+        return str.trim();
     }
 
 }

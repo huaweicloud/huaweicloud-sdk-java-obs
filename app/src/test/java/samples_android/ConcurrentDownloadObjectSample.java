@@ -61,7 +61,7 @@ public class ConcurrentDownloadObjectSample extends Activity
     
     private static ExecutorService executorService = Executors.newFixedThreadPool(5);
     
-    private static AtomicInteger completedBlocks = new AtomicInteger(0);
+    private static AtomicInteger blocks = new AtomicInteger(0);
     
     private static ObsClient obsClient;
     
@@ -99,17 +99,16 @@ public class ConcurrentDownloadObjectSample extends Activity
     
     private static class BlockFetcher implements Runnable
     {
+        private long rangeStart;
         
-        private long startPos;
-        
-        private long endPos;
+        private long rangeEnd;
         
         private int blockNumber;
         
-        public BlockFetcher(long startPos, long endPos, int blockNumber)
+        public BlockFetcher(long rangeStart, long rangeEnd, int blockNumber)
         {
-            this.startPos = startPos;
-            this.endPos = endPos;
+            this.rangeStart = rangeStart;
+            this.rangeEnd = rangeEnd;
             this.blockNumber = blockNumber;
         }
         
@@ -120,24 +119,24 @@ public class ConcurrentDownloadObjectSample extends Activity
             try
             {
                 raf = new RandomAccessFile(localFilePath, "rw");
-                raf.seek(startPos);
+                raf.seek(rangeStart);
                 
                 GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectKey);
-                getObjectRequest.setRangeStart(startPos);
-                getObjectRequest.setRangeEnd(endPos);
+                getObjectRequest.setRangeStart(rangeStart);
+                getObjectRequest.setRangeEnd(rangeEnd);
                 ObsObject object = obsClient.getObject(getObjectRequest);
                 
-                InputStream objectContent = object.getObjectContent();
+                InputStream content = object.getObjectContent();
                 try
                 {
-                    byte[] buf = new byte[4096];
-                    int bytesRead = 0;
-                    while ((bytesRead = objectContent.read(buf)) != -1)
+                    byte[] buf = new byte[8196];
+                    int bytes = 0;
+                    while ((bytes = content.read(buf)) != -1)
                     {
-                        raf.write(buf, 0, bytesRead);
+                        raf.write(buf, 0, bytes);
                     }
-                    completedBlocks.incrementAndGet();
-                    sb.append("Block#" + blockNumber + " done\n\n");
+                    blocks.incrementAndGet();
+                    System.out.println("Block : " + blockNumber + " Finish \n");
                 }
                 catch (IOException e)
                 {
@@ -145,7 +144,7 @@ public class ConcurrentDownloadObjectSample extends Activity
                 }
                 finally
                 {
-                    objectContent.close();
+                    content.close();
                 }
             }
             catch (Exception e)
@@ -224,9 +223,9 @@ public class ConcurrentDownloadObjectSample extends Activity
                 sb.append("Start to download " + objectKey + "\n\n");
                 for (int i = 0; i < blockCount;)
                 {
-                    long startPos = i++ * blockSize;
-                    long endPos = (i == blockCount) ? objectSize - 1 : i * blockSize - 1;
-                    executorService.execute(new BlockFetcher(startPos, endPos, i));
+                    long rangeStart = i++ * blockSize;
+                    long rangeEnd = (i == blockCount) ? objectSize - 1 : i * blockSize - 1;
+                    executorService.execute(new BlockFetcher(rangeStart, rangeEnd, i));
                 }
                 
                 /*
@@ -248,9 +247,9 @@ public class ConcurrentDownloadObjectSample extends Activity
                 /*
                  * Verify whether all blocks are finished
                  */
-                if (completedBlocks.intValue() != blockCount)
+                if (blocks.intValue() != blockCount)
                 {
-                    throw new IllegalStateException("Download fails due to some blocks are not finished yet");
+                    throw new IllegalStateException("Some blocks are not finished");
                 }
                 else
                 {

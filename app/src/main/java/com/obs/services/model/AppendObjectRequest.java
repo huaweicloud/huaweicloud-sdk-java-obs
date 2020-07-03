@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -19,24 +20,27 @@ package com.obs.services.model;
  * 
  *
  */
-public class AppendObjectRequest extends PutObjectRequest{
-	
-	protected long position;
-	
-	/**
-	 * 获取追加上传位置
-	 * @return 追加上传位置
-	 */
-	public long getPosition() {
-		return position;
-	}
+public class AppendObjectRequest extends PutObjectRequest {
 
-	/**
-	 * 设置追加上传位置
-	 * @param position 追加上传位置
-	 */
-	public void setPosition(long position) {
-		this.position = position;
-	}
-	
+    protected long position;
+
+    /**
+     * 获取追加上传位置
+     * 
+     * @return 追加上传位置
+     */
+    public long getPosition() {
+        return position;
+    }
+
+    /**
+     * 设置追加上传位置
+     * 
+     * @param position
+     *            追加上传位置
+     */
+    public void setPosition(long position) {
+        this.position = position;
+    }
+
 }

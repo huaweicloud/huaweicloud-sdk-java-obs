@@ -11,43 +11,48 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
- * 列举桶的请求参数 
+ * 列举桶的请求参数
  *
  */
 public class ListBucketsRequest {
-	private boolean queryLocation = true;
+    private boolean queryLocation = true;
 
-	private BucketTypeEnum bucketType;
+    private BucketTypeEnum bucketType;
 
-	public boolean isQueryLocation() {
-		return queryLocation;
-	}
+    public boolean isQueryLocation() {
+        return queryLocation;
+    }
 
-	/**
-	 * 设置是否列出所有桶的区域信息
-	 * @param queryLocation 是否列出所有桶的区域信息标识
-	 */
-	public void setQueryLocation(boolean queryLocation) {
-		this.queryLocation = queryLocation;
-	}
+    /**
+     * 设置是否列出所有桶的区域信息
+     * 
+     * @param queryLocation
+     *            是否列出所有桶的区域信息标识
+     */
+    public void setQueryLocation(boolean queryLocation) {
+        this.queryLocation = queryLocation;
+    }
 
-	@Override
-	public String toString() {
-		return "ListBucketsRequest [queryLocation=" + queryLocation + "]";
-	}
+    @Override
+    public String toString() {
+        return "ListBucketsRequest [queryLocation=" + queryLocation + "]";
+    }
 
-	public BucketTypeEnum getBucketType() {
-		return bucketType;
-	}
+    public BucketTypeEnum getBucketType() {
+        return bucketType;
+    }
 
-	/**
-	 * 设置列举桶的类型
-	 * @param bucketType 桶类型
-	 */
-	public void setBucketType(BucketTypeEnum bucketType) {
-		this.bucketType = bucketType;
-	}
+    /**
+     * 设置列举桶的类型
+     * 
+     * @param bucketType
+     *            桶类型
+     */
+    public void setBucketType(BucketTypeEnum bucketType) {
+        this.bucketType = bucketType;
+    }
 }

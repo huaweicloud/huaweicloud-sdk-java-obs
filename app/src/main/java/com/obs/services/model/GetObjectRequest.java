@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -57,6 +58,8 @@ public class GetObjectRequest extends GenericRequest {
 
     private Map<String, String> requestParameters;
 
+    private boolean autoUnzipResponse = false;
+    
     public GetObjectRequest() {
 
     }
@@ -409,6 +412,30 @@ public class GetObjectRequest extends GenericRequest {
     public void setRequestParameters(Map<String, String> requestParameters) {
         this.requestParameters = requestParameters;
     }
+    
+    /**
+     * 获取是否自动解压gzip压缩后的响应，默认为false，表示不自动解压<br>
+     * 说明：obs sdk使用了okhttp，在okhttp中，如果请求的时候未设置Accetp-Encoding，则okhttp会自动添加Accept-Encoding:gzip头域，并且在收到请求后，会自动解压；<br>
+     * 如果请求的时候手动设置了Accetp-Encoding头域，则不会自动解压
+     * @see okhttp3.internal.http.BridgeInterceptor
+     * @return 
+     * @since 3.20.5
+     */
+    public boolean isAutoUnzipResponse() {
+        return autoUnzipResponse;
+    }
+
+    /**
+     * 设置是否自动解压gzip压缩后的响应，默认为false，表示不自动解压<br>
+     * 说明：obs sdk使用了okhttp，在okhttp中，如果请求的时候未设置Accetp-Encoding，则okhttp会自动添加Accept-Encoding:gzip头域，并且在收到请求后，会自动解压；<br>
+     * 如果请求的时候手动设置了Accetp-Encoding头域，则不会自动解压
+     * @see okhttp3.internal.http.BridgeInterceptor
+     * @param autoUnzipResponse
+     * @since 3.20.5
+     */
+    public void setAutoUnzipResponse(boolean autoUnzipResponse) {
+        this.autoUnzipResponse = autoUnzipResponse;
+    }
 
     @Override
     public String toString() {
@@ -416,7 +443,7 @@ public class GetObjectRequest extends GenericRequest {
                 + ", rangeEnd=" + rangeEnd + ", versionId=" + versionId + ", replaceMetadata=" + replaceMetadata
                 + ", sseCHeader=" + sseCHeader + ", ifModifiedSince=" + ifModifiedSince + ", ifUnmodifiedSince="
                 + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag=" + ifNoneMatchTag
-                + ", imageProcess=" + imageProcess + "]";
+                + ", imageProcess=" + imageProcess + ", autoUnzipResponse=" + autoUnzipResponse + "]";
     }
 
 }

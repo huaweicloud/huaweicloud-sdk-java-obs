@@ -11,11 +11,12 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.DeleteObjectResult;
 
-public class DropFileResult extends DeleteObjectResult{
+public class DropFileResult extends DeleteObjectResult {
 
     public DropFileResult(boolean deleteMarker, String versionId) {
         super(deleteMarker, versionId);
@@ -24,7 +25,5 @@ public class DropFileResult extends DeleteObjectResult{
     public DropFileResult(boolean deleteMarker, String objectKey, String versionId) {
         super(deleteMarker, objectKey, versionId);
     }
-    
-    
 
 }

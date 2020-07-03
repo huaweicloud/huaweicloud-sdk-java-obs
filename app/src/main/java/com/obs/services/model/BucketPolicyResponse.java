@@ -11,34 +11,32 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * 获取桶策略的响应结果
  *
  */
-public class BucketPolicyResponse extends HeaderResponse
-{
+public class BucketPolicyResponse extends HeaderResponse {
     private String policy;
-    
-    public BucketPolicyResponse(String policy) {
-		this.policy = policy;
-	}
 
-	/**
+    public BucketPolicyResponse(String policy) {
+        this.policy = policy;
+    }
+
+    /**
      * 获取桶策略
+     * 
      * @return 桶策略
      */
-    public String getPolicy()
-    {
+    public String getPolicy() {
         return policy;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketPolicyResponse [policy=" + policy + "]";
     }
-    
-    
+
 }

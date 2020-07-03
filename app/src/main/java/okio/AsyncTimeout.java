@@ -189,7 +189,8 @@ public class AsyncTimeout extends Timeout {
 					node.next = prev.next;
 					prev.next = node;
 					if (prev == node.getLocker().head) {
-						node.getLocker().notify(); // Wake up the watchdog when
+					    // fix findbugs NO_NOTIFY_NOT_NOTIFYALL, change notify() to notifyAll()
+						node.getLocker().notifyAll(); // Wake up the watchdog when
 														// inserting at the front.
 					}
 					break;
@@ -408,7 +409,8 @@ public class AsyncTimeout extends Timeout {
 	final void exit(boolean throwOnTimeout) throws IOException {
 		boolean timedOut = exit();
 		if (timedOut && throwOnTimeout)
-			throw newTimeoutException(null);
+		    // fix findbugs NP_NONNULL_PARAM_VIOLATION
+			throw new InterruptedIOException("timeout");
 	}
 
 	/**
@@ -482,6 +484,11 @@ public class AsyncTimeout extends Timeout {
 	 * on that has been removed.
 	 */
 	static AsyncTimeout awaitTimeout(Locker locker) throws InterruptedException {
+	    // fix findbugs UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR
+	    if (null == locker.head) {
+            return null;
+        }
+	    
 		// Get the next eligible node.
 		AsyncTimeout node = locker.head.next;
 

@@ -11,37 +11,43 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 public interface TaskProgressStatus {
-    
-	/**
-	 * 获取上传进度百分比
-	 * @return 上传进度百分比
-	 */
+
+    /**
+     * 获取上传进度百分比
+     * 
+     * @return 上传进度百分比
+     */
     public int getExecPercentage();
-    
+
     /**
-	 * 获取正在上传对象数量
-	 * @return 正在上传对象数量
-	 */
+     * 获取正在上传对象数量
+     * 
+     * @return 正在上传对象数量
+     */
     public int getExecTaskNum();
-    
+
     /**
-	 * 获取上传成功的对象数量  
-	 * @return 上传成功的对象数量
-	 */
+     * 获取上传成功的对象数量
+     * 
+     * @return 上传成功的对象数量
+     */
     public int getSucceedTaskNum();
-    
+
     /**
-	 * 获取上传失败的对象数量
-	 * @return 上传失败的对象数量
-	 */
+     * 获取上传失败的对象数量
+     * 
+     * @return 上传失败的对象数量
+     */
     public int getFailTaskNum();
-    
+
     /**
-	 * 获取总上传对象数量
-	 * @return 总上传对象数量
-	 */
+     * 获取总上传对象数量
+     * 
+     * @return 总上传对象数量
+     */
     public int getTotalTaskNum();
 }

@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -19,33 +20,33 @@ package com.obs.services.model;
  *
  */
 public enum RuleStatusEnum {
-	
-	/**
-	 * 启用规则
-	 */
-	ENABLED("Enabled"),
 
-	/**
-	 * 禁用规则
-	 */
-	DISABLED("Disabled");
+    /**
+     * 启用规则
+     */
+    ENABLED("Enabled"),
 
-	private String code;
+    /**
+     * 禁用规则
+     */
+    DISABLED("Disabled");
 
-	private RuleStatusEnum(String code) {
-		this.code = code;
-	}
+    private String code;
 
-	public String getCode() {
-		return code;
-	}
+    private RuleStatusEnum(String code) {
+        this.code = code;
+    }
 
-	public static RuleStatusEnum getValueFromCode(String code) {
-		for (RuleStatusEnum val : RuleStatusEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    public String getCode() {
+        return code;
+    }
+
+    public static RuleStatusEnum getValueFromCode(String code) {
+        for (RuleStatusEnum val : RuleStatusEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

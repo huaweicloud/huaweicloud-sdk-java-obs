@@ -1,10 +1,4 @@
 /**
- * 
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -77,17 +71,18 @@ import okhttp3.Response;
 public abstract class RestStorageService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
 
-    private static final Set<Class<? extends IOException>> nonRetriableClasses = new HashSet<Class<? extends IOException>>();
+    private static final Set<Class<? extends IOException>> NON_RETRIABLE_CLASSES = new HashSet<Class<? extends IOException>>();
 
     private static final String REQUEST_TIMEOUT_CODE = "RequestTimeout";
-    
-    // for example:Caused by: java.io.IOException: unexpected end of stream on Connection{...}
+
+    // for example:Caused by: java.io.IOException: unexpected end of stream on
+    // Connection{...}
     private static final String UNEXPECTED_END_OF_STREAM_EXCEPTION = "unexpected end of stream";
 
     static {
-        nonRetriableClasses.add(UnknownHostException.class);
-        nonRetriableClasses.add(SSLException.class);
-        nonRetriableClasses.add(ConnectException.class);
+        NON_RETRIABLE_CLASSES.add(UnknownHostException.class);
+        NON_RETRIABLE_CLASSES.add(SSLException.class);
+        NON_RETRIABLE_CLASSES.add(ConnectException.class);
     }
 
     protected OkHttpClient httpClient;
@@ -108,10 +103,10 @@ public abstract class RestStorageService {
 
     protected Semaphore semaphore;
 
-    protected ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<HashMap<String, String>>();
+    private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<HashMap<String, String>>();
 
     // switch of using standard http headers
-    protected ThreadLocal<Boolean> canUseStandardHTTPHeaders = new ThreadLocal<Boolean>();
+    protected static final ThreadLocal<Boolean> CAN_USE_STANDARD_HTTP_HEADERS = new ThreadLocal<Boolean>();
 
     protected RestStorageService() {
 
@@ -120,12 +115,12 @@ public abstract class RestStorageService {
     /**
      * set switch of using standard http headers
      * 
-     * @param canUseStandardHTTPHeaders
+     * @param CAN_USE_STANDARD_HTTP_HEADERS
      *            A Boolean variable to control switch of using http standard
      *            headers
      */
-    public void setCanUseStandardHTTPHeaders(Boolean canUseStandardHTTPHeaders) {
-        this.canUseStandardHTTPHeaders.set(canUseStandardHTTPHeaders);
+    public void setCanUseStandardHTTPHeaders(Boolean canUseStandardHTTPHeadersMap) {
+        CAN_USE_STANDARD_HTTP_HEADERS.set(canUseStandardHTTPHeadersMap);
     }
 
     /**
@@ -134,8 +129,8 @@ public abstract class RestStorageService {
      * @param userHeaders
      *            A HashMap<String,String></String,String>
      */
-    public void setUserHeaders(HashMap<String, String> userHeaders) {
-        this.userHeaders.set(userHeaders);
+    public void setUserHeaders(HashMap<String, String> userHeadersMap) {
+        userHeaders.set(userHeadersMap);
     }
 
     /**
@@ -145,7 +140,7 @@ public abstract class RestStorageService {
      *            Request in OKHttp3.0
      */
     private void addUserHeaderToRequest(Request.Builder builder) {
-        HashMap<String, String> userHeaderMap = this.userHeaders.get();
+        HashMap<String, String> userHeaderMap = userHeaders.get();
         // check headers
         for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
             String key = entry.getKey();
@@ -204,7 +199,8 @@ public abstract class RestStorageService {
                     Method dispatcherMethod = httpClient.getClass().getMethod("dispatcher");
                     if (dispatcherMethod != null) {
                         Method m = dispatcherMethod.invoke(httpClient).getClass().getDeclaredMethod("executorService");
-                        m.setAccessible(true);
+                        // fix findbugs: DP_DO_INSIDE_DO_PRIVILEGED
+                        // m.setAccessible(true);
                         Object exeService = m.invoke(httpClient.dispatcher());
                         if (exeService instanceof ExecutorService) {
                             ExecutorService executorService = (ExecutorService) exeService;
@@ -213,6 +209,9 @@ public abstract class RestStorageService {
                     }
                 } catch (Exception e) {
                     // ignore
+                    if (log.isWarnEnabled()) {
+                        log.warn("shows some exceptions at the time of shutdown httpClient. ", e);
+                    }
                 }
                 if (httpClient.connectionPool() != null) {
                     httpClient.connectionPool().evictAll();
@@ -235,10 +234,10 @@ public abstract class RestStorageService {
         if (executionCount > retryMaxCount) {
             return false;
         }
-        if (nonRetriableClasses.contains(exception.getClass())) {
+        if (NON_RETRIABLE_CLASSES.contains(exception.getClass())) {
             return false;
         } else {
-            for (final Class<? extends IOException> rejectException : nonRetriableClasses) {
+            for (final Class<? extends IOException> rejectException : NON_RETRIABLE_CLASSES) {
                 if (rejectException.isInstance(exception)) {
                     return false;
                 }
@@ -251,17 +250,17 @@ public abstract class RestStorageService {
 
         return true;
     }
-    
-    private boolean retryRequestForUnexpectedException(IOException exception, int executionCount, int retryMaxCount, Call call) {
-        if (null == exception
-                || executionCount > retryMaxCount) {
+
+    private boolean retryRequestForUnexpectedException(IOException exception, int executionCount, int retryMaxCount,
+            Call call) {
+        if (null == exception || executionCount > retryMaxCount) {
             return false;
         }
-        
-        if(!exception.getMessage().contains(UNEXPECTED_END_OF_STREAM_EXCEPTION)) {
+
+        if (!exception.getMessage().contains(UNEXPECTED_END_OF_STREAM_EXCEPTION)) {
             return false;
         }
-        
+
         if (call.isCanceled()) {
             return false;
         }
@@ -585,7 +584,7 @@ public abstract class RestStorageService {
             boolean doSignature, boolean isOEF) throws ServiceException {
         Response response = null;
 
-        if (this.userHeaders.get() != null && this.userHeaders.get().size() > 0) {
+        if (userHeaders.get() != null && userHeaders.get().size() > 0) {
             // create a new Builder from current Request
             Request.Builder builderTmp = request.newBuilder();
             // add user header
@@ -610,7 +609,8 @@ public abstract class RestStorageService {
             int responseCode = -1;
             int retryMaxCount = obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
                     ObsConstraint.HTTP_RETRY_MAX_VALUE);
-            int unexpectedRetryMaxCount = obsProperties.getIntProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
+            int unexpectedRetryMaxCount = obsProperties.getIntProperty(
+                    ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
                     ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION);
             do {
                 if (!wasRecentlyRedirected) {
@@ -641,15 +641,16 @@ public abstract class RestStorageService {
                         }
                     }
                     lastException = e;
-                    
-                    // for example:Caused by: java.io.IOException: unexpected end of stream on Connection{...}
-                    if(retryRequestForUnexpectedException(e, ++unexpectedErrorCount, unexpectedRetryMaxCount, call)) {
+
+                    // for example:Caused by: java.io.IOException: unexpected
+                    // end of stream on Connection{...}
+                    if (retryRequestForUnexpectedException(e, ++unexpectedErrorCount, unexpectedRetryMaxCount, call)) {
                         if (log.isErrorEnabled()) {
                             log.error("unexpected end of stream excepiton.");
                         }
                         continue;
                     }
-                    
+
                     if (retryRequest(e, ++internalErrorCount, retryMaxCount, request, call)) {
                         long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
                         Thread.sleep(delayMs);
@@ -703,7 +704,7 @@ public abstract class RestStorageService {
                                 "Request Error." + ServiceUtils.toValid(xmlMessage));
                         exception.setErrorMessage(oefException.getMessage());
                         exception.setErrorCode(oefException.getCode());
-                        exception.setErrorRequestId(oefException.getRequest_id());
+                        exception.setErrorRequestId(oefException.getRequestId());
 
                         throw exception;
                     } else if (responseCode >= 500) {
@@ -923,7 +924,7 @@ public abstract class RestStorageService {
 
         IAuthentication iauthentication;
         if (isV4) {
-            builder.header(this.getIHeaders().contentSha256Header(), V4Authentication.content_sha256);
+            builder.header(this.getIHeaders().contentSha256Header(), V4Authentication.CONTENT_SHA256);
             iauthentication = V4Authentication.makeServiceCanonicalString(request.method(),
                     convertHeadersToMap(builder.build().headers()), fullUrl, providerCredentials, now, securityKey);
             if (log.isDebugEnabled()) {
@@ -934,9 +935,10 @@ public abstract class RestStorageService {
                     request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
                     Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
         }
-        //if (log.isDebugEnabled()) {
-        //    log.debug("StringToSign ('|' is a newline): " + iauthentication.getStringToSign().replace('\n', '|'));
-        //}
+        // if (log.isDebugEnabled()) {
+        // log.debug("StringToSign ('|' is a newline): " +
+        // iauthentication.getStringToSign().replace('\n', '|'));
+        // }
 
         String authorizationString = iauthentication.getAuthorization();
         builder.header(CommonHeaders.AUTHORIZATION, authorizationString);
@@ -1133,7 +1135,9 @@ public abstract class RestStorageService {
         for (Map.Entry<String, List<String>> entry : headers.toMultimap().entrySet()) {
             List<String> values = entry.getValue();
             for (String value : values) {
-                map.put(new String(entry.getKey()), value);
+                // map.put(new String(entry.getKey()), value);
+                // fix FindBug
+                map.put(new StringBuilder(entry.getKey()).toString(), value);
             }
         }
         return map;
@@ -1230,26 +1234,26 @@ public abstract class RestStorageService {
             body = RequestBody.create(null, "");
         }
         switch (method) {
-        case PUT:
-            builder.put(body);
-            break;
-        case POST:
-            builder.post(body);
-            break;
-        case HEAD:
-            builder.head();
-            break;
-        case GET:
-            builder.get();
-            break;
-        case DELETE:
-            builder.delete(body);
-            break;
-        case OPTIONS:
-            builder.method("OPTIONS", null);
-            break;
-        default:
-            throw new IllegalArgumentException("Unrecognised HTTP method name: " + method);
+            case PUT:
+                builder.put(body);
+                break;
+            case POST:
+                builder.post(body);
+                break;
+            case HEAD:
+                builder.head();
+                break;
+            case GET:
+                builder.get();
+                break;
+            case DELETE:
+                builder.delete(body);
+                break;
+            case OPTIONS:
+                builder.method("OPTIONS", null);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognised HTTP method name: " + method);
         }
 
         if (!this.isKeepAlive()) {
@@ -1265,21 +1269,23 @@ public abstract class RestStorageService {
 
     protected String addRequestParametersToUrlPath(String urlPath, Map<String, String> requestParameters, boolean isOEF)
             throws ServiceException {
+        StringBuilder urlPathBuilder = new StringBuilder(urlPath);
         if (requestParameters != null) {
             for (Map.Entry<String, String> entry : requestParameters.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (isOEF) {
                     if (isPathStyle()) {
-                        urlPath += "/" + key;
+                        urlPathBuilder.append("/").append(key);
                     } else {
-                        urlPath += key;
+                        urlPathBuilder.append(key);
                     }
                 } else {
-                    urlPath += (urlPath.indexOf("?") < 0 ? "?" : "&") + RestUtils.encodeUrlString(key);
+                    urlPathBuilder.append((urlPathBuilder.indexOf("?") < 0 ? "?" : "&"))
+                            .append(RestUtils.encodeUrlString(key));
                 }
                 if (ServiceUtils.isValid(value)) {
-                    urlPath += "=" + RestUtils.encodeUrlString(value);
+                    urlPathBuilder.append("=").append(RestUtils.encodeUrlString(value));
                     if (log.isDebugEnabled()) {
                         log.debug("Added request parameter: " + key + "=" + value);
                     }
@@ -1290,7 +1296,7 @@ public abstract class RestStorageService {
                 }
             }
         }
-        return urlPath;
+        return urlPathBuilder.toString();
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {

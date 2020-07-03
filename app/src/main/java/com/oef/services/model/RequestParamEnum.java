@@ -11,58 +11,51 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import com.obs.services.model.SpecialParamEnum;
 
 public enum RequestParamEnum {
-	/**
+    /**
      * 获取/设置/删除异步策略
      */
-    EXTENSION_POLICY("v1/extension_policy"),
+    EXTENSION_POLICY("v1/extension_policy"), 
     /**
      * 获取/设置/删除异步任务
      */
-	ASYNC_FETCH_JOBS("v1/async-fetch/jobs"),
-	
-	DIS_POLICIES("v1/dis_policies"); 
-    
+    ASYNC_FETCH_JOBS("v1/async-fetch/jobs"),
+
+    DIS_POLICIES("v1/dis_policies");
+
     private String stringCode;
-    
-    private RequestParamEnum(String stringCode)
-    {
-        if (stringCode == null)
-        {
+
+    private RequestParamEnum(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("stringCode is null");
         }
         this.stringCode = stringCode;
     }
-    
-    public String getStringCode()
-    {
+
+    public String getStringCode() {
         return this.stringCode.toLowerCase();
     }
-    
-    public String getOriginalStringCode()
-    {
+
+    public String getOriginalStringCode() {
         return this.stringCode;
     }
-    
-    public static SpecialParamEnum getValueFromStringCode(String stringCode)
-    {
-        if (stringCode == null)
-        {
+
+    public static SpecialParamEnum getValueFromStringCode(String stringCode) {
+        if (stringCode == null) {
             throw new IllegalArgumentException("string code is null");
         }
-        
-        for (SpecialParamEnum installMode : SpecialParamEnum.values())
-        {
-            if (installMode.getStringCode().equals(stringCode.toLowerCase()))
-            {
+
+        for (SpecialParamEnum installMode : SpecialParamEnum.values()) {
+            if (installMode.getStringCode().equals(stringCode.toLowerCase())) {
                 return installMode;
             }
         }
-        
+
         throw new IllegalArgumentException("string code is illegal");
     }
 }

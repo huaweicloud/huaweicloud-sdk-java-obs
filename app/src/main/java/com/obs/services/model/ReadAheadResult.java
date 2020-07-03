@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,85 +21,97 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class ReadAheadResult extends HeaderResponse {
-	@JsonProperty(value = "bucket")
-	private String bucketName;
+    @JsonProperty(value = "bucket")
+    private String bucketName;
 
-	@JsonProperty(value = "prefix")
-	private String prefix;
-    
+    @JsonProperty(value = "prefix")
+    private String prefix;
+
     @JsonProperty(value = "taskID")
-	private String taskId;
-    
+    private String taskId;
+
     /**
      * 构造函数
      */
     public ReadAheadResult() {
-    	
+
     }
-    
+
     /**
      * 构造函数
-     * @param bucketName 桶名
-     * @param prefix 预读对象的对象名前缀
-     * @param taskId 预读任务ID
+     * 
+     * @param bucketName
+     *            桶名
+     * @param prefix
+     *            预读对象的对象名前缀
+     * @param taskId
+     *            预读任务ID
      */
     public ReadAheadResult(String bucketName, String prefix, String taskId) {
-    	this.bucketName = bucketName;
-    	this.prefix = prefix;
-    	this.taskId = taskId;
+        this.bucketName = bucketName;
+        this.prefix = prefix;
+        this.taskId = taskId;
     }
-    
+
     /**
-                  * 获取桶名 
+     * 获取桶名
+     * 
      * @return 桶名
      */
     public String getBucketName() {
-		return bucketName;
-	}
+        return bucketName;
+    }
 
     /**
-                 * 设置桶名
-     * @param bucketName 桶名
+     * 设置桶名
+     * 
+     * @param bucketName
+     *            桶名
      */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
-	/**
-	    * 获取预读对象的对象名前缀
-	 * @return 预读对象的对象名前缀
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * 获取预读对象的对象名前缀
+     * 
+     * @return 预读对象的对象名前缀
+     */
+    public String getPrefix() {
+        return prefix;
+    }
 
-	/**
-	    * 设置预读对象的对象名前缀
-	 * @param prefix 预读对象的对象名前缀
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    /**
+     * 设置预读对象的对象名前缀
+     * 
+     * @param prefix
+     *            预读对象的对象名前缀
+     */
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	/**
-	 * 获取预读任务ID
-	 * @return 预读任务ID
-	 */
-	public String getTaskId() {
-		return taskId;
-	}
+    /**
+     * 获取预读任务ID
+     * 
+     * @return 预读任务ID
+     */
+    public String getTaskId() {
+        return taskId;
+    }
 
-	/**
-	 * 设置预读任务ID
-	 * @param taskId 预读任务ID
-	 */
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
-	}
-	
-	@Override
-	public String toString() {
-		return "ReadAheadResult [bucketName=" + bucketName + ", prefix=" + prefix 
-				+", taskId=" + taskId +  "]";
-	}
+    /**
+     * 设置预读任务ID
+     * 
+     * @param taskId
+     *            预读任务ID
+     */
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadAheadResult [bucketName=" + bucketName + ", prefix=" + prefix + ", taskId=" + taskId + "]";
+    }
 }

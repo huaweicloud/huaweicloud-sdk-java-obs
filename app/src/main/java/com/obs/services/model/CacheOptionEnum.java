@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -18,33 +19,33 @@ package com.obs.services.model;
  *
  */
 public enum CacheOptionEnum {
-	//联调版本暂不支持
-//	/**
-//	 * 保证预读缓存的一致性，低缓存性能 
-//	 */
-//	CONSISTENCY("cache-with-consistency"),
-	
-	/**
-	 * 不保证预读缓存的一致性，高缓存性能
-	 */
-	 PERFORMANCE("cache-with-performance");
-	
-	private String code;
-	
-	private CacheOptionEnum(String code) {
-		this.code = code;
-	}
+    // 联调版本暂不支持
+    // /**
+    // * 保证预读缓存的一致性，低缓存性能
+    // */
+    // CONSISTENCY("cache-with-consistency"),
 
-	public String getCode() {
-		return code;
-	}
-	
-	public static CacheOptionEnum getValueFromCode(String code) {
-		for (CacheOptionEnum val : CacheOptionEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    /**
+     * 不保证预读缓存的一致性，高缓存性能
+     */
+    PERFORMANCE("cache-with-performance");
+
+    private String code;
+
+    private CacheOptionEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public static CacheOptionEnum getValueFromCode(String code) {
+        for (CacheOptionEnum val : CacheOptionEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

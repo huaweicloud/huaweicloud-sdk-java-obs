@@ -11,53 +11,52 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * 桶配额信息
  */
-public class BucketQuota extends HeaderResponse
-{
+public class BucketQuota extends HeaderResponse {
 
     private long bucketQuota;
-    
-    public BucketQuota(){
-        
+
+    public BucketQuota() {
+
     }
-    
+
     /**
      * 构造函数
-     * @param bucketQuota 桶配额大小
+     * 
+     * @param bucketQuota
+     *            桶配额大小
      */
-    public BucketQuota(long bucketQuota)
-    {
+    public BucketQuota(long bucketQuota) {
         this.bucketQuota = bucketQuota;
     }
-    
+
     /**
      * 获取桶配额大小，单位：字节
      * 
      * @return 桶配额大小
      */
-    public long getBucketQuota()
-    {
+    public long getBucketQuota() {
         return bucketQuota;
     }
-    
+
     /**
      * 设置配额大小，单位：字节
      * 
-     * @param quota 桶配额大小
+     * @param quota
+     *            桶配额大小
      */
-    public void setBucketQuota(long quota)
-    {
+    public void setBucketQuota(long quota) {
         this.bucketQuota = quota;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketQuota [bucketQuota=" + bucketQuota + "]";
     }
-    
+
 }

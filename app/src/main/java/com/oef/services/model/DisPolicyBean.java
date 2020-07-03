@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import java.util.ArrayList;
@@ -22,117 +23,122 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class DisPolicyBean {
-	@JsonProperty(value = "id")
-	private String id;
-	
-	@JsonProperty(value = "stream")
-	private String stream;
-	
-	@JsonProperty(value = "project")
-	private String project;
-	
-	@JsonProperty(value = "events")
-	private ArrayList<String> events;
-	
-	@JsonProperty(value = "prefix")
-	private String prefix;
-	
-	@JsonProperty(value = "suffix")
-	private String suffix;
-	
-	@JsonProperty(value = "agency")
-	private String agency;
-	
-	public DisPolicyBean() {
-		
-	}
-	
-	/**
-	 * 构造函数
-	 * @param id 策略规则ID
-	 * @param stream DIS服务通道名称
-	 * @param project DIS服务通道所属的项目ID
-	 * @param events OBS事件列表
-	 * @param agency IAM委托名
-	 */
-	public DisPolicyBean(String id, String stream, String project, ArrayList<String> events, String agency) {
-		this.setId(id);
-		this.setStream(stream);
-		this.setProject(project);
-		this.setEvents(events);
-		this.setAgency(agency);
-	}
+    @JsonProperty(value = "id")
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    @JsonProperty(value = "stream")
+    private String stream;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @JsonProperty(value = "project")
+    private String project;
 
-	public String getStream() {
-		return stream;
-	}
+    @JsonProperty(value = "events")
+    private ArrayList<String> events;
 
-	public void setStream(String stream) {
-		this.stream = stream;
-	}
+    @JsonProperty(value = "prefix")
+    private String prefix;
 
-	public String getProject() {
-		return project;
-	}
+    @JsonProperty(value = "suffix")
+    private String suffix;
 
-	public void setProject(String project) {
-		this.project = project;
-	}
+    @JsonProperty(value = "agency")
+    private String agency;
 
-	public ArrayList<String> getEvents() {
-		return events;
-	}
+    public DisPolicyBean() {
 
-	public void setEvents(ArrayList<String> events) {
-		this.events = events;
-	}
+    }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * 构造函数
+     * 
+     * @param id
+     *            策略规则ID
+     * @param stream
+     *            DIS服务通道名称
+     * @param project
+     *            DIS服务通道所属的项目ID
+     * @param events
+     *            OBS事件列表
+     * @param agency
+     *            IAM委托名
+     */
+    public DisPolicyBean(String id, String stream, String project, ArrayList<String> events, String agency) {
+        this.setId(id);
+        this.setStream(stream);
+        this.setProject(project);
+        this.setEvents(events);
+        this.setAgency(agency);
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getSuffix() {
-		return suffix;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
+    public String getStream() {
+        return stream;
+    }
 
-	public String getAgency() {
-		return agency;
-	}
+    public void setStream(String stream) {
+        this.stream = stream;
+    }
 
-	public void setAgency(String agency) {
-		this.agency = agency;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder strEvents = new StringBuilder();
-		if(events != null) {
-			for(String event : events) {
-				strEvents.append(event.toString());
-				strEvents.append(",");
-			}
-			if(strEvents.length() > 0) {
-				strEvents = strEvents.deleteCharAt(strEvents.length() - 1);
-			}
-		}
-		return "DisPolicyBean [id = " + id + ", stream = " +  stream
-	            + ", project = " + project + ", events = " + strEvents 
-	            + ", prefix = " + prefix + ", suffix = " + suffix + ", agency = " + agency +"]";
-	}
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public ArrayList<String> getEvents() {
+        return events;
+    }
+
+    public void setEvents(ArrayList<String> events) {
+        this.events = events;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public String getAgency() {
+        return agency;
+    }
+
+    public void setAgency(String agency) {
+        this.agency = agency;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder strEvents = new StringBuilder();
+        if (events != null) {
+            for (String event : events) {
+                strEvents.append(event);
+                strEvents.append(",");
+            }
+            if (strEvents.length() > 0) {
+                strEvents = strEvents.deleteCharAt(strEvents.length() - 1);
+            }
+        }
+        return "DisPolicyBean [id = " + id + ", stream = " + stream + ", project = " + project + ", events = "
+                + strEvents + ", prefix = " + prefix + ", suffix = " + suffix + ", agency = " + agency + "]";
+    }
 }

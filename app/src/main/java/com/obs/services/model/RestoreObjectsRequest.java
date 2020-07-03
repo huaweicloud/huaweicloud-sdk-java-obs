@@ -11,23 +11,22 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.List;
 
 /**
- * 批量取回归档存储对象请求参数
- * 在一个请求中不能同时设置prefix和keyAndVersions参数
- * 如果两个参数都为空，则取回桶中的所有归档存储对象
+ * 批量取回归档存储对象请求参数 在一个请求中不能同时设置prefix和keyAndVersions参数 如果两个参数都为空，则取回桶中的所有归档存储对象
  */
-public class RestoreObjectsRequest extends AbstractBulkRequest{
-    
+public class RestoreObjectsRequest extends AbstractBulkRequest {
+
     private int days;
 
     private RestoreTierEnum tier;
 
     private String prefix;
-    
+
     private boolean versionRestored;
 
     private List<KeyAndVersion> keyAndVersions;
@@ -41,7 +40,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 构造函数
      * 
-     * @param bucketName 桶名
+     * @param bucketName
+     *            桶名
      */
     public RestoreObjectsRequest(String bucketName) {
         super(bucketName);
@@ -50,16 +50,18 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 构造函数
      * 
-     * @param bucketName     桶名
-     * @param days           对象取回后保存时间
-     * @param tier           取回选项
+     * @param bucketName
+     *            桶名
+     * @param days
+     *            对象取回后保存时间
+     * @param tier
+     *            取回选项
      */
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier) {
         super(bucketName);
         this.days = days;
         this.tier = tier;
     }
-    
 
     /**
      * 获取对象取回后保存时间，单位：天，最小值为1，最大值为30
@@ -73,7 +75,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置对象取回后保存时间，单位：天，最小值为1，最大值为30
      * 
-     * @param days 对象取回后保存时间
+     * @param days
+     *            对象取回后保存时间
      */
     public void setDays(int days) {
         this.days = days;
@@ -91,7 +94,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置取回选项.
      * 
-     * @param tier 取回选项
+     * @param tier
+     *            取回选项
      */
     public void setRestoreTier(RestoreTierEnum tier) {
         this.tier = tier;
@@ -100,7 +104,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置批量取回的对象名前缀
      * 
-     * @param prefix 对象名前缀
+     * @param prefix
+     *            对象名前缀
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -114,10 +119,9 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     public String getPrefix() {
         return prefix;
     }
-    
+
     /**
-     * 是否取回多版本归档存储对象
-     * 默认为false，只取回最新版本的归档存储对象
+     * 是否取回多版本归档存储对象 默认为false，只取回最新版本的归档存储对象
      * 
      * @return 多版本标志取回标记
      */
@@ -128,7 +132,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置是否取回多版本归档存储对象
      *
-     * @param versionRestored 多版本标志取回标记
+     * @param versionRestored
+     *            多版本标志取回标记
      */
     public void setVersionRestored(boolean versionRestored) {
         this.versionRestored = versionRestored;
@@ -137,7 +142,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置待取回对象列表
      * 
-     * @param keyAndVersions 待取回对象列表
+     * @param keyAndVersions
+     *            待取回对象列表
      */
     public void setKeyAndVersions(List<KeyAndVersion> keyAndVersions) {
         this.keyAndVersions = keyAndVersions;
@@ -155,8 +161,10 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 新增待取回的对象
      * 
-     * @param objectKey 对象名
-     * @param versionId 对象版本号
+     * @param objectKey
+     *            对象名
+     * @param versionId
+     *            对象版本号
      * @return 新增的待取回对象
      */
     public KeyAndVersion addKeyAndVersion(String objectKey, String versionId) {
@@ -168,7 +176,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 新增待取回的对象
      * 
-     * @param objectKey 对象名
+     * @param objectKey
+     *            对象名
      * @return 新增的待取回对象
      */
     public KeyAndVersion addKeyAndVersion(String objectKey) {
@@ -187,12 +196,12 @@ public class RestoreObjectsRequest extends AbstractBulkRequest{
     /**
      * 设置批量任务的回调对象
      * 
-     * @param callback 回调对象
+     * @param callback
+     *            回调对象
      */
     public void setCallback(TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback) {
         this.callback = callback;
     }
-
 
     @Override
     public String toString() {

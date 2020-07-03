@@ -136,7 +136,7 @@ public class ConcurrentCopyPartSample
             {
                 try
                 {
-                    executorService.awaitTermination(5, TimeUnit.SECONDS);
+                    executorService.awaitTermination(3, TimeUnit.SECONDS);
                 }
                 catch (InterruptedException e)
                 {

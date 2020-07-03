@@ -11,33 +11,32 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * 获取桶区域位置的响应结果
  *
  */
-public class BucketLocationResponse extends HeaderResponse
-{
+public class BucketLocationResponse extends HeaderResponse {
     private String location;
-    
+
     public BucketLocationResponse(String location) {
-    	this.location = location;
+        this.location = location;
     }
-    
+
     /**
      * 获取桶的区域位置
+     * 
      * @return 桶的区域位置
      */
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketLocationResponse [location=" + location + "]";
     }
-    
+
 }

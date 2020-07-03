@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.utils;
 
 import com.obs.services.internal.Constants;
@@ -26,257 +27,226 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Locale;
 
+public class V4Authentication {
 
-public class V4Authentication
-{
-    
-    public static final String content_sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    
+    public static final String CONTENT_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+
     private String ak;
-    
+
     private String sk;
-    
+
     private String region;
-    
+
     private String nowISOtime;
-    
-    protected V4Authentication()
-    {
+
+    protected V4Authentication() {
     }
-    
-    public String getAk()
-    {
+
+    public String getAk() {
         return ak;
     }
-    
-    public void setAk(String ak)
-    {
+
+    public void setAk(String ak) {
         this.ak = ak;
     }
-    
-    public String getSk()
-    {
+
+    public String getSk() {
         return sk;
     }
-    
-    public void setSk(String sk)
-    {
+
+    public void setSk(String sk) {
         this.sk = sk;
     }
-    
-    public String getRegion()
-    {
+
+    public String getRegion() {
         return region;
     }
-    
-    public void setRegion(String region)
-    {
+
+    public void setRegion(String region) {
         this.region = region;
     }
-    
-	public static String caculateSignature(String stringToSign, String shortDate, String sk) throws Exception {
-		byte[] dateKey = V4Authentication.hmac_sha256Encode(
-				("AWS4" + sk).getBytes(Constants.DEFAULT_ENCODING),
-				shortDate);
-		byte[] dataRegionKey = V4Authentication.hmac_sha256Encode(dateKey, ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE);
 
-		byte[] dateRegionServiceKey = V4Authentication.hmac_sha256Encode(dataRegionKey, Constants.SERVICE);
+    public static String caculateSignature(String stringToSign, String shortDate, String sk) throws Exception {
+        byte[] dateKey = V4Authentication.hmac_sha256Encode(("AWS4" + sk).getBytes(Constants.DEFAULT_ENCODING),
+                shortDate);
+        byte[] dataRegionKey = V4Authentication.hmac_sha256Encode(dateKey, ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE);
 
-		byte[] signingKey = V4Authentication.hmac_sha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
-		
-		return V4Authentication.byteToHex(V4Authentication.hmac_sha256Encode(signingKey, stringToSign));
-	}
-    
-    public static IAuthentication makeServiceCanonicalString(String method, Map<String, String> headers, String strURIPath,
-        ProviderCredentials credent, Date date, BasicSecurityKey securityKey)
-        throws ServiceException
-    {
+        byte[] dateRegionServiceKey = V4Authentication.hmac_sha256Encode(dataRegionKey, Constants.SERVICE);
+
+        byte[] signingKey = V4Authentication.hmac_sha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
+
+        return V4Authentication.byteToHex(V4Authentication.hmac_sha256Encode(signingKey, stringToSign));
+    }
+
+    public static IAuthentication makeServiceCanonicalString(String method, Map<String, String> headers,
+            String strURIPath, ProviderCredentials credent, Date date, BasicSecurityKey securityKey)
+                    throws ServiceException {
         V4Authentication v4 = new V4Authentication();
         v4.setAk(securityKey.getAccessKey());
         v4.setSk(securityKey.getSecretKey());
         v4.setRegion(credent.getRegion());
         v4.setNowISOTime(date);
-        
+
         List<String> signedAndCanonicalList = v4.getSignedAndCanonicalHeaders(headers);
-        
+
         String scope = v4.getScope();
-        try
-        {
+        try {
             String canonicalRequest = v4.getCanonicalRequest(method, strURIPath, signedAndCanonicalList);
-            String stringToSign = new StringBuilder(Constants.V4_ALGORITHM).append("\n").append(v4.nowISOtime).append("\n").append(scope).append("\n").append(V4Authentication.byteToHex(V4Authentication.sha256encode(canonicalRequest))).toString();
-            String signature = V4Authentication.byteToHex(V4Authentication.hmac_sha256Encode(v4.getSigningKey(), stringToSign));
-            String auth = new StringBuilder(Constants.V4_ALGORITHM).append(" Credential=").append(v4.ak).append("/").append(scope)
-              .append(",SignedHeaders=").append(signedAndCanonicalList.get(0)).append(",Signature=").append(signature).toString();
+            String stringToSign = new StringBuilder(Constants.V4_ALGORITHM).append("\n").append(v4.nowISOtime)
+                    .append("\n").append(scope).append("\n")
+                    .append(V4Authentication.byteToHex(V4Authentication.sha256encode(canonicalRequest))).toString();
+            String signature = V4Authentication
+                    .byteToHex(V4Authentication.hmac_sha256Encode(v4.getSigningKey(), stringToSign));
+            String auth = new StringBuilder(Constants.V4_ALGORITHM).append(" Credential=").append(v4.ak).append("/")
+                    .append(scope).append(",SignedHeaders=").append(signedAndCanonicalList.get(0)).append(",Signature=")
+                    .append(signature).toString();
             return new DefaultAuthentication(canonicalRequest, stringToSign, auth);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new ServiceException("has an err when V4 aurhentication ", e);
         }
     }
-    
-    private void setNowISOTime(Date headerDate)
-    {
+
+    private void setNowISOTime(Date headerDate) {
         SimpleDateFormat fmt1 = new SimpleDateFormat(Constants.LONG_DATE_FORMATTER);
         fmt1.setTimeZone(Constants.GMT_TIMEZONE);
         this.nowISOtime = fmt1.format(headerDate);
     }
-    
-    
-    private List<String> getSignedAndCanonicalHeaders(Map<String, String> headers)
-    {
+
+    private List<String> getSignedAndCanonicalHeaders(Map<String, String> headers) {
         List<String> list = new ArrayList<String>();
-        StringBuilder Signed = new StringBuilder();
-        StringBuilder Canonical = new StringBuilder();
+        StringBuilder signed = new StringBuilder();
+        StringBuilder canonical = new StringBuilder();
         Map<String, List<String>> map = new TreeMap<String, List<String>>();
-        if (headers != null && headers.size() > 0)
-        {
-            for (Map.Entry<String, String> entry : headers.entrySet())
-            {
+        if (headers != null && headers.size() > 0) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                
-                if (key == null || "".equals(key) || "connection".equalsIgnoreCase(key))
-                {
+
+                if (key == null || "".equals(key) || "connection".equalsIgnoreCase(key)) {
                     continue;
                 }
-                
+
                 String lk = key.toLowerCase(Locale.getDefault());
                 List<String> values = map.get(lk);
-                if(values == null) {
-                	values = new ArrayList<String>();
-                	map.put(lk, values);
+                if (values == null) {
+                    values = new ArrayList<String>();
+                    map.put(lk, values);
                 }
                 values.add(value);
             }
             int i = 0;
-            for (Map.Entry<String, List<String>> entry : map.entrySet())
-            {
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
                 String key = entry.getKey();
                 List<String> values = entry.getValue();
-                if (i != 0)
-                {
-                    Signed.append(";");
+                if (i != 0) {
+                    signed.append(";");
                 }
                 i = 1;
-                Signed.append(key);
-                for(String value : values) {
-                	Canonical.append(key).append(":").append(value).append( "\n");
+                signed.append(key);
+                for (String value : values) {
+                    canonical.append(key).append(":").append(value).append("\n");
                 }
             }
         }
-        
-        list.add(Signed.toString());
-        list.add(Canonical.toString());
+
+        list.add(signed.toString());
+        list.add(canonical.toString());
         return list;
     }
-    
-    private List<String> getCanonicalURIAndQuery(String fulPath)
-        throws ServiceException
-    {
-        String URI = "";
+
+    private List<String> getCanonicalURIAndQuery(String fulPath) throws ServiceException {
+        String url = "";
         String query = "";
         String[] pathStrings = fulPath.split("[?]");
-        if (pathStrings.length > 0)
-        {
-            URI += pathStrings[0];
+        if (pathStrings.length > 0) {
+            url += pathStrings[0];
         }
-        if (pathStrings.length > 1)
-        {
+        if (pathStrings.length > 1) {
             String[] uri = pathStrings[1].split("[&]");
             Map<String, String> map = new TreeMap<String, String>();
-            for (int i = 0; i < uri.length; i++)
-            {
+            for (int i = 0; i < uri.length; i++) {
                 String[] kvStrings = uri[i].split("[=]");
                 String key = kvStrings[0];
                 String val = "";
-                if (kvStrings.length > 1)
-                {
+                if (kvStrings.length > 1) {
                     val = kvStrings[1];
                 }
                 map.put(key, val);
             }
             int j = 0;
-            
+
             StringBuilder tempStr = new StringBuilder(query);
-            for (Map.Entry<String, String> entry : map.entrySet())
-            {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
-                if (j != 0)
-                {
-                	tempStr.append("&");
+                if (j != 0) {
+                    tempStr.append("&");
                 }
                 j = 1;
                 tempStr.append(key.toString()).append("=").append(value.toString());
             }
-            
+
             query = tempStr.toString();
-            
+
         }
         List<String> list = new ArrayList<String>();
-        list.add(URI);
+        list.add(url);
         list.add(query);
         return list;
     }
-    
-    
-    private String getScope()
-    {
-        return new StringBuilder().append(this.nowISOtime.split("T")[0]).append("/")
-            .append(this.region).append("/").append(Constants.SERVICE).append("/").append(Constants.REQUEST_TAG).toString();
+
+    private String getScope() {
+        return new StringBuilder().append(this.nowISOtime.split("T")[0]).append("/").append(this.region).append("/")
+                .append(Constants.SERVICE).append("/").append(Constants.REQUEST_TAG).toString();
     }
-    
-    private String getCanonicalRequest(String method, String fulPath, List<String> canonical)
-        throws ServiceException
-    {
+
+    private String getCanonicalRequest(String method, String fulPath, List<String> canonical) throws ServiceException {
         List<String> list = this.getCanonicalURIAndQuery(fulPath);
-        StringBuilder outPut = new StringBuilder(method).append("\n").append(list.get(0)).append("\n").append(list.get(1)).append("\n")
-            .append(canonical.get(1)).append("\n").append(canonical.get(0)).append("\n").append(V4Authentication.content_sha256);
+        StringBuilder outPut = new StringBuilder(method).append("\n").append(list.get(0)).append("\n")
+                .append(list.get(1)).append("\n").append(canonical.get(1)).append("\n").append(canonical.get(0))
+                .append("\n").append(V4Authentication.CONTENT_SHA256);
         return outPut.toString();
     }
-    
-    private byte[] getSigningKey()
-        throws ServiceException
-    {
+
+    private byte[] getSigningKey() throws ServiceException {
         String shortDate = this.nowISOtime.split("[T]")[0];
         String keyString = "AWS4" + this.sk;
-        try
-        {
-            byte[] dateKey = V4Authentication.hmac_sha256Encode(keyString.getBytes(Constants.DEFAULT_ENCODING), shortDate);
+        try {
+            byte[] dateKey = V4Authentication.hmac_sha256Encode(keyString.getBytes(Constants.DEFAULT_ENCODING),
+                    shortDate);
             byte[] dateRegionKey = V4Authentication.hmac_sha256Encode(dateKey, this.region);
             byte[] dateRegionServiceKey = V4Authentication.hmac_sha256Encode(dateRegionKey, Constants.SERVICE);
             return V4Authentication.hmac_sha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new ServiceException("Get sign string for v4 aurhentication error", e);
         }
     }
-    
-    public static byte[] hmac_sha256Encode(byte[] key, String data) throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException
-    {
-        Mac sha256_HMAC = Mac.getInstance(Constants.HMAC_SHA256_ALGORITHM);
-        SecretKeySpec secret_key = new SecretKeySpec(key, Constants.HMAC_SHA256_ALGORITHM);
-        sha256_HMAC.init(secret_key);
-        return sha256_HMAC.doFinal(data.getBytes(Constants.DEFAULT_ENCODING));
+
+    public static byte[] hmac_sha256Encode(byte[] key, String data)
+            throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
+        Mac sha256HMAC = Mac.getInstance(Constants.HMAC_SHA256_ALGORITHM);
+        SecretKeySpec secretkey = new SecretKeySpec(key, Constants.HMAC_SHA256_ALGORITHM);
+        sha256HMAC.init(secretkey);
+        return sha256HMAC.doFinal(data.getBytes(Constants.DEFAULT_ENCODING));
     }
-    
-    public static byte[] sha256encode(String str)
-        throws NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+
+    public static byte[] sha256encode(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest digest;
         byte[] hash = null;
         digest = MessageDigest.getInstance("SHA-256");
         hash = digest.digest(str.getBytes(Constants.DEFAULT_ENCODING));
-        
+
         return hash;
     }
-    
-    public static String byteToHex(byte[] hash)
-    {
+
+    public static String byteToHex(byte[] hash) {
         return ServiceUtils.toHex(hash);
     }
 

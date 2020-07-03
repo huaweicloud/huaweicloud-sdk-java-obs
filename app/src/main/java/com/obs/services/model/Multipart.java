@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -20,29 +21,32 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * 分段上传任务中的段信息
  */
-public class Multipart extends HeaderResponse
-{
+public class Multipart extends HeaderResponse {
     private Integer partNumber;
-    
+
     private Date lastModified;
-    
+
     private String etag;
-    
+
     private Long size;
-    
-    public Multipart(){
-        
+
+    public Multipart() {
+
     }
-    
+
     /**
      * 构造函数
-     * @param partNumber 分段号
-     * @param lastModified 分段最后修改时间
-     * @param etag 分段的etag校验值
-     * @param size 分段的大小，单位：字节
+     * 
+     * @param partNumber
+     *            分段号
+     * @param lastModified
+     *            分段最后修改时间
+     * @param etag
+     *            分段的etag校验值
+     * @param size
+     *            分段的大小，单位：字节
      */
-    public Multipart(Integer partNumber, Date lastModified, String etag, Long size)
-    {
+    public Multipart(Integer partNumber, Date lastModified, String etag, Long size) {
         this.partNumber = partNumber;
         this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
         this.etag = etag;
@@ -54,48 +58,40 @@ public class Multipart extends HeaderResponse
      * 
      * @return 分段号
      */
-    public Integer getPartNumber()
-    {
+    public Integer getPartNumber() {
         return partNumber;
     }
-    
-    
+
     /**
      * 获取分段的最后修改时间
      * 
      * @return 分段的最后修改时间
      */
-    public Date getLastModified()
-    {
+    public Date getLastModified() {
         return ServiceUtils.cloneDateIgnoreNull(this.lastModified);
     }
-    
-    
+
     /**
      * 获取分段的etag校验值
      * 
      * @return 分段的etag校验值
      */
-    public String getEtag()
-    {
+    public String getEtag() {
         return etag;
     }
-    
-    
+
     /**
      * 获取分段的大小，单位：字节
      * 
      * @return 分段的大小
      */
-    public Long getSize()
-    {
+    public Long getSize() {
         return size;
     }
-    
 
     @Override
-    public String toString()
-    {
-        return "Multipart [partNumber=" + partNumber + ", lastModified=" + lastModified + ", etag=" + etag + ", size=" + size + "]";
+    public String toString() {
+        return "Multipart [partNumber=" + partNumber + ", lastModified=" + lastModified + ", etag=" + etag + ", size="
+                + size + "]";
     }
 }

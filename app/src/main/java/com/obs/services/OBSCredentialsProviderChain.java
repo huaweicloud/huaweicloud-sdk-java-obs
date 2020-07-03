@@ -11,15 +11,16 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services;
 
 public class OBSCredentialsProviderChain extends DefaultCredentialsProviderChain {
 
-	public OBSCredentialsProviderChain() {
-		this(true);
-	}
+    public OBSCredentialsProviderChain() {
+        this(true);
+    }
 
-	public OBSCredentialsProviderChain(boolean reused) {
-		super(reused, new EnvironmentVariableObsCredentialsProvider(), new EcsObsCredentialsProvider());
-	}
+    public OBSCredentialsProviderChain(boolean reused) {
+        super(reused, new EnvironmentVariableObsCredentialsProvider(), new EcsObsCredentialsProvider());
+    }
 }

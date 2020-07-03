@@ -1,10 +1,4 @@
 /**
- * 
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -17,20 +11,16 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-
 import okhttp3.Response;
 
 public class HttpMethodReleaseInputStream extends InputStream implements InputStreamWrapper {
-    private static final ILogger interfaceLog = LoggerBuilder.getLogger("com.obs.services.internal.RestStorageService");
-    
     private InputStream inputStream = null;
     private Response httpResponse = null;
     private boolean flag = false;
@@ -43,7 +33,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         } catch (Exception e) {
             try {
                 response.close();
-            } catch (Exception ee){
+            } catch (Exception ee) {
                 // ignore
             }
             this.inputStream = new ByteArrayInputStream(new byte[] {});
@@ -54,7 +44,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         return httpResponse;
     }
 
-    protected void releaseConnection() throws IOException {
+    protected void closeConnection() throws IOException {
         if (!flag) {
             if (!comsumed && httpResponse != null) {
                 httpResponse.close();
@@ -68,16 +58,16 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         try {
             int read = inputStream.read();
             if (read == -1) {
-            	comsumed = true;
+                comsumed = true;
                 if (!flag) {
-                    releaseConnection();
+                    closeConnection();
                 }
             }
             return read;
         } catch (IOException e) {
             try {
-                releaseConnection();
-            } catch(IOException ignored) {
+                closeConnection();
+            } catch (IOException ignored) {
             }
             throw e;
         }
@@ -88,17 +78,16 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         try {
             int read = inputStream.read(b, off, len);
             if (read == -1) {
-            	comsumed = true;
+                comsumed = true;
                 if (!flag) {
-                    releaseConnection();
+                    closeConnection();
                 }
             }
             return read;
         } catch (IOException e) {
             try {
-                releaseConnection();
-            } catch(IOException ignored) {
-                //
+                closeConnection();
+            } catch (IOException ignored) {
             }
             throw e;
         }
@@ -110,9 +99,8 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             return inputStream.available();
         } catch (IOException e) {
             try {
-                releaseConnection();
-            } catch(IOException ignored) {
-                //
+                closeConnection();
+            } catch (IOException ignored) {
             }
             throw e;
         }
@@ -121,20 +109,9 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
     @Override
     public void close() throws IOException {
         if (!flag) {
-            releaseConnection();
+            closeConnection();
         }
         inputStream.close();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        if (!flag) {
-            releaseConnection();
-            if (interfaceLog.isWarnEnabled()) {
-            	interfaceLog.warn("Successfully released HttpMethod in finalize().");
-            }
-        }
-        super.finalize();
     }
 
     public InputStream getWrappedInputStream() {

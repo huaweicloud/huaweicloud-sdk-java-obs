@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -150,7 +151,6 @@ public class RestoreObjectRequest extends BaseObjectRequest {
         this(bucketName, objectKey, versionId, days);
         this.tier = tier;
     }
-
 
     /**
      * 获取对象取回后保存时间，单位：天，最小值为1，最大值为30

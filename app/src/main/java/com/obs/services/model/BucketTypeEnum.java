@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -19,24 +20,24 @@ package com.obs.services.model;
  *
  */
 public enum BucketTypeEnum {
-	
-	/**
-	 * 对象桶
-	 */
-	OBJECT("OBJECT"),
 
-	/**
-	 * 并行文件系统
-	 */
-	PFS("POSIX");
+    /**
+     * 对象桶
+     */
+    OBJECT("OBJECT"),
 
-	private String code;
+    /**
+     * 并行文件系统
+     */
+    PFS("POSIX");
 
-	private BucketTypeEnum(String code) {
-		this.code = code;
-	}
+    private String code;
 
-	public String getCode()  {
-		return this.code;
-	}
+    private BucketTypeEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
 }

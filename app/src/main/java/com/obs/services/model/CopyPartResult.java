@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -20,59 +21,49 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * 复制段的响应结果
  */
-public class CopyPartResult extends HeaderResponse
-{
+public class CopyPartResult extends HeaderResponse {
     private int partNumber;
-    
+
     private String etag;
-    
+
     private Date lastModified;
-    
-    
+
     public CopyPartResult(int partNumber, String etag, Date lastModified) {
-		this.partNumber = partNumber;
-		this.etag = etag;
-		this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
-	}
+        this.partNumber = partNumber;
+        this.etag = etag;
+        this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
+    }
 
-
-	/**
+    /**
      * 获取目标段的分段号
      * 
      * @return 目标段的分段号
      */
-    public int getPartNumber()
-    {
+    public int getPartNumber() {
         return partNumber;
     }
-    
-    
-    /** 
+
+    /**
      * 获取目标段的etag值
      * 
      * @return 目标段的etag值
      */
-    public String getEtag()
-    {
+    public String getEtag() {
         return etag;
     }
-    
 
     /**
      * 获取目标段的最后修改时间
      * 
      * @return 目标段的最后修改时间
      */
-    public Date getLastModified()
-    {
+    public Date getLastModified() {
         return ServiceUtils.cloneDateIgnoreNull(this.lastModified);
     }
-    
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "CopyPartResult [partNumber=" + partNumber + ", etag=" + etag + ", lastModified=" + lastModified + "]";
     }
-    
+
 }

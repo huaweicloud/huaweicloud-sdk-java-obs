@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -19,35 +20,34 @@ package com.obs.services.model;
  *
  */
 public enum StorageClassEnum {
-	
-	/**
-	 * 标准存储
-	 */
-	STANDARD,
 
-	/**
-	 * 低频访问存储
-	 */
-	WARM,
-	
-	/**
-	 * 归档存储
-	 */
-	COLD;
+    /**
+     * 标准存储
+     */
+    STANDARD,
 
+    /**
+     * 低频访问存储
+     */
+    WARM,
 
-	public String getCode() {
-		return this.name();
-	}
+    /**
+     * 归档存储
+     */
+    COLD;
 
-	public static StorageClassEnum getValueFromCode(String code) {
-		if("STANDARD".equals(code)) {
-			return STANDARD;
-		}else if("WARM".equals(code) || "STANDARD_IA".equals(code)) {
-			return WARM;
-		}else if("COLD".equals(code) || "GLACIER".equals(code)) {
-			return COLD;
-		}
-		return null;
-	}
+    public String getCode() {
+        return this.name();
+    }
+
+    public static StorageClassEnum getValueFromCode(String code) {
+        if ("STANDARD".equals(code)) {
+            return STANDARD;
+        } else if ("WARM".equals(code) || "STANDARD_IA".equals(code)) {
+            return WARM;
+        } else if ("COLD".equals(code) || "GLACIER".equals(code)) {
+            return COLD;
+        }
+        return null;
+    }
 }

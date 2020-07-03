@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.io.UnsupportedEncodingException;
@@ -21,40 +22,37 @@ import com.obs.services.internal.Constants;
 /**
  * SSE-C加解密头域信息
  */
-public class SseCHeader
-{
-    
+public class SseCHeader {
+
     private ServerAlgorithm algorithm;
-    
+
     private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.AES256;
-    
+
     private byte[] sseCKey;
-    
+
     private String sseCKeyBase64;
-    
+
     /**
      * 获取加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
      * @return 加密算法类型
      */
     @Deprecated
-    public ServerAlgorithm getAlgorithm()
-    {
+    public ServerAlgorithm getAlgorithm() {
         return algorithm;
     }
-    
+
     /**
      * 设置加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
-     * @param algorithm 加密算法类型
+     * @param algorithm
+     *            加密算法类型
      */
     @Deprecated
-    public void setAlgorithm(ServerAlgorithm algorithm)
-    {
+    public void setAlgorithm(ServerAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
-    
-    
+
     /**
      * 获取加密算法类型，目前仅支持AES256，需要和sseCKey一起使用
      * 
@@ -63,66 +61,73 @@ public class SseCHeader
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }
-    
+
     /**
      * 获取SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
      * @return SSE-C方式下使用的密钥
      */
-    public byte[] getSseCKey()
-    {
-        return this.sseCKey;
+    public byte[] getSseCKey() {
+        if (null != this.sseCKey) {
+            return this.sseCKey.clone(); 
+        }
+        return null;
     }
-    
+
     /**
      * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
-     * @param sseCKey SSE-C方式下使用的密钥，用于加解密对象
+     * @param sseCKey
+     *            SSE-C方式下使用的密钥，用于加解密对象
      */
     @Deprecated
-    public void setSseCKey(String sseCKey)
-    {
-    	if(sseCKey != null) {
-    		try {
-				this.sseCKey = sseCKey.getBytes(Constants.ISO_8859_1_ENCOING);
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalStateException("fail to read sseCkey", e);
-			}
-    	}
+    public void setSseCKey(String sseCKey) {
+        if (sseCKey != null) {
+            try {
+                this.sseCKey = sseCKey.getBytes(Constants.ISO_8859_1_ENCOING);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("fail to read sseCkey", e);
+            }
+        }
     }
-    
+
     /**
      * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥未进行base64encode的原始值
      * 
-     * @param sseCKey SSE-C方式下使用的密钥，用于加解密对象
+     * @param sseCKey
+     *            SSE-C方式下使用的密钥，用于加解密对象
      */
-    public void setSseCKey(byte[] sseCKey)
-    {
-        this.sseCKey = sseCKey;
+    public void setSseCKey(byte[] sseCKey) {
+        if (null != sseCKey) {
+            this.sseCKey = sseCKey.clone();
+        } else {
+            this.sseCKey = null;
+        }
     }
-    
+
     /**
      * 获取SSE-C方式下使用的密钥，用于加解密对象，该值是密钥进行base64encode后的值
      * 
      * @return SSE-C方式下使用的密钥
      */
-	public String getSseCKeyBase64() {
-		return sseCKeyBase64;
-	}
+    public String getSseCKeyBase64() {
+        return sseCKeyBase64;
+    }
 
-	/**
+    /**
      * 设置SSE-C方式下使用的密钥，用于加解密对象，该值是密钥进行base64encode后的值
      * 
-     * @param sseCKeyBase64 SSE-C方式下使用的密钥，用于加解密对象
+     * @param sseCKeyBase64
+     *            SSE-C方式下使用的密钥，用于加解密对象
      */
-	public void setSseCKeyBase64(String sseCKeyBase64) {
-		this.sseCKeyBase64 = sseCKeyBase64;
-	}
+    public void setSseCKeyBase64(String sseCKeyBase64) {
+        this.sseCKeyBase64 = sseCKeyBase64;
+    }
 
-	@Override
-	public String toString() {
-		return "SseCHeader [algorithm=" + algorithm + ", sseCKey=" + Arrays.toString(sseCKey) + ", sseCKeyBase64=" + sseCKeyBase64 + "]";
-	}
-	
-	
+    @Override
+    public String toString() {
+        return "SseCHeader [algorithm=" + algorithm + ", sseCKey=" + Arrays.toString(sseCKey) + ", sseCKeyBase64="
+                + sseCKeyBase64 + "]";
+    }
+
 }

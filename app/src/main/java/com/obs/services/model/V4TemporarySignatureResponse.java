@@ -11,17 +11,14 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 @Deprecated
-public class V4TemporarySignatureResponse extends TemporarySignatureResponse
-{
-    
-    public V4TemporarySignatureResponse(String signedUrl)
-    {
+public class V4TemporarySignatureResponse extends TemporarySignatureResponse {
+
+    public V4TemporarySignatureResponse(String signedUrl) {
         super(signedUrl);
     }
-    
 
-    
 }

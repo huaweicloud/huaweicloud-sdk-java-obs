@@ -115,7 +115,7 @@ public class ConcurrentUploadPartSample
             }
             
             /*
-             * Waiting for all parts finished
+             * Wait for all tasks to finish
              */
             executorService.shutdown();
             while (!executorService.isTerminated())
@@ -131,11 +131,11 @@ public class ConcurrentUploadPartSample
             }
             
             /*
-             * Verify whether all parts are finished
+             * Verify whether all tasks are finished
              */
             if (partETags.size() != partCount)
             {
-                throw new IllegalStateException("Upload multiparts fail due to some parts are not finished yet");
+                throw new IllegalStateException("Some parts are not finished");
             }
             else
             {

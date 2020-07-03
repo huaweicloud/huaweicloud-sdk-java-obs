@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.security;
 
 import com.obs.services.model.ISecurityKey;
@@ -20,12 +21,12 @@ public class BasicSecurityKey implements ISecurityKey {
     protected String secretKey;
     protected String securityToken;
 
-    public BasicSecurityKey(String accessKey, String secretKey){
+    public BasicSecurityKey(String accessKey, String secretKey) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
     }
 
-    public BasicSecurityKey(String accessKey, String secretKey, String securityToken){
+    public BasicSecurityKey(String accessKey, String secretKey, String securityToken) {
         this(accessKey, secretKey);
         this.securityToken = securityToken;
     }

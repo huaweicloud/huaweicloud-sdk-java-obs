@@ -19,45 +19,45 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class RequestPaymentConfiguration extends HeaderResponse
-{
+public class RequestPaymentConfiguration extends HeaderResponse {
     private RequestPaymentEnum payer;
-    
+
     /**
      * 构造函数
-     * @param payer 请求者付费状态
+     * 
+     * @param payer
+     *            请求者付费状态
      */
-    public RequestPaymentConfiguration(RequestPaymentEnum payer)
-    {
+    public RequestPaymentConfiguration(RequestPaymentEnum payer) {
         this.payer = payer;
     }
-    
-    public RequestPaymentConfiguration(){
-        
+
+    public RequestPaymentConfiguration() {
+
     }
-    
+
     /**
      * 获取请求者付费状态
+     * 
      * @return 请求者付费状态
      */
-    public RequestPaymentEnum getPayer()
-    {
+    public RequestPaymentEnum getPayer() {
         return payer;
     }
-    
+
     /**
      * 设置请求者付费状态
-     * @param payer 请求者付费状态
+     * 
+     * @param payer
+     *            请求者付费状态
      */
-    public void setPayer(RequestPaymentEnum payer)
-    {
+    public void setPayer(RequestPaymentEnum payer) {
         this.payer = payer;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RequestPaymentConfiguration [payer=" + payer.getCode() + "]";
     }
-    
+
 }

@@ -11,39 +11,32 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.Date;
 
 @Deprecated
-public class V4PostSignatureRequest extends PostSignatureRequest
-{
-    
-    
-    public V4PostSignatureRequest()
-    {
-        
+public class V4PostSignatureRequest extends PostSignatureRequest {
+
+    public V4PostSignatureRequest() {
+
     }
-    
-    public V4PostSignatureRequest(long expires, String bucketName, String objectKey)
-    {
+
+    public V4PostSignatureRequest(long expires, String bucketName, String objectKey) {
         super(expires, bucketName, objectKey);
     }
-    
-    public V4PostSignatureRequest(Date expiryDate, String bucketName, String objectKey)
-    {
-    	super(expiryDate, bucketName, objectKey);
+
+    public V4PostSignatureRequest(Date expiryDate, String bucketName, String objectKey) {
+        super(expiryDate, bucketName, objectKey);
     }
-    
-    public V4PostSignatureRequest(long expires, Date requestDate, String bucketName, String objectKey)
-    {
-    	super(expires, requestDate, bucketName, objectKey);
+
+    public V4PostSignatureRequest(long expires, Date requestDate, String bucketName, String objectKey) {
+        super(expires, requestDate, bucketName, objectKey);
     }
-    
-    public V4PostSignatureRequest(Date expiryDate, Date requestDate, String bucketName, String objectKey)
-    {
-    	super(expiryDate,requestDate, bucketName, objectKey);
+
+    public V4PostSignatureRequest(Date expiryDate, Date requestDate, String bucketName, String objectKey) {
+        super(expiryDate, requestDate, bucketName, objectKey);
     }
-    
-    
+
 }

@@ -11,8 +11,8 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services.model.fs;
 
+package com.obs.services.model.fs;
 
 /**
  * 桶的文件网关特性状态
@@ -20,32 +20,32 @@ package com.obs.services.model.fs;
  */
 public enum FSStatusEnum {
 
-	/**
-	 * 启用文件网关特性
-	 */
-	ENABLED("Enabled"),
+    /**
+     * 启用文件网关特性
+     */
+    ENABLED("Enabled"),
 
-	/**
-	 * 禁用文件网关特性
-	 */
-	DISABLED("Disabled");
+    /**
+     * 禁用文件网关特性
+     */
+    DISABLED("Disabled");
 
-	private String code;
+    private String code;
 
-	private FSStatusEnum(String code) {
-		this.code = code;
-	}
+    private FSStatusEnum(String code) {
+        this.code = code;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public static FSStatusEnum getValueFromCode(String code) {
-		for (FSStatusEnum val : FSStatusEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    public static FSStatusEnum getValueFromCode(String code) {
+        for (FSStatusEnum val : FSStatusEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

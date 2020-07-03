@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,150 +21,175 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class ReadAheadQueryResult extends HeaderResponse {
-	@JsonProperty(value = "bucket")
-	private String bucketName;
+    @JsonProperty(value = "bucket")
+    private String bucketName;
 
-	@JsonProperty(value = "prefix")
-	private String prefix;
-	
-	@JsonProperty(value = "consumedTime")
-	private long consumedTime;
-	
-	@JsonProperty(value = "finishedObjectNum")
-	private long finishedObjectNum;
-	
-	@JsonProperty(value = "finishedSize")
-	private long finishedSize;
-	
-	@JsonProperty(value = "status")
-	private String status;
-	
-	/**
-	 * 构造函数
-	 */
-	public ReadAheadQueryResult() {
-		
-	}
-	
-	/**
-	 * 构造函数
-	 * @param bucketName 桶名
-	 * @param prefix 预读对象的对象名前缀
-	 * @param consumedTime 消耗时间 单位：秒
-	 * @param finishedObjectNum 已完成的对象个数
-	 * @param finishedSize 已完成的对象大小
-	 * @param status 任务状态
-	 */
-	public ReadAheadQueryResult(String bucketName, String prefix, long consumedTime, 
-			long finishedObjectNum, long finishedSize, String status) {
-		this.bucketName = bucketName;
-		this.prefix = prefix;
-		this.consumedTime = consumedTime;
-		this.finishedObjectNum = finishedObjectNum;
-		this.finishedSize = finishedSize;
-		this.status = status;
-	}
+    @JsonProperty(value = "prefix")
+    private String prefix;
 
-	/**
-	 * 获取桶名
-	 * @return 桶名
-	 */
-	public String getBucketName() {
-		return bucketName;
-	}
+    @JsonProperty(value = "consumedTime")
+    private long consumedTime;
 
-	/**
-	 * 设置桶名
-	 * @param bucketName 桶名
-	 */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    @JsonProperty(value = "finishedObjectNum")
+    private long finishedObjectNum;
 
-	/**
-	 * 获取预读对象的对象名前缀
-	 * @return 预读对象的对象名前缀
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    @JsonProperty(value = "finishedSize")
+    private long finishedSize;
 
-	/**
-	 * 设置预读对象的对象名前缀
-	 * @param prefix 预读对象的对象名前缀
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    @JsonProperty(value = "status")
+    private String status;
 
-	/**
-	 * 获取消耗时间 单位：秒
-	 * @return 消耗时间 单位：秒
-	 */
-	public long getConsumedTime() {
-		return consumedTime;
-	}
+    /**
+     * 构造函数
+     */
+    public ReadAheadQueryResult() {
 
-	/**
-	 * 设置消耗时间 单位：秒
-	 * @param consumedTime 消耗时间 单位：秒
-	 */
-	public void setConsumedTime(long consumedTime) {
-		this.consumedTime = consumedTime;
-	}
+    }
 
-	/**
-	 * 获取已完成的对象个数
-	 * @return 已完成的对象个数
-	 */
-	public long getFinishedObjectNum() {
-		return finishedObjectNum;
-	}
+    /**
+     * 构造函数
+     * 
+     * @param bucketName
+     *            桶名
+     * @param prefix
+     *            预读对象的对象名前缀
+     * @param consumedTime
+     *            消耗时间 单位：秒
+     * @param finishedObjectNum
+     *            已完成的对象个数
+     * @param finishedSize
+     *            已完成的对象大小
+     * @param status
+     *            任务状态
+     */
+    public ReadAheadQueryResult(String bucketName, String prefix, long consumedTime, long finishedObjectNum,
+            long finishedSize, String status) {
+        this.bucketName = bucketName;
+        this.prefix = prefix;
+        this.consumedTime = consumedTime;
+        this.finishedObjectNum = finishedObjectNum;
+        this.finishedSize = finishedSize;
+        this.status = status;
+    }
 
-	/**
-	 * 设置已完成的对象个数
-	 * @param finishedObjectNum 已完成的对象个数
-	 */
-	public void setFinishedObjectNum(long finishedObjectNum) {
-		this.finishedObjectNum = finishedObjectNum;
-	}
+    /**
+     * 获取桶名
+     * 
+     * @return 桶名
+     */
+    public String getBucketName() {
+        return bucketName;
+    }
 
-	/**
-	 * 获取已完成的对象大小
-	 * @return 已完成的对象大小
-	 */
-	public long getFinishedSize() {
-		return finishedSize;
-	}
+    /**
+     * 设置桶名
+     * 
+     * @param bucketName
+     *            桶名
+     */
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
-	/**
-	 * 设置已完成的对象大小
-	 * @param finishedSize 已完成的对象大小
-	 */
-	public void setFinishedSize(long finishedSize) {
-		this.finishedSize = finishedSize;
-	}
+    /**
+     * 获取预读对象的对象名前缀
+     * 
+     * @return 预读对象的对象名前缀
+     */
+    public String getPrefix() {
+        return prefix;
+    }
 
-	/**
-	 * 获取任务状态
-	 * @return 任务状态
-	 */
-	public String getStatus() {
-		return status;
-	}
+    /**
+     * 设置预读对象的对象名前缀
+     * 
+     * @param prefix
+     *            预读对象的对象名前缀
+     */
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	/**
-	 * 设置任务状态
-	 * @param status 任务状态
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	@Override
-	public String toString() {
-		return "ReadAheadQueryResult [bucketName=" + bucketName + ", prefix=" + prefix 
-				+", consumedTime=" + consumedTime + ", finishedObjectNum=" + finishedObjectNum 
-				+ ", finishedSize=" + finishedSize + ", status=" + status + "]";
-	}
+    /**
+     * 获取消耗时间 单位：秒
+     * 
+     * @return 消耗时间 单位：秒
+     */
+    public long getConsumedTime() {
+        return consumedTime;
+    }
+
+    /**
+     * 设置消耗时间 单位：秒
+     * 
+     * @param consumedTime
+     *            消耗时间 单位：秒
+     */
+    public void setConsumedTime(long consumedTime) {
+        this.consumedTime = consumedTime;
+    }
+
+    /**
+     * 获取已完成的对象个数
+     * 
+     * @return 已完成的对象个数
+     */
+    public long getFinishedObjectNum() {
+        return finishedObjectNum;
+    }
+
+    /**
+     * 设置已完成的对象个数
+     * 
+     * @param finishedObjectNum
+     *            已完成的对象个数
+     */
+    public void setFinishedObjectNum(long finishedObjectNum) {
+        this.finishedObjectNum = finishedObjectNum;
+    }
+
+    /**
+     * 获取已完成的对象大小
+     * 
+     * @return 已完成的对象大小
+     */
+    public long getFinishedSize() {
+        return finishedSize;
+    }
+
+    /**
+     * 设置已完成的对象大小
+     * 
+     * @param finishedSize
+     *            已完成的对象大小
+     */
+    public void setFinishedSize(long finishedSize) {
+        this.finishedSize = finishedSize;
+    }
+
+    /**
+     * 获取任务状态
+     * 
+     * @return 任务状态
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * 设置任务状态
+     * 
+     * @param status
+     *            任务状态
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadAheadQueryResult [bucketName=" + bucketName + ", prefix=" + prefix + ", consumedTime="
+                + consumedTime + ", finishedObjectNum=" + finishedObjectNum + ", finishedSize=" + finishedSize
+                + ", status=" + status + "]";
+    }
 }

@@ -1,9 +1,4 @@
 /**
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -21,9 +16,11 @@ package com.obs.services.internal.handler;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +58,7 @@ import com.obs.services.model.FunctionGraphConfiguration;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
+import com.obs.services.model.HistoricalObjectReplicationEnum;
 import com.obs.services.model.InitiateMultipartUploadResult;
 import com.obs.services.model.LifecycleConfiguration;
 import com.obs.services.model.Multipart;
@@ -84,6 +82,7 @@ import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.VersioningStatusEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.fs.FolderContentSummary;
 
 public class XmlResponsesSaxParser {
 
@@ -133,7 +132,15 @@ public class XmlResponsesSaxParser {
         } catch (Throwable t) {
             throw new ServiceException("Failed to sanitize XML document destined", t);
         } finally {
-            ServiceUtils.closeStream(br);
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(e);
+                    }
+                }
+            }
             ServiceUtils.closeStream(inputStream);
         }
     }
@@ -154,8 +161,10 @@ public class XmlResponsesSaxParser {
                 parseXmlInputStream((DefaultHandler) handler, inputStream);
             }
             return handler;
-        } catch (ServiceException e) {
-            throw e;
+        } catch (NoSuchMethodException e) {
+            throw new ServiceException(e);
+        } catch (InvocationTargetException e) {
+            throw new ServiceException(e);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -251,24 +260,30 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void endElement(String name, String elementText) {
-            try {
-                if (name.equals("Name")) {
-                    bucketName = elementText;
-                } else if (!insideCommonPrefixes && name.equals("Prefix")) {
-                    requestPrefix = elementText;
-                } else if (name.equals("Marker")) {
-                    requestMarker = elementText;
-                } else if (name.equals("NextMarker")) {
-                    nextMarker = elementText;
-                } else if (name.equals("MaxKeys")) {
-                    requestMaxKeys = Integer.parseInt(elementText);
-                } else if (name.equals("Delimiter")) {
-                    requestDelimiter = elementText;
-                } else if (name.equals("IsTruncated")) {
-                    listingTruncated = Boolean.valueOf(elementText);
-                } else if (name.equals("Contents")) {
-                    objects.add(currentObject);
-                } else if (name.equals("Key")) {
+            if (name.equals("Name")) {
+                bucketName = elementText;
+            } else if (!insideCommonPrefixes && name.equals("Prefix")) {
+                requestPrefix = elementText;
+            } else if (name.equals("Marker")) {
+                requestMarker = elementText;
+            } else if (name.equals("NextMarker")) {
+                nextMarker = elementText;
+            } else if (name.equals("MaxKeys")) {
+                requestMaxKeys = Integer.parseInt(elementText);
+            } else if (name.equals("Delimiter")) {
+                requestDelimiter = elementText;
+            } else if (name.equals("IsTruncated")) {
+                listingTruncated = Boolean.valueOf(elementText);
+            } else if (name.equals("Contents")) {
+                objects.add(currentObject);
+            } else if (name.equals("DisplayName")) {
+                if (currentOwner != null) {
+                    currentOwner.setDisplayName(elementText);
+                }
+            }
+
+            if (null != currentObject) {
+                if (name.equals("Key")) {
                     currentObject.setObjectKey(elementText);
                     lastKey = elementText;
                 } else if (name.equals("LastModified")) {
@@ -294,24 +309,128 @@ public class XmlResponsesSaxParser {
                     currentOwner.setId(elementText);
                 } else if (name.equals("Type")) {
                     currentObject.getMetadata().setAppendable("Appendable".equals(elementText));
-                } else if (name.equals("DisplayName")) {
-                    if (currentOwner != null) {
-                        currentOwner.setDisplayName(elementText);
-                    }
-                } else if (insideCommonPrefixes && name.equals("Prefix")) {
+                }
+            }
+
+            if (null != currentExtenedCommonPrefix) {
+                if (insideCommonPrefixes && name.equals("Prefix")) {
                     commonPrefixes.add(elementText);
                     currentExtenedCommonPrefix.setObjectKey(elementText);
                 } else if (insideCommonPrefixes && name.equals("MTime")) {
                     currentExtenedCommonPrefix.getMetadata()
                             .setLastModified(new Date(Long.parseLong(elementText) * 1000));
-                } else if (name.equals("CommonPrefixes")) {
-                    extenedCommonPrefixes.add(currentExtenedCommonPrefix);
-                    insideCommonPrefixes = false;
                 }
-            } catch (NullPointerException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
-                }
+            }
+
+            if (name.equals("CommonPrefixes")) {
+                extenedCommonPrefixes.add(currentExtenedCommonPrefix);
+                insideCommonPrefixes = false;
+            }
+        }
+    }
+
+    public static class ListContentSummaryHandler extends DefaultXmlHandler {
+        private FolderContentSummary currentFolderContentSummary;
+
+        private FolderContentSummary.LayerSummary currentLayerSummary;
+
+        private final List<FolderContentSummary> folderContentSummaries = new ArrayList<FolderContentSummary>();
+
+        private String bucketName;
+
+        private String requestPrefix;
+
+        private String requestMarker;
+
+        private String requestDelimiter;
+
+        private int requestMaxKeys = 0;
+
+        private boolean listingTruncated = false;
+
+        private String nextMarker;
+
+        private String lastFolder;
+
+
+        public String getBucketName() {
+            return bucketName;
+        }
+
+        public boolean isListingTruncated() {
+            return listingTruncated;
+        }
+
+        public List<FolderContentSummary> getFolderContentSummaries() {
+            return folderContentSummaries;
+        }
+
+        public String getRequestPrefix() {
+            return requestPrefix;
+        }
+
+        public String getRequestMarker() {
+            return requestMarker;
+        }
+
+        public String getNextMarker() {
+            return nextMarker;
+        }
+
+        public int getRequestMaxKeys() {
+            return requestMaxKeys;
+        }
+
+        public String getRequestDelimiter() {
+            return requestDelimiter;
+        }
+
+        public String getMarkerForNextListing() {
+            return listingTruncated ? nextMarker == null ? lastFolder : nextMarker : null;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals("Contents")) {
+                currentFolderContentSummary = new FolderContentSummary();
+            } else if (name.equals("LayerSummary")) {
+                currentLayerSummary = new FolderContentSummary.LayerSummary();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (name.equals("BucketName")) {
+                bucketName = elementText;
+            } else if (name.equals("Prefix")) {
+                requestPrefix = elementText;
+            } else if (name.equals("Marker")) {
+                requestMarker = elementText;
+            } else if (name.equals("NextMarker")) {
+                nextMarker = elementText;
+            } else if (name.equals("MaxKeys")) {
+                requestMaxKeys = Integer.parseInt(elementText);
+            } else if (name.equals("Delimiter")) {
+                requestDelimiter = elementText;
+            } else if (name.equals("IsTruncated")) {
+                listingTruncated = Boolean.valueOf(elementText);
+            } else if (name.equals("Directory")) {
+                currentFolderContentSummary.setDir(elementText);
+                lastFolder = elementText;
+            } else if (name.equals("DirHeight")) {
+                currentFolderContentSummary.setDirHeight(Long.parseLong(elementText));
+            } else if (name.equals("SummaryHeight")) {
+                currentLayerSummary.setSummaryHeight(Long.parseLong(elementText));
+            } else if (name.equals("DirCount")) {
+                currentLayerSummary.setDirCount(Long.parseLong(elementText));
+            } else if (name.equals("FileCount")) {
+                currentLayerSummary.setFileCount(Long.parseLong(elementText));
+            } else if (name.equals("FileSize")) {
+                currentLayerSummary.setFileSize(Long.parseLong(elementText));
+            } else if (name.equals("LayerSummary")) {
+                currentFolderContentSummary.getLayerSummaries().add(currentLayerSummary);
+            } else if (name.equals("Contents")) {
+                folderContentSummaries.add(currentFolderContentSummary);
             }
         }
     }
@@ -342,12 +461,16 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void endElement(String name, String elementText) {
-            try {
+            if (null != bucketsOwner) {
                 if (name.equals("ID")) {
                     bucketsOwner.setId(elementText);
                 } else if (name.equals("DisplayName")) {
                     bucketsOwner.setDisplayName(elementText);
-                } else if (name.equals("Bucket")) {
+                }
+            }
+
+            if (null != currentBucket) {
+                if (name.equals("Bucket")) {
                     currentBucket.setOwner(bucketsOwner);
                     buckets.add(currentBucket);
                 } else if (name.equals("Name")) {
@@ -369,10 +492,6 @@ public class XmlResponsesSaxParser {
                     } else {
                         currentBucket.setBucketType(BucketTypeEnum.OBJECT);
                     }
-                }
-            } catch (NullPointerException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
                 }
             }
         }
@@ -719,78 +838,73 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
-                if (name.equals("Name")) {
-                    bucketName = elementText;
-                } else if (!insideCommonPrefixes && name.equals("Prefix")) {
-                    requestPrefix = elementText;
-                } else if (name.equals("KeyMarker")) {
-                    keyMarker = elementText;
-                } else if (name.equals("NextKeyMarker")) {
-                    nextMarker = elementText;
-                } else if (name.equals("VersionIdMarker")) {
-                    versionIdMarker = elementText;
-                } else if (name.equals("NextVersionIdMarker")) {
-                    nextVersionIdMarker = elementText;
-                } else if (name.equals("MaxKeys")) {
-                    requestMaxKeys = Long.parseLong(elementText);
-                } else if (name.equals("IsTruncated")) {
-                    listingTruncated = Boolean.valueOf(elementText);
-                } else if (name.equals("Delimiter")) {
-                    delimiter = elementText;
-                } else if (name.equals("Version")) {
-                    VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
-                            lastModified, owner, etag, size, StorageClassEnum.getValueFromCode(storageClass), false,
-                            isAppendable);
-                    items.add(item);
-                    this.reset();
-                } else if (name.equals("DeleteMarker")) {
-                    VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
-                            lastModified, owner, null, 0, null, true, false);
-                    items.add(item);
-                    this.reset();
-                } else if (name.equals("Key")) {
-                    key = elementText;
-                } else if (name.equals("VersionId")) {
-                    versionId = elementText;
-                } else if (name.equals("IsLatest")) {
-                    isLatest = Boolean.valueOf(elementText);
-                } else if (name.equals("LastModified")) {
-                    try {
-                        lastModified = ServiceUtils.parseIso8601Date(elementText);
-                    } catch (ParseException e) {
-                        if (log.isWarnEnabled()) {
-                            log.warn("Non-ISO8601 date for LastModified in bucket's versions listing output: "
-                                    + elementText, e);
-                        }
+        public void endElement(String name, String content) {
+            if (name.equals("Name")) {
+                bucketName = content;
+            } else if (!insideCommonPrefixes && name.equals("Prefix")) {
+                requestPrefix = content;
+            } else if (name.equals("KeyMarker")) {
+                keyMarker = content;
+            } else if (name.equals("NextKeyMarker")) {
+                nextMarker = content;
+            } else if (name.equals("VersionIdMarker")) {
+                versionIdMarker = content;
+            } else if (name.equals("NextVersionIdMarker")) {
+                nextVersionIdMarker = content;
+            } else if (name.equals("MaxKeys")) {
+                requestMaxKeys = Long.parseLong(content);
+            } else if (name.equals("IsTruncated")) {
+                listingTruncated = Boolean.valueOf(content);
+            } else if (name.equals("Delimiter")) {
+                delimiter = content;
+            } else if (name.equals("Version")) {
+                VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
+                        lastModified, owner, etag, size, StorageClassEnum.getValueFromCode(storageClass), false,
+                        isAppendable);
+                items.add(item);
+                this.reset();
+            } else if (name.equals("DeleteMarker")) {
+                VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
+                        lastModified, owner, null, 0, null, true, false);
+                items.add(item);
+                this.reset();
+            } else if (name.equals("Key")) {
+                key = content;
+            } else if (name.equals("VersionId")) {
+                versionId = content;
+            } else if (name.equals("IsLatest")) {
+                isLatest = Boolean.valueOf(content);
+            } else if (name.equals("LastModified")) {
+                try {
+                    lastModified = ServiceUtils.parseIso8601Date(content);
+                } catch (ParseException e) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(
+                                "Non-ISO8601 date for LastModified in bucket's versions listing output: " + content,
+                                e);
                     }
-                } else if (name.equals("ETag")) {
-                    etag = elementText;
-                } else if (name.equals("Size")) {
-                    size = Long.parseLong(elementText);
-                } else if (name.equals("StorageClass")) {
-                    storageClass = elementText;
-                } else if (name.equals("Type")) {
-                    isAppendable = "Appendable".equals(elementText);
-                } else if (name.equals("ID")) {
-                    if (owner == null) {
-                        owner = new Owner();
-                    }
-                    owner.setId(elementText);
-                } else if (name.equals("DisplayName")) {
-                    if (owner != null) {
-                        owner.setDisplayName(elementText);
-                    }
-                } else if (insideCommonPrefixes && name.equals("Prefix")) {
-                    commonPrefixes.add(elementText);
-                } else if (name.equals("CommonPrefixes")) {
-                    insideCommonPrefixes = false;
                 }
-            } catch (NullPointerException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
+            } else if (name.equals("ETag")) {
+                etag = content;
+            } else if (name.equals("Size")) {
+                size = Long.parseLong(content);
+            } else if (name.equals("StorageClass")) {
+                storageClass = content;
+            } else if (name.equals("Type")) {
+                isAppendable = "Appendable".equals(content);
+            } else if (name.equals("ID")) {
+                if (owner == null) {
+                    owner = new Owner();
                 }
+                owner.setId(content);
+            } else if (name.equals("DisplayName")) {
+                if (owner != null) {
+                    owner.setDisplayName(content);
+                }
+            } else if (insideCommonPrefixes && name.equals("Prefix")) {
+                commonPrefixes.add(content);
+            } else if (name.equals("CommonPrefixes")) {
+                insideCommonPrefixes = false;
             }
         }
     }
@@ -811,19 +925,19 @@ public class XmlResponsesSaxParser {
             return owner;
         }
 
-        public void endID(String text) {
-            this.id = text;
+        public void endID(String content) {
+            this.id = content;
         }
 
-        public void endDisplayName(String text) {
-            this.displayName = text;
+        public void endDisplayName(String content) {
+            this.displayName = content;
         }
 
-        public void endOwner(String text) {
+        public void endOwner(String content) {
             returnControlToParentHandler();
         }
 
-        public void endInitiator(String text) {
+        public void endInitiator(String content) {
             returnControlToParentHandler();
         }
     }
@@ -844,16 +958,16 @@ public class XmlResponsesSaxParser {
             return result;
         }
 
-        public void endUploadId(String text) {
-            this.uploadId = text;
+        public void endUploadId(String content) {
+            this.uploadId = content;
         }
 
-        public void endBucket(String text) {
-            this.bucketName = text;
+        public void endBucket(String content) {
+            this.bucketName = content;
         }
 
-        public void endKey(String text) {
-            this.objectKey = text;
+        public void endKey(String content) {
+            this.objectKey = content;
         }
     }
 
@@ -870,7 +984,7 @@ public class XmlResponsesSaxParser {
 
         private Date initiatedDate;
 
-        private boolean inInitiator = false;
+        private boolean isInInitiator = false;
 
         public MultipartUploadHandler(XMLReader xr) {
             super(xr);
@@ -882,45 +996,45 @@ public class XmlResponsesSaxParser {
             return multipartUpload;
         }
 
-        public void endUploadId(String text) {
-            this.uploadId = text;
+        public void endUploadId(String content) {
+            this.uploadId = content;
         }
 
-        public void endKey(String text) {
-            this.objectKey = text;
+        public void endKey(String content) {
+            this.objectKey = content;
         }
 
-        public void endStorageClass(String text) {
-            this.storageClass = text;
+        public void endStorageClass(String content) {
+            this.storageClass = content;
         }
 
-        public void endInitiated(String text) {
+        public void endInitiated(String content) {
             try {
-                this.initiatedDate = ServiceUtils.parseIso8601Date(text);
+                this.initiatedDate = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
             }
         }
 
         public void startOwner() {
-            inInitiator = false;
-            transferControlToHandler(new OwnerHandler(xr));
+            isInInitiator = false;
+            transferControl(new OwnerHandler(xr));
         }
 
         public void startInitiator() {
-            inInitiator = true;
-            transferControlToHandler(new OwnerHandler(xr));
+            isInInitiator = true;
+            transferControl(new OwnerHandler(xr));
         }
 
         @Override
         public void controlReturned(SimpleHandler childHandler) {
-            if (inInitiator) {
-                this.owner = ((OwnerHandler) childHandler).getOwner();
-            } else {
+            if (isInInitiator) {
                 this.initiator = ((OwnerHandler) childHandler).getOwner();
+            } else {
+                this.owner = ((OwnerHandler) childHandler).getOwner();
             }
         }
 
-        public void endUpload(String text) {
+        public void endUpload(String content) {
             returnControlToParentHandler();
         }
     }
@@ -1003,7 +1117,7 @@ public class XmlResponsesSaxParser {
         }
 
         public void startUpload() {
-            transferControlToHandler(new MultipartUploadHandler(xr));
+            transferControl(new MultipartUploadHandler(xr));
         }
 
         public void startCommonPrefixes() {
@@ -1015,33 +1129,33 @@ public class XmlResponsesSaxParser {
             uploads.add(((MultipartUploadHandler) childHandler).getMultipartUpload());
         }
 
-        public void endDelimiter(String text) {
-            this.delimiter = text;
+        public void endDelimiter(String content) {
+            this.delimiter = content;
         }
 
-        public void endBucket(String text) {
-            this.bucketName = text;
+        public void endBucket(String content) {
+            this.bucketName = content;
         }
 
-        public void endKeyMarker(String text) {
-            this.keyMarker = text;
+        public void endKeyMarker(String content) {
+            this.keyMarker = content;
         }
 
-        public void endUploadIdMarker(String text) {
-            this.uploadIdMarker = text;
+        public void endUploadIdMarker(String content) {
+            this.uploadIdMarker = content;
         }
 
-        public void endNextKeyMarker(String text) {
-            this.nextKeyMarker = text;
+        public void endNextKeyMarker(String content) {
+            this.nextKeyMarker = content;
         }
 
-        public void endNextUploadIdMarker(String text) {
-            this.nextUploadIdMarker = text;
+        public void endNextUploadIdMarker(String content) {
+            this.nextUploadIdMarker = content;
         }
 
-        public void endMaxUploads(String text) {
+        public void endMaxUploads(String content) {
             try {
-                this.maxUploads = Integer.parseInt(text);
+                this.maxUploads = Integer.parseInt(content);
             } catch (Exception e) {
                 if (log.isErrorEnabled()) {
                     log.error("Response xml is not well-format", e);
@@ -1049,15 +1163,15 @@ public class XmlResponsesSaxParser {
             }
         }
 
-        public void endIsTruncated(String text) {
-            this.isTruncated = Boolean.parseBoolean(text);
+        public void endIsTruncated(String content) {
+            this.isTruncated = Boolean.parseBoolean(content);
         }
 
-        public void endPrefix(String text) {
+        public void endPrefix(String content) {
             if (insideCommonPrefixes) {
-                commonPrefixes.add(text);
+                commonPrefixes.add(content);
             } else {
-                this.prefix = text;
+                this.prefix = content;
             }
         }
 
@@ -1081,15 +1195,15 @@ public class XmlResponsesSaxParser {
             return result;
         }
 
-        public void endLastModified(String text) {
+        public void endLastModified(String content) {
             try {
-                this.lastModified = ServiceUtils.parseIso8601Date(text);
+                this.lastModified = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
             }
         }
 
-        public void endETag(String text) {
-            this.etag = text;
+        public void endETag(String content) {
+            this.etag = content;
         }
 
     }
@@ -1111,26 +1225,26 @@ public class XmlResponsesSaxParser {
             return new Multipart(partNumber, lastModified, etag, size);
         }
 
-        public void endPartNumber(String text) {
-            this.partNumber = Integer.parseInt(text);
+        public void endPartNumber(String content) {
+            this.partNumber = Integer.parseInt(content);
         }
 
-        public void endLastModified(String text) {
+        public void endLastModified(String content) {
             try {
-                this.lastModified = ServiceUtils.parseIso8601Date(text);
+                this.lastModified = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
             }
         }
 
-        public void endETag(String text) {
-            this.etag = text;
+        public void endETag(String content) {
+            this.etag = content;
         }
 
-        public void endSize(String text) {
-            this.size = Long.parseLong(text);
+        public void endSize(String content) {
+            this.size = Long.parseLong(content);
         }
 
-        public void endPart(String text) {
+        public void endPart(String content) {
             returnControlToParentHandler();
         }
     }
@@ -1158,7 +1272,7 @@ public class XmlResponsesSaxParser {
 
         private boolean isTruncated = false;
 
-        private boolean inInitiator = false;
+        private boolean isInInitiator = false;
 
         public ListPartsHandler(XMLReader xr) {
             super(xr);
@@ -1209,7 +1323,7 @@ public class XmlResponsesSaxParser {
         }
 
         public void startPart() {
-            transferControlToHandler(new PartResultHandler(xr));
+            transferControl(new PartResultHandler(xr));
         }
 
         @Override
@@ -1217,7 +1331,7 @@ public class XmlResponsesSaxParser {
             if (childHandler instanceof PartResultHandler) {
                 parts.add(((PartResultHandler) childHandler).getMultipartPart());
             } else {
-                if (inInitiator) {
+                if (isInInitiator) {
                     initiator = ((OwnerHandler) childHandler).getOwner();
                 } else {
                     owner = ((OwnerHandler) childHandler).getOwner();
@@ -1226,45 +1340,45 @@ public class XmlResponsesSaxParser {
         }
 
         public void startInitiator() {
-            inInitiator = true;
-            transferControlToHandler(new OwnerHandler(xr));
+            isInInitiator = true;
+            transferControl(new OwnerHandler(xr));
         }
 
         public void startOwner() {
-            inInitiator = false;
-            transferControlToHandler(new OwnerHandler(xr));
+            isInInitiator = false;
+            transferControl(new OwnerHandler(xr));
         }
 
-        public void endBucket(String text) {
-            this.bucketName = text;
+        public void endBucket(String content) {
+            this.bucketName = content;
         }
 
-        public void endKey(String text) {
-            this.objectKey = text;
+        public void endKey(String content) {
+            this.objectKey = content;
         }
 
-        public void endStorageClass(String text) {
-            this.storageClass = text;
+        public void endStorageClass(String content) {
+            this.storageClass = content;
         }
 
-        public void endUploadId(String text) {
-            this.uploadId = text;
+        public void endUploadId(String content) {
+            this.uploadId = content;
         }
 
-        public void endPartNumberMarker(String text) {
-            this.partNumberMarker = text;
+        public void endPartNumberMarker(String content) {
+            this.partNumberMarker = content;
         }
 
-        public void endNextPartNumberMarker(String text) {
-            this.nextPartNumberMarker = text;
+        public void endNextPartNumberMarker(String content) {
+            this.nextPartNumberMarker = content;
         }
 
-        public void endMaxParts(String text) {
-            this.maxParts = Integer.parseInt(text);
+        public void endMaxParts(String content) {
+            this.maxParts = Integer.parseInt(content);
         }
 
-        public void endIsTruncated(String text) {
-            this.isTruncated = Boolean.parseBoolean(text);
+        public void endIsTruncated(String content) {
+            this.isTruncated = Boolean.parseBoolean(content);
         }
     }
 
@@ -1282,20 +1396,20 @@ public class XmlResponsesSaxParser {
             super(xr);
         }
 
-        public void endLocation(String text) {
-            this.location = text;
+        public void endLocation(String content) {
+            this.location = content;
         }
 
-        public void endBucket(String text) {
-            this.bucketName = text;
+        public void endBucket(String content) {
+            this.bucketName = content;
         }
 
-        public void endKey(String text) {
-            this.objectKey = text;
+        public void endKey(String content) {
+            this.objectKey = content;
         }
 
-        public void endETag(String text) {
-            this.etag = text;
+        public void endETag(String content) {
+            this.etag = content;
         }
 
         public String getLocation() {
@@ -1349,38 +1463,44 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
+        public void endElement(String name, String content) {
+            if (null != config) {
                 if (name.equals("Suffix")) {
-                    config.setSuffix(elementText);
+                    config.setSuffix(content);
                 } else if (name.equals("Key")) {
-                    config.setKey(elementText);
-                } else if (name.equals("KeyPrefixEquals")) {
-                    currentCondition.setKeyPrefixEquals(elementText);
-                } else if (name.equals("HttpErrorCodeReturnedEquals")) {
-                    currentCondition.setHttpErrorCodeReturnedEquals(elementText);
-                } else if (name.equals("Protocol")) {
-                    if (currentRedirectAllRule != null) {
-                        currentRedirectAllRule.setRedirectProtocol(ProtocolEnum.getValueFromCode(elementText));
-                    } else if (currentRedirectRule != null) {
-                        currentRedirectRule.setRedirectProtocol(ProtocolEnum.getValueFromCode(elementText));
-                    }
-                } else if (name.equals("HostName")) {
-                    if (currentRedirectAllRule != null) {
-                        currentRedirectAllRule.setHostName(elementText);
-                    } else if (currentRedirectRule != null) {
-                        currentRedirectRule.setHostName(elementText);
-                    }
-                } else if (name.equals("ReplaceKeyPrefixWith")) {
-                    currentRedirectRule.setReplaceKeyPrefixWith(elementText);
-                } else if (name.equals("ReplaceKeyWith")) {
-                    currentRedirectRule.setReplaceKeyWith(elementText);
-                } else if (name.equals("HttpRedirectCode")) {
-                    currentRedirectRule.setHttpRedirectCode(elementText);
+                    config.setKey(content);
                 }
-            } catch (NullPointerException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
+            }
+
+            if (null != currentCondition) {
+                if (name.equals("KeyPrefixEquals")) {
+                    currentCondition.setKeyPrefixEquals(content);
+                } else if (name.equals("HttpErrorCodeReturnedEquals")) {
+                    currentCondition.setHttpErrorCodeReturnedEquals(content);
+                }
+            }
+
+            if (name.equals("Protocol")) {
+                if (currentRedirectAllRule != null) {
+                    currentRedirectAllRule.setRedirectProtocol(ProtocolEnum.getValueFromCode(content));
+                } else if (currentRedirectRule != null) {
+                    currentRedirectRule.setRedirectProtocol(ProtocolEnum.getValueFromCode(content));
+                }
+            } else if (name.equals("HostName")) {
+                if (currentRedirectAllRule != null) {
+                    currentRedirectAllRule.setHostName(content);
+                } else if (currentRedirectRule != null) {
+                    currentRedirectRule.setHostName(content);
+                }
+            }
+
+            if (null != currentRedirectRule) {
+                if (name.equals("ReplaceKeyPrefixWith")) {
+                    currentRedirectRule.setReplaceKeyPrefixWith(content);
+                } else if (name.equals("ReplaceKeyWith")) {
+                    currentRedirectRule.setReplaceKeyWith(content);
+                } else if (name.equals("HttpRedirectCode")) {
+                    currentRedirectRule.setHttpRedirectCode(content);
                 }
             }
         }
@@ -1418,27 +1538,27 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
+        public void endElement(String name, String content) {
             if ("Key".equals(name)) {
-                key = elementText;
+                key = content;
             } else if ("VersionId".equals(name)) {
-                version = elementText;
+                version = content;
             } else if ("DeleteMarker".equals(name)) {
-                withDeleteMarker = Boolean.parseBoolean(elementText);
+                withDeleteMarker = Boolean.parseBoolean(content);
             } else if ("DeleteMarkerVersionId".equals(name)) {
-                deleteMarkerVersion = elementText;
+                deleteMarkerVersion = content;
             } else if ("Code".equals(name)) {
-                errorCode = elementText;
+                errorCode = content;
             } else if ("Message".equals(name)) {
-                message = elementText;
+                message = content;
             } else if ("Deleted".equals(name)) {
-                DeleteObjectsResult.DeleteObjectResult r = result.new DeleteObjectResult(key, version, withDeleteMarker,
+                DeleteObjectsResult.DeleteObjectResult r = new DeleteObjectsResult.DeleteObjectResult(key, version, withDeleteMarker,
                         deleteMarkerVersion);
                 deletedObjectResults.add(r);
                 key = version = deleteMarkerVersion = null;
                 withDeleteMarker = false;
             } else if ("Error".equals(name)) {
-                errorResults.add(result.new ErrorResult(key, version, errorCode, message));
+                errorResults.add(new DeleteObjectsResult.ErrorResult(key, version, errorCode, message));
                 key = version = errorCode = message = null;
             } else if (name.equals("DeleteResult")) {
                 result.getDeletedObjectResults().addAll(deletedObjectResults);
@@ -1459,11 +1579,11 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
+        public void endElement(String name, String content) {
             if ("Key".equals(name)) {
-                currentKey = elementText;
+                currentKey = content;
             } else if ("Value".equals(name)) {
-                currentValue = elementText;
+                currentValue = content;
             } else if ("Tag".equals(name)) {
                 tagInfo.getTagSet().addTag(currentKey, currentValue);
             }
@@ -1499,33 +1619,44 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
-                if ("Id".equals(name)) {
-                    id = elementText;
-                } else if ("Topic".equals(name) || "FunctionGraph".equals(name)) {
-                    urn = elementText;
-                } else if ("Event".equals(name)) {
-                    events.add(EventTypeEnum.getValueFromCode(elementText));
-                } else if ("Name".equals(name)) {
-                    ruleName = elementText;
-                } else if ("Value".equals(name)) {
-                    ruleValue = elementText;
-                } else if ("FilterRule".equals(name)) {
-                    filter.addFilterRule(ruleName, ruleValue);
-                } else if ("TopicConfiguration".equals(name)) {
-                    bucketNotificationConfiguration
-                            .addTopicConfiguration(new TopicConfiguration(id, filter, urn, events));
-                    events = new ArrayList<EventTypeEnum>();
-                } else if ("FunctionGraphConfiguration".equals(name)) {
-                    bucketNotificationConfiguration
-                            .addFunctionGraphConfiguration(new FunctionGraphConfiguration(id, filter, urn, events));
-                    events = new ArrayList<EventTypeEnum>();
+        public void endElement(String name, String content) {
+            if ("Id".equals(name)) {
+                id = content;
+            } else if ("Topic".equals(name) || "FunctionGraph".equals(name)) {
+                urn = content;
+            } else if ("Event".equals(name)) {
+                events.add(EventTypeEnum.getValueFromCode(content));
+            } else if ("Name".equals(name)) {
+                ruleName = content;
+            } else if ("Value".equals(name)) {
+                ruleValue = content;
+            } else if ("FilterRule".equals(name)) {
+                if (null == filter) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Response xml is not well-formt");
+                    }
+                    return;
                 }
-            } catch (NullPointerException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
+                filter.addFilterRule(ruleName, ruleValue);
+            } else if ("TopicConfiguration".equals(name)) {
+                if (null == bucketNotificationConfiguration) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Response xml is not well-formt");
+                    }
+                    return;
                 }
+                bucketNotificationConfiguration.addTopicConfiguration(new TopicConfiguration(id, filter, urn, events));
+                events = new ArrayList<EventTypeEnum>();
+            } else if ("FunctionGraphConfiguration".equals(name)) {
+                if (null == bucketNotificationConfiguration) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Response xml is not well-formt");
+                    }
+                    return;
+                }
+                bucketNotificationConfiguration
+                        .addFunctionGraphConfiguration(new FunctionGraphConfiguration(id, filter, urn, events));
+                events = new ArrayList<EventTypeEnum>();
             }
         }
 
@@ -1568,39 +1699,39 @@ public class XmlResponsesSaxParser {
                     .add(((LifecycleConfiguration.NoncurrentVersionTransition) latestTimeEvent));
         }
 
-        public void endStorageClass(String text) {
-            LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(text));
+        public void endStorageClass(String content) {
+            LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content));
         }
 
-        public void endDate(String text) throws ParseException {
-            LifecycleConfiguration.setDate(latestTimeEvent, ServiceUtils.parseIso8601Date(text));
+        public void endDate(String content) throws ParseException {
+            LifecycleConfiguration.setDate(latestTimeEvent, ServiceUtils.parseIso8601Date(content));
         }
 
-        public void endNoncurrentDays(String text) {
-            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(text));
+        public void endNoncurrentDays(String content) {
+            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content));
         }
 
-        public void endDays(String text) {
-            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(text));
+        public void endDays(String content) {
+            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content));
         }
 
         public void startRule() {
             latestRule = config.new Rule();
         }
 
-        public void endID(String text) {
-            latestRule.setId(text);
+        public void endID(String content) {
+            latestRule.setId(content);
         }
 
-        public void endPrefix(String text) {
-            latestRule.setPrefix(text);
+        public void endPrefix(String content) {
+            latestRule.setPrefix(content);
         }
 
-        public void endStatus(String text) {
-            latestRule.setEnabled("Enabled".equals(text));
+        public void endStatus(String content) {
+            latestRule.setEnabled("Enabled".equals(content));
         }
 
-        public void endRule(String text) {
+        public void endRule(String content) {
             config.addRule(latestRule);
         }
     }
@@ -1632,28 +1763,28 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
+        public void endElement(String name, String content) {
             if (name.equals("ID") && !insideACL) {
-                owner.setId(elementText);
+                owner.setId(content);
             } else if (name.equals("DisplayName") && !insideACL) {
-                owner.setDisplayName(elementText);
+                owner.setDisplayName(content);
             } else if (name.equals("ID")) {
                 currentGrantee = new CanonicalGrantee();
-                currentGrantee.setIdentifier(elementText);
+                currentGrantee.setIdentifier(content);
             } else if (name.equals("URI") || name.equals("Canned")) {
                 currentGrantee = new GroupGrantee();
-                currentGrantee.setIdentifier(elementText);
+                currentGrantee.setIdentifier(content);
             } else if (name.equals("DisplayName")) {
                 if (currentGrantee instanceof CanonicalGrantee) {
-                    ((CanonicalGrantee) currentGrantee).setDisplayName(elementText);
+                    ((CanonicalGrantee) currentGrantee).setDisplayName(content);
                 }
             } else if (name.equals("Permission")) {
-                currentPermission = Permission.parsePermission(elementText);
+                currentPermission = Permission.parsePermission(content);
             } else if (name.equals("Delivered")) {
                 if (insideACL) {
-                    currentDelivered = Boolean.parseBoolean(elementText);
+                    currentDelivered = Boolean.parseBoolean(content);
                 } else {
-                    accessControlList.setDelivered(Boolean.parseBoolean(elementText));
+                    accessControlList.setDelivered(Boolean.parseBoolean(content));
                 }
             } else if (name.equals("Grant")) {
                 GrantAndPermission obj = accessControlList.grantPermission(currentGrantee, currentPermission);
@@ -1680,10 +1811,10 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
+        public void endElement(String name, String content) {
             if (name.equals("StorageQuota")) {
                 if (quota != null) {
-                    quota.setBucketQuota(Long.parseLong(elementText));
+                    quota.setBucketQuota(Long.parseLong(content));
                 }
             }
         }
@@ -1704,20 +1835,19 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
-                if (name.equals("SSEAlgorithm")) {
-                    encryption.setSseAlgorithm(SSEAlgorithmEnum.getValueFromCode(elementText.replace("aws:", "")));
-                } else if (name.equals("KMSMasterKeyID")) {
-                    encryption.setKmsKeyId(elementText);
-                }
-            } catch (NullPointerException e) {
+        public void endElement(String name, String content) {
+            if (null == encryption) {
                 if (log.isWarnEnabled()) {
-                    log.warn("Response xml is not well-formt", e);
+                    log.warn("Response xml is not well-formt");
                 }
+                return;
+            }
+            if (name.equals("SSEAlgorithm")) {
+                encryption.setSseAlgorithm(SSEAlgorithmEnum.getValueFromCode(content.replace("aws:", "")));
+            } else if (name.equals("KMSMasterKeyID")) {
+                encryption.setKmsKeyId(content);
             }
         }
-
     }
 
     public static class BucketStoragePolicyHandler extends DefaultXmlHandler {
@@ -1735,10 +1865,10 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
+        public void endElement(String name, String content) {
             if (name.equals("DefaultStorageClass") || name.equals("StorageClass")) {
                 if (storagePolicyConfiguration != null) {
-                    storagePolicyConfiguration.setBucketStorageClass(StorageClassEnum.getValueFromCode(elementText));
+                    storagePolicyConfiguration.setBucketStorageClass(StorageClassEnum.getValueFromCode(content));
                 }
             }
         }
@@ -1759,17 +1889,18 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
-                if (name.equals("Size")) {
-                    storageInfo.setSize(Long.parseLong(elementText));
-                } else if (name.equals("ObjectNumber")) {
-                    storageInfo.setObjectNumber(Long.parseLong(elementText));
-                }
-            } catch (NullPointerException e) {
+        public void endElement(String name, String content) {
+            if (null == storageInfo) {
                 if (log.isWarnEnabled()) {
-                    log.warn("Response xml is not well-formt", e);
+                    log.warn("Response xml is not well-formt");
                 }
+                return;
+            }
+
+            if (name.equals("Size")) {
+                storageInfo.setSize(Long.parseLong(content));
+            } else if (name.equals("ObjectNumber")) {
+                storageInfo.setObjectNumber(Long.parseLong(content));
             }
         }
     }
@@ -1793,27 +1924,35 @@ public class XmlResponsesSaxParser {
         }
 
         @Override
-        public void endElement(String name, String elementText) {
-            try {
+        public void endElement(String name, String content) {
+            if (null != replicationConfiguration) {
                 if ("Agency".equals(name)) {
-                    replicationConfiguration.setAgency(elementText);
+                    replicationConfiguration.setAgency(content);
                 } else if ("Rule".equals(name)) {
                     replicationConfiguration.getRules().add(currentRule);
-                } else if ("ID".equals(name)) {
-                    currentRule.setId(elementText);
-                } else if ("Status".equals(name)) {
-                    currentRule.setStatus(RuleStatusEnum.getValueFromCode(elementText));
-                } else if ("Prefix".equals(name)) {
-                    currentRule.setPrefix(elementText);
-                } else if ("Bucket".equals(name)) {
-                    currentRule.getDestination().setBucket(elementText);
-                } else if ("StorageClass".equals(name)) {
-                    currentRule.getDestination().setObjectStorageClass(StorageClassEnum.getValueFromCode(elementText));
                 }
-            } catch (NullPointerException e) {
+            }
+
+            if (null == currentRule) {
                 if (log.isErrorEnabled()) {
-                    log.error("Response xml is not well-formt", e);
+                    log.error("Response xml is not well-formt");
                 }
+                return;
+            }
+
+            if ("ID".equals(name)) {
+                currentRule.setId(content);
+            } else if ("Status".equals(name)) {
+                currentRule.setStatus(RuleStatusEnum.getValueFromCode(content));
+            } else if ("Prefix".equals(name)) {
+                currentRule.setPrefix(content);
+            } else if ("Bucket".equals(name)) {
+                currentRule.getDestination().setBucket(content);
+            } else if ("StorageClass".equals(name)) {
+                currentRule.getDestination().setObjectStorageClass(StorageClassEnum.getValueFromCode(content));
+            } else if ("HistoricalObjectReplication".equals(name)) {
+                currentRule
+                        .setHistoricalObjectReplication(HistoricalObjectReplicationEnum.getValueFromCode(content));
             }
         }
     }
@@ -1833,5 +1972,4 @@ public class XmlResponsesSaxParser {
         }
 
     }
-
 }

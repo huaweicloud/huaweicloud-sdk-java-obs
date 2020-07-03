@@ -31,17 +31,17 @@ public class InterfaceLogBean {
     private String transactionId;
 
     /**
-     * 填写接口所属的产品，如UC的接口填写UC。包括UC、IVS、TP、FusionSphere、Storage等
+     * 填写接口所属的产品，默认为Storage
      */
     private String product;
 
     /**
-     * 接口类型，值为1和2：其中1标识为北向接口；2标识为南向接口
+     * 接口类型，值为1和2：其中1标识为北向接口；2标识为南向接口，默认为1
      */
     private String interfaceType;
 
     /**
-     * 协议类型，值为SOAP（细分ParlayX）、Rest、COM、Native、HTTP+XML，SMPP
+     * 协议类型，值为SOAP（细分ParlayX）、Rest、COM、Native、HTTP+XML，SMPP，默认为HTTP+XML
      */
     private String protocolType;
 
@@ -51,12 +51,12 @@ public class InterfaceLogBean {
     private String name;
 
     /**
-     * 源端设备，客户端API类为空，参数不对外体现
+     * 源端设备地址
      */
     private String sourceAddr;
 
     /**
-     * 宿端设备，客户端API类为空，参数不对外体现
+     * 目的设备地址
      */
     private String targetAddr;
 
@@ -66,7 +66,7 @@ public class InterfaceLogBean {
     private Date reqTime;
 
     /**
-     * 格式为yyyy-MM-dd HH:mm:ss
+     * 请求时间，格式为yyyy-MM-dd HH:mm:ss
      */
     private String reqTimeAsString;
 
@@ -76,12 +76,12 @@ public class InterfaceLogBean {
     private Date respTime;
 
     /**
-     * 格式为yyyy-MM-dd HH:mm:ss
+     * 应答时间，格式为yyyy-MM-dd HH:mm:ss
      */
     private String respTimeAsString;
 
     /**
-     * 请求参数，关键字需要用*替换
+     * 请求参数
      */
     private String reqParams;
 
@@ -91,12 +91,9 @@ public class InterfaceLogBean {
     private String resultCode;
 
     /**
-     * 应答参数，关键字需要用*替换
+     * 应答参数
      */
     private String respParams;
-
-    public InterfaceLogBean() {
-    }
 
     /**
      * 默认 InterfaceType 1, Product Storage, ProtocolType HTTP+XML, ReqTime 构造时间,

@@ -30,7 +30,7 @@ public class DownloadFileRequest extends GenericRequest {
     // 本地文件
     private String downloadFile;
     // 分片大小，单位字节，默认9MB
-    private long partSize = 1024 * 1024 * 9l;
+    private long partSize = 1024 * 1024 * 9L;
     // 分片上传线程数，默认1
     private int taskNum = 1;
     // 开启断点续传时记录下载信息的本地文件

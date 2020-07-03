@@ -347,6 +347,9 @@ public class RestUtils {
                 Method m = builder.getClass().getMethod("dispatcher", httpDispatcher.getClass());
                 m.invoke(builder, httpDispatcher);
             } catch (Exception e) {
+                if (log.isWarnEnabled()) {
+                    log.warn("invoke " + httpDispatcher.getClass() + ".dispatcher() failed.", e);
+                }
                 try {
                     Class<?> c = Class.forName("okhttp3.AbsDispatcher");
                     Method m = builder.getClass().getMethod("dispatcher", c);
