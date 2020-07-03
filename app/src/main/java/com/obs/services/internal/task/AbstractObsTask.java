@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.task;
 
 import com.obs.services.ObsClient;
@@ -23,7 +24,7 @@ public abstract class AbstractObsTask implements Runnable {
     protected DefaultTaskProgressStatus progressStatus;
     protected TaskProgressListener progressListener;
     protected int taskProgressInterval;
-  
+
     public AbstractObsTask(ObsClient obsClient, String bucketName) {
         this.obsClient = obsClient;
         this.bucketName = bucketName;

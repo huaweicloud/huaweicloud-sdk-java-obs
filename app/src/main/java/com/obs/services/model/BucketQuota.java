@@ -17,50 +17,46 @@ package com.obs.services.model;
 /**
  * Bucket quota information
  */
-public class BucketQuota extends HeaderResponse
-{
+public class BucketQuota extends HeaderResponse {
 
     private long bucketQuota;
-    
-    public BucketQuota(){
-        
+
+    public BucketQuota() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketQuota Bucket quota
+     * 
+     * @param bucketQuota
+     *            Bucket quota
      */
-    public BucketQuota(long bucketQuota)
-    {
+    public BucketQuota(long bucketQuota) {
         this.bucketQuota = bucketQuota;
     }
-    
+
     /**
-     * Obtain the bucket quota (in bytes). 
+     * Obtain the bucket quota (in bytes).
      * 
      * @return Bucket quota
      */
-    public long getBucketQuota()
-    {
+    public long getBucketQuota() {
         return bucketQuota;
     }
-    
+
     /**
-     * Set the bucket quota (in bytes). 
+     * Set the bucket quota (in bytes).
      * 
-     * @param quota Bucket quota
+     * @param quota
+     *            Bucket quota
      */
-    public void setBucketQuota(long quota)
-    {
+    public void setBucketQuota(long quota) {
         this.bucketQuota = quota;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketQuota [bucketQuota=" + bucketQuota + "]";
     }
-    
+
 }
-
-

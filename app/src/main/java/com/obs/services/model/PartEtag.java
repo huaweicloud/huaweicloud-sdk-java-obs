@@ -20,9 +20,6 @@ import java.io.Serializable;
  * Part information, including the ETag and part number
  */
 public class PartEtag implements Serializable {
-    /**
-     * 
-     */
     private static final long serialVersionUID = -2946156755118245847L;
 
     private String etag;

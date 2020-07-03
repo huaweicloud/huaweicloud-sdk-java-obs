@@ -11,27 +11,29 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.BucketMetadataInfoRequest;
 
 /**
- * Parameters in a request for obtaining status of the file gateway feature of the bucket
+ * Parameters in a request for obtaining status of the file gateway feature of
+ * the bucket
  *
  */
-public class GetBucketFSStatusRequest extends BucketMetadataInfoRequest{
-	
-	public GetBucketFSStatusRequest() {
-		
-	}
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 */
-	public GetBucketFSStatusRequest(String bucketName) {
-		this.bucketName = bucketName;
-	}
+public class GetBucketFSStatusRequest extends BucketMetadataInfoRequest {
+
+    public GetBucketFSStatusRequest() {
+
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     */
+    public GetBucketFSStatusRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
 }
-
-

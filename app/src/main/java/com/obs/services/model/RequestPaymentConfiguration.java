@@ -19,45 +19,45 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class RequestPaymentConfiguration extends HeaderResponse
-{
+public class RequestPaymentConfiguration extends HeaderResponse {
     private RequestPaymentEnum payer;
-    
+
     /**
      * Constructor
-     * @param payer Status of the requester-pays function
+     * 
+     * @param payer
+     *            Status of the requester-pays function
      */
-    public RequestPaymentConfiguration(RequestPaymentEnum payer)
-    {
+    public RequestPaymentConfiguration(RequestPaymentEnum payer) {
         this.payer = payer;
     }
-    
-    public RequestPaymentConfiguration(){
-        
+
+    public RequestPaymentConfiguration() {
+
     }
-    
+
     /**
      * Obtain the status of the requester-pays function.
+     * 
      * @return The status of the requester-pays function
      */
-    public RequestPaymentEnum getPayer()
-    {
+    public RequestPaymentEnum getPayer() {
         return payer;
     }
-    
+
     /**
      * Configure the status of the requester-pays function.
-     * @param payer Status of the requester-pays function
+     * 
+     * @param payer
+     *            Status of the requester-pays function
      */
-    public void setPayer(RequestPaymentEnum payer)
-    {
+    public void setPayer(RequestPaymentEnum payer) {
         this.payer = payer;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RequestPaymentConfiguration [payer=" + payer.getCode() + "]";
     }
-    
+
 }

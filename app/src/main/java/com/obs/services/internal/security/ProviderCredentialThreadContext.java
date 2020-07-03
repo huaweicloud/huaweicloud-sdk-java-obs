@@ -11,35 +11,35 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.security;
 
-public class ProviderCredentialThreadContext
-{   
-    
-    private ThreadLocal<ProviderCredentials> context = new ThreadLocal<ProviderCredentials>();
-    
-    private ProviderCredentialThreadContext(){
-        
+public class ProviderCredentialThreadContext {
+
+    private static ThreadLocal<ProviderCredentials> context = new ThreadLocal<ProviderCredentials>();
+
+    private ProviderCredentialThreadContext() {
+
     }
-    
-    private static class ProviderCredentialThreadContextHolder{
+
+    private static class ProviderCredentialThreadContextHolder {
         private static ProviderCredentialThreadContext instance = new ProviderCredentialThreadContext();
     }
-    
-    public static ProviderCredentialThreadContext getInstance(){
+
+    public static ProviderCredentialThreadContext getInstance() {
         return ProviderCredentialThreadContextHolder.instance;
     }
-    
-    public void setProviderCredentials(ProviderCredentials providerCredentials){
+
+    public void setProviderCredentials(ProviderCredentials providerCredentials) {
         context.set(providerCredentials);
     }
-    
-    public ProviderCredentials getProviderCredentials(){
+
+    public ProviderCredentials getProviderCredentials() {
         return context.get();
     }
-    
-    public void clearProviderCredentials(){
+
+    public void clearProviderCredentials() {
         context.remove();
     }
-    
+
 }

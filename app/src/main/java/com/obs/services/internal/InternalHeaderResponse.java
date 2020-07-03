@@ -11,25 +11,23 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal;
 
 import java.util.Map;
 
 public class InternalHeaderResponse {
 
-	protected Map<String,Object> responseHeaders;
-    
+    protected Map<String, Object> responseHeaders;
+
     protected int statusCode;
 
-
-    protected void setResponseHeaders(Map<String,Object> responseHeaders) {
-		this.responseHeaders = responseHeaders;
-	}
-
+    protected void setResponseHeaders(Map<String, Object> responseHeaders) {
+        this.responseHeaders = responseHeaders;
+    }
 
     protected void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
-    
-    
+        this.statusCode = statusCode;
+    }
+
 }

@@ -39,7 +39,6 @@ import com.obs.log.InterfaceLogBean;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
-import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ObsProperties;
 import com.obs.services.internal.ObsService;
@@ -58,23 +57,98 @@ import com.obs.services.internal.task.UploadTaskProgressStatus;
 import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ReflectUtils;
 import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.*;
-import com.obs.services.model.PolicyConditionItem.ConditionOperator;
-import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
-import com.obs.services.model.fs.DropFileRequest;
+import com.obs.services.model.AbortMultipartUploadRequest;
+import com.obs.services.model.AccessControlList;
+import com.obs.services.model.AppendObjectRequest;
+import com.obs.services.model.AppendObjectResult;
+import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.BaseBucketRequest;
+import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
+import com.obs.services.model.BucketLocationResponse;
+import com.obs.services.model.BucketLoggingConfiguration;
+import com.obs.services.model.BucketMetadataInfoRequest;
+import com.obs.services.model.BucketMetadataInfoResult;
+import com.obs.services.model.BucketNotificationConfiguration;
+import com.obs.services.model.BucketPolicyResponse;
+import com.obs.services.model.BucketTagInfo;
+import com.obs.services.model.BucketVersioningConfiguration;
+import com.obs.services.model.CompleteMultipartUploadRequest;
+import com.obs.services.model.CompleteMultipartUploadResult;
+import com.obs.services.model.CopyObjectRequest;
+import com.obs.services.model.CopyPartRequest;
+import com.obs.services.model.CopyPartResult;
+import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.DeleteObjectResult;
+import com.obs.services.model.DeleteObjectsRequest;
+import com.obs.services.model.DeleteObjectsResult;
+import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.InitiateMultipartUploadRequest;
+import com.obs.services.model.InitiateMultipartUploadResult;
+import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.ListBucketsRequest;
+import com.obs.services.model.ListBucketsResult;
+import com.obs.services.model.ListMultipartUploadsRequest;
+import com.obs.services.model.ListObjectsRequest;
+import com.obs.services.model.ListPartsRequest;
+import com.obs.services.model.ListPartsResult;
+import com.obs.services.model.ListVersionsRequest;
+import com.obs.services.model.ListVersionsResult;
+import com.obs.services.model.ModifyObjectRequest;
+import com.obs.services.model.ModifyObjectResult;
+import com.obs.services.model.MultipartUploadListing;
+import com.obs.services.model.ObjectListing;
+import com.obs.services.model.ObjectMetadata;
+import com.obs.services.model.ObsBucket;
+import com.obs.services.model.OptionsInfoRequest;
+import com.obs.services.model.PolicyTempSignatureRequest;
+import com.obs.services.model.PostSignatureRequest;
+import com.obs.services.model.PostSignatureResponse;
+import com.obs.services.model.PutObjectRequest;
+import com.obs.services.model.ReadAheadRequest;
+import com.obs.services.model.ReadAheadResult;
+import com.obs.services.model.RenameObjectRequest;
+import com.obs.services.model.RenameObjectResult;
+import com.obs.services.model.ReplicationConfiguration;
+import com.obs.services.model.RequestPaymentConfiguration;
+import com.obs.services.model.RestoreObjectRequest;
+import com.obs.services.model.RestoreObjectResult;
+import com.obs.services.model.SetBucketAclRequest;
+import com.obs.services.model.SetBucketCorsRequest;
+import com.obs.services.model.SetBucketDirectColdAccessRequest;
+import com.obs.services.model.SetBucketEncryptionRequest;
+import com.obs.services.model.SetBucketLifecycleRequest;
+import com.obs.services.model.SetBucketLoggingRequest;
+import com.obs.services.model.SetBucketNotificationRequest;
+import com.obs.services.model.SetBucketPolicyRequest;
+import com.obs.services.model.SetBucketQuotaRequest;
+import com.obs.services.model.SetBucketReplicationRequest;
+import com.obs.services.model.SetBucketRequestPaymentRequest;
+import com.obs.services.model.SetBucketStoragePolicyRequest;
+import com.obs.services.model.SetBucketTaggingRequest;
+import com.obs.services.model.SetBucketVersioningRequest;
+import com.obs.services.model.SetBucketWebsiteRequest;
+import com.obs.services.model.SetObjectAclRequest;
+import com.obs.services.model.SpecialParamEnum;
+import com.obs.services.model.StorageClassEnum;
+import com.obs.services.model.TaskCallback;
+import com.obs.services.model.TaskProgressListener;
+import com.obs.services.model.TemporarySignatureRequest;
+import com.obs.services.model.TemporarySignatureResponse;
+import com.obs.services.model.TruncateObjectRequest;
+import com.obs.services.model.TruncateObjectResult;
+import com.obs.services.model.UploadPartRequest;
+import com.obs.services.model.UploadPartResult;
+import com.obs.services.model.RequestPaymentEnum;
+import com.obs.services.model.V4PostSignatureResponse;
+import com.obs.services.model.VersionOrDeleteMarker;
+import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.DropFileResult;
-import com.obs.services.model.fs.DropFolderRequest;
-import com.obs.services.model.fs.GetAttributeRequest;
-import com.obs.services.model.fs.GetBucketFSStatusRequest;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
-import com.obs.services.model.fs.NewBucketRequest;
-import com.obs.services.model.fs.NewFileRequest;
-import com.obs.services.model.fs.NewFolderRequest;
+import com.obs.services.model.fs.ListContentSummaryRequest;
+import com.obs.services.model.fs.ListContentSummaryResult;
 import com.obs.services.model.fs.ObsFSAttribute;
-import com.obs.services.model.fs.ObsFSBucket;
 import com.obs.services.model.fs.ObsFSFile;
-import com.obs.services.model.fs.ObsFSFolder;
-import com.obs.services.model.fs.ReadFileRequest;
 import com.obs.services.model.fs.ReadFileResult;
 import com.obs.services.model.fs.RenameRequest;
 import com.obs.services.model.fs.RenameResult;
@@ -82,6 +156,54 @@ import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.CopyObjectResult;
+import com.obs.services.model.GetObjectMetadataRequest;
+import com.obs.services.model.ProgressListener;
+import com.obs.services.model.SetObjectMetadataRequest;
+import com.obs.services.model.GetObjectRequest;
+import com.obs.services.model.ObsObject;
+import com.obs.services.model.BucketQuota;
+import com.obs.services.model.BucketStoragePolicyConfiguration;
+import com.obs.services.model.BucketStorageInfo;
+import com.obs.services.model.GetObjectAclRequest;
+import com.obs.services.model.DeleteObjectRequest;
+import com.obs.services.model.ReadAheadQueryResult;
+import com.obs.services.model.BucketDirectColdAccess;
+import com.obs.services.model.OptionsInfoResult;
+import com.obs.services.model.PutObjectResult;
+import com.obs.services.model.DownloadFileResult;
+import com.obs.services.model.DownloadFileRequest;
+import com.obs.services.model.UploadFileRequest;
+import com.obs.services.model.MonitorableProgressListener;
+import com.obs.services.model.RestoreObjectsRequest;
+import com.obs.services.model.TaskProgressStatus;
+import com.obs.services.model.PolicyConditionItem;
+import com.obs.services.model.ProgressStatus;
+import com.obs.services.model.SseKmsHeader;
+import com.obs.services.model.SseCHeader;
+import com.obs.services.model.UploadObjectsProgressListener;
+import com.obs.services.model.PutObjectBasicRequest;
+import com.obs.services.model.UploadProgressStatus;
+import com.obs.services.model.RestoreTierEnum;
+import com.obs.services.model.KeyAndVersion;
+import com.obs.services.model.S3BucketCors;
+import com.obs.services.model.S3Bucket;
+import com.obs.services.model.HttpMethodEnum;
+import com.obs.services.model.V4TemporarySignatureResponse;
+import com.obs.services.model.V4TemporarySignatureRequest;
+import com.obs.services.model.V4PostSignatureRequest;
+import com.obs.services.model.ExtensionObjectPermissionEnum;
+import com.obs.services.model.PutObjectsRequest;
+import com.obs.services.model.fs.DropFileRequest;
+import com.obs.services.model.fs.DropFolderRequest;
+import com.obs.services.model.fs.GetAttributeRequest;
+import com.obs.services.model.fs.GetBucketFSStatusRequest;
+import com.obs.services.model.fs.NewBucketRequest;
+import com.obs.services.model.fs.NewFileRequest;
+import com.obs.services.model.fs.NewFolderRequest;
+import com.obs.services.model.fs.ObsFSBucket;
+import com.obs.services.model.fs.ObsFSFolder;
+import com.obs.services.model.fs.ReadFileRequest;
 
 /**
  * ObsClient
@@ -486,9 +608,9 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
             Map<String, String> headers, Map<String, Object> queryParams) {
         PolicyTempSignatureRequest request = new PolicyTempSignatureRequest(HttpMethodEnum.GET, bucketName, objectKey);
         List<PolicyConditionItem> conditions = new ArrayList<PolicyConditionItem>();
-        PolicyConditionItem keyCondition = new PolicyConditionItem(ConditionOperator.STARTS_WITH, "key", prefix);
+        PolicyConditionItem keyCondition = new PolicyConditionItem(com.obs.services.model.PolicyConditionItem.ConditionOperator.STARTS_WITH, "key", prefix);
         String bucket = this.isCname() ? this.getEndpoint() : bucketName;
-        PolicyConditionItem bucketCondition = new PolicyConditionItem(ConditionOperator.EQUAL, "bucket", bucket);
+        PolicyConditionItem bucketCondition = new PolicyConditionItem(com.obs.services.model.PolicyConditionItem.ConditionOperator.EQUAL, "bucket", bucket);
         conditions.add(keyCondition);
         conditions.add(bucketCondition);
         request.setConditions(conditions);
@@ -521,7 +643,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         request.getFormParams().put(
                 this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4 ? "acl" : this.getIHeaders().aclHeader(),
                 acl);
-        request.getFormParams().put(CommonHeaders.CONTENT_TYPE, contentType);
+        request.getFormParams().put(com.obs.services.internal.Constants.CommonHeaders.CONTENT_TYPE, contentType);
         return this.createPostSignature(request);
     }
 
@@ -1470,7 +1592,6 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
     public HeaderResponse setBucketVersioning(final SetBucketVersioningRequest request) throws ObsException {
         ServiceUtils.asserParameterNotNull(request, "SetBucketVersioningRequest is null");
         ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
-        ServiceUtils.asserParameterNotNull(request.getStatus(), "versioning status is null");
 
         return this.doActionWithResult("setBucketVersioning", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -1963,7 +2084,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
      */
     @Override
     public HeaderResponse deleteBucketTagging(final String bucketName) throws ObsException {
-        return deleteBucket(new BaseBucketRequest(bucketName));
+        return deleteBucketTagging(new BaseBucketRequest(bucketName));
     }
 
     /*
@@ -2373,7 +2494,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         try {
             return new ResumableClient(this).downloadFileResume(downloadFileRequest);
         } finally {
-            if(null != downloadFileRequest.getProgressListener()
+            if (null != downloadFileRequest.getProgressListener()
                     && downloadFileRequest.getProgressListener() instanceof MonitorableProgressListener) {
                 ((MonitorableProgressListener)downloadFileRequest.getProgressListener()).finishOneTask();
             }
@@ -2496,13 +2617,13 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
      * RestoreObjectRequest)
      */
     @Deprecated
-    public RestoreObjectStatus restoreObject(final RestoreObjectRequest request) throws ObsException {
+    public com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus restoreObject(final RestoreObjectRequest request) throws ObsException {
         ServiceUtils.asserParameterNotNull(request, "RestoreObjectRequest is null");
         return this.doActionWithResult("restoreObject", request.getBucketName(),
-                new ActionCallbackWithResult<RestoreObjectStatus>() {
+                new ActionCallbackWithResult<com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus>() {
 
                     @Override
-                    public RestoreObjectStatus action() throws ServiceException {
+                    public com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus action() throws ServiceException {
                         ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return ObsClient.this.restoreObjectImpl(request);
                     }
@@ -2679,7 +2800,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
                                 continue;
                             }
                             files = tempFile.listFiles();
-                            if(null == files) {
+                            if (null == files) {
                                 continue;
                             }
                             for (File file : files) {
@@ -2840,28 +2961,23 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         ThreadPoolExecutor executor = this.initThreadPool(request);
         DefaultTaskProgressStatus progressStatus = new DefaultTaskProgressStatus();
         try {
-            String bucketName = request.getBucketName();
             String folderName = request.getFolderName();
             String delimiter = this.getFileSystemDelimiter();
             if (!folderName.endsWith(delimiter)) {
                 folderName = folderName + delimiter;
             }
-            TaskCallback<DeleteObjectResult, String> callback;
-            TaskProgressListener listener;
-            callback = (request.getCallback() == null) ? new LazyTaksCallback<DeleteObjectResult, String>()
+            TaskCallback<DeleteObjectResult, String> callback = (request.getCallback() == null) ? new LazyTaksCallback<DeleteObjectResult, String>()
                     : request.getCallback();
-            listener = request.getProgressListener();
+            TaskProgressListener listener = request.getProgressListener();
             int interval = request.getProgressInterval();
             int[] totalTasks = { 0 };
-            boolean isSubDeleted = recurseFolders(folderName, bucketName, callback, interval, progressStatus, listener,
-                    executor, totalTasks, request.isRequesterPays());
+            boolean isSubDeleted = recurseFolders(request, folderName, callback, progressStatus, executor, totalTasks);
             Map<String, Future<?>> futures = new HashMap<String, Future<?>>();
             totalTasks[0]++;
             progressStatus.setTotalTaskNum(totalTasks[0]);
 
             if (isSubDeleted) {
-                submitDropTask(folderName, bucketName, callback, interval, progressStatus, listener, executor, futures,
-                        request.isRequesterPays());
+                submitDropTask(request, folderName, callback, progressStatus, executor, futures);
                 checkDropFutures(futures, progressStatus, callback, listener, interval);
             } else {
                 progressStatus.failTaskIncrement();
@@ -2880,13 +2996,27 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
         return progressStatus;
     }
 
-    private boolean recurseFolders(String folders, String bucketName, TaskCallback<DeleteObjectResult, String> callback,
-            int interval, DefaultTaskProgressStatus progressStatus, TaskProgressListener listener,
-            ThreadPoolExecutor executor, int[] count, boolean isRequesterPays) {
-        ListObjectsRequest request = new ListObjectsRequest(bucketName);
+    /* (non-Javadoc)
+     * @see com.obs.services.IFSClient#listContentSummary(com.obs.services.model.fs.listContentSummaryRequest)
+     */
+    @Override
+    public ListContentSummaryResult listContentSummary(final ListContentSummaryRequest request) throws ObsException {
+        ServiceUtils.asserParameterNotNull(request, "ListContentSummaryRequest is null");
+        return this.doActionWithResult("listcontentsummary", request.getBucketName(),
+            new ActionCallbackWithResult<ListContentSummaryResult>() {
+                @Override
+                public ListContentSummaryResult action() throws ServiceException {
+                    return ObsClient.this.listContentSummaryImpl(request);
+                }
+            });
+    }
+
+    private boolean recurseFolders(DropFolderRequest dropRequest, String folders, TaskCallback<DeleteObjectResult, String> callback,
+            DefaultTaskProgressStatus progressStatus, ThreadPoolExecutor executor, int[] count) {
+        ListObjectsRequest request = new ListObjectsRequest(dropRequest.getBucketName());
         request.setDelimiter("/");
         request.setPrefix(folders);
-        request.setRequesterPays(isRequesterPays);
+        request.setRequesterPays(dropRequest.isRequesterPays());
         ObjectListing result;
         boolean isDeleted = true;
         do {
@@ -2896,8 +3026,7 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
             for (ObsObject o : result.getObjects()) {
                 if (!o.getObjectKey().endsWith("/")) {
                     count[0]++;
-                    isDeleted = submitDropTask(o.getObjectKey(), bucketName, callback, interval, progressStatus,
-                            listener, executor, futures, isRequesterPays) && isDeleted;
+                    isDeleted = submitDropTask(dropRequest, o.getObjectKey(), callback, progressStatus, executor, futures) && isDeleted;
                     if (ILOG.isInfoEnabled()) {
                         if (count[0] % 1000 == 0) {
                             ILOG.info("DropFolder: " + Arrays.toString(count)
@@ -2908,17 +3037,15 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
             }
 
             for (String prefix : result.getCommonPrefixes()) {
-                boolean isSubDeleted = recurseFolders(prefix, bucketName, callback, interval, progressStatus, listener,
-                        executor, count, isRequesterPays);
+                boolean isSubDeleted = recurseFolders(dropRequest, prefix, callback, progressStatus, executor, count);
                 count[0]++;
                 if (isSubDeleted) {
-                    isDeleted = submitDropTask(prefix, bucketName, callback, interval, progressStatus, listener,
-                            executor, futures, isRequesterPays) && isDeleted;
+                    isDeleted = submitDropTask(dropRequest, prefix, callback, progressStatus, executor, futures) && isDeleted;
                 } else {
                     progressStatus.failTaskIncrement();
                     callback.onException(new ObsException("Failed to delete due to child file deletion failed"),
                             prefix);
-                    recordBulkTaskStatus(progressStatus, callback, listener, interval);
+                    recordBulkTaskStatus(progressStatus, callback, dropRequest.getProgressListener(), dropRequest.getProgressInterval());
                 }
                 if (ILOG.isInfoEnabled()) {
                     if (count[0] % 1000 == 0) {
@@ -2928,16 +3055,16 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
             }
 
             request.setMarker(result.getNextMarker());
-            isDeleted = checkDropFutures(futures, progressStatus, callback, listener, interval) && isDeleted;
+            isDeleted = checkDropFutures(futures, progressStatus, callback, dropRequest.getProgressListener(), dropRequest.getProgressInterval()) && isDeleted;
         } while (result.isTruncated());
         return isDeleted;
     }
 
-    private boolean submitDropTask(String key, String bucketName, TaskCallback<DeleteObjectResult, String> callback,
-            int interval, DefaultTaskProgressStatus progreStatus, TaskProgressListener listener,
-            ThreadPoolExecutor executor, Map<String, Future<?>> futures, boolean isRequesterPays) {
-        DropFolderTask task = new DropFolderTask(this, bucketName, key, progreStatus, listener, interval, callback,
-                isRequesterPays);
+    private boolean submitDropTask(DropFolderRequest request, String key, TaskCallback<DeleteObjectResult, String> callback,
+            DefaultTaskProgressStatus progreStatus,
+            ThreadPoolExecutor executor, Map<String, Future<?>> futures) {
+        DropFolderTask task = new DropFolderTask(this, request.getBucketName(), key, progreStatus, request.getProgressListener(), request.getProgressInterval(), callback,
+                request.isRequesterPays());
         try {
             futures.put(key, executor.submit(task));
         } catch (RejectedExecutionException e) {
@@ -3847,11 +3974,4 @@ public class ObsClient extends ObsService implements Closeable, IObsClient, IFSC
     public String base64Md5(InputStream is) throws NoSuchAlgorithmException, IOException {
         return ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(is));
     }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        this.close();
-    }
-
 }

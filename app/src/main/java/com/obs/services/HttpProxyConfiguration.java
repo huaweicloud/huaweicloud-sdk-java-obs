@@ -11,40 +11,44 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services;
 
 /**
  * HTTP proxy configuration
  */
-public class HttpProxyConfiguration
-{
-    
+public class HttpProxyConfiguration {
+
     private String proxyAddr;
-    
+
     private int proxyPort;
-    
+
     private String proxyUname;
-    
+
     private String userPaaswd;
-    
+
     private String domain;
-    
+
     private String workstation;
-    
-    public HttpProxyConfiguration()
-    {
+
+    public HttpProxyConfiguration() {
     }
-    
+
     /**
      * 
-     * @param proxyAddr Proxy address
-     * @param proxyPort Proxy port
-     * @param proxyUname Proxy username
-     * @param userPaaswd Proxy password
-     * @param domain Proxy domain
+     * @param proxyAddr
+     *            Proxy address
+     * @param proxyPort
+     *            Proxy port
+     * @param proxyUname
+     *            Proxy username
+     * @param userPaaswd
+     *            Proxy password
+     * @param domain
+     *            Proxy domain
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain)
-    {
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd,
+            String domain) {
         this.proxyAddr = proxyAddr;
         this.proxyPort = proxyPort;
         this.proxyUname = proxyUname;
@@ -52,137 +56,141 @@ public class HttpProxyConfiguration
         this.domain = domain;
         this.workstation = this.proxyAddr;
     }
-    
+
     /**
      * Parameterized constructor
      * 
-     * @param proxyAddr Proxy address
-     * @param proxyPort Proxy port
-     * @param proxyUname Proxy username
-     * @param userPaaswd Proxy password
-     * @param domain Proxy domain
-     * @param workstation Workstation where the proxy is resides
+     * @param proxyAddr
+     *            Proxy address
+     * @param proxyPort
+     *            Proxy port
+     * @param proxyUname
+     *            Proxy username
+     * @param userPaaswd
+     *            Proxy password
+     * @param domain
+     *            Proxy domain
+     * @param workstation
+     *            Workstation where the proxy is resides
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain, String workstation)
-    {
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain,
+            String workstation) {
         this(proxyAddr, proxyPort, proxyUname, userPaaswd, domain);
         this.workstation = this.proxyAddr;
     }
-    
+
     /**
      * Obtain the proxy address.
      * 
      * @return Proxy address
      */
-    public String getProxyAddr()
-    {
+    public String getProxyAddr() {
         return proxyAddr;
     }
-    
+
     /**
      * Set the proxy address.
      * 
-     * @param proxyAddr Proxy address
+     * @param proxyAddr
+     *            Proxy address
      */
-    public void setProxyAddr(String proxyAddr)
-    {
+    public void setProxyAddr(String proxyAddr) {
         this.proxyAddr = proxyAddr;
     }
-    
+
     /**
      * Obtain the proxy port.
      * 
      * @return Proxy port
      */
-    public int getProxyPort()
-    {
+    public int getProxyPort() {
         return proxyPort;
     }
-    
+
     /**
      * Set the proxy port.
      * 
-     * @param proxyPort Proxy port
+     * @param proxyPort
+     *            Proxy port
      */
-    public void setProxyPort(int proxyPort)
-    {
+    public void setProxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
     }
-    
+
     /**
      * Obtain the proxy username.
      * 
      * @return Proxy username
      */
-    public String getProxyUName()
-    {
+    public String getProxyUName() {
         return proxyUname;
     }
-    
+
     /**
      * Set the username.
      * 
-     * @param proxyUName Proxy username
+     * @param proxyUName
+     *            Proxy username
      */
-    public void setProxyUName(String proxyUName)
-    {
+    public void setProxyUName(String proxyUName) {
         this.proxyUname = proxyUName;
     }
-    
+
     /**
      * Obtain the proxy password.
+     * 
      * @return Proxy password
      */
-    public String getUserPaaswd()
-    {
+    public String getUserPaaswd() {
         return userPaaswd;
     }
-    
+
     /**
      * Set the proxy password.
-     * @param userPaaswd Proxy password
+     * 
+     * @param userPaaswd
+     *            Proxy password
      */
-    public void setUserPaaswd(String userPaaswd)
-    {
+    public void setUserPaaswd(String userPaaswd) {
         this.userPaaswd = userPaaswd;
     }
-    
+
     /**
      * Obtain the proxy domain.
      * 
      * @return Proxy domain
      */
-    public String getDomain()
-    {
+    public String getDomain() {
         return domain;
     }
-    
+
     /**
      * Set the proxy domain.
      * 
-     * @param domain Proxy domain
+     * @param domain
+     *            Proxy domain
      */
-    public void setDomain(String domain)
-    {
+    public void setDomain(String domain) {
         this.domain = domain;
     }
 
     /**
      * Obtain the proxy workstation.
+     * 
      * @return Proxy workstation
      */
-    public String getWorkstation()
-    {
+    public String getWorkstation() {
         return workstation;
     }
 
     /**
      * Set the proxy workstation.
-     * @param workstation Workstation where the proxy is resides
+     * 
+     * @param workstation
+     *            Workstation where the proxy is resides
      */
-    public void setWorkstation(String workstation)
-    {
+    public void setWorkstation(String workstation) {
         this.workstation = workstation;
     }
-    
+
 }

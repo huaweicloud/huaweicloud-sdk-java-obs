@@ -21,70 +21,69 @@ import com.obs.services.internal.utils.ServiceUtils;
  *
  */
 public enum EventTypeEnum {
-	
-	/**
-	 * All events for creating objects
-	 */
-	OBJECT_CREATED_ALL,
 
-	/**
-	 * PUT Object events
-	 */
-	OBJECT_CREATED_PUT,
+    /**
+     * All events for creating objects
+     */
+    OBJECT_CREATED_ALL,
 
-	/**
-	 * POST Object events
-	 */
-	OBJECT_CREATED_POST,
+    /**
+     * PUT Object events
+     */
+    OBJECT_CREATED_PUT,
 
-	/**
-	 * Events for copying objects
-	 */
-	OBJECT_CREATED_COPY,
+    /**
+     * POST Object events
+     */
+    OBJECT_CREATED_POST,
 
-	/**
-	 * Events for combining parts
-	 */
-	OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD,
+    /**
+     * Events for copying objects
+     */
+    OBJECT_CREATED_COPY,
 
-	/**
-	 * All events for deleting objects
-	 */
-	OBJECT_REMOVED_ALL,
+    /**
+     * Events for combining parts
+     */
+    OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD,
 
-	/**
-	 * Events for deleting objects by specifying object version IDs
-	 */
-	OBJECT_REMOVED_DELETE,
+    /**
+     * All events for deleting objects
+     */
+    OBJECT_REMOVED_ALL,
 
-	/**
-	 * Events for deleting objects without specifying version IDs after versioning is enabled
-	 */
-	OBJECT_REMOVED_DELETE_MARKER_CREATED;
+    /**
+     * Events for deleting objects by specifying object version IDs
+     */
+    OBJECT_REMOVED_DELETE,
 
-	public static EventTypeEnum getValueFromCode(String code) {
-		if (ServiceUtils.isValid(code)) {
-			if (code.indexOf("ObjectCreated:*") >= 0) {
-				return OBJECT_CREATED_ALL;
-			} else if (code.indexOf("ObjectCreated:Put") >= 0) {
-				return OBJECT_CREATED_PUT;
-			} else if (code.indexOf("ObjectCreated:Post") >= 0) {
-				return OBJECT_CREATED_POST;
-			} else if (code.indexOf("ObjectCreated:Copy") >= 0) {
-				return OBJECT_CREATED_COPY;
-			} else if (code.indexOf("ObjectCreated:CompleteMultipartUpload") >= 0) {
-				return OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD;
-			} else if (code.indexOf("ObjectRemoved:*") >= 0) {
-				return OBJECT_REMOVED_ALL;
-			} else if (code.indexOf("ObjectRemoved:Delete") >= 0) {
-				return OBJECT_REMOVED_DELETE;
-			} else if (code.indexOf("ObjectRemoved:DeleteMarkerCreated") >= 0) {
-				return OBJECT_REMOVED_DELETE_MARKER_CREATED;
-			}
-		}
-		return null;
-	}
+    /**
+     * Events for deleting objects without specifying version IDs after
+     * versioning is enabled
+     */
+    OBJECT_REMOVED_DELETE_MARKER_CREATED;
+
+    public static EventTypeEnum getValueFromCode(String code) {
+        if (ServiceUtils.isValid(code)) {
+            if (code.indexOf("ObjectCreated:*") >= 0) {
+                return OBJECT_CREATED_ALL;
+            } else if (code.indexOf("ObjectCreated:Put") >= 0) {
+                return OBJECT_CREATED_PUT;
+            } else if (code.indexOf("ObjectCreated:Post") >= 0) {
+                return OBJECT_CREATED_POST;
+            } else if (code.indexOf("ObjectCreated:Copy") >= 0) {
+                return OBJECT_CREATED_COPY;
+            } else if (code.indexOf("ObjectCreated:CompleteMultipartUpload") >= 0) {
+                return OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD;
+            } else if (code.indexOf("ObjectRemoved:*") >= 0) {
+                return OBJECT_REMOVED_ALL;
+            } else if (code.indexOf("ObjectRemoved:Delete") >= 0) {
+                return OBJECT_REMOVED_DELETE;
+            } else if (code.indexOf("ObjectRemoved:DeleteMarkerCreated") >= 0) {
+                return OBJECT_REMOVED_DELETE_MARKER_CREATED;
+            }
+        }
+        return null;
+    }
 
 }
-
-

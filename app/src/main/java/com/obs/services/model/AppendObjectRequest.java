@@ -20,26 +20,27 @@ package com.obs.services.model;
  * 
  *
  */
-public class AppendObjectRequest extends PutObjectRequest{
-	
-	protected long position;
-	
-	/**
-	 * Obtain the position where data is to be appended.
-	 * @return Location where the data is to be appended
-	 */
-	public long getPosition() {
-		return position;
-	}
+public class AppendObjectRequest extends PutObjectRequest {
 
-	/**
-	 * Set the position where the data is to be appended.
-	 * @param position Location where the data is to be appended
-	 */
-	public void setPosition(long position) {
-		this.position = position;
-	}
-	
+    protected long position;
+
+    /**
+     * Obtain the position where data is to be appended.
+     * 
+     * @return Location where the data is to be appended
+     */
+    public long getPosition() {
+        return position;
+    }
+
+    /**
+     * Set the position where the data is to be appended.
+     * 
+     * @param position
+     *            Location where the data is to be appended
+     */
+    public void setPosition(long position) {
+        this.position = position;
+    }
+
 }
-
-

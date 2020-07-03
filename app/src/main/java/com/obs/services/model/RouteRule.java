@@ -11,57 +11,58 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * Route rules for redirection
  */
-public class RouteRule
-{
+public class RouteRule {
     private RouteRuleCondition condition;
-    
+
     private Redirect redirect;
-    
+
     /**
      * Obtain the redirection condition.
-     * @return Redirection condition 
+     * 
+     * @return Redirection condition
      */
-    public RouteRuleCondition getCondition()
-    {
+    public RouteRuleCondition getCondition() {
         return condition;
     }
-    
+
     /**
      * Set the redirection condition
-     * @param condition Redirection condition
+     * 
+     * @param condition
+     *            Redirection condition
      */
-    public void setCondition(RouteRuleCondition condition)
-    {
+    public void setCondition(RouteRuleCondition condition) {
         this.condition = condition;
     }
-    
+
     /**
      * Obtain the redirection configuration.
-     * @return Redirection configuration 
+     * 
+     * @return Redirection configuration
      */
-    public Redirect getRedirect()
-    {
+    public Redirect getRedirect() {
         return redirect;
     }
-    
+
     /**
      * Configure the redirection.
-     * @param redirect Redirection configuration
+     * 
+     * @param redirect
+     *            Redirection configuration
      */
-    public void setRedirect(Redirect redirect)
-    {
+    public void setRedirect(Redirect redirect) {
         this.redirect = redirect;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RouteRule [condition=" + condition + ", redirect=" + redirect + "]";
     }
-    
+
 }

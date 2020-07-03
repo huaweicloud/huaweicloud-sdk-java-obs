@@ -17,73 +17,74 @@ package com.obs.services.model;
 /**
  * Information about the versioning object to be deleted
  */
-public class KeyAndVersion
-{
+public class KeyAndVersion {
     private String key;
     private String version;
-    
+
     /**
      * Constructor
-     * @param key Object name
-     * @param version Version ID of the object
+     * 
+     * @param key
+     *            Object name
+     * @param version
+     *            Version ID of the object
      */
-    public KeyAndVersion(String key, String version)
-    {
+    public KeyAndVersion(String key, String version) {
         this.key = key;
         this.version = version;
     }
-    
+
     /**
      * Constructor
-     * @param key Object name
+     * 
+     * @param key
+     *            Object name
      */
-    public KeyAndVersion(String key)
-    {
+    public KeyAndVersion(String key) {
         this(key, null);
     }
-    
+
     /**
      * Obtain the object name.
+     * 
      * @return Object name
      */
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
-    
+
     /**
      * Obtain the object version ID.
+     * 
      * @return Version ID of the object
      */
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
-    
+
     /**
      * Set the object name.
-     * @param key Object name
+     * 
+     * @param key
+     *            Object name
      */
-    public void setKey(String key)
-    {
+    public void setKey(String key) {
         this.key = key;
     }
-    
+
     /**
-     * Set the version ID of the object. 
-     * @param version Version ID of the object
+     * Set the version ID of the object.
+     * 
+     * @param version
+     *            Version ID of the object
      */
-    public void setVersion(String version)
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "KeyAndVersion [key=" + key + ", version=" + version + "]";
     }
-    
+
 }
-
-

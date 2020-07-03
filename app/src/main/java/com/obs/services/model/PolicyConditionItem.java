@@ -11,14 +11,15 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 public class PolicyConditionItem {
-    
+
     private ConditionOperator operator;
-    
+
     private String key;
-    
+
     private String value;
 
     public PolicyConditionItem(ConditionOperator operator, String key, String value) {
@@ -26,15 +27,13 @@ public class PolicyConditionItem {
         this.key = key;
         this.value = value;
     }
-    
-    
+
     public String toString() {
-    	if (value == null) {
+        if (null == value) {
             value = "";
         }
         return String.format("[\"%s\",\"$%s\",\"%s\"]", operator.getOperationCode(), key, value);
     }
-
 
     public static enum ConditionOperator {
 

@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -18,36 +19,35 @@ package com.obs.services.model;
  *
  */
 public enum RestoreTierEnum {
-	/**
-	 * Expedited restoration, which restores an object in 1 to 5 minutes
-	 */
-	EXPEDITED("Expedited"),
-	/**
-	 * Standard restoration, which restores the object in 3 to 5 hours
-	 */
-	STANDARD("Standard"),
-	/**
-	 * Batch restoration, which restores objects in 5 to 12 hours
-	 */
-	@Deprecated
-	BULK("Bulk");
+    /**
+     * Expedited restoration, which restores an object in 1 to 5 minutes
+     */
+    EXPEDITED("Expedited"), /**
+                             * Standard restoration, which restores the object
+                             * in 3 to 5 hours
+                             */
+    STANDARD("Standard"), /**
+                           * Batch restoration, which restores objects in 5 to
+                           * 12 hours
+                           */
+    @Deprecated BULK("Bulk");
 
-	private String code;
+    private String code;
 
-	private RestoreTierEnum(String code) {
-		this.code = code;
-	}
+    private RestoreTierEnum(String code) {
+        this.code = code;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public static RestoreTierEnum getValueFromCode(String code) {
-		for (RestoreTierEnum val : RestoreTierEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    public static RestoreTierEnum getValueFromCode(String code) {
+        for (RestoreTierEnum val : RestoreTierEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

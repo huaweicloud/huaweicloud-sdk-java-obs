@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.log;
 
 import com.obs.services.internal.utils.AccessLoggerUtils;
@@ -42,6 +43,7 @@ public class Log4jLogger implements ILogger {
         private static Object errorLevel;
         private static Object warnLevel;
         private static Object traceLevel;
+
         static {
             try {
                 if (LoggerBuilder.GetLoggerHolder.loggerClass != null) {
@@ -61,34 +63,23 @@ public class Log4jLogger implements ILogger {
                     warnLevel = level.getField("WARN").get(level);
                     traceLevel = level.getField("TRACE").get(level);
                 }
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException 
-            		| IllegalArgumentException | IllegalAccessException | NoSuchFieldException  e) {
-            	e.printStackTrace();
-            } 
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException
+                    | IllegalAccessException | NoSuchFieldException e) {
+            }
         }
     }
-
-    private volatile int isInfoE = -1;
-    private volatile int isDebugE = -1;
-    private volatile int isErrorE = -1;
-    private volatile int isWarnE = -1;
-    private volatile int isTraceE = -1;
 
     Log4jLogger(Object logger) {
         this.logger = logger;
     }
 
     public boolean isInfoEnabled() {
-        if (isInfoE == -1) {
-            try {
-                isInfoE = (this.logger != null && LoggerMethodHolder.infoLevel != null
-                        && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger,
-                                LoggerMethodHolder.infoLevel))) ? 1 : 0;
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                isInfoE = 0;
-            }
+        try {
+            return this.logger != null && LoggerMethodHolder.infoLevel != null
+                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.infoLevel));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return false;
         }
-        return isInfoE == 1;
     }
 
     public void info(CharSequence msg) {
@@ -122,16 +113,12 @@ public class Log4jLogger implements ILogger {
     }
 
     public boolean isWarnEnabled() {
-        if (isWarnE == -1) {
-            try {
-                isWarnE = (this.logger != null && LoggerMethodHolder.warnLevel != null
-                        && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger,
-                                LoggerMethodHolder.warnLevel))) ? 1 : 0;
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                isWarnE = 0;
-            }
+        try {
+            return this.logger != null && LoggerMethodHolder.warnLevel != null
+                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.warnLevel));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return false;
         }
-        return isWarnE == 1;
     }
 
     public void warn(CharSequence msg) {
@@ -165,16 +152,12 @@ public class Log4jLogger implements ILogger {
     }
 
     public boolean isErrorEnabled() {
-        if (isErrorE == -1) {
-            try {
-                isErrorE = (this.logger != null && LoggerMethodHolder.errorLevel != null
-                        && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger,
-                                LoggerMethodHolder.errorLevel))) ? 1 : 0;
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                isErrorE = 0;
-            }
+        try {
+            return this.logger != null && LoggerMethodHolder.errorLevel != null
+                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.errorLevel));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return false;
         }
-        return isErrorE == 1;
     }
 
     public void error(CharSequence msg) {
@@ -208,16 +191,12 @@ public class Log4jLogger implements ILogger {
     }
 
     public boolean isDebugEnabled() {
-        if (isDebugE == -1) {
-            try {
-                isDebugE = (this.logger != null && LoggerMethodHolder.debugLevel != null
-                        && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger,
-                                LoggerMethodHolder.debugLevel))) ? 1 : 0;
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                isDebugE = 0;
-            }
+        try {
+            return this.logger != null && LoggerMethodHolder.debugLevel != null
+                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.debugLevel));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return false;
         }
-        return isDebugE == 1;
     }
 
     public void debug(CharSequence msg) {
@@ -251,16 +230,12 @@ public class Log4jLogger implements ILogger {
     }
 
     public boolean isTraceEnabled() {
-        if (isTraceE == -1) {
-            try {
-                isTraceE = (this.logger != null && LoggerMethodHolder.traceLevel != null
-                        && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger,
-                                LoggerMethodHolder.traceLevel))) ? 1 : 0;
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                isTraceE = 0;
-            }
+        try {
+            return this.logger != null && LoggerMethodHolder.traceLevel != null
+                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.traceLevel));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return false;
         }
-        return isTraceE == 1;
     }
 
     public void trace(CharSequence msg) {

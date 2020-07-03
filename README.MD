@@ -1,8 +1,28 @@
+
 [![HitCount](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs.svg)](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs)
 [![Build Status](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs.svg?branch=master)](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs)
 [![Coverage Status](https://coveralls.io/repos/github/huaweicloud/huaweicloud-sdk-java-obs/badge.svg?branch=master)](https://coveralls.io/github/huaweicloud/huaweicloud-sdk-java-obs?branch=master)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.huaweicloud/huaweicloud-sdk-java-obs/badge.svg)](https://search.maven.org/search?q=g:com.huaweicloud%20AND%20a:esdk-obs-java) 
+-----------------------------------------------------------------------------------
+
+Version 3.20.6
+Fixed issues:
+1. Fixed the issue that logs cannot be dynamically updated.
+2. Fixed the issue that automatic depression is not executed when gzip files are being downloaded. 
+
+Third-party dependencies:
+1. Replaced okhttp 3.14.2 with okhttp 3.14.4.
+2. Replaced log4j-core 2.12.0 with log4j-core 2.13.2.
+3. Replaced log4j-api 2.12.0 with log4j-api 2.13.2.
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.3
+New Features:
+1. Supports Requester Pays.
+2. Deleted the default log4j configuration.
+
 -----------------------------------------------------------------------------------
 
 Version 3.20.1

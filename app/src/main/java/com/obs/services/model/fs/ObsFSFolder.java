@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.ObsClient;
@@ -24,55 +25,62 @@ import com.obs.services.model.TaskProgressStatus;
  * Folders in a bucket that supports the file interface
  *
  */
-public class ObsFSFolder extends PutObjectResult{
-	
-	protected ObsClient innerClient;
-	
-	public ObsFSFolder(String bucketName, String objectKey, String etag, String versionId, StorageClassEnum storageClass,
-			String objectUrl) {
-		super(bucketName, objectKey, etag, versionId, storageClass, objectUrl);
-	}
+public class ObsFSFolder extends PutObjectResult {
 
-	/**
-	 * Obtain folder properties.
-	 * @return Folder properties
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-	 */
-	public ObsFSAttribute attribute() throws ObsException{
-		this.checkInternalClient();
-		return (ObsFSAttribute)this.innerClient.getObjectMetadata(this.getBucketName(), this.getObjectKey());
-	}
-	
-	/**
-	 * Rename a folder.
-	 * @param newName New folder name
-	 * @return Response to the request for renaming a folder
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-	 */
-	public RenameResult rename(String newName) throws ObsException{
-		this.checkInternalClient();
-		RenameRequest request = new RenameRequest(this.getBucketName(), this.getObjectKey(), newName);
-		return this.innerClient.renameFolder(request);
-	}
-	
-	/**
-	 * Delete a folder.
-	 * @throws ObsException OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
-	 */
-	public TaskProgressStatus dropFolder() throws ObsException {
-	    this.checkInternalClient();
-	    DropFolderRequest request = new DropFolderRequest(this.getBucketName(), this.getObjectKey());
-	    return this.innerClient.dropFolder(request);
-	}
-	
-	protected void checkInternalClient() {
-		ServiceUtils.asserParameterNotNull(this.innerClient, "ObsClient is null");
-	}
+    protected ObsClient innerClient;
 
-	@Override
-	protected void finalize() throws Throwable {
-		this.innerClient = null;
-		super.finalize();
-	}
-	
+    public ObsFSFolder(String bucketName, String objectKey, String etag, String versionId,
+            StorageClassEnum storageClass, String objectUrl) {
+        super(bucketName, objectKey, etag, versionId, storageClass, objectUrl);
+    }
+
+    protected void setInnerClient(ObsClient innerClient) {
+        this.innerClient = innerClient;
+    }
+    
+    /**
+     * Obtain folder properties.
+     * 
+     * @return Folder properties
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    public ObsFSAttribute attribute() throws ObsException {
+        this.checkInternalClient();
+        return (ObsFSAttribute) this.innerClient.getObjectMetadata(this.getBucketName(), this.getObjectKey());
+    }
+
+    /**
+     * Rename a folder.
+     * 
+     * @param newName
+     *            New folder name
+     * @return Response to the request for renaming a folder
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    public RenameResult rename(String newName) throws ObsException {
+        this.checkInternalClient();
+        RenameRequest request = new RenameRequest(this.getBucketName(), this.getObjectKey(), newName);
+        return this.innerClient.renameFolder(request);
+    }
+
+    /**
+     * Delete a folder.
+     * 
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    public TaskProgressStatus dropFolder() throws ObsException {
+        this.checkInternalClient();
+        DropFolderRequest request = new DropFolderRequest(this.getBucketName(), this.getObjectKey());
+        return this.innerClient.dropFolder(request);
+    }
+
+    protected void checkInternalClient() {
+        ServiceUtils.asserParameterNotNull(this.innerClient, "ObsClient is null");
+    }
 }

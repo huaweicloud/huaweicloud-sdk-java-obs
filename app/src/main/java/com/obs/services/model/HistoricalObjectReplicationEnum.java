@@ -16,17 +16,17 @@ package com.obs.services.model;
 
 /**
 *
-* 历史对象复制关键字，如果为Enabled，会复制符合这条规则的历史对象
+* Keyword for replicating historical objects. If the value is Enabled, historical objects that meet the rule are replicated.
 *
 */
 public enum HistoricalObjectReplicationEnum {
     /**
-     * 启用规则
+     * Enable the rule.
      */
     ENABLED("Enabled"),
 
     /**
-     * 禁用规则
+     * Disable the rule.
      */
     DISABLED("Disabled");
 

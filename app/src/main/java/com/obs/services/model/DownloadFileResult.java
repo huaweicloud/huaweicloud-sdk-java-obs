@@ -11,15 +11,14 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services.model;
 
-import com.obs.services.model.ObjectMetadata;
+package com.obs.services.model;
 
 /**
  * Response to a file download request
  */
 public class DownloadFileResult {
-	/**
+    /**
      * Obtain object properties.
      * 
      * @return Object properties
@@ -31,18 +30,18 @@ public class DownloadFileResult {
     /**
      * Set object properties.
      * 
-     * @param objectMetadata Object properties
+     * @param objectMetadata
+     *            Object properties
      */
     public void setObjectMetadata(ObjectMetadata objectMetadata) {
         this.objectMetadata = objectMetadata;
     }
-    
+
     private ObjectMetadata objectMetadata;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "DownloadFileResult [objectMetadata=" + objectMetadata + "]";
     }
-    
+
 }

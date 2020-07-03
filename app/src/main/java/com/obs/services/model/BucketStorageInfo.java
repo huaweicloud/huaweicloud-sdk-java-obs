@@ -17,58 +17,52 @@ package com.obs.services.model;
 /**
  * Bucket storage information
  */
-public class BucketStorageInfo extends HeaderResponse
-{
+public class BucketStorageInfo extends HeaderResponse {
     private long size;
-    
+
     private long objectNum;
-    
+
     /**
-     * Obtain the bucket quota (in bytes). 
+     * Obtain the bucket quota (in bytes).
      * 
      * @return Bucket size
      */
-    public long getSize()
-    {
+    public long getSize() {
         return size;
     }
-    
-    /** 
-     * Set the bucket size (in bytes). 
+
+    /**
+     * Set the bucket size (in bytes).
      * 
-     * @param storageSize Bucket size
+     * @param storageSize
+     *            Bucket size
      */
-    public void setSize(long storageSize)
-    {
+    public void setSize(long storageSize) {
         this.size = storageSize;
     }
-    
+
     /**
      * Obtain the number of objects in the bucket.
      * 
      * @return Number of objects in the bucket
      */
-    public long getObjectNumber()
-    {
+    public long getObjectNumber() {
         return objectNum;
     }
-    
-    /** 
+
+    /**
      * Set the number of objects in the bucket.
      * 
-     * @param objectNumber Number of objects in the bucket
+     * @param objectNumber
+     *            Number of objects in the bucket
      */
-    public void setObjectNumber(long objectNumber)
-    {
+    public void setObjectNumber(long objectNumber) {
         this.objectNum = objectNumber;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketStorageInfo [size=" + size + ", objectNum=" + objectNum + "]";
     }
-    
+
 }
-
-

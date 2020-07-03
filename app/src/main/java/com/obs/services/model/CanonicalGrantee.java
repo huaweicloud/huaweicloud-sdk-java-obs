@@ -17,73 +17,66 @@ package com.obs.services.model;
 /**
  * Grantee information in the ACL, {@link AccessControlList}
  */
-public class CanonicalGrantee implements GranteeInterface
-{
+public class CanonicalGrantee implements GranteeInterface {
     private String grantId;
-    
+
     private String displayName;
-    
-    public CanonicalGrantee()
-    {
+
+    public CanonicalGrantee() {
     }
-    
+
     /**
      * Constructor
      * 
-     * @param identifier ID of the domain to which the grantee belongs
+     * @param identifier
+     *            ID of the domain to which the grantee belongs
      */
-    public CanonicalGrantee(String identifier)
-    {
+    public CanonicalGrantee(String identifier) {
         this.grantId = identifier;
     }
-    
+
     /**
      * Set the ID of the domain to which the grantee belongs.
      * 
-     * @param canonicalGrantId ID of the domain to which the grantee belongs
+     * @param canonicalGrantId
+     *            ID of the domain to which the grantee belongs
      */
-    public void setIdentifier(String canonicalGrantId)
-    {
+    public void setIdentifier(String canonicalGrantId) {
         this.grantId = canonicalGrantId;
     }
-    
+
     /**
      * Obtain the ID of the domain to which the grantee belongs.
      * 
      * @return ID of the domain to which the grantee belongs
      */
-    public String getIdentifier()
-    {
+    public String getIdentifier() {
         return grantId;
     }
-    
+
     /**
      * Set the username for the grantee.
      * 
-     * @param displayName Username of the grantee
+     * @param displayName
+     *            Username of the grantee
      */
     @Deprecated
-    public void setDisplayName(String displayName)
-    {
+    public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-    
+
     /**
      * Obtain the username of the grantee.
      * 
      * @return Username of the grantee
      */
     @Deprecated
-    public String getDisplayName()
-    {
+    public String getDisplayName() {
         return this.displayName;
     }
-    
-   
-    
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((grantId == null) ? 0 : grantId.hashCode());
@@ -91,29 +84,28 @@ public class CanonicalGrantee implements GranteeInterface
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CanonicalGrantee other = (CanonicalGrantee)obj;
-        if (grantId == null)
-        {
-            if (other.grantId != null)
-                return false;
         }
-        else if (!grantId.equals(other.grantId))
+        if (obj == null) {
             return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CanonicalGrantee other = (CanonicalGrantee) obj;
+        if (grantId == null) {
+            if (other.grantId != null) {
+                return false;
+            }
+        } else if (!grantId.equals(other.grantId)) {
+            return false;
+        }
         return true;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "CanonicalGrantee [id=" + grantId + (displayName != null ? ", displayName=" + displayName : "") + "]";
     }
 }
-
-

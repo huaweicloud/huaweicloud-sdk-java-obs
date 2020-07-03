@@ -11,12 +11,12 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.security;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.BasicObsCredentialsProvider;
-import com.obs.services.EcsObsCredentialsProvider;
 import com.obs.services.IObsCredentialsProvider;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.model.AuthTypeEnum;
@@ -25,9 +25,8 @@ public class ProviderCredentials {
     protected static final ILogger log = LoggerBuilder.getLogger(ProviderCredentials.class);
 
     protected AuthTypeEnum authType;
-    private ThreadLocal<AuthTypeEnum> threadLocalAuthType;
+    private static ThreadLocal<AuthTypeEnum> threadLocalAuthType;
     private IObsCredentialsProvider obsCredentialsProvider;
-
 
     public String getRegion() {
         return ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE;
@@ -49,18 +48,17 @@ public class ProviderCredentials {
         this.authType = authType;
     }
 
-    public void setObsCredentialsProvider(IObsCredentialsProvider ObsCredentialsProvider) {
-        this.obsCredentialsProvider = ObsCredentialsProvider;
+    public void setObsCredentialsProvider(IObsCredentialsProvider obsCredentialsProvider) {
+        this.obsCredentialsProvider = obsCredentialsProvider;
     }
 
-    public IObsCredentialsProvider getObsCredentialsProvider(){
-        return  this.obsCredentialsProvider;
+    public IObsCredentialsProvider getObsCredentialsProvider() {
+        return this.obsCredentialsProvider;
     }
 
-    public BasicSecurityKey getSecurityKey(){
-        return (BasicSecurityKey)this.obsCredentialsProvider.getSecurityKey();
+    public BasicSecurityKey getSecurityKey() {
+        return (BasicSecurityKey) this.obsCredentialsProvider.getSecurityKey();
     }
-
 
     public void setThreadLocalAuthType(AuthTypeEnum authType) {
         if (threadLocalAuthType != null) {

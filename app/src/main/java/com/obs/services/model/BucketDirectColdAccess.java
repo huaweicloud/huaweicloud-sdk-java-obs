@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -18,42 +19,47 @@ package com.obs.services.model;
  *
  */
 public class BucketDirectColdAccess extends HeaderResponse {
-	
-	private RuleStatusEnum status;
-	
-	/**
-	 * Constructor
-	 * @param status Direct reading status of Archive objects in a bucket
-	 */
-	public BucketDirectColdAccess(RuleStatusEnum status) {
-		this.status = status;
-	}
 
-	/**
-	 * Constructor
-	 */
-	public BucketDirectColdAccess() {
-	}
+    private RuleStatusEnum status;
 
-	/**
-	 * Obtain the direct reading status of Archive objects in a bucket.
-	 * @return Direct reading status of Archive objects in a bucket
-	 */
-	public RuleStatusEnum getStatus() {
-		return status;
-	}
+    /**
+     * Constructor
+     * 
+     * @param status
+     *            Direct reading status of Archive objects in a bucket
+     */
+    public BucketDirectColdAccess(RuleStatusEnum status) {
+        this.status = status;
+    }
 
-	/**
-	 * Set the direct reading status of Archive objects in a bucket.
-	 * @param status Direct reading status of Archive objects in a bucket
-	 */
-	public void setStatus(RuleStatusEnum status) {
-		this.status = status;
-	}
-	
-	@Override
+    /**
+     * Constructor
+     */
+    public BucketDirectColdAccess() {
+    }
+
+    /**
+     * Obtain the direct reading status of Archive objects in a bucket.
+     * 
+     * @return Direct reading status of Archive objects in a bucket
+     */
+    public RuleStatusEnum getStatus() {
+        return status;
+    }
+
+    /**
+     * Set the direct reading status of Archive objects in a bucket.
+     * 
+     * @param status
+     *            Direct reading status of Archive objects in a bucket
+     */
+    public void setStatus(RuleStatusEnum status) {
+        this.status = status;
+    }
+
+    @Override
     public String toString() {
         return "BucketDirectColdAccess [Status=" + status.getCode() + "]";
     }
-	
+
 }

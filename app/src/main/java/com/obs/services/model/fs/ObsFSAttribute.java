@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.ObjectMetadata;
@@ -19,22 +20,25 @@ import com.obs.services.model.ObjectMetadata;
  * File or folder properties
  *
  */
-public class ObsFSAttribute extends ObjectMetadata{
-	private int mode = -1;
-	
-	/**
-	 * Query the file or folder type.
-	 * @return File or folder type 
-	 */
-	public int getMode() {
-		return mode;
-	}
+public class ObsFSAttribute extends ObjectMetadata {
+    private int mode = -1;
 
-	/**
-	 * Set the file or folder type.
-	 * @param mode File or folder type
-	 */
-	public void setMode(int mode) {
-		this.mode = mode;
-	}
+    /**
+     * Query the file or folder type.
+     * 
+     * @return File or folder type
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Set the file or folder type.
+     * 
+     * @param mode
+     *            File or folder type
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
 }

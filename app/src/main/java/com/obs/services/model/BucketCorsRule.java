@@ -20,167 +20,158 @@ import java.util.List;
 /**
  * Bucket CORS rules
  */
-public class BucketCorsRule
-{
+public class BucketCorsRule {
     private String id;
-    
+
     private int maxAgeSecond = Integer.MIN_VALUE;
-    
+
     private List<String> allowedMethod;
-    
+
     private List<String> allowedOrigin;
-    
+
     private List<String> allowedHeader;
 
     private List<String> exposeHeader;
-    
+
     /**
      * Obtain the CORS rule ID.
      * 
      * @return CORS rule ID
      */
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
-    
+
     /**
      * Set the CORS rule ID.
      * 
-     * @param id CORS rule ID
+     * @param id
+     *            CORS rule ID
      */
-    public void setId(String id)
-    {
+    public void setId(String id) {
         this.id = id;
     }
-    
+
     /**
-     * Obtain the cache duration (in seconds) of the request result in the instance of ObsClient.
+     * Obtain the cache duration (in seconds) of the request result in the
+     * instance of ObsClient.
      * 
      * @return Cache duration
      */
-    public int getMaxAgeSecond()
-    {
-    	if(this.maxAgeSecond == Integer.MIN_VALUE) {
-    		return 0;
-    	}
+    public int getMaxAgeSecond() {
+        if (this.maxAgeSecond == Integer.MIN_VALUE) {
+            return 0;
+        }
         return maxAgeSecond;
     }
-    
+
     /**
-     * Set the cache duration (in seconds) of the request result in the instance of ObsClient.
+     * Set the cache duration (in seconds) of the request result in the instance
+     * of ObsClient.
      * 
-     * @param maxAgeSecond Cache duration
+     * @param maxAgeSecond
+     *            Cache duration
      */
-    public void setMaxAgeSecond(int maxAgeSecond)
-    {
+    public void setMaxAgeSecond(int maxAgeSecond) {
         this.maxAgeSecond = maxAgeSecond;
     }
-    
+
     /**
      * Obtain the list of methods allowed by the CORS rules.
      * 
      * @return Method list
      */
-    public List<String> getAllowedMethod()
-    {
-        if (null == allowedMethod)
-        {
+    public List<String> getAllowedMethod() {
+        if (null == allowedMethod) {
             return allowedMethod = new ArrayList<String>();
         }
         return allowedMethod;
     }
-    
+
     /**
-     * Set the methods allowed by the CORS rules. Possible values are GET, PUT, DELETE, POST, and HEAD.
+     * Set the methods allowed by the CORS rules. Possible values are GET, PUT,
+     * DELETE, POST, and HEAD.
      * 
-     * @param allowedMethod Method list
+     * @param allowedMethod
+     *            Method list
      */
-    public void setAllowedMethod(List<String> allowedMethod)
-    {
+    public void setAllowedMethod(List<String> allowedMethod) {
         this.allowedMethod = allowedMethod;
     }
-    
+
     /**
-     * Obtain the list of origins (character strings representing domain names) allowed by the CORS rules.
+     * Obtain the list of origins (character strings representing domain names)
+     * allowed by the CORS rules.
      * 
      * @return List of request origins
      */
-    public List<String> getAllowedOrigin()
-    {
-        if (null == allowedOrigin)
-        {
+    public List<String> getAllowedOrigin() {
+        if (null == allowedOrigin) {
             return allowedOrigin = new ArrayList<String>();
         }
         return allowedOrigin;
     }
-    
+
     /**
-     * Set the list of origins (character strings representing domain names) allowed by the CORS rules.
+     * Set the list of origins (character strings representing domain names)
+     * allowed by the CORS rules.
      * 
-     * @param allowedOrigin List of request origins
+     * @param allowedOrigin
+     *            List of request origins
      */
-    public void setAllowedOrigin(List<String> allowedOrigin)
-    {
+    public void setAllowedOrigin(List<String> allowedOrigin) {
         this.allowedOrigin = allowedOrigin;
     }
-    
+
     /**
      * Obtain the list of request headers allowed by the CORS rules.
      * 
      * @return List of request headers
      */
-    public List<String> getAllowedHeader()
-    {
-        if (null == allowedHeader)
-        {
+    public List<String> getAllowedHeader() {
+        if (null == allowedHeader) {
             return allowedHeader = new ArrayList<String>();
         }
         return allowedHeader;
     }
-    
+
     /**
      * Set the list of request headers allowed by the CORS rules.
      * 
-     * @param allowedHeader List of request headers
+     * @param allowedHeader
+     *            List of request headers
      */
-    public void setAllowedHeader(List<String> allowedHeader)
-    {
+    public void setAllowedHeader(List<String> allowedHeader) {
         this.allowedHeader = allowedHeader;
     }
-    
+
     /**
      * Obtain the additional response headers allowed by the CORS rules.
      * 
      * @return List of additional headers
      */
-    public List<String> getExposeHeader()
-    {
-        if (null == exposeHeader)
-        {
+    public List<String> getExposeHeader() {
+        if (null == exposeHeader) {
             return exposeHeader = new ArrayList<String>();
         }
         return exposeHeader;
     }
-    
+
     /**
      * Specify the additional response headers allowed by the CORS rules.
      * 
-     * @param exposeHeader List of additional headers
+     * @param exposeHeader
+     *            List of additional headers
      */
-    public void setExposeHeader(List<String> exposeHeader)
-    {
+    public void setExposeHeader(List<String> exposeHeader) {
         this.exposeHeader = exposeHeader;
     }
-    
-    
+
     @Override
-    public String toString()
-    {
-        return "BucketCorsRule [id=" + id + ", maxAgeSecond=" + maxAgeSecond + ", allowedMethod=" + allowedMethod + ", allowedOrigin="
-            + allowedOrigin + ", allowedHeader=" + allowedHeader + ", exposeHeader=" + exposeHeader + "]";
+    public String toString() {
+        return "BucketCorsRule [id=" + id + ", maxAgeSecond=" + maxAgeSecond + ", allowedMethod=" + allowedMethod
+                + ", allowedOrigin=" + allowedOrigin + ", allowedHeader=" + allowedHeader + ", exposeHeader="
+                + exposeHeader + "]";
     }
-    
+
 }
-
-

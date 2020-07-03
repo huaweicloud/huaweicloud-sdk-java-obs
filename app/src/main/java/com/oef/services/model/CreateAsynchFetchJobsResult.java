@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,60 +22,72 @@ import com.obs.services.model.HeaderResponse;
  *
  */
 public class CreateAsynchFetchJobsResult extends HeaderResponse {
-	@JsonProperty(value = "id")
-	private String id;
+    @JsonProperty(value = "id")
+    private String id;
 
     @JsonProperty(value = "Wait")
-	private int Wait;
-	
-	public CreateAsynchFetchJobsResult() {
-		
-	}
-	
-	/**
-	 * Constructor
-	 * @param id Job ID
-	 * @param Wait Number of queuing jobs before the current job. The value 0 indicates that the current job is being executed, and the value -1 indicates that the job has been executed at least once (the retry logic may be triggered).
-	 */
-	public CreateAsynchFetchJobsResult(String id, int Wait) {
-		this.setId(id);
-		this.setWait(Wait);
-	}
+    private int wait;
+
+    public CreateAsynchFetchJobsResult() {
+
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param id
+     *            Job ID
+     * @param wait
+     *            Number of queuing jobs before the current job. The value 0
+     *            indicates that the current job is being executed, and the
+     *            value -1 indicates that the job has been executed at least
+     *            once (the retry logic may be triggered).
+     */
+    public CreateAsynchFetchJobsResult(String id, int wait) {
+        this.setId(id);
+        this.setWait(wait);
+    }
 
     /**
      * Obtain the job ID.
+     * 
      * @return Job ID
      */
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	/**
-	 * Set the job ID.
-	 * @param id Job ID
-	 */
-	public void setId(String id) {
-		this.id = id;
-	}
+    /**
+     * Set the job ID.
+     * 
+     * @param id
+     *            Job ID
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	/**
-	 * Obtain the number of queuing jobs.
-	 * @return Number of queuing jobs
-	 */
-	public int getWait() {
-		return Wait;
-	}
+    /**
+     * Obtain the number of queuing jobs.
+     * 
+     * @return Number of queuing jobs
+     */
+    public int getWait() {
+        return wait;
+    }
 
-	/**
-	 * Set the number of queuing jobs.
-	 * @param Wait Number of queuing jobs
-	 */
-	public void setWait(int Wait) {
-		this.Wait = Wait;
-	}
-	
-	@Override
-	public String toString() {
-		return "CreateAsynchFetchJobsResult [id=" + id + ", Wait=" + Wait + "]";
-	}
+    /**
+     * Set the number of queuing jobs.
+     * 
+     * @param wait
+     *            Number of queuing jobs
+     */
+    public void setWait(int wait) {
+        this.wait = wait;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateAsynchFetchJobsResult [id=" + id + ", Wait=" + wait + "]";
+    }
 }

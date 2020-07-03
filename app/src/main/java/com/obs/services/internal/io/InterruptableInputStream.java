@@ -1,9 +1,4 @@
 /**
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -16,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.io;
 
 import java.io.IOException;
@@ -30,7 +26,7 @@ public class InterruptableInputStream extends InputStream implements InputStream
         this.inputStream = inputStream;
     }
 
-    private void maybeInterruptInputStream() throws IOException {
+    private void doInterrupted() throws IOException {
         if (interrupted) {
             try {
                 close();
@@ -42,19 +38,19 @@ public class InterruptableInputStream extends InputStream implements InputStream
 
     @Override
     public int read() throws IOException {
-        maybeInterruptInputStream();
+        doInterrupted();
         return inputStream.read();
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        maybeInterruptInputStream();
+        doInterrupted();
         return inputStream.read(b, off, len);
     }
 
     @Override
     public int available() throws IOException {
-        maybeInterruptInputStream();
+        doInterrupted();
         return inputStream.available();
     }
 
@@ -63,6 +59,7 @@ public class InterruptableInputStream extends InputStream implements InputStream
         inputStream.close();
     }
 
+    @Override
     public InputStream getWrappedInputStream() {
         return inputStream;
     }

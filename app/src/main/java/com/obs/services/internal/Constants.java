@@ -85,6 +85,8 @@ public class Constants {
         public static final String IF_NONE_MATCH = "If-None-Match";
 
         public static final String X_RESERVED_INDICATOR = "x-reserved-indicator";
+        
+        public static final String ACCETP_ENCODING = "Accept-Encoding";
     }
 
     public static class ObsRequestParams {
@@ -196,7 +198,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.20.4";
+    public static final String OBS_SDK_VERSION = "3.20.6";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -250,7 +252,7 @@ public class Constants {
                     "cache-control", "content-disposition", "content-encoding", "access-control-request-method",
                     "access-control-request-headers", "success-action-redirect", "x-default-storage-class", "location",
                     "date", "etag", "range", "host", "if-modified-since", "if-unmodified-since", "if-match",
-                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type"));
+                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type", "accept-encoding"));
 
     public static final List<String> ALLOWED_RESOURCE_PARAMTER_NAMES = Collections.unmodifiableList(
             Arrays.asList("acl", "backtosource", "policy", "torrent", "logging", "location", "storageinfo", "quota",
@@ -264,6 +266,6 @@ public class Constants {
                     "response-content-type", "response-content-language", "response-expires", "response-cache-control",
                     "response-content-disposition", "response-content-encoding", "x-image-save-bucket",
                     "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id", "x-oss-process",
-                    "ignore-sign-in-query"));
+                    "ignore-sign-in-query","listcontentsummary"));
 
 }

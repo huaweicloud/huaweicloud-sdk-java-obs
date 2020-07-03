@@ -11,24 +11,23 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * 
- * Response to a request for browser-based authorized access 
+ * Response to a request for browser-based authorized access
  *
  */
-public class V4PostSignatureResponse extends PostSignatureResponse
-{
+public class V4PostSignatureResponse extends PostSignatureResponse {
     private String algorithm;
-    
+
     private String credential;
-    
+
     private String date;
-    
-    public V4PostSignatureResponse(String policy, String originPolicy, String algorithm, String credential, String date, String signature,
-        String expiration)
-    {
+
+    public V4PostSignatureResponse(String policy, String originPolicy, String algorithm, String credential, String date,
+            String signature, String expiration) {
         this.policy = policy;
         this.originPolicy = originPolicy;
         this.algorithm = algorithm;
@@ -37,40 +36,39 @@ public class V4PostSignatureResponse extends PostSignatureResponse
         this.signature = signature;
         this.expiration = expiration;
     }
-    
+
     /**
      * Obtain the signature algorithm.
+     * 
      * @return Signature algorithm
      */
-    public String getAlgorithm()
-    {
+    public String getAlgorithm() {
         return algorithm;
     }
-    
+
     /**
      * Obtain the credential information
+     * 
      * @return Credential information
      */
-    public String getCredential()
-    {
+    public String getCredential() {
         return credential;
     }
-    
+
     /**
      * Obtain the date in the ISO 8601 format.
+     * 
      * @return Date in the ISO 8601 format
      */
-    public String getDate()
-    {
+    public String getDate() {
         return date;
     }
-    
 
-	@Override
-	public String toString() {
-		return "V4PostSignatureResponse [algorithm=" + algorithm + ", credential=" + credential + ", date=" + date
-				+ ", expiration=" + expiration + ", policy=" + policy + ", originPolicy=" + originPolicy
-				+ ", signature=" + signature + "]";
-	}
-    
+    @Override
+    public String toString() {
+        return "V4PostSignatureResponse [algorithm=" + algorithm + ", credential=" + credential + ", date=" + date
+                + ", expiration=" + expiration + ", policy=" + policy + ", originPolicy=" + originPolicy
+                + ", signature=" + signature + "]";
+    }
+
 }

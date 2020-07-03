@@ -38,12 +38,15 @@ public class EcsSecurityUtils {
     private static final long HTTP_CONNECT_TIMEOUT_VALUE = 30 * 1000;
 
     private static OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false)
-            .retryOnConnectionFailure(true).cache(null).connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
-            .writeTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).readTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).build();
+            .retryOnConnectionFailure(true).cache(null)
+            .connectTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
+            .writeTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS)
+            .readTimeout(HTTP_CONNECT_TIMEOUT_VALUE, TimeUnit.MILLISECONDS).build();
 
     /**
-     * Returns the temporary security credentials (access, secret, securitytoken,
-     * and expires_at) associated with the IAM roles on the instance.
+     * Returns the temporary security credentials (access, secret,
+     * securitytoken, and expires_at) associated with the IAM roles on the
+     * instance.
      */
     public static String getSecurityKeyInfoWithDetail() throws IOException {
         return getResourceWithDetail(getEndpointForECSMetadataService() + OPENSTACK_METADATA_ROOT + "/securitykey");
@@ -58,8 +61,8 @@ public class EcsSecurityUtils {
     }
 
     /**
-     * Get resource and return contents from metadata service
-     * with the specify path.
+     * Get resource and return contents from metadata service with the specify
+     * path.
      */
     private static String getResourceWithDetail(String endpoint) throws IOException {
         Request.Builder builder = new Request.Builder();
@@ -78,8 +81,9 @@ public class EcsSecurityUtils {
                 content = res.body().string();
             }
 
-            if(!(res.code() >= 200 && res.code() < 300)){
-                String errorMessage = "Get securityKey form ECS failed, Code : " + res.code() + "; Headers : " + header + "; Content : " + content;
+            if (!(res.code() >= 200 && res.code() < 300)) {
+                String errorMessage = "Get securityKey form ECS failed, Code : " + res.code() + "; Headers : " + header
+                        + "; Content : " + content;
                 throw new IllegalArgumentException(errorMessage);
             }
 

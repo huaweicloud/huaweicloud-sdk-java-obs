@@ -60,7 +60,6 @@ import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
 
-@SuppressWarnings("deprecation")
 public class V2Convertor implements IConvertor {
 
     private static IConvertor instance = new V2Convertor();
@@ -638,32 +637,32 @@ public class V2Convertor implements IConvertor {
         String eventTypeStr = "";
         if (eventType != null) {
             switch (eventType) {
-            case OBJECT_CREATED_ALL:
-                eventTypeStr = "s3:ObjectCreated:*";
-                break;
-            case OBJECT_CREATED_PUT:
-                eventTypeStr = "s3:ObjectCreated:Put";
-                break;
-            case OBJECT_CREATED_POST:
-                eventTypeStr = "s3:ObjectCreated:Post";
-                break;
-            case OBJECT_CREATED_COPY:
-                eventTypeStr = "s3:ObjectCreated:Copy";
-                break;
-            case OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD:
-                eventTypeStr = "s3:ObjectCreated:CompleteMultipartUpload";
-                break;
-            case OBJECT_REMOVED_ALL:
-                eventTypeStr = "s3:ObjectRemoved:*";
-                break;
-            case OBJECT_REMOVED_DELETE:
-                eventTypeStr = "s3:ObjectRemoved:Delete";
-                break;
-            case OBJECT_REMOVED_DELETE_MARKER_CREATED:
-                eventTypeStr = "s3:ObjectRemoved:DeleteMarkerCreated";
-                break;
-            default:
-                break;
+                case OBJECT_CREATED_ALL:
+                    eventTypeStr = "s3:ObjectCreated:*";
+                    break;
+                case OBJECT_CREATED_PUT:
+                    eventTypeStr = "s3:ObjectCreated:Put";
+                    break;
+                case OBJECT_CREATED_POST:
+                    eventTypeStr = "s3:ObjectCreated:Post";
+                    break;
+                case OBJECT_CREATED_COPY:
+                    eventTypeStr = "s3:ObjectCreated:Copy";
+                    break;
+                case OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD:
+                    eventTypeStr = "s3:ObjectCreated:CompleteMultipartUpload";
+                    break;
+                case OBJECT_REMOVED_ALL:
+                    eventTypeStr = "s3:ObjectRemoved:*";
+                    break;
+                case OBJECT_REMOVED_DELETE:
+                    eventTypeStr = "s3:ObjectRemoved:Delete";
+                    break;
+                case OBJECT_REMOVED_DELETE_MARKER_CREATED:
+                    eventTypeStr = "s3:ObjectRemoved:DeleteMarkerCreated";
+                    break;
+                default:
+                    break;
             }
         }
         return eventTypeStr;
@@ -674,17 +673,17 @@ public class V2Convertor implements IConvertor {
         String storageClassStr = "";
         if (storageClass != null) {
             switch (storageClass) {
-            case STANDARD:
-                storageClassStr = "STANDARD";
-                break;
-            case WARM:
-                storageClassStr = "STANDARD_IA";
-                break;
-            case COLD:
-                storageClassStr = "GLACIER";
-                break;
-            default:
-                break;
+                case STANDARD:
+                    storageClassStr = "STANDARD";
+                    break;
+                case WARM:
+                    storageClassStr = "STANDARD_IA";
+                    break;
+                case COLD:
+                    storageClassStr = "GLACIER";
+                    break;
+                default:
+                    break;
             }
         }
         return storageClassStr;
@@ -733,17 +732,17 @@ public class V2Convertor implements IConvertor {
         String groupGranteeStr = "";
         if (groupGrantee != null) {
             switch (groupGrantee) {
-            case ALL_USERS:
-                groupGranteeStr = Constants.ALL_USERS_URI;
-                break;
-            case AUTHENTICATED_USERS:
-                groupGranteeStr = Constants.AUTHENTICATED_USERS_URI;
-                break;
-            case LOG_DELIVERY:
-                groupGranteeStr = Constants.LOG_DELIVERY_URI;
-                break;
-            default:
-                break;
+                case ALL_USERS:
+                    groupGranteeStr = Constants.ALL_USERS_URI;
+                    break;
+                case AUTHENTICATED_USERS:
+                    groupGranteeStr = Constants.AUTHENTICATED_USERS_URI;
+                    break;
+                case LOG_DELIVERY:
+                    groupGranteeStr = Constants.LOG_DELIVERY_URI;
+                    break;
+                default:
+                    break;
             }
         }
         return groupGranteeStr;

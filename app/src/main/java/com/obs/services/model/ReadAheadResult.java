@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,85 +21,97 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class ReadAheadResult extends HeaderResponse {
-	@JsonProperty(value = "bucket")
-	private String bucketName;
+    @JsonProperty(value = "bucket")
+    private String bucketName;
 
-	@JsonProperty(value = "prefix")
-	private String prefix;
-    
+    @JsonProperty(value = "prefix")
+    private String prefix;
+
     @JsonProperty(value = "taskID")
-	private String taskId;
-    
+    private String taskId;
+
     /**
      * Constructor
      */
     public ReadAheadResult() {
-    	
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param prefix Name prefix of objects to be read ahead
-     * @param taskId ID of the read-ahead task
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param prefix
+     *            Name prefix of objects to be read ahead
+     * @param taskId
+     *            ID of the read-ahead task
      */
     public ReadAheadResult(String bucketName, String prefix, String taskId) {
-    	this.bucketName = bucketName;
-    	this.prefix = prefix;
-    	this.taskId = taskId;
+        this.bucketName = bucketName;
+        this.prefix = prefix;
+        this.taskId = taskId;
     }
-    
+
     /**
-                  * Obtain the bucket name. 
+     * Obtain the bucket name.
+     * 
      * @return Bucket name
      */
     public String getBucketName() {
-		return bucketName;
-	}
+        return bucketName;
+    }
 
     /**
-                 * Set the bucket name.
-     * @param bucketName Bucket name
+     * Set the bucket name.
+     * 
+     * @param bucketName
+     *            Bucket name
      */
-	public void setBucketName(String bucketName) {
-		this.bucketName = bucketName;
-	}
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
-	/**
-	    * Obtain the name prefix of objects to be read ahead.
-	 * @return Name prefix of objects to be read ahead
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * Obtain the name prefix of objects to be read ahead.
+     * 
+     * @return Name prefix of objects to be read ahead
+     */
+    public String getPrefix() {
+        return prefix;
+    }
 
-	/**
-	    * Set the name prefix of objects to be read ahead.
-	 * @param prefix Name prefix of objects to be read ahead
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    /**
+     * Set the name prefix of objects to be read ahead.
+     * 
+     * @param prefix
+     *            Name prefix of objects to be read ahead
+     */
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	/**
-	 * Obtain the ID of the read-ahead task.
-	 * @return ID of the read-ahead task
-	 */
-	public String getTaskId() {
-		return taskId;
-	}
+    /**
+     * Obtain the ID of the read-ahead task.
+     * 
+     * @return ID of the read-ahead task
+     */
+    public String getTaskId() {
+        return taskId;
+    }
 
-	/**
-	 * Set the ID of the read-ahead task.
-	 * @param taskId ID of the read-ahead task
-	 */
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
-	}
-	
-	@Override
-	public String toString() {
-		return "ReadAheadResult [bucketName=" + bucketName + ", prefix=" + prefix 
-				+", taskId=" + taskId +  "]";
-	}
+    /**
+     * Set the ID of the read-ahead task.
+     * 
+     * @param taskId
+     *            ID of the read-ahead task
+     */
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadAheadResult [bucketName=" + bucketName + ", prefix=" + prefix + ", taskId=" + taskId + "]";
+    }
 }

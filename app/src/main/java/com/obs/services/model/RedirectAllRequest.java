@@ -11,81 +11,81 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * Redirection configuration for all requests
  */
-public class RedirectAllRequest
-{
+public class RedirectAllRequest {
     private ProtocolEnum protocol;
-    
+
     private String hostName;
-    
+
     /**
      * Obtain the protocol used for redirecting requests.
+     * 
      * @return Protocol used for redirecting requests
      * @see #getRedirectProtocol()
      */
     @Deprecated
-    public String getProtocol()
-    {
+    public String getProtocol() {
         return this.protocol != null ? this.protocol.getCode() : null;
     }
-    
+
     /**
      * Set the protocol used for redirecting requests.
-     * @param protocol Protocol used for redirecting requests
+     * 
+     * @param protocol
+     *            Protocol used for redirecting requests
      * @see #setRedirectProtocol(ProtocolEnum protocol)
      */
     @Deprecated
-    public void setProtocol(String protocol)
-    {
+    public void setProtocol(String protocol) {
         this.protocol = ProtocolEnum.getValueFromCode(protocol);
     }
-    
+
     /**
      * Obtain the protocol used for redirecting requests.
+     * 
      * @return Protocol used for redirecting requests
      */
-    public ProtocolEnum getRedirectProtocol()
-    {
+    public ProtocolEnum getRedirectProtocol() {
         return protocol;
     }
-    
+
     /**
      * Set the protocol used for redirecting requests.
-     * @param protocol Protocol used for redirecting requests
+     * 
+     * @param protocol
+     *            Protocol used for redirecting requests
      */
-    public void setRedirectProtocol(ProtocolEnum protocol)
-    {
+    public void setRedirectProtocol(ProtocolEnum protocol) {
         this.protocol = protocol;
     }
-    
+
     /**
      * Obtain the host name used for redirecting requests.
+     * 
      * @return Host name used for redirecting requests
      */
-    public String getHostName()
-    {
+    public String getHostName() {
         return hostName;
     }
-    
+
     /**
      * Set the host name used for redirecting requests.
-     * @param hostName Host name used for redirecting requests
+     * 
+     * @param hostName
+     *            Host name used for redirecting requests
      */
-    public void setHostName(String hostName)
-    {
+    public void setHostName(String hostName) {
         this.hostName = hostName;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RedirectAllRequest [protocol=" + protocol + ", hostName=" + hostName + "]";
     }
-    
+
 }
-
-

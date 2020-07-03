@@ -20,35 +20,33 @@ package com.obs.services.model;
  *
  */
 public enum ProtocolEnum {
-	
-	/**
-	 * Use HTTP for redirection.
-	 */
-	HTTP("http"),
 
-	/**
-	 * Use HTTPS for redirection.
-	 */
-	HTTPS("https");
+    /**
+     * Use HTTP for redirection.
+     */
+    HTTP("http"),
 
-	private String code;
+    /**
+     * Use HTTPS for redirection.
+     */
+    HTTPS("https");
 
-	private ProtocolEnum(String code) {
-		this.code = code;
-	}
+    private String code;
 
-	public String getCode() {
-		return code;
-	}
+    private ProtocolEnum(String code) {
+        this.code = code;
+    }
 
-	public static ProtocolEnum getValueFromCode(String code) {
-		for (ProtocolEnum val : ProtocolEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    public String getCode() {
+        return code;
+    }
+
+    public static ProtocolEnum getValueFromCode(String code) {
+        for (ProtocolEnum val : ProtocolEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }
-
-

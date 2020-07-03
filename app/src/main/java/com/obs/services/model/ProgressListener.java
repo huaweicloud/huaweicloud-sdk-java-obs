@@ -11,6 +11,7 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 /**
@@ -18,11 +19,13 @@ package com.obs.services.model;
  * 
  */
 public interface ProgressListener {
-	
-	/**
-	 * Data transfer callback function
-	 * @param status Data transfer status
-	 */
-	public void progressChanged(ProgressStatus status);
-	
+
+    /**
+     * Data transfer callback function
+     * 
+     * @param status
+     *            Data transfer status
+     */
+    public void progressChanged(ProgressStatus status);
+
 }

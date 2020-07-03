@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.security;
 
 import java.util.Calendar;
@@ -19,12 +20,9 @@ import java.util.Date;
 import com.obs.services.internal.utils.ServiceUtils;
 
 public class LimitedTimeSecurityKey extends BasicSecurityKey {
-    protected String accessKey;
-    protected String secretKey;
-    protected String securityToken;
     protected Date expiryDate;
-    private static final long expirySeconds = 5 * 60;
-    private static final long willSoonExpireSeconds = 2 * 60;
+    private static final long EXPIRY_SECONDS = 5 * 60L;
+    private static final long WILL_SOON_EXPIRE_SECONDS = 2 * 60L;
 
     public LimitedTimeSecurityKey(String accessKey, String secretKey, String securityToken) {
         super(accessKey, secretKey, securityToken);
@@ -44,18 +42,22 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
 
     /**
      * about 2~5 minutes
+     * 
      * @return
      */
     public boolean aboutToExpire() {
-        return (expiryDate.getTime() - getUtcTime().getTime()) >= willSoonExpireSeconds * 1000 && (expiryDate.getTime() - getUtcTime().getTime()) < expirySeconds * 1000;
+        return (expiryDate.getTime() - getUtcTime().getTime()) >= WILL_SOON_EXPIRE_SECONDS * 1000
+                && (expiryDate.getTime() - getUtcTime().getTime()) < EXPIRY_SECONDS * 1000;
     }
 
     /**
      * less than 2 minutes
+     * 
      * @return
      */
     public boolean willSoonExpire() {
-        return expiryDate.before(getUtcTime()) || (expiryDate.getTime() - getUtcTime().getTime()) < willSoonExpireSeconds * 1000;
+        return expiryDate.before(getUtcTime())
+                || (expiryDate.getTime() - getUtcTime().getTime()) < WILL_SOON_EXPIRE_SECONDS * 1000;
     }
 
     private static Date getUtcTime() {

@@ -103,9 +103,6 @@ public class InterfaceLogBean {
      */
     private String respParams;
 
-    public InterfaceLogBean() {
-    }
-
     /**
      * Default InterfaceType 1, Product Storage, ProtocolType HTTP+XML, ReqTime
      * Construction time, sourceAddr Local IP address, transactionId Request ID,

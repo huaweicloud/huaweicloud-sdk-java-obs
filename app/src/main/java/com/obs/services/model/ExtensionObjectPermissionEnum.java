@@ -16,35 +16,42 @@ package com.obs.services.model;
 
 /**
  * 
- * OBS Bucket extension permission 
+ * OBS Bucket extension permission
  *
  */
-public enum ExtensionObjectPermissionEnum{
-	/**
-	 * Grant the read permission on all users belonging to the specified "domainId" to read objects and obtain object metadata. 
-	 */
-	GRANT_READ("grantReadHeader"),
-	/**
-	 * Grant the "READ_ACP" permission to all users belonging to the specified "domainId" to obtain ACLs of objects. 
-	 */
-	GRANT_READ_ACP("grantReadAcpHeader"),
-	/**
-	 * Grant the "WRITE_ACP" permission to all users belonging to the specified "domainId" to modify ACLs of objects. 
-	 */
-	GRANT_WRITE_ACP("grantWriteAcpHeader"),
-	/**
-	 * Grant the full control permission to all users belonging to the specified "domainId" to read objects, obtain object metadata, as well as obtain and write object ACLs. 
-	 */
-	GRANT_FULL_CONTROL("grantFullControlHeader");
-	
-	private String code;
-	
-	private ExtensionObjectPermissionEnum(String code) {
-		this.code = code;
-	}
-	
-	public String getCode() {
-		return this.code;
-	}
-}
+public enum ExtensionObjectPermissionEnum {
+    /**
+     * Grant the read permission on all users belonging to the specified
+     * "domainId" to read objects and obtain object metadata.
+     */
+    GRANT_READ("grantReadHeader"), /**
+                                    * Grant the "READ_ACP" permission to all
+                                    * users belonging to the specified
+                                    * "domainId" to obtain ACLs of objects.
+                                    */
+    GRANT_READ_ACP(
+            "grantReadAcpHeader"), /**
+                                    * Grant the "WRITE_ACP" permission to all
+                                    * users belonging to the specified
+                                    * "domainId" to modify ACLs of objects.
+                                    */
+    GRANT_WRITE_ACP(
+            "grantWriteAcpHeader"), /**
+                                     * Grant the full control permission to all
+                                     * users belonging to the specified
+                                     * "domainId" to read objects, obtain object
+                                     * metadata, as well as obtain and write
+                                     * object ACLs.
+                                     */
+    GRANT_FULL_CONTROL("grantFullControlHeader");
 
+    private String code;
+
+    private ExtensionObjectPermissionEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+}

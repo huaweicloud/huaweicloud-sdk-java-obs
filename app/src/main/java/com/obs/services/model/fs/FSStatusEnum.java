@@ -11,8 +11,8 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services.model.fs;
 
+package com.obs.services.model.fs;
 
 /**
  * File gateway feature of the bucket
@@ -20,34 +20,32 @@ package com.obs.services.model.fs;
  */
 public enum FSStatusEnum {
 
-	/**
-	 * Enable the file gateway feature.
-	 */
-	ENABLED("Enabled"),
+    /**
+     * Enable the file gateway feature.
+     */
+    ENABLED("Enabled"),
 
-	/**
-	 * Disable the file gateway feature.
-	 */
-	DISABLED("Disabled");
+    /**
+     * Disable the file gateway feature.
+     */
+    DISABLED("Disabled");
 
-	private String code;
+    private String code;
 
-	private FSStatusEnum(String code) {
-		this.code = code;
-	}
+    private FSStatusEnum(String code) {
+        this.code = code;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public static FSStatusEnum getValueFromCode(String code) {
-		for (FSStatusEnum val : FSStatusEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    public static FSStatusEnum getValueFromCode(String code) {
+        for (FSStatusEnum val : FSStatusEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }
-
-

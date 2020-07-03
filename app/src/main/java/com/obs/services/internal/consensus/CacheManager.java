@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.consensus;
 
 import com.obs.services.model.AuthTypeEnum;
@@ -24,7 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CacheManager {
     private ConcurrentHashMap<String, CacheData> apiVersionCache = new ConcurrentHashMap<String, CacheData>();
 
-    public CacheManager() {}
+    public CacheManager() {
+    }
 
     private static class SingletonHolder {
         private static final CacheManager INSTANCE = new CacheManager();
