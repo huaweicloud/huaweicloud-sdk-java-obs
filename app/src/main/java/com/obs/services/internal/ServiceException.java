@@ -1,9 +1,4 @@
 /**
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -16,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal;
 
 import java.io.IOException;
@@ -36,7 +32,7 @@ public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = -757626557833455141L;
 
-    private String xmlMessage ;
+    private String xmlMessage;
 
     private String errorCode;
     private String errorMessage;
@@ -82,29 +78,28 @@ public class ServiceException extends RuntimeException {
 
     @Override
     public String toString() {
-        String myString = super.toString();
+        StringBuilder myString = new StringBuilder(super.toString());
 
-        if (requestVerb != null) {
-            myString +=
-                " " + requestVerb
-                + " '" + requestPath + "'"
-                + (requestHost != null ? " on Host '" + requestHost + "'" : "")
-                + (responseDate != null ? " @ '" + responseDate + "'" : "");
+        if (this.requestVerb != null) {
+            myString.append(" ").append(this.requestVerb)
+            .append(" '").append(this.requestPath).append("'")
+            .append(this.requestHost != null ? " on Host '" + this.requestHost + "'" : "")
+            .append(this.responseDate != null ? " @ '" + this.responseDate + "'" : "");
         }
-        if (responseCode != -1) {
-            myString +=
-                " -- ResponseCode: " + responseCode
-                + ", ResponseStatus: " + responseStatus;
+        
+        if (this.responseCode != -1) {
+            myString.append(" -- ResponseCode: ").append(this.responseCode)
+            .append(", ResponseStatus: ").append(this.responseStatus);
         }
         if (isParsedFromXmlMessage()) {
-            myString += ", XML Error Message: " + xmlMessage;
+            myString.append(", XML Error Message: ").append(this.xmlMessage);
         }  else {
-            if (errorRequestId != null) {
-                myString += ", RequestId: " + errorRequestId
-                    + ", HostId: " + errorHostId;
+            if (this.errorRequestId != null) {
+                myString.append(", RequestId: ").append(this.errorRequestId)
+                .append(", HostId: ").append(this.errorHostId);
             }
         }
-        return myString;
+        return myString.toString();
     }
 
     private String findXmlElementText(String xmlMessage, String elementName) {
@@ -146,7 +141,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public void setErrorMessage(String message) {
-        this.errorMessage= message;
+        this.errorMessage = message;
     }
 
     public String getErrorHostId() {
@@ -170,8 +165,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public XMLBuilder getXmlMessageAsBuilder()
-        throws IOException, ParserConfigurationException, SAXException
-    {
+        throws IOException, ParserConfigurationException, SAXException {
         if (this.xmlMessage == null) {
             return null;
         }
@@ -245,12 +239,12 @@ public class ServiceException extends RuntimeException {
         this.responseHeaders = responseHeaders;
     }
     
-	public String getErrorIndicator() {
-		return errorIndicator;
-	}
+    public String getErrorIndicator() {
+        return errorIndicator;
+    }
 
-	public void setErrorIndicator(String errorIndicator) {
-		this.errorIndicator = errorIndicator;
-	}
+    public void setErrorIndicator(String errorIndicator) {
+        this.errorIndicator = errorIndicator;
+    }
 
 }

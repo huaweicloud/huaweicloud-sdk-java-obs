@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import java.util.ArrayList;
@@ -18,41 +19,41 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DisPolicy {
-	@JsonProperty(value = "rules")
-	private ArrayList<DisPolicyBean> rules;
-	
-	public DisPolicy() {
-		
-	}
-	
-	public DisPolicy(ArrayList<DisPolicyBean> rules) {
-		this.rules = rules;
-	}
+    @JsonProperty(value = "rules")
+    private ArrayList<DisPolicyBean> rules;
 
-	public ArrayList<DisPolicyBean> getRules() {
-		return rules;
-	}
+    public DisPolicy() {
 
-	public void setRules(ArrayList<DisPolicyBean> rules) {
-		this.rules = rules;
-	}
-	
-	public void addRules(DisPolicyBean rule) {
-		if(this.rules == null) {
-			this.rules = new ArrayList<DisPolicyBean>();
-		}
-		this.rules.add(rule);
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder strRules = new StringBuilder();
-		if(rules != null) {
-			for(DisPolicyBean rule : rules) {
-				strRules.append(rule.toString());
-				strRules.append("\n");
-			}
-		}
-		return "DisPolicy["+ strRules +"]";
-	}
+    }
+
+    public DisPolicy(ArrayList<DisPolicyBean> rules) {
+        this.rules = rules;
+    }
+
+    public ArrayList<DisPolicyBean> getRules() {
+        return rules;
+    }
+
+    public void setRules(ArrayList<DisPolicyBean> rules) {
+        this.rules = rules;
+    }
+
+    public void addRules(DisPolicyBean rule) {
+        if (this.rules == null) {
+            this.rules = new ArrayList<DisPolicyBean>();
+        }
+        this.rules.add(rule);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder strRules = new StringBuilder();
+        if (rules != null) {
+            for (DisPolicyBean rule : rules) {
+                strRules.append(rule.toString());
+                strRules.append("\n");
+            }
+        }
+        return "DisPolicy[" + strRules + "]";
+    }
 }

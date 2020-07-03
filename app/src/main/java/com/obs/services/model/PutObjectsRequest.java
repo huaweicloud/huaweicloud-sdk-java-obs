@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.HashMap;
@@ -36,11 +37,11 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
 
     // Part size, in bytes, 5 MB by default.
-    private long partSize = 1024 * 1024 * 5l;
+    private long partSize = 1024 * 1024 * 5L;
 
     // Threshold size of a file for multipart upload, in bytes, 100 MB by
     // default.
-    private long bigfileThreshold = 1024 * 1024 * 100l;
+    private long bigfileThreshold = 1024 * 1024 * 100L;
 
     // Number of threads for multipart upload, 1 by default.
     private int taskNum = 1;
@@ -163,10 +164,10 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            Threshold size of a file for multipart upload
      */
     public void setBigfileThreshold(long bigfileThreshold) {
-        if (bigfileThreshold < 100 * 1024l) {
-            this.bigfileThreshold = 100 * 1024l;
-        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024l) {
-            this.bigfileThreshold = 5 * 1024 * 1024 * 1024l;
+        if (bigfileThreshold < 100 * 1024L) {
+            this.bigfileThreshold = 100 * 1024L;
+        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024L) {
+            this.bigfileThreshold = 5 * 1024 * 1024 * 1024L;
         } else {
             this.bigfileThreshold = bigfileThreshold;
         }

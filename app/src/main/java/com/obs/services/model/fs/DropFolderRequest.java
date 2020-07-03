@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.AbstractBulkRequest;
@@ -18,8 +19,9 @@ import com.obs.services.model.DeleteObjectResult;
 import com.obs.services.model.TaskCallback;
 
 /**
- * Request parameters for deleting folders. Deleting a folder will delete all sub-folders and files in the folder.
- * This function does not support buckets with versioning enabled.
+ * Request parameters for deleting folders. Deleting a folder will delete all
+ * sub-folders and files in the folder. This function does not support buckets
+ * with versioning enabled.
  */
 public class DropFolderRequest extends AbstractBulkRequest {
 
@@ -33,7 +35,8 @@ public class DropFolderRequest extends AbstractBulkRequest {
     /**
      * Constructor
      * 
-     * @param bucketName Bucket name
+     * @param bucketName
+     *            Bucket name
      */
     public DropFolderRequest(String bucketName) {
         super(bucketName);
@@ -56,7 +59,8 @@ public class DropFolderRequest extends AbstractBulkRequest {
     /**
      * Set the folder name.
      * 
-     * @param folderName Folder name
+     * @param folderName
+     *            Folder name
      */
     public void setFolderName(String folderName) {
         this.folderName = folderName;
@@ -74,7 +78,8 @@ public class DropFolderRequest extends AbstractBulkRequest {
     /**
      * Set the callback object of a batch task.
      * 
-     * @param callback Callback object
+     * @param callback
+     *            Callback object
      */
     public void setCallback(TaskCallback<DeleteObjectResult, String> callback) {
         this.callback = callback;

@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.util.List;
@@ -19,54 +20,56 @@ import java.util.List;
  * Event notification configuration
  *
  */
-public class TopicConfiguration extends AbstractNotification
-{
-    
-    public TopicConfiguration(){
-        
+public class TopicConfiguration extends AbstractNotification {
+
+    public TopicConfiguration() {
+
     }
-    
+
     /**
      * Constructor
-     * @param id Event notification configuration ID
-     * @param filter Filtering rule group
-     * @param topic URN of the event notification topic
-     * @param events List of the event types that require the release of notification messages
+     * 
+     * @param id
+     *            Event notification configuration ID
+     * @param filter
+     *            Filtering rule group
+     * @param topic
+     *            URN of the event notification topic
+     * @param events
+     *            List of the event types that require the release of
+     *            notification messages
      */
-    public TopicConfiguration(String id, Filter filter, String topic, List<EventTypeEnum> events)
-    {
+    public TopicConfiguration(String id, Filter filter, String topic, List<EventTypeEnum> events) {
         super(id, filter, events);
         this.topic = topic;
-        
+
     }
-      
+
     private String topic;
-   
 
     /**
      * Obtain the URN of the event notification topic.
+     * 
      * @return URN of the event notification topic
-
+     * 
      */
-    public String getTopic()
-    {
+    public String getTopic() {
         return topic;
     }
 
     /**
-     * Set the URN of the event notification topic. 
-     * @param topic URN of the event notification topic
+     * Set the URN of the event notification topic.
+     * 
+     * @param topic
+     *            URN of the event notification topic
      */
-    public void setTopic(String topic)
-    {
+    public void setTopic(String topic) {
         this.topic = topic;
     }
-    
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "TopicConfiguration [id=" + id + ", topic=" + topic + ", events=" + events + ", filter=" + filter + "]";
     }
-    
+
 }

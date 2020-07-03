@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.CreateBucketRequest;
@@ -19,29 +20,32 @@ import com.obs.services.model.CreateBucketRequest;
  * Parameters in a bucket creation request
  *
  */
-public class NewBucketRequest extends CreateBucketRequest{
+public class NewBucketRequest extends CreateBucketRequest {
 
-	public NewBucketRequest() {
-		super();
-	}
+    public NewBucketRequest() {
+        super();
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param location Bucket location
-	 */
-	public NewBucketRequest(String bucketName, String location) {
-		super(bucketName, location);
-	}
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param location
+     *            Bucket location
+     */
+    public NewBucketRequest(String bucketName, String location) {
+        super(bucketName, location);
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 */
-	public NewBucketRequest(String bucketName) {
-		super(bucketName);
-	}
-	
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     */
+    public NewBucketRequest(String bucketName) {
+        super(bucketName);
+    }
+
 }
-
-

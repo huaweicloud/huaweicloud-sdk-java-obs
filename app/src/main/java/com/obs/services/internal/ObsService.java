@@ -16,23 +16,15 @@ package com.obs.services.internal;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -42,32 +34,7 @@ import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.AccessControlListHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketCorsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketDirectColdAccessHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketEncryptionHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLifecycleConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLocationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketLoggingHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketNotificationConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketQuotaHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketReplicationConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketStorageInfoHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketStoragePolicyHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketTagInfoHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketVersioningHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.BucketWebsiteConfigurationHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CompleteMultipartUploadHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CopyObjectResultHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.CopyPartResultHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.DeleteObjectsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.InitiateMultipartUploadHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListBucketsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListMultipartUploadsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListObjectsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListPartsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.ListVersionsHandler;
-import com.obs.services.internal.handler.XmlResponsesSaxParser.RequestPaymentHandler;
+import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.io.ProgressInputStream;
 import com.obs.services.internal.security.BasicSecurityKey;
@@ -80,12 +47,101 @@ import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.internal.utils.V2Authentication;
 import com.obs.services.internal.utils.V4Authentication;
-import com.obs.services.model.*;
+import com.obs.services.model.AbortMultipartUploadRequest;
+import com.obs.services.model.AbstractBulkRequest;
+import com.obs.services.model.AbstractTemporarySignatureRequest;
+import com.obs.services.model.AccessControlList;
+import com.obs.services.model.AppendObjectRequest;
+import com.obs.services.model.AppendObjectResult;
+import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.BaseBucketRequest;
+import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketEncryption;
+import com.obs.services.model.BucketLocationResponse;
+import com.obs.services.model.BucketLoggingConfiguration;
+import com.obs.services.model.BucketMetadataInfoRequest;
+import com.obs.services.model.BucketMetadataInfoResult;
+import com.obs.services.model.BucketNotificationConfiguration;
+import com.obs.services.model.BucketPolicyResponse;
+import com.obs.services.model.BucketTagInfo;
+import com.obs.services.model.BucketVersioningConfiguration;
+import com.obs.services.model.CompleteMultipartUploadRequest;
+import com.obs.services.model.CompleteMultipartUploadResult;
+import com.obs.services.model.CopyObjectRequest;
+import com.obs.services.model.CopyPartRequest;
+import com.obs.services.model.CopyPartResult;
+import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.DeleteObjectResult;
+import com.obs.services.model.DeleteObjectsRequest;
+import com.obs.services.model.DeleteObjectsResult;
+import com.obs.services.model.GrantAndPermission;
+import com.obs.services.model.GroupGrantee;
+import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.InitiateMultipartUploadRequest;
+import com.obs.services.model.InitiateMultipartUploadResult;
+import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.ListBucketsRequest;
+import com.obs.services.model.ListBucketsResult;
+import com.obs.services.model.ListMultipartUploadsRequest;
+import com.obs.services.model.ListObjectsRequest;
+import com.obs.services.model.ListPartsRequest;
+import com.obs.services.model.ListPartsResult;
+import com.obs.services.model.ListVersionsRequest;
+import com.obs.services.model.ListVersionsResult;
+import com.obs.services.model.ModifyObjectRequest;
+import com.obs.services.model.ModifyObjectResult;
+import com.obs.services.model.MultipartUploadListing;
+import com.obs.services.model.ObjectListing;
+import com.obs.services.model.ObjectMetadata;
+import com.obs.services.model.ObsBucket;
+import com.obs.services.model.OptionsInfoRequest;
+import com.obs.services.model.Permission;
+import com.obs.services.model.PolicyTempSignatureRequest;
+import com.obs.services.model.PostSignatureRequest;
+import com.obs.services.model.PostSignatureResponse;
+import com.obs.services.model.PutObjectRequest;
+import com.obs.services.model.ReadAheadRequest;
+import com.obs.services.model.ReadAheadResult;
+import com.obs.services.model.RenameObjectRequest;
+import com.obs.services.model.RenameObjectResult;
+import com.obs.services.model.ReplicationConfiguration;
+import com.obs.services.model.RequestPaymentConfiguration;
+import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectRequest.RestoreObjectStatus;
+import com.obs.services.model.RestoreObjectResult;
+import com.obs.services.model.SetBucketAclRequest;
+import com.obs.services.model.SetBucketCorsRequest;
+import com.obs.services.model.SetBucketDirectColdAccessRequest;
+import com.obs.services.model.SetBucketEncryptionRequest;
+import com.obs.services.model.SetBucketLifecycleRequest;
+import com.obs.services.model.SetBucketLoggingRequest;
+import com.obs.services.model.SetBucketNotificationRequest;
+import com.obs.services.model.SetBucketPolicyRequest;
+import com.obs.services.model.SetBucketQuotaRequest;
+import com.obs.services.model.SetBucketReplicationRequest;
+import com.obs.services.model.SetBucketRequestPaymentRequest;
+import com.obs.services.model.SetBucketStoragePolicyRequest;
+import com.obs.services.model.SetBucketTaggingRequest;
+import com.obs.services.model.SetBucketVersioningRequest;
+import com.obs.services.model.SetBucketWebsiteRequest;
+import com.obs.services.model.SetObjectAclRequest;
+import com.obs.services.model.SpecialParamEnum;
+import com.obs.services.model.StorageClassEnum;
+import com.obs.services.model.TaskCallback;
+import com.obs.services.model.TaskProgressListener;
+import com.obs.services.model.TemporarySignatureRequest;
+import com.obs.services.model.TemporarySignatureResponse;
+import com.obs.services.model.TruncateObjectRequest;
+import com.obs.services.model.TruncateObjectResult;
+import com.obs.services.model.UploadPartRequest;
+import com.obs.services.model.UploadPartResult;
+import com.obs.services.model.V4PostSignatureResponse;
+import com.obs.services.model.VersionOrDeleteMarker;
+import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.DropFileResult;
-import com.obs.services.model.fs.FSStatusEnum;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
-import com.obs.services.model.fs.NewBucketRequest;
+import com.obs.services.model.fs.ListContentSummaryRequest;
+import com.obs.services.model.fs.ListContentSummaryResult;
 import com.obs.services.model.fs.ObsFSAttribute;
 import com.obs.services.model.fs.ObsFSFile;
 import com.obs.services.model.fs.ReadFileResult;
@@ -95,60 +151,34 @@ import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.CopyObjectResult;
+import com.obs.services.model.GetObjectMetadataRequest;
+import com.obs.services.model.ProgressListener;
+import com.obs.services.model.SetObjectMetadataRequest;
+import com.obs.services.model.GetObjectRequest;
+import com.obs.services.model.ObsObject;
+import com.obs.services.model.BucketQuota;
+import com.obs.services.model.BucketStoragePolicyConfiguration;
+import com.obs.services.model.BucketStorageInfo;
+import com.obs.services.model.GetObjectAclRequest;
+import com.obs.services.model.DeleteObjectRequest;
+import com.obs.services.model.ReadAheadQueryResult;
+import com.obs.services.model.BucketDirectColdAccess;
 import com.oef.services.model.CreateAsynchFetchJobsResult;
 import com.oef.services.model.DisPolicy;
 import com.oef.services.model.GetDisPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
 import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.RequestParamEnum;
-
-import okhttp3.Headers;
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ObsService extends RestStorageService {
+public class ObsService extends RequestConvertor {
 
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
 
     protected ObsService() {
 
-    }
-
-    private static class TransResult {
-        private Map<String, String> headers;
-
-        private Map<String, String> params;
-
-        private RequestBody body;
-
-        TransResult(Map<String, String> headers) {
-            this(headers, null, null);
-        }
-
-        TransResult(Map<String, String> headers, RequestBody body) {
-            this(headers, null, body);
-        }
-
-        TransResult(Map<String, String> headers, Map<String, String> params, RequestBody body) {
-            this.headers = headers;
-            this.params = params;
-            this.body = body;
-        }
-
-        Map<String, String> getHeaders() {
-            if (this.headers == null) {
-                headers = new HashMap<String, String>();
-            }
-            return this.headers;
-        }
-
-        Map<String, String> getParams() {
-            if (this.params == null) {
-                params = new HashMap<String, String>();
-            }
-            return this.params;
-        }
     }
 
     protected HeaderResponse setBucketVersioningImpl(SetBucketVersioningRequest request) throws ServiceException {
@@ -164,20 +194,6 @@ public class ObsService extends RestStorageService {
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParams,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
         return this.build(response);
-    }
-
-    protected RequestBody createRequestBody(String mimeType, String content) throws ServiceException {
-        try {
-            if (log.isTraceEnabled()) {
-                try {
-                    log.trace("Entity Content:" + content);
-                } catch (Exception e) {
-                }
-            }
-            return RequestBody.create(MediaType.parse(mimeType), content.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException(e);
-        }
     }
 
     protected void verifyResponseContentType(Response response) throws ServiceException {
@@ -200,9 +216,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        BucketVersioningConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(response), BucketVersioningHandler.class, false)
-                .getVersioningStatus();
+        BucketVersioningConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.BucketVersioningHandler.class, false).getVersioningStatus();
         setResponseHeaders(ret, this.cleanResponseHeaders(response));
         setStatusCode(ret, response.code());
         return ret;
@@ -234,40 +249,11 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        RequestPaymentConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(response), RequestPaymentHandler.class, false)
-                .getRequestPaymentConfiguration();
+        RequestPaymentConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.RequestPaymentHandler.class, false).getRequestPaymentConfiguration();
         setResponseHeaders(ret, this.cleanResponseHeaders(response));
         setStatusCode(ret, response.code());
         return ret;
-    }
-
-    TransResult transListVersionsRequest(ListVersionsRequest request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(SpecialParamEnum.VERSIONS.getOriginalStringCode(), "");
-        if (request.getPrefix() != null) {
-            params.put(ObsRequestParams.PREFIX, request.getPrefix());
-        }
-        if (request.getDelimiter() != null) {
-            params.put(ObsRequestParams.DELIMITER, request.getDelimiter());
-        }
-        if (request.getMaxKeys() > 0) {
-            params.put(ObsRequestParams.MAX_KEYS, String.valueOf(request.getMaxKeys()));
-        }
-        if (request.getKeyMarker() != null) {
-            params.put(ObsRequestParams.KEY_MARKER, request.getKeyMarker());
-        }
-        if (request.getVersionIdMarker() != null) {
-            params.put(ObsRequestParams.VERSION_ID_MARKER, request.getVersionIdMarker());
-        }
-        Map<String, String> headers = new HashMap<String, String>();
-        if (request.getListTimeout() > 0) {
-            putHeader(headers, this.getIHeaders().listTimeoutHeader(), String.valueOf(request.getListTimeout()));
-        }
-
-        this.transRequestPaymentHeaders(request, headers, this.getIHeaders());
-
-        return new TransResult(headers, params, null);
     }
 
     protected ListVersionsResult listVersionsImpl(ListVersionsRequest request) throws ServiceException {
@@ -278,8 +264,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        ListVersionsHandler handler = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
-                ListVersionsHandler.class, true);
+        XmlResponsesSaxParser.ListVersionsHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.ListVersionsHandler.class, true);
         List<VersionOrDeleteMarker> partialItems = handler.getItems();
 
         ListVersionsResult listVersionsResult = new ListVersionsResult(
@@ -324,8 +310,8 @@ public class ObsService extends RestStorageService {
         this.verifyResponseContentType(httpResponse);
 
         BucketNotificationConfiguration result = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketNotificationConfigurationHandler.class,
-                        false)
+                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.BucketNotificationConfigurationHandler.class, false)
                 .getBucketNotificationConfiguration();
         setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
         setStatusCode(result, httpResponse.code());
@@ -375,69 +361,6 @@ public class ObsService extends RestStorageService {
         return ret;
     }
 
-    TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-        IConvertor iconvertor = this.getIConvertor();
-
-        ObjectMetadata objectMetadata = request.getMetadata() == null ? new ObjectMetadata() : request.getMetadata();
-
-        for (Map.Entry<String, Object> entry : objectMetadata.getMetadata().entrySet()) {
-            String key = entry.getKey();
-            if (!ServiceUtils.isValid(key)) {
-                continue;
-            }
-            key = key.trim();
-            if ((this.canUseStandardHTTPHeaders.get() == null || (this.canUseStandardHTTPHeaders.get() != null
-                    && !this.canUseStandardHTTPHeaders.get().booleanValue()))
-                    && Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
-                continue;
-            }
-            headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
-        }
-
-        if (objectMetadata.getObjectStorageClass() != null) {
-            putHeader(headers, iheaders.storageClassHeader(),
-                    iconvertor.transStorageClass(objectMetadata.getObjectStorageClass()));
-        }
-
-        if (request.getExpires() > 0) {
-            putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
-        }
-
-        if (ServiceUtils.isValid(objectMetadata.getWebSiteRedirectLocation())) {
-            putHeader(headers, iheaders.websiteRedirectLocationHeader(), objectMetadata.getWebSiteRedirectLocation());
-        }
-
-        if (ServiceUtils.isValid(request.getSuccessRedirectLocation())) {
-            putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
-        }
-
-        if (ServiceUtils.isValid(objectMetadata.getContentEncoding())) {
-            headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
-        }
-
-        transRequestPaymentHeaders(request, headers, iheaders);
-
-        transExtensionPermissions(request, headers);
-
-        transSseHeaders(request, headers, iheaders);
-
-        Object contentType = objectMetadata.getContentType() == null
-                ? objectMetadata.getValue(CommonHeaders.CONTENT_TYPE) : objectMetadata.getContentType();
-        if (contentType == null) {
-            contentType = Mimetypes.getInstance().getMimetype(request.getObjectKey());
-        }
-
-        String contentTypeStr = contentType.toString().trim();
-        headers.put(CommonHeaders.CONTENT_TYPE, contentTypeStr);
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(SpecialParamEnum.UPLOADS.getOriginalStringCode(), "");
-
-        return new TransResult(headers, params, null);
-    }
-
     protected InitiateMultipartUploadResult initiateMultipartUploadImpl(InitiateMultipartUploadRequest request)
             throws ServiceException {
 
@@ -451,7 +374,8 @@ public class ObsService extends RestStorageService {
         this.verifyResponseContentType(httpResponse);
 
         InitiateMultipartUploadResult multipartUpload = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), InitiateMultipartUploadHandler.class, true)
+                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.InitiateMultipartUploadHandler.class, true)
                 .getInitiateMultipartUploadResult();
         setResponseHeaders(multipartUpload, this.cleanResponseHeaders(httpResponse));
         setStatusCode(multipartUpload, httpResponse.code());
@@ -486,8 +410,9 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        CompleteMultipartUploadHandler handler = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(response), CompleteMultipartUploadHandler.class, true);
+        XmlResponsesSaxParser.CompleteMultipartUploadHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.CompleteMultipartUploadHandler.class,
+                true);
 
         String versionId = response.header(this.getIHeaders().versionIdHeader());
 
@@ -524,8 +449,9 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        ListMultipartUploadsHandler handler = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), ListMultipartUploadsHandler.class, true);
+        XmlResponsesSaxParser.ListMultipartUploadsHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListMultipartUploadsHandler.class,
+                true);
 
         MultipartUploadListing listResult = new MultipartUploadListing(
                 handler.getBucketName() == null ? request.getBucketName() : handler.getBucketName(),
@@ -556,8 +482,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        ListPartsHandler handler = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
-                ListPartsHandler.class, true);
+        XmlResponsesSaxParser.ListPartsHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListPartsHandler.class, true);
 
         ListPartsResult result = new ListPartsResult(
                 handler.getBucketName() == null ? request.getBucketName() : handler.getBucketName(),
@@ -586,9 +512,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        WebsiteConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketWebsiteConfigurationHandler.class, false)
-                .getWebsiteConfig();
+        WebsiteConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketWebsiteConfigurationHandler.class, false).getWebsiteConfig();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -632,9 +557,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        LifecycleConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(response), BucketLifecycleConfigurationHandler.class, false)
-                .getLifecycleConfig();
+        LifecycleConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.BucketLifecycleConfigurationHandler.class, false).getLifecycleConfig();
         setResponseHeaders(ret, this.cleanResponseHeaders(response));
         setStatusCode(ret, response.code());
         return ret;
@@ -683,9 +607,8 @@ public class ObsService extends RestStorageService {
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), false);
         this.verifyResponseContentType(httpResponse);
 
-        DeleteObjectsResult ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), DeleteObjectsHandler.class, true)
-                .getMultipleDeleteResult();
+        DeleteObjectsResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.DeleteObjectsHandler.class, true).getMultipleDeleteResult();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -815,14 +738,6 @@ public class ObsService extends RestStorageService {
         return transRestoreObjectResultToRestoreObjectStatus(restoreObjectResult);
     }
 
-    private RestoreObjectStatus transRestoreObjectResultToRestoreObjectStatus(RestoreObjectResult result) {
-        RestoreObjectStatus ret = RestoreObjectStatus.valueOf(result.getStatusCode());
-        ret.setResponseHeaders(result.getResponseHeaders());
-        ret.setStatusCode(result.getStatusCode());
-
-        return ret;
-    }
-
     protected RestoreObjectResult restoreObjectV2Impl(RestoreObjectRequest restoreObjectRequest)
             throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
@@ -854,9 +769,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketTagInfo result = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketTagInfoHandler.class, false)
-                .getBucketTagInfo();
+        BucketTagInfo result = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketTagInfoHandler.class, false).getBucketTagInfo();
         setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
         setStatusCode(result, httpResponse.code());
         return result;
@@ -900,9 +814,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketEncryption ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketEncryptionHandler.class, false)
-                .getEncryption();
+        BucketEncryption ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketEncryptionHandler.class, false).getEncryption();
 
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
@@ -947,8 +860,8 @@ public class ObsService extends RestStorageService {
         this.verifyResponseContentType(httpResponse);
 
         ReplicationConfiguration result = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketReplicationConfigurationHandler.class,
-                        false)
+                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.BucketReplicationConfigurationHandler.class, false)
                 .getReplicationConfiguration();
         setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
         setStatusCode(result, httpResponse.code());
@@ -1123,7 +1036,8 @@ public class ObsService extends RestStorageService {
         return response;
     }
 
-    protected PostSignatureResponse createPostSignatureResponse(PostSignatureRequest request, boolean isV4) throws Exception {
+    protected PostSignatureResponse createPostSignatureResponse(PostSignatureRequest request, boolean isV4)
+            throws Exception {
         BasicSecurityKey securityKey = this.getProviderCredentials().getSecurityKey();
         String accessKey = securityKey.getAccessKey();
         String secretKey = securityKey.getSecretKey();
@@ -1371,43 +1285,6 @@ public class ObsService extends RestStorageService {
         return response;
     }
 
-    protected String getCredential(String shortDate, String accessKey) {
-        return new StringBuilder(accessKey).append("/").append(shortDate).append("/")
-                .append(ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE).append("/").append(Constants.SERVICE).append("/")
-                .append(Constants.REQUEST_TAG).toString();
-    }
-
-    GetBucketFSStatusResult getOptionInfoResult(Response response) {
-
-        Headers headers = response.headers();
-
-        Map<String, List<String>> map = headers.toMultimap();
-        String maxAge = headers.get(Constants.CommonHeaders.ACCESS_CONTROL_MAX_AGE);
-
-        IHeaders iheaders = this.getIHeaders();
-        FSStatusEnum status = FSStatusEnum.getValueFromCode(headers.get(iheaders.fsFileInterfaceHeader()));
-
-        BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
-        if (FSStatusEnum.ENABLED == status) {
-            bucketType = BucketTypeEnum.PFS;
-        }
-
-        GetBucketFSStatusResult output = new GetBucketFSStatusResult(
-                headers.get(Constants.CommonHeaders.ACCESS_CONTROL_ALLOW_ORIGIN),
-                map.get(Constants.CommonHeaders.ACCESS_CONTROL_ALLOW_HEADERS),
-                maxAge == null ? 0 : Integer.parseInt(maxAge),
-                map.get(Constants.CommonHeaders.ACCESS_CONTROL_ALLOW_METHODS),
-                map.get(Constants.CommonHeaders.ACCESS_CONTROL_EXPOSE_HEADERS),
-                StorageClassEnum.getValueFromCode(headers.get(iheaders.defaultStorageClassHeader())),
-                headers.get(iheaders.bucketRegionHeader()), headers.get(iheaders.serverVersionHeader()), status,
-                AvailableZoneEnum.getValueFromCode(headers.get(iheaders.azRedundancyHeader())),
-                headers.get(iheaders.epidHeader()), bucketType);
-
-        setResponseHeaders(output, this.cleanResponseHeaders(response));
-        setStatusCode(output, response.code());
-        return output;
-    }
-
     protected BucketMetadataInfoResult optionsImpl(String bucketName, String objectName, OptionsInfoRequest option)
             throws ServiceException {
         Map<String, String> metadata = new IdentityHashMap<String, String>();
@@ -1417,10 +1294,12 @@ public class ObsService extends RestStorageService {
         }
 
         for (int i = 0; option.getRequestMethod() != null && i < option.getRequestMethod().size(); i++) {
-            metadata.put(new String(CommonHeaders.ACCESS_CONTROL_REQUEST_METHOD), option.getRequestMethod().get(i));
+            metadata.put(new String(new StringBuilder(CommonHeaders.ACCESS_CONTROL_REQUEST_METHOD)),
+                    option.getRequestMethod().get(i));
         }
         for (int i = 0; option.getRequestHeaders() != null && i < option.getRequestHeaders().size(); i++) {
-            metadata.put(new String(CommonHeaders.ACCESS_CONTROL_REQUEST_HEADERS), option.getRequestHeaders().get(i));
+            metadata.put(new String(new StringBuilder(CommonHeaders.ACCESS_CONTROL_REQUEST_HEADERS)),
+                    option.getRequestHeaders().get(i));
         }
         transRequestPaymentHeaders(option.isRequesterPays(), metadata, this.getIHeaders());
 
@@ -1447,9 +1326,8 @@ public class ObsService extends RestStorageService {
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
 
         this.verifyResponseContentType(httpResponse);
-        BucketCors ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketCorsHandler.class, false)
-                .getConfiguration();
+        BucketCors ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketCorsHandler.class, false).getConfiguration();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -1595,91 +1473,6 @@ public class ObsService extends RestStorageService {
         return ret;
     }
 
-    AbstractAuthentication getAuthentication() {
-        return Constants.AUTHTICATION_MAP.get(this.getProviderCredentials().getAuthType());
-    }
-
-    SpecialParamEnum getSpecialParamForStorageClass() {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? SpecialParamEnum.STORAGECLASS
-                : SpecialParamEnum.STORAGEPOLICY;
-    }
-
-    void putHeader(Map<String, String> headers, String key, String value) {
-        if (ServiceUtils.isValid(key)) {
-            headers.put(key, value);
-        }
-    }
-
-    TransResult transCreateBucketRequest(CreateBucketRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        IConvertor convertor = this.getIConvertor();
-
-        if (request.getBucketStorageClass() != null) {
-            putHeader(headers, getIHeaders().defaultStorageClassHeader(),
-                    convertor.transStorageClass(request.getBucketStorageClass()));
-        }
-
-        if (request.getEpid() != null) {
-            putHeader(headers, getIHeaders().epidHeader(), request.getEpid());
-        }
-
-        if (request instanceof NewBucketRequest) {
-            putHeader(headers, getIHeaders().fsFileInterfaceHeader(), Constants.ENABLED);
-        }
-
-        if (null != request.getBucketType() && BucketTypeEnum.PFS == request.getBucketType()) {
-            putHeader(headers, getIHeaders().fsFileInterfaceHeader(), Constants.ENABLED);
-        }
-
-        if (request.getAvailableZone() != null) {
-            putHeader(headers, getIHeaders().azRedundancyHeader(), request.getAvailableZone().getCode());
-        }
-
-        Set<ExtensionBucketPermissionEnum> extensionPermissionEnums = request.getAllGrantPermissions();
-        if (!extensionPermissionEnums.isEmpty()) {
-            for (ExtensionBucketPermissionEnum extensionPermissionEnum : extensionPermissionEnums) {
-                Set<String> domainIds = request.getDomainIdsByGrantPermission(extensionPermissionEnum);
-                List<String> domainIdList = new ArrayList<String>(domainIds.size());
-                for (String domainId : domainIds) {
-                    domainIdList.add("id=" + domainId);
-                }
-                putHeader(headers, getHeaderByMethodName(extensionPermissionEnum.getCode()),
-                        ServiceUtils.join(domainIdList, ","));
-            }
-        }
-
-        if (request.getExtensionHeaderMap() != null) {
-            for (Entry<String, String> kv : request.getExtensionHeaderMap().entrySet()) {
-                putHeader(headers, kv.getKey(), kv.getValue());
-            }
-        }
-
-        String contentType = Mimetypes.MIMETYPE_XML;
-        headers.put(Constants.CommonHeaders.CONTENT_TYPE, contentType);
-        TransResult result = new TransResult(headers);
-        if (ServiceUtils.isValid(request.getLocation())) {
-            String configXml = convertor.transBucketLoction(request.getLocation());
-            headers.put(Constants.CommonHeaders.CONTENT_LENGTH, String.valueOf(configXml.length()));
-            RequestBody requestEntity = createRequestBody(contentType, configXml);
-            result.body = requestEntity;
-        }
-        return result;
-    }
-
-    String getHeaderByMethodName(String code) {
-        try {
-            IHeaders iheaders = this.getIHeaders();
-            Method m = iheaders.getClass().getMethod(code);
-            Object result = m.invoke(iheaders);
-            return result == null ? "" : result.toString();
-        } catch (Exception e) {
-            if (log.isWarnEnabled()) {
-                log.warn("Invoke getHeaderByMethodName error", e);
-            }
-        }
-        return null;
-    }
-
     protected ObsBucket createBucketImpl(CreateBucketRequest request) throws ServiceException {
         TransResult result = this.transCreateBucketRequest(request);
         String bucketName = request.getBucketName();
@@ -1687,7 +1480,7 @@ public class ObsService extends RestStorageService {
 
         boolean isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
-        Response response = performRestPut(bucketName, null, result.getHeaders(), null, result.body, true);
+        Response response = performRestPut(bucketName, null, result.getHeaders(), null, result.getBody(), true);
 
         if (isExtraAclPutRequired && acl != null) {
             if (log.isDebugEnabled()) {
@@ -1713,119 +1506,6 @@ public class ObsService extends RestStorageService {
         return bucket;
     }
 
-    boolean prepareRESTHeaderAclForV2(Map<String, String> metadata, AccessControlList acl) {
-        String restHeaderAclValue = null;
-        if (acl == AccessControlList.REST_CANNED_PRIVATE) {
-            restHeaderAclValue = Constants.ACL_PRIVATE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE;
-        } else if (acl == AccessControlList.REST_CANNED_AUTHENTICATED_READ) {
-            restHeaderAclValue = Constants.ACL_AUTHENTICATED_READ;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_READ) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_READ;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_FULL_CONTROL) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_FULL_CONTROL;
-        } else if (acl == AccessControlList.REST_CANNED_LOG_DELIVERY_WRITE) {
-            restHeaderAclValue = Constants.ACL_LOG_DELIVERY_WRITE;
-        }
-        String aclHeader = this.getIHeaders().aclHeader();
-        if (restHeaderAclValue != null) {
-            metadata.put(aclHeader, restHeaderAclValue);
-        }
-        return metadata.containsKey(aclHeader);
-    }
-
-    boolean prepareRESTHeaderAclForOBS(Map<String, String> metadata, AccessControlList acl) throws ServiceException {
-        String restHeaderAclValue = null;
-        boolean invalid = false;
-        if (acl == AccessControlList.REST_CANNED_PRIVATE) {
-            restHeaderAclValue = Constants.ACL_PRIVATE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_DELIVERED;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE_DELIVERED;
-        } else if (acl == AccessControlList.REST_CANNED_AUTHENTICATED_READ) {
-            restHeaderAclValue = Constants.ACL_AUTHENTICATED_READ;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_READ) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_READ;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_FULL_CONTROL) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_FULL_CONTROL;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_LOG_DELIVERY_WRITE) {
-            restHeaderAclValue = Constants.ACL_LOG_DELIVERY_WRITE;
-            invalid = true;
-        }
-        if (invalid) {
-            log.info("Invalid Canned ACL:" + restHeaderAclValue);
-        }
-
-        String aclHeader = this.getIHeaders().aclHeader();
-        if (restHeaderAclValue != null) {
-            metadata.put(aclHeader, restHeaderAclValue);
-        }
-        return metadata.containsKey(aclHeader);
-    }
-
-    boolean prepareRESTHeaderAclObject(Map<String, String> metadata, AccessControlList acl) throws ServiceException {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS
-                ? this.prepareRESTHeaderAclForOBSObject(metadata, acl) : this.prepareRESTHeaderAclForV2(metadata, acl);
-    }
-
-    boolean prepareRESTHeaderAclForOBSObject(Map<String, String> metadata, AccessControlList acl)
-            throws ServiceException {
-        String restHeaderAclValue = null;
-        boolean invalid = false;
-        if (acl == AccessControlList.REST_CANNED_PRIVATE) {
-            restHeaderAclValue = Constants.ACL_PRIVATE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ;
-        } else if (acl == AccessControlList.REST_CANNED_PUBLIC_READ_WRITE_DELIVERED) {
-            restHeaderAclValue = Constants.ACL_PUBLIC_READ_WRITE;
-        } else if (acl == AccessControlList.REST_CANNED_AUTHENTICATED_READ) {
-            restHeaderAclValue = Constants.ACL_AUTHENTICATED_READ;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_READ) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_READ;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_BUCKET_OWNER_FULL_CONTROL) {
-            restHeaderAclValue = Constants.ACL_BUCKET_OWNER_FULL_CONTROL;
-            invalid = true;
-        } else if (acl == AccessControlList.REST_CANNED_LOG_DELIVERY_WRITE) {
-            restHeaderAclValue = Constants.ACL_LOG_DELIVERY_WRITE;
-            invalid = true;
-        }
-        if (invalid) {
-            log.info("Invalid Canned ACL:" + restHeaderAclValue);
-        }
-
-        String aclHeader = this.getIHeaders().aclHeader();
-        if (restHeaderAclValue != null) {
-            metadata.put(aclHeader, restHeaderAclValue);
-        }
-        return metadata.containsKey(aclHeader);
-    }
-
-    boolean prepareRESTHeaderAcl(Map<String, String> metadata, AccessControlList acl) throws ServiceException {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS
-                ? this.prepareRESTHeaderAclForOBS(metadata, acl) : this.prepareRESTHeaderAclForV2(metadata, acl);
-    }
-
     protected BucketLocationResponse getBucketLocationImpl(BaseBucketRequest request) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put(SpecialParamEnum.LOCATION.getOriginalStringCode(), "");
@@ -1835,9 +1515,9 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketLocationResponse ret = new BucketLocationResponse(getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketLocationHandler.class, false)
-                .getLocation());
+        BucketLocationResponse ret = new BucketLocationResponse(
+                getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.BucketLocationHandler.class, false).getLocation());
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -1854,276 +1534,12 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketLoggingConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketLoggingHandler.class, false)
-                .getBucketLoggingStatus();
+        BucketLoggingConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketLoggingHandler.class, false).getBucketLoggingStatus();
 
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
-    }
-
-    TransResult transPutObjectRequest(PutObjectRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        IConvertor iconvertor = this.getIConvertor();
-        IHeaders iheaders = this.getIHeaders();
-
-        ObjectMetadata objectMetadata = request.getMetadata() == null ? new ObjectMetadata() : request.getMetadata();
-
-        for (Map.Entry<String, Object> entry : objectMetadata.getMetadata().entrySet()) {
-            String key = entry.getKey();
-            if (!ServiceUtils.isValid(key)) {
-                continue;
-            }
-            key = key.trim();
-            if ((this.canUseStandardHTTPHeaders.get() == null || (this.canUseStandardHTTPHeaders.get() != null
-                    && !this.canUseStandardHTTPHeaders.get().booleanValue()))
-                    && Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
-                continue;
-            }
-            headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
-        }
-
-        if (ServiceUtils.isValid(objectMetadata.getContentMd5())) {
-            headers.put(CommonHeaders.CONTENT_MD5, objectMetadata.getContentMd5().trim());
-        }
-
-        if (ServiceUtils.isValid(objectMetadata.getContentEncoding())) {
-            headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
-        }
-
-        if (objectMetadata.getObjectStorageClass() != null) {
-            putHeader(headers, iheaders.storageClassHeader(),
-                    iconvertor.transStorageClass(objectMetadata.getObjectStorageClass()));
-        }
-
-        if (request.getExpires() >= 0) {
-            putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
-        }
-
-        if (objectMetadata.getWebSiteRedirectLocation() != null) {
-            putHeader(headers, iheaders.websiteRedirectLocationHeader(), objectMetadata.getWebSiteRedirectLocation());
-        }
-
-        if (request.getSuccessRedirectLocation() != null) {
-            putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
-        }
-
-        transRequestPaymentHeaders(request, headers, iheaders);
-
-        transExtensionPermissions(request, headers);
-
-        transSseHeaders(request, headers, iheaders);
-
-        Object contentType = objectMetadata.getContentType() == null
-                ? objectMetadata.getValue(CommonHeaders.CONTENT_TYPE) : objectMetadata.getContentType();
-        if (contentType == null) {
-            contentType = Mimetypes.getInstance().getMimetype(request.getObjectKey());
-        }
-        Object contentLength = objectMetadata.getContentLength();
-
-        if (contentLength == null) {
-            contentLength = objectMetadata.getValue(CommonHeaders.CONTENT_LENGTH);
-        }
-
-        long contentLengthValue = contentLength == null ? -1L : Long.parseLong(contentLength.toString());
-
-        InputStream input = null;
-        if (request.getFile() != null) {
-
-            if (Mimetypes.MIMETYPE_OCTET_STREAM.equals(contentType)) {
-                contentType = Mimetypes.getInstance().getMimetype(request.getFile());
-            }
-
-            try {
-                input = new FileInputStream(request.getFile());
-            } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("File doesnot exist");
-            }
-
-            long fileSize = request.getFile().length();
-            if (request.getOffset() > 0 && request.getOffset() < fileSize) {
-                contentLengthValue = (contentLengthValue > 0 && contentLengthValue <= fileSize - request.getOffset())
-                        ? contentLengthValue : fileSize - request.getOffset();
-                try {
-                    input.skip(request.getOffset());
-                } catch (IOException e) {
-                    ServiceUtils.closeStream(input);
-                    throw new ServiceException(e);
-                }
-            } else if (contentLengthValue < 0 || contentLengthValue > fileSize) {
-                contentLengthValue = fileSize;
-            }
-
-            if (request.getProgressListener() != null) {
-                ProgressManager progressManager = new SimpleProgressManager(contentLengthValue, 0,
-                        request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                                : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-                input = new ProgressInputStream(input, progressManager);
-            }
-
-        } else {
-            input = request.getInput();
-            if (input != null && request.getProgressListener() != null) {
-                ProgressManager progressManager = new SimpleProgressManager(contentLengthValue, 0,
-                        request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                                : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-                input = new ProgressInputStream(input, progressManager);
-            }
-        }
-
-        String contentTypeStr = contentType.toString().trim();
-        headers.put(CommonHeaders.CONTENT_TYPE, contentTypeStr);
-
-        if (contentLengthValue > -1) {
-            this.putHeader(headers, CommonHeaders.CONTENT_LENGTH, String.valueOf(contentLengthValue));
-        }
-
-        RequestBody body = input == null ? null
-                : new RepeatableRequestEntity(input, contentTypeStr, contentLengthValue, this.obsProperties);
-
-        return new TransResult(headers, body);
-    }
-
-    TransResult transWriteFileRequest(WriteFileRequest request) throws ServiceException {
-        TransResult result = this.transPutObjectRequest(request);
-        if (request.getPosition() > 0) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(SpecialParamEnum.MODIFY.getOriginalStringCode(), "");
-            params.put(ObsRequestParams.POSITION, String.valueOf(request.getPosition()));
-            result.params = params;
-        }
-        return result;
-    }
-
-    TransResult transModifyObjectRequest(ModifyObjectRequest request) throws ServiceException {
-        TransResult result = this.transPutObjectRequest(request);
-        if (request.getPosition() > 0) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(SpecialParamEnum.MODIFY.getOriginalStringCode(), "");
-            params.put(ObsRequestParams.POSITION, String.valueOf(request.getPosition()));
-            result.params = params;
-        }
-        return result;
-    }
-
-    TransResult transAppendObjectRequest(AppendObjectRequest request) throws ServiceException {
-        TransResult result = this.transPutObjectRequest(request);
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(SpecialParamEnum.APPEND.getOriginalStringCode(), "");
-        params.put(ObsRequestParams.POSITION, String.valueOf(request.getPosition()));
-        result.params = params;
-        return result;
-    }
-
-    void transSseKmsHeaders(SseKmsHeader kmsHeader, Map<String, String> headers, IHeaders iheaders) {
-        if (kmsHeader == null) {
-            return;
-        }
-
-        String sseKmsEncryption = this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS
-                ? "aws:" + kmsHeader.getSSEAlgorithm().getCode() : kmsHeader.getSSEAlgorithm().getCode();
-        putHeader(headers, iheaders.sseKmsHeader(), ServiceUtils.toValid(sseKmsEncryption));
-        if (ServiceUtils.isValid(kmsHeader.getKmsKeyId())) {
-            putHeader(headers, iheaders.sseKmsKeyHeader(), kmsHeader.getKmsKeyId());
-        }
-
-        if (ServiceUtils.isValid(kmsHeader.getProjectId())) {
-            putHeader(headers, iheaders.sseKmsProjectIdHeader(), kmsHeader.getProjectId());
-        }
-    }
-
-    void transSseCHeaders(SseCHeader cHeader, Map<String, String> headers, IHeaders iheaders) throws ServiceException {
-        if (cHeader == null) {
-            return;
-        }
-
-        String sseCAlgorithm = cHeader.getSSEAlgorithm().getCode();
-
-        putHeader(headers, iheaders.sseCHeader(), ServiceUtils.toValid(sseCAlgorithm));
-        if (cHeader.getSseCKeyBase64() != null) {
-            try {
-                putHeader(headers, iheaders.sseCKeyHeader(), cHeader.getSseCKeyBase64());
-                putHeader(headers, iheaders.sseCKeyMd5Header(), ServiceUtils
-                        .toBase64(ServiceUtils.computeMD5Hash(ServiceUtils.fromBase64(cHeader.getSseCKeyBase64()))));
-            } catch (IOException e) {
-                throw new IllegalStateException("fail to read sseCkey", e);
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("fail to read sseCkey", e);
-            }
-        } else if (null != cHeader.getSseCKey()) {
-            try {
-                byte[] data = cHeader.getSseCKey();
-                putHeader(headers, iheaders.sseCKeyHeader(), ServiceUtils.toBase64(data));
-                putHeader(headers, iheaders.sseCKeyMd5Header(),
-                        ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(data)));
-            } catch (IOException e) {
-                throw new IllegalStateException("fail to read sseCkey", e);
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("fail to read sseCkey", e);
-            }
-        }
-    }
-
-    void transSseHeaders(PutObjectBasicRequest request, Map<String, String> headers, IHeaders iheaders)
-            throws ServiceException {
-        if (null != request.getSseCHeader()) {
-            this.transSseCHeaders(request.getSseCHeader(), headers, iheaders);
-        } else if (null != request.getSseKmsHeader()) {
-            this.transSseKmsHeaders(request.getSseKmsHeader(), headers, iheaders);
-        }
-    }
-
-    /**
-     * set requestHeader for requestPayment
-     * 
-     * @param request
-     * @param headers
-     * @param iheaders
-     * @throws ServiceException
-     */
-    Map<String, String> transRequestPaymentHeaders(boolean isRequesterPays, Map<String, String> headers,
-            IHeaders iheaders) throws ServiceException {
-        if (isRequesterPays) {
-            if (null == headers) {
-                headers = new HashMap<String, String>();
-            }
-            putHeader(headers, iheaders.requestPaymentHeader(), "requester");
-        }
-
-        return headers;
-    }
-
-    /**
-     * set requestHeader for requestPayment
-     * 
-     * @param request
-     * @param headers
-     * @param iheaders
-     * @throws ServiceException
-     */
-    Map<String, String> transRequestPaymentHeaders(GenericRequest request, Map<String, String> headers,
-            IHeaders iheaders) throws ServiceException {
-        if (null != request) {
-            return transRequestPaymentHeaders(request.isRequesterPays(), headers, iheaders);
-        }
-
-        return null;
-    }
-
-    void transExtensionPermissions(PutObjectBasicRequest request, Map<String, String> headers) {
-        Set<ExtensionObjectPermissionEnum> extensionPermissionEnums = request.getAllGrantPermissions();
-        if (!extensionPermissionEnums.isEmpty()) {
-            for (ExtensionObjectPermissionEnum extensionPermissionEnum : extensionPermissionEnums) {
-                Set<String> domainIds = request.getDomainIdsByGrantPermission(extensionPermissionEnum);
-                List<String> domainIdList = new ArrayList<String>(domainIds.size());
-                for (String domainId : domainIds) {
-                    domainIdList.add("id=" + domainId);
-                }
-                putHeader(headers, getHeaderByMethodName(extensionPermissionEnum.getCode()),
-                        ServiceUtils.join(domainIdList, ","));
-            }
-        }
     }
 
     protected AppendObjectResult appendObjectImpl(AppendObjectRequest request) throws ServiceException {
@@ -2137,10 +1553,10 @@ public class ObsService extends RestStorageService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPost(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.body, true);
+                    result.getParams(), result.getBody(), true);
         } finally {
-            if (result != null && result.body != null && request.isAutoClose()) {
-                RepeatableRequestEntity entity = (RepeatableRequestEntity) result.body;
+            if (result != null && result.getBody() != null && request.isAutoClose()) {
+                RepeatableRequestEntity entity = (RepeatableRequestEntity) result.getBody();
                 ServiceUtils.closeStream(entity);
             }
         }
@@ -2166,7 +1582,6 @@ public class ObsService extends RestStorageService {
     }
 
     protected ObsFSFile writeFileImpl(WriteFileRequest request) throws ServiceException {
-
         TransResult result = null;
         Response response;
         boolean isExtraAclPutRequired;
@@ -2177,11 +1592,11 @@ public class ObsService extends RestStorageService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.body, true);
+                    result.getParams(), result.getBody(), true);
         } finally {
-            if (result != null && result.body != null && request.isAutoClose()) {
-                if (result.body instanceof Closeable) {
-                    ServiceUtils.closeStream((Closeable) result.body);
+            if (result != null && result.getBody() != null && request.isAutoClose()) {
+                if (result.getBody() instanceof Closeable) {
+                    ServiceUtils.closeStream((Closeable) result.getBody());
                 }
             }
         }
@@ -2217,11 +1632,11 @@ public class ObsService extends RestStorageService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.body, true);
+                    result.getParams(), result.getBody(), true);
         } finally {
-            if (result != null && result.body != null && request.isAutoClose()) {
-                if (result.body instanceof Closeable) {
-                    ServiceUtils.closeStream((Closeable) result.body);
+            if (result != null && result.getBody() != null && request.isAutoClose()) {
+                if (result.getBody() instanceof Closeable) {
+                    ServiceUtils.closeStream((Closeable) result.getBody());
                 }
             }
         }
@@ -2253,11 +1668,11 @@ public class ObsService extends RestStorageService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(), null,
-                    result.body, true);
+                    result.getBody(), true);
         } finally {
-            if (result != null && result.body != null && request.isAutoClose()) {
-                if (result.body instanceof Closeable) {
-                    ServiceUtils.closeStream((Closeable) result.body);
+            if (result != null && result.getBody() != null && request.isAutoClose()) {
+                if (result.getBody() instanceof Closeable) {
+                    ServiceUtils.closeStream((Closeable) result.getBody());
                 }
             }
         }
@@ -2281,118 +1696,6 @@ public class ObsService extends RestStorageService {
         return ret;
     }
 
-    TransResult transCopyObjectRequest(CopyObjectRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        IConvertor iconvertor = this.getIConvertor();
-        IHeaders iheaders = this.getIHeaders();
-
-        ObjectMetadata objectMetadata = request.getNewObjectMetadata() == null ? new ObjectMetadata()
-                : request.getNewObjectMetadata();
-
-        putHeader(headers, iheaders.metadataDirectiveHeader(),
-                request.isReplaceMetadata() ? Constants.DERECTIVE_REPLACE : Constants.DERECTIVE_COPY);
-        if (request.isReplaceMetadata()) {
-            objectMetadata.getMetadata().remove(iheaders.requestIdHeader());
-            objectMetadata.getMetadata().remove(iheaders.requestId2Header());
-            for (Map.Entry<String, Object> entry : objectMetadata.getMetadata().entrySet()) {
-                String key = entry.getKey();
-                if (!ServiceUtils.isValid(key)) {
-                    continue;
-                }
-                key = key.trim();
-                if (Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
-                    continue;
-                }
-                headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
-            }
-        }
-
-        if (objectMetadata.getContentType() != null) {
-            headers.put(CommonHeaders.CONTENT_TYPE, objectMetadata.getContentType().trim());
-        }
-
-        if (objectMetadata.getContentEncoding() != null) {
-            headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
-        }
-
-        if (objectMetadata.getObjectStorageClass() != null) {
-            putHeader(headers, iheaders.storageClassHeader(),
-                    iconvertor.transStorageClass(objectMetadata.getObjectStorageClass()));
-        }
-
-        if (objectMetadata.getWebSiteRedirectLocation() != null) {
-            putHeader(headers, iheaders.websiteRedirectLocationHeader(), objectMetadata.getWebSiteRedirectLocation());
-        }
-
-        if (request.getSuccessRedirectLocation() != null) {
-            putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
-        }
-
-        this.transRequestPaymentHeaders(request, headers, iheaders);
-        this.transExtensionPermissions(request, headers);
-        this.transSseHeaders(request, headers, iheaders);
-
-        transSseCSourceHeaders(request.getSseCHeaderSource(), headers, iheaders);
-
-        transConditionCopyHeaders(request, headers, iheaders);
-
-        String sourceKey = RestUtils.encodeUrlString(request.getSourceBucketName()) + "/"
-                + RestUtils.encodeUrlString(request.getSourceObjectKey());
-        if (ServiceUtils.isValid(request.getVersionId())) {
-            sourceKey += "?versionId=" + request.getVersionId().trim();
-        }
-        putHeader(headers, iheaders.copySourceHeader(), sourceKey);
-
-        return new TransResult(headers);
-    }
-
-    void transSseCSourceHeaders(SseCHeader sseCHeader, Map<String, String> headers, IHeaders iheaders)
-            throws ServiceException {
-        if (sseCHeader != null) {
-            String algorithm = sseCHeader.getSSEAlgorithm().getCode();
-            putHeader(headers, iheaders.copySourceSseCHeader(), ServiceUtils.toValid(algorithm));
-            if (sseCHeader.getSseCKeyBase64() != null) {
-                try {
-                    putHeader(headers, iheaders.copySourceSseCKeyHeader(), sseCHeader.getSseCKeyBase64());
-                    putHeader(headers, iheaders.copySourceSseCKeyMd5Header(), ServiceUtils.toBase64(
-                            ServiceUtils.computeMD5Hash(ServiceUtils.fromBase64(sseCHeader.getSseCKeyBase64()))));
-                } catch (IOException e) {
-                    throw new IllegalStateException("fail to read sseCkey", e);
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalStateException("fail to read sseCkey", e);
-                }
-            } else if (null != sseCHeader.getSseCKey()) {
-                try {
-                    byte[] data = sseCHeader.getSseCKey();
-                    putHeader(headers, iheaders.copySourceSseCKeyHeader(), ServiceUtils.toBase64(data));
-                    putHeader(headers, iheaders.copySourceSseCKeyMd5Header(),
-                            ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(data)));
-                } catch (IOException e) {
-                    throw new IllegalStateException("fail to read sseCkey", e);
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IllegalStateException("fail to read sseCkey", e);
-                }
-            }
-        }
-    }
-
-    void transConditionCopyHeaders(CopyObjectRequest request, Map<String, String> headers, IHeaders iheaders) {
-        if (request.getIfModifiedSince() != null) {
-            putHeader(headers, iheaders.copySourceIfModifiedSinceHeader(),
-                    ServiceUtils.formatRfc822Date(request.getIfModifiedSince()));
-        }
-        if (request.getIfUnmodifiedSince() != null) {
-            putHeader(headers, iheaders.copySourceIfUnmodifiedSinceHeader(),
-                    ServiceUtils.formatRfc822Date(request.getIfUnmodifiedSince()));
-        }
-        if (ServiceUtils.isValid(request.getIfMatchTag())) {
-            putHeader(headers, iheaders.copySourceIfMatchHeader(), request.getIfMatchTag().trim());
-        }
-        if (ServiceUtils.isValid(request.getIfNoneMatchTag())) {
-            putHeader(headers, iheaders.copySourceIfNoneMatchHeader(), request.getIfNoneMatchTag().trim());
-        }
-    }
-
     protected CopyObjectResult copyObjectImpl(CopyObjectRequest request) throws ServiceException {
 
         TransResult result = this.transCopyObjectRequest(request);
@@ -2405,8 +1708,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(response);
 
-        CopyObjectResultHandler handler = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
-                CopyObjectResultHandler.class, false);
+        XmlResponsesSaxParser.CopyObjectResultHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.CopyObjectResultHandler.class, false);
         CopyObjectResult copyRet = new CopyObjectResult(handler.getETag(), handler.getLastModified(),
                 response.header(this.getIHeaders().versionIdHeader()),
                 response.header(this.getIHeaders().copySourceVersionIdHeader()),
@@ -2469,170 +1772,11 @@ public class ObsService extends RestStorageService {
         return doesObjectExist;
     }
 
-    TransResult transSetObjectMetadataRequest(SetObjectMetadataRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-        IConvertor iconvertor = this.getIConvertor();
-
-        for (Map.Entry<String, String> entry : request.getMetadata().entrySet()) {
-            String key = entry.getKey();
-            if (!ServiceUtils.isValid(key)) {
-                continue;
-            }
-            key = key.trim();
-            headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
-        }
-
-        if (request.getObjectStorageClass() != null) {
-            putHeader(headers, iheaders.storageClassHeader(),
-                    iconvertor.transStorageClass(request.getObjectStorageClass()));
-        }
-
-        if (request.getWebSiteRedirectLocation() != null) {
-            putHeader(headers, iheaders.websiteRedirectLocationHeader(), request.getWebSiteRedirectLocation());
-        }
-
-        if (request.getContentDisposition() != null) {
-            putHeader(headers, Constants.CommonHeaders.CONTENT_DISPOSITION, request.getContentDisposition());
-        }
-
-        if (request.getContentEncoding() != null) {
-            putHeader(headers, Constants.CommonHeaders.CONTENT_ENCODING, request.getContentEncoding());
-        }
-
-        if (request.getContentLanguage() != null) {
-            putHeader(headers, Constants.CommonHeaders.CONTENT_LANGUAGE, request.getContentLanguage());
-        }
-
-        if (request.getContentType() != null) {
-            putHeader(headers, Constants.CommonHeaders.CONTENT_TYPE, request.getContentType());
-        }
-
-        if (request.getCacheControl() != null) {
-            putHeader(headers, Constants.CommonHeaders.CACHE_CONTROL, request.getCacheControl());
-        }
-
-        if (request.getExpires() != null) {
-            putHeader(headers, Constants.CommonHeaders.EXPIRES, request.getExpires());
-        }
-
-        this.transRequestPaymentHeaders(request, headers, iheaders);
-        putHeader(headers, iheaders.metadataDirectiveHeader(),
-                request.isRemoveUnset() ? Constants.DERECTIVE_REPLACE : Constants.DERECTIVE_REPLACE_NEW);
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(SpecialParamEnum.METADATA.getOriginalStringCode(), "");
-        if (request.getVersionId() != null) {
-            params.put(ObsRequestParams.VERSION_ID, request.getVersionId());
-        }
-
-        return new TransResult(headers, params, null);
-    }
-
     protected ObjectMetadata setObjectMetadataImpl(SetObjectMetadataRequest request) {
         TransResult result = this.transSetObjectMetadataRequest(request);
-        Response response = performRestPut(request.getBucketName(), request.getObjectKey(), result.headers,
-                result.params, result.body, true);
+        Response response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
+                result.getParams(), result.getBody(), true);
         return this.getObsFSAttributeFromResponse(response);
-    }
-
-    TransResult transGetObjectRequest(GetObjectRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
-        this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders());
-        this.transConditionGetObjectHeaders(request, headers);
-
-        this.transRequestPaymentHeaders(request, headers, this.getIHeaders());
-        transRangeHeader(request, headers);
-
-        Map<String, String> params = new HashMap<String, String>();
-        this.transGetObjectParams(request, params);
-
-        return new TransResult(headers, params, null);
-    }
-
-    /**
-     *
-     * @param request
-     * @param headers
-     */
-    private void transRangeHeader(GetObjectRequest request, Map<String, String> headers) {
-        String start = "";
-        String end = "";
-
-        if (null != request.getRangeStart()) {
-            ServiceUtils.assertParameterNotNegative(request.getRangeStart().longValue(),
-                    "start range should not be negative.");
-            start = String.valueOf(request.getRangeStart());
-        }
-
-        if (null != request.getRangeEnd()) {
-            ServiceUtils.assertParameterNotNegative(request.getRangeEnd().longValue(),
-                    "end range should not be negative.");
-            end = String.valueOf(request.getRangeEnd());
-        }
-
-        if (null != request.getRangeStart() && null != request.getRangeEnd()) {
-            if (request.getRangeStart().longValue() > request.getRangeEnd().longValue()) {
-                throw new IllegalArgumentException("start must be less than end.");
-            }
-        }
-
-        if (!"".equals(start) || !"".equals(end)) {
-            String range = String.format("bytes=%s-%s", start, end);
-            headers.put(CommonHeaders.RANGE, range);
-        }
-    }
-
-    void transGetObjectParams(GetObjectRequest request, Map<String, String> params) {
-        if (null != request.getReplaceMetadata()) {
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getCacheControl())) {
-                params.put(ObsRequestParams.RESPONSE_CACHE_CONTROL, request.getReplaceMetadata().getCacheControl());
-            }
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getContentDisposition())) {
-                params.put(ObsRequestParams.RESPONSE_CONTENT_DISPOSITION,
-                        request.getReplaceMetadata().getContentDisposition());
-            }
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getContentEncoding())) {
-                params.put(ObsRequestParams.RESPONSE_CONTENT_ENCODING,
-                        request.getReplaceMetadata().getContentEncoding());
-            }
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getContentLanguage())) {
-                params.put(ObsRequestParams.RESPONSE_CONTENT_LANGUAGE,
-                        request.getReplaceMetadata().getContentLanguage());
-            }
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getContentType())) {
-                params.put(ObsRequestParams.RESPONSE_CONTENT_TYPE, request.getReplaceMetadata().getContentType());
-            }
-            if (ServiceUtils.isValid(request.getReplaceMetadata().getExpires())) {
-                params.put(ObsRequestParams.RESPONSE_EXPIRES, request.getReplaceMetadata().getExpires());
-            }
-        }
-        if (ServiceUtils.isValid(request.getImageProcess())) {
-            params.put(ObsRequestParams.X_IMAGE_PROCESS, request.getImageProcess());
-        }
-        if (request.getVersionId() != null) {
-            params.put(ObsRequestParams.VERSION_ID, request.getVersionId());
-        }
-        if (request.getCacheOption() != null) {
-            String cacheControl = request.getCacheOption().getCode() + ", ttl=" + request.getTtl();
-            params.put(ObsRequestParams.X_CACHE_CONTROL, cacheControl);
-        }
-    }
-
-    void transConditionGetObjectHeaders(GetObjectRequest request, Map<String, String> headers) {
-        if (request.getIfModifiedSince() != null) {
-            headers.put(CommonHeaders.IF_MODIFIED_SINCE, ServiceUtils.formatRfc822Date(request.getIfModifiedSince()));
-        }
-        if (request.getIfUnmodifiedSince() != null) {
-            headers.put(CommonHeaders.IF_UNMODIFIED_SINCE,
-                    ServiceUtils.formatRfc822Date(request.getIfUnmodifiedSince()));
-        }
-        if (ServiceUtils.isValid(request.getIfMatchTag())) {
-            headers.put(CommonHeaders.IF_MATCH, request.getIfMatchTag().trim());
-        }
-        if (ServiceUtils.isValid(request.getIfNoneMatchTag())) {
-            headers.put(CommonHeaders.IF_NONE_MATCH, request.getIfNoneMatchTag().trim());
-        }
     }
 
     protected ObsObject getObjectImpl(GetObjectRequest request) throws ServiceException {
@@ -2729,7 +1873,10 @@ public class ObsService extends RestStorageService {
         obsObject.setObjectKey(objectKey);
         obsObject.setBucketName(bucketName);
         obsObject.setMetadata(objMetadata);
-        InputStream input = response.body().byteStream();
+        // pmd error message: CloseResource - Ensure that resources like this
+        // InputStream object are closed after use
+        // 该接口是下载对象，需要将流返回给客户（调用方），我们不能关闭这个流
+        InputStream input = response.body().byteStream(); // NOPMD
         if (progressListener != null) {
             ProgressManager progressManager = new SimpleProgressManager(objMetadata.getContentLength(), 0,
                     progressListener,
@@ -2756,8 +1903,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketQuota ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketQuotaHandler.class, false).getQuota();
+        BucketQuota ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketQuotaHandler.class, false).getQuota();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -2774,7 +1921,8 @@ public class ObsService extends RestStorageService {
         this.verifyResponseContentType(httpResponse);
 
         BucketStoragePolicyConfiguration ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketStoragePolicyHandler.class, false)
+                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.BucketStoragePolicyHandler.class, false)
                 .getStoragePolicy();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
@@ -2790,9 +1938,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketStorageInfo ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketStorageInfoHandler.class, false)
-                .getStorageInfo();
+        BucketStorageInfo ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketStorageInfoHandler.class, false).getStorageInfo();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -2807,9 +1954,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        AccessControlList ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), AccessControlListHandler.class, false)
-                .getAccessControlList();
+        AccessControlList ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.AccessControlListHandler.class, false).getAccessControlList();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -2827,9 +1973,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        AccessControlList ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), AccessControlListHandler.class, false)
-                .getAccessControlList();
+        AccessControlList ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.AccessControlListHandler.class, false).getAccessControlList();
         setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
         setStatusCode(ret, httpResponse.code());
         return ret;
@@ -2935,9 +2080,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        BucketDirectColdAccess result = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), BucketDirectColdAccessHandler.class, false)
-                .getBucketDirectColdAccess();
+        BucketDirectColdAccess result = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketDirectColdAccessHandler.class, false).getBucketDirectColdAccess();
         setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
         setStatusCode(result, httpResponse.code());
         return result;
@@ -2973,32 +2117,6 @@ public class ObsService extends RestStorageService {
         return ret;
     }
 
-    TransResult transListObjectsRequest(ListObjectsRequest listObjectsRequest) {
-        Map<String, String> params = new HashMap<String, String>();
-        if (listObjectsRequest.getPrefix() != null) {
-            params.put(ObsRequestParams.PREFIX, listObjectsRequest.getPrefix());
-        }
-        if (listObjectsRequest.getDelimiter() != null) {
-            params.put(ObsRequestParams.DELIMITER, listObjectsRequest.getDelimiter());
-        }
-        if (listObjectsRequest.getMaxKeys() > 0) {
-            params.put(ObsRequestParams.MAX_KEYS, String.valueOf(listObjectsRequest.getMaxKeys()));
-        }
-
-        if (listObjectsRequest.getMarker() != null) {
-            params.put(ObsRequestParams.MARKER, listObjectsRequest.getMarker());
-        }
-
-        Map<String, String> headers = new HashMap<String, String>();
-        transRequestPaymentHeaders(listObjectsRequest, headers, this.getIHeaders());
-        if (listObjectsRequest.getListTimeout() > 0) {
-            putHeader(headers, this.getIHeaders().listTimeoutHeader(),
-                    String.valueOf(listObjectsRequest.getListTimeout()));
-        }
-
-        return new TransResult(headers, params, null);
-    }
-
     protected ObjectListing listObjectsImpl(ListObjectsRequest listObjectsRequest) throws ServiceException {
 
         TransResult result = this.transListObjectsRequest(listObjectsRequest);
@@ -3008,8 +2126,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        ListObjectsHandler listObjectsHandler = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse), ListObjectsHandler.class, true);
+        XmlResponsesSaxParser.ListObjectsHandler listObjectsHandler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListObjectsHandler.class, true);
 
         ObjectListing objList = new ObjectListing(listObjectsHandler.getObjects(),
                 listObjectsHandler.getCommonPrefixes(),
@@ -3031,6 +2149,39 @@ public class ObsService extends RestStorageService {
         return objList;
     }
 
+    protected ListContentSummaryResult listContentSummaryImpl(ListContentSummaryRequest listContentSummaryRequest)
+            throws ServiceException {
+
+        TransResult result = this.transListContentSummaryRequest(listContentSummaryRequest);
+
+        Response httpResponse = performRestGet(listContentSummaryRequest.getBucketName(), null, result.getParams(),
+                null);
+
+        this.verifyResponseContentType(httpResponse);
+
+        XmlResponsesSaxParser.ListContentSummaryHandler listContentSummaryHandler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListContentSummaryHandler.class,
+                true);
+
+        ListContentSummaryResult contentSummaryResult = new ListContentSummaryResult(
+                listContentSummaryHandler.getFolderContentSummaries(),
+                listContentSummaryHandler.getBucketName() == null ? listContentSummaryRequest.getBucketName()
+                        : listContentSummaryHandler.getBucketName(),
+                listContentSummaryHandler.isListingTruncated(),
+                listContentSummaryHandler.getRequestPrefix() == null ? listContentSummaryRequest.getPrefix()
+                        : listContentSummaryHandler.getRequestPrefix(),
+                listContentSummaryHandler.getRequestMarker() == null ? listContentSummaryRequest.getMarker()
+                        : listContentSummaryHandler.getRequestMarker(),
+                listContentSummaryHandler.getRequestMaxKeys(),
+                listContentSummaryHandler.getRequestDelimiter() == null ? listContentSummaryRequest.getDelimiter()
+                        : listContentSummaryHandler.getRequestDelimiter(),
+                listContentSummaryHandler.getMarkerForNextListing(),
+                httpResponse.header(this.getIHeaders().bucketRegionHeader()));
+        setResponseHeaders(contentSummaryResult, this.cleanResponseHeaders(httpResponse));
+        setStatusCode(contentSummaryResult, httpResponse.code());
+        return contentSummaryResult;
+    }
+
     protected ListBucketsResult listAllBucketsImpl(ListBucketsRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         if (request != null && request.isQueryLocation()) {
@@ -3043,8 +2194,8 @@ public class ObsService extends RestStorageService {
 
         this.verifyResponseContentType(httpResponse);
 
-        ListBucketsHandler handler = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
-                ListBucketsHandler.class, true);
+        XmlResponsesSaxParser.ListBucketsHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListBucketsHandler.class, true);
 
         Map<String, Object> responseHeaders = this.cleanResponseHeaders(httpResponse);
 
@@ -3126,93 +2277,16 @@ public class ObsService extends RestStorageService {
         return this.build(response);
     }
 
-    Map<String, Object> cleanResponseHeaders(Response response) {
-        Map<String, List<String>> map = response.headers().toMultimap();
-        return ServiceUtils.cleanRestMetadataMap(map, this.getIHeaders().headerPrefix(),
-                this.getIHeaders().headerMetaPrefix());
-    }
-
-    TransResult transUploadPartRequest(UploadPartRequest request) throws ServiceException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(ObsRequestParams.PART_NUMBER, String.valueOf(request.getPartNumber()));
-        params.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
-
-        Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-
-        if (ServiceUtils.isValid(request.getContentMd5())) {
-            headers.put(CommonHeaders.CONTENT_MD5, request.getContentMd5().trim());
-        }
-
-        this.transRequestPaymentHeaders(request, headers, iheaders);
-        this.transSseCHeaders(request.getSseCHeader(), headers, iheaders);
-
-        InputStream input = null;
-        long contentLength = -1L;
-        if (null != request.getFile()) {
-            long fileSize = request.getFile().length();
-            long offset = (request.getOffset() >= 0 && request.getOffset() < fileSize) ? request.getOffset() : 0;
-            long partSize = (request.getPartSize() != null && request.getPartSize() > 0
-                    && request.getPartSize() <= (fileSize - offset)) ? request.getPartSize() : fileSize - offset;
-            contentLength = partSize;
-
-            try {
-                if (request.isAttachMd5() && !ServiceUtils.isValid(request.getContentMd5())) {
-                    headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.toBase64(
-                            ServiceUtils.computeMD5Hash(new FileInputStream(request.getFile()), partSize, offset)));
-                }
-                input = new FileInputStream(request.getFile());
-                long skipByte = input.skip(offset);
-                if (log.isDebugEnabled()) {
-                    log.debug("Skip " + skipByte + " bytes; offset : " + offset);
-                }
-            } catch (Exception e) {
-                ServiceUtils.closeStream(input);
-                throw new ServiceException(e);
-            }
-
-            if (request.getProgressListener() != null) {
-                ProgressManager progressManager = new SimpleProgressManager(contentLength, 0,
-                        request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                                : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-                input = new ProgressInputStream(input, progressManager);
-            }
-
-        } else if (null != request.getInput()) {
-            if (request.getPartSize() != null && request.getPartSize() > 0) {
-                contentLength = request.getPartSize();
-            }
-            input = request.getInput();
-
-            if (input != null && request.getProgressListener() != null) {
-                ProgressManager progressManager = new SimpleProgressManager(contentLength, 0,
-                        request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                                : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-                input = new ProgressInputStream(input, progressManager);
-            }
-
-        }
-        String contentType = Mimetypes.getInstance().getMimetype(request.getObjectKey());
-        headers.put(CommonHeaders.CONTENT_TYPE, contentType);
-
-        if (contentLength > -1) {
-            this.putHeader(headers, CommonHeaders.CONTENT_LENGTH, String.valueOf(contentLength));
-        }
-        RequestBody body = input == null ? null
-                : new RepeatableRequestEntity(input, contentType, contentLength, this.obsProperties);
-        return new TransResult(headers, params, body);
-    }
-
     protected UploadPartResult uploadPartImpl(UploadPartRequest request) throws ServiceException {
         TransResult result = null;
         Response response;
         try {
             result = this.transUploadPartRequest(request);
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.body, true);
+                    result.getParams(), result.getBody(), true);
         } finally {
-            if (result != null && result.body != null && request.isAutoClose()) {
-                RepeatableRequestEntity entity = (RepeatableRequestEntity) result.body;
+            if (result != null && result.getBody() != null && request.isAutoClose()) {
+                RepeatableRequestEntity entity = (RepeatableRequestEntity) result.getBody();
                 ServiceUtils.closeStream(entity);
             }
         }
@@ -3224,34 +2298,6 @@ public class ObsService extends RestStorageService {
         return ret;
     }
 
-    TransResult transCopyPartRequest(CopyPartRequest request) throws ServiceException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(ObsRequestParams.PART_NUMBER, String.valueOf(request.getPartNumber()));
-        params.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
-
-        Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-
-        String sourceKey = RestUtils.encodeUrlString(request.getSourceBucketName()) + "/"
-                + RestUtils.encodeUrlString(request.getSourceObjectKey());
-        if (ServiceUtils.isValid(request.getVersionId())) {
-            sourceKey += "?versionId=" + request.getVersionId().trim();
-        }
-        putHeader(headers, iheaders.copySourceHeader(), sourceKey);
-
-        if (request.getByteRangeStart() != null) {
-            String rangeEnd = request.getByteRangeEnd() != null ? String.valueOf(request.getByteRangeEnd()) : "";
-            String range = String.format("bytes=%s-%s", request.getByteRangeStart(), rangeEnd);
-            putHeader(headers, iheaders.copySourceRangeHeader(), range);
-        }
-
-        this.transRequestPaymentHeaders(request, headers, iheaders);
-        this.transSseCHeaders(request.getSseCHeaderDestination(), headers, iheaders);
-        this.transSseCSourceHeaders(request.getSseCHeaderSource(), headers, iheaders);
-
-        return new TransResult(headers, params, null);
-    }
-
     protected CopyPartResult copyPartImpl(CopyPartRequest request) throws ServiceException {
 
         TransResult result = this.transCopyPartRequest(request);
@@ -3259,33 +2305,11 @@ public class ObsService extends RestStorageService {
                 result.getHeaders(), result.getParams(), null, false);
         this.verifyResponseContentType(response);
 
-        CopyPartResult ret = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(response), CopyPartResultHandler.class, true)
-                .getCopyPartResult(request.getPartNumber());
+        CopyPartResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.CopyPartResultHandler.class, true).getCopyPartResult(request.getPartNumber());
         setResponseHeaders(ret, this.cleanResponseHeaders(response));
         setStatusCode(ret, response.code());
         return ret;
-    }
-
-    HeaderResponse build(Response res) {
-        HeaderResponse response = new HeaderResponse();
-        setResponseHeaders(response, this.cleanResponseHeaders(res));
-        setStatusCode(response, res.code());
-        return response;
-    }
-
-    static HeaderResponse build(Map<String, Object> responseHeaders) {
-        HeaderResponse response = new HeaderResponse();
-        setResponseHeaders(response, responseHeaders);
-        return response;
-    }
-
-    static void setStatusCode(HeaderResponse response, int statusCode) {
-        response.setStatusCode(statusCode);
-    }
-
-    static void setResponseHeaders(HeaderResponse response, Map<String, Object> responseHeaders) {
-        response.setResponseHeaders(responseHeaders);
     }
 
     private String getObjectUrl(String bucketName, String objectKey) {
@@ -3296,49 +2320,6 @@ public class ObsService extends RestStorageService {
                 .append(pathStyle || isCname ? "" : bucketName + ".").append(this.getEndpoint()).append(":")
                 .append(https ? this.getHttpsPort() : this.getHttpPort()).append("/")
                 .append(pathStyle ? bucketName + "/" : "").append(RestUtils.uriEncode(objectKey, false)).toString();
-    }
-
-    protected AuthTypeEnum getApiVersion(String bucketName) throws ServiceException {
-        if (!ServiceUtils.isValid(bucketName)) {
-            return parseAuthTypeInResponse("");
-        }
-        AuthTypeEnum apiVersion = apiVersionCache.getApiVersionInCache(bucketName);
-        if (apiVersion == null) {
-            try {
-                segmentLock.lock(bucketName);
-                apiVersion = apiVersionCache.getApiVersionInCache(bucketName);
-                if (apiVersion == null) {
-                    apiVersion = parseAuthTypeInResponse(bucketName);
-                    apiVersionCache.addApiVersion(bucketName, apiVersion);
-                }
-            } finally {
-                segmentLock.unlock(bucketName);
-            }
-        }
-        return apiVersion;
-    }
-
-    private AuthTypeEnum parseAuthTypeInResponse(String bucketName) throws ServiceException {
-        Response response;
-        try {
-            response = getAuthTypeNegotiationResponseImpl(bucketName);
-        } catch (ServiceException e) {
-            if (e.getResponseCode() == 404 || e.getResponseCode() <= 0 || e.getResponseCode() == 408
-                    || e.getResponseCode() >= 500) {
-                throw e;
-            } else {
-                return AuthTypeEnum.V2;
-            }
-        }
-        String apiVersion;
-        return (response.code() == 200 && (apiVersion = response.headers().get("x-obs-api")) != null
-                && apiVersion.compareTo("3.0") >= 0) ? AuthTypeEnum.OBS : AuthTypeEnum.V2;
-    }
-
-    private Response getAuthTypeNegotiationResponseImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put("apiversion", "");
-        return performRestForApiVersion(bucketName, null, requestParameters, null);
     }
 
     protected ThreadPoolExecutor initThreadPool(AbstractBulkRequest request) {
@@ -3534,7 +2515,7 @@ public class ObsService extends RestStorageService {
             String contentType = response.header(Constants.CommonHeaders.CONTENT_TYPE);
             if (null == contentType) {
                 throw new ServiceException("Expected JSON document response  but received content type is null");
-            } else if (-1 == contentType.toString().indexOf(Mimetypes.MIMETYPE_JSON)) {
+            } else if (-1 == contentType.indexOf(Mimetypes.MIMETYPE_JSON)) {
                 throw new ServiceException(
                         "Expected JSON document response  but received content type is " + contentType);
             }

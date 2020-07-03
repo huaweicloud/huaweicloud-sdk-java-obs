@@ -21,100 +21,86 @@ import java.util.List;
  * Response to a bucket or object preflight request
  *
  */
-public class OptionsInfoResult extends HeaderResponse
-{
+public class OptionsInfoResult extends HeaderResponse {
     private String allowOrigin;
-    
+
     private List<String> allowHeaders;
-    
+
     private int maxAge;
-    
+
     private List<String> allowMethods;
-    
+
     private List<String> exposeHeaders;
-    
-    
-    
+
     public OptionsInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge, List<String> allowMethods,
-			List<String> exposeHeaders) {
-		super();
-		this.allowOrigin = allowOrigin;
-		this.allowHeaders = allowHeaders;
-		this.maxAge = maxAge;
-		this.allowMethods = allowMethods;
-		this.exposeHeaders = exposeHeaders;
-	}
+            List<String> exposeHeaders) {
+        super();
+        this.allowOrigin = allowOrigin;
+        this.allowHeaders = allowHeaders;
+        this.maxAge = maxAge;
+        this.allowMethods = allowMethods;
+        this.exposeHeaders = exposeHeaders;
+    }
 
-
-	/**
+    /**
      * Obtain the origin of the allowed cross-origin request.
      * 
      * @return Origin of the allowed cross-origin request
      */
-    public String getAllowOrigin()
-    {
+    public String getAllowOrigin() {
         return allowOrigin;
     }
-    
-    
-    /** 
+
+    /**
      * Obtain the list of allowed request headers.
      * 
      * @return List of allowed request headers
      */
-    public List<String> getAllowHeaders()
-    {
-        if(this.allowHeaders == null){
+    public List<String> getAllowHeaders() {
+        if (this.allowHeaders == null) {
             allowHeaders = new ArrayList<String>();
         }
         return allowHeaders;
     }
-    
-    
-    /** 
-     * Obtain the cache duration (in seconds) of the request result in the instance of ObsClient.
+
+    /**
+     * Obtain the cache duration (in seconds) of the request result in the
+     * instance of ObsClient.
      * 
      * @return Cache duration of the request result in the instance of ObsClient
      */
-    public int getMaxAge()
-    {
+    public int getMaxAge() {
         return maxAge;
     }
+
     /**
      * Obtain the list of allowed cross-origin request methods.
      * 
      * @return List of allowed cross-origin request methods
      */
-    public List<String> getAllowMethods()
-    {
-        if(this.allowMethods == null){
+    public List<String> getAllowMethods() {
+        if (this.allowMethods == null) {
             this.allowMethods = new ArrayList<String>();
         }
         return allowMethods;
     }
-    
-    
+
     /**
      * Obtain the list of allowed additional headers in the response.
      * 
      * @return List of allowed additional headers in the response
      */
-    public List<String> getExposeHeaders()
-    {
-        if(this.exposeHeaders == null){
+    public List<String> getExposeHeaders() {
+        if (this.exposeHeaders == null) {
             this.exposeHeaders = new ArrayList<String>();
         }
         return exposeHeaders;
     }
-    
 
     @Override
-    public String toString()
-    {
-        return "OptionsInfoResult [allowOrigin=" + allowOrigin + ", allowHeaders=" + allowHeaders + ", maxAge=" + maxAge + ", allowMethods="
-            + allowMethods + ", exposeHeaders=" + exposeHeaders + "]";
+    public String toString() {
+        return "OptionsInfoResult [allowOrigin=" + allowOrigin + ", allowHeaders=" + allowHeaders + ", maxAge=" + maxAge
+                + ", allowMethods=" + allowMethods + ", exposeHeaders=" + exposeHeaders + "]";
     }
-    
+
 }
-
-

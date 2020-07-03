@@ -11,29 +11,31 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.GetObjectRequest;
 
 /**
- * Parameters in a request for obtaining the file content 
+ * Parameters in a request for obtaining the file content
  *
  */
-public class ReadFileRequest extends GetObjectRequest{
+public class ReadFileRequest extends GetObjectRequest {
 
-	public ReadFileRequest() {
-		super();
-	}
+    public ReadFileRequest() {
+        super();
+    }
 
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey File name
-	 */
-	public ReadFileRequest(String bucketName, String objectKey) {
-		super(bucketName, objectKey);
-	}
-	
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     */
+    public ReadFileRequest(String bucketName, String objectKey) {
+        super(bucketName, objectKey);
+    }
+
 }
-
-

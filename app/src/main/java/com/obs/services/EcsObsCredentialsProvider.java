@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services;
 
 import java.io.IOException;
@@ -73,7 +74,9 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
 
     /**
      * fefresh
-     * @param ignoreException  ignore exception
+     * 
+     * @param ignoreException
+     *            ignore exception
      */
     private void refresh(boolean ignoreException) {
         int times = 0;
@@ -81,7 +84,8 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
             try {
                 securityKey = getNewSecurityKey();
             } catch (IOException | RuntimeException e) {
-                ILOG.warn("refresh new security key failed. times : " + times + "; maxRetryTimes is : " + maxRetryTimes + "; ignoreException : " + ignoreException, e);
+                ILOG.warn("refresh new security key failed. times : " + times + "; maxRetryTimes is : " + maxRetryTimes
+                        + "; ignoreException : " + ignoreException, e);
 
                 if (times >= this.maxRetryTimes) {
                     ILOG.error("refresh new security key failed.", e);
@@ -120,6 +124,7 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
         strAccess.append(accessKey.substring(2 * length / 3, length - 1));
         ILOG.warn("the AccessKey : " + strAccess.toString() + "will expiry at UTC time : " + expiryDate);
 
-        return new LimitedTimeSecurityKey(bean.getAccessKey(), bean.getSecretKey(), bean.getSecurityToken(), expiryDate);
+        return new LimitedTimeSecurityKey(bean.getAccessKey(), bean.getSecretKey(), bean.getSecurityToken(),
+                expiryDate);
     }
 }

@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import java.io.File;
@@ -22,72 +23,86 @@ import com.obs.services.model.AppendObjectRequest;
  * Parameters in a request for writing data to a file
  *
  */
-public class WriteFileRequest extends AppendObjectRequest{
+public class WriteFileRequest extends AppendObjectRequest {
 
-	public WriteFileRequest() {
-		super();
-	}
-	
-	 /**
+    public WriteFileRequest() {
+        super();
+    }
+
+    /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
      */
-    public WriteFileRequest(String bucketName, String objectKey)
-    {
+    public WriteFileRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param file Local path to the file
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param file
+     *            Local path to the file
      */
-    public WriteFileRequest(String bucketName, String objectKey, File file)
-    {
+    public WriteFileRequest(String bucketName, String objectKey, File file) {
         this(bucketName, objectKey);
         this.file = file;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param file Local path to the file
-     * @param position Start position for writing data to a file
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param file
+     *            Local path to the file
+     * @param position
+     *            Start position for writing data to a file
      */
-    public WriteFileRequest(String bucketName, String objectKey, File file, long position)
-    {
-    	 this(bucketName, objectKey, file);
-    	 this.position = position;
+    public WriteFileRequest(String bucketName, String objectKey, File file, long position) {
+        this(bucketName, objectKey, file);
+        this.position = position;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param input Data stream to be uploaded
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param input
+     *            Data stream to be uploaded
      */
-    public WriteFileRequest(String bucketName, String objectKey, InputStream input)
-    {
-    	this(bucketName, objectKey);
-    	this.input = input;
+    public WriteFileRequest(String bucketName, String objectKey, InputStream input) {
+        this(bucketName, objectKey);
+        this.input = input;
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Bucket name
-     * @param objectKey File name
-     * @param input Data stream to be uploaded
-     * @param position Start position for writing data to a file
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            File name
+     * @param input
+     *            Data stream to be uploaded
+     * @param position
+     *            Start position for writing data to a file
      */
-    public WriteFileRequest(String bucketName, String objectKey, InputStream input, long position)
-    {
-    	this(bucketName, objectKey, input);
-    	this.position = position;
+    public WriteFileRequest(String bucketName, String objectKey, InputStream input, long position) {
+        this(bucketName, objectKey, input);
+        this.position = position;
     }
 }
-
-

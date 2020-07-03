@@ -30,7 +30,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     private String downloadFile;
 
-    private long partSize = 1024 * 1024 * 9l;
+    private long partSize = 1024 * 1024 * 9L;
 
     private int taskNum = 1;
 

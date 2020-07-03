@@ -1,16 +1,17 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+
 package com.obs.services.model;
 
 import java.util.Date;
@@ -57,6 +58,8 @@ public class GetObjectRequest extends GenericRequest {
 
     private Map<String, String> requestParameters;
 
+    private boolean autoUnzipResponse = false;
+    
     public GetObjectRequest() {
 
     }
@@ -434,6 +437,30 @@ public class GetObjectRequest extends GenericRequest {
     public void setRequestParameters(Map<String, String> requestParameters) {
         this.requestParameters = requestParameters;
     }
+    
+    /**
+     * Obtain the response to whether to automatically decompress the object compressed using gzip. The default response is false, indicating that the object is not automatically decompressed.<br>
+     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after receiving the request.<br>
+     * If the Accept-Encoding header is manually set in a request, the object will not be automatically decompressed.
+     * @see okhttp3.internal.http.BridgeInterceptor
+     * @return 
+     * @since 3.20.5
+     */
+    public boolean isAutoUnzipResponse() {
+        return autoUnzipResponse;
+    }
+
+    /**
+     * Set the response to whether to automatically decompress the object compressed using gzip. The default response is false, indicating that the object is not automatically decompressed.<br>
+     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after receiving the request.<br>
+     * If the Accept-Encoding header is manually set in a request, the object will not be automatically decompressed.
+     * @see okhttp3.internal.http.BridgeInterceptor
+     * @param autoUnzipResponse
+     * @since 3.20.5
+     */
+    public void setAutoUnzipResponse(boolean autoUnzipResponse) {
+        this.autoUnzipResponse = autoUnzipResponse;
+    }
 
     @Override
     public String toString() {
@@ -441,7 +468,7 @@ public class GetObjectRequest extends GenericRequest {
                 + ", rangeEnd=" + rangeEnd + ", versionId=" + versionId + ", replaceMetadata=" + replaceMetadata
                 + ", sseCHeader=" + sseCHeader + ", ifModifiedSince=" + ifModifiedSince + ", ifUnmodifiedSince="
                 + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag=" + ifNoneMatchTag
-                + ", imageProcess=" + imageProcess + "]";
+                + ", imageProcess=" + imageProcess + ", autoUnzipResponse=" + autoUnzipResponse + "]";
     }
 
 }

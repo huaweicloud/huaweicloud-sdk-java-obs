@@ -25,10 +25,12 @@ final class SegmentPool {
   static final long MAX_SIZE = 64 * 1024; // 64 KiB.
 
   /** Singly-linked list of segments. */
-  static Segment next;
+  // fix findbugs UUF_UNUSED_FIELD
+  // static Segment next;
 
   /** Total bytes in this pool. */
-  static long byteCount;
+  // fix findbugs UUF_UNUSED_FIELD
+  // static long byteCount;
 
   private SegmentPool() {
   }

@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import java.io.UnsupportedEncodingException;
@@ -21,110 +22,123 @@ import com.obs.services.internal.Constants;
 /**
  * SSE-C encryption/decryption headers
  */
-public class SseCHeader
-{
-   
+public class SseCHeader {
+
     private ServerAlgorithm algorithm;
-    
+
     private SSEAlgorithmEnum sseAlgorithm = SSEAlgorithmEnum.AES256;
-    
+
     private byte[] sseCKey;
-    
+
     private String sseCKeyBase64;
-    
+
     /**
-     * Obtain the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey."
+     * Obtain the encryption algorithm type. Only AES256 is supported. This
+     * parameter must be used together with "sseCKey."
      * 
      * @return Encryption algorithm type
      */
     @Deprecated
-    public ServerAlgorithm getAlgorithm()
-    {
+    public ServerAlgorithm getAlgorithm() {
         return algorithm;
     }
-    
+
     /**
-     * Set the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey."
+     * Set the encryption algorithm type. Only AES256 is supported. This
+     * parameter must be used together with "sseCKey."
      * 
-     * @param algorithm Encryption algorithm type
+     * @param algorithm
+     *            Encryption algorithm type
      */
     @Deprecated
-    public void setAlgorithm(ServerAlgorithm algorithm)
-    {
+    public void setAlgorithm(ServerAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
-    
-    
+
     /**
-     * Obtain the encryption algorithm type. Only AES256 is supported. This parameter must be used together with "sseCKey".
+     * Obtain the encryption algorithm type. Only AES256 is supported. This
+     * parameter must be used together with "sseCKey".
      * 
      * @return Encryption algorithm type
      */
     public SSEAlgorithmEnum getSSEAlgorithm() {
         return sseAlgorithm;
     }
-    
+
     /**
-     * Obtain the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * Obtain the key used in the SSE-C mode. The key is used to encrypt and
+     * decrypt an object. The value is not encoded using Base64.
      * 
      * @return Key used in the SSE-C mode
      */
-    public byte[] getSseCKey()
-    {
-        return this.sseCKey;
+    public byte[] getSseCKey() {
+        if (null != this.sseCKey) {
+            return this.sseCKey.clone(); 
+        }
+        return null;
     }
-    
+
     /**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * Set the key used in the SSE-C mode. The key is used to encrypt and
+     * decrypt an object. The value is not encoded using Base64.
      * 
-     * @param sseCKey Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKey
+     *            Key used in the SSE-C mode. The key is used to encrypt and
+     *            decrypt an object.
      */
     @Deprecated
-    public void setSseCKey(String sseCKey)
-    {
-    	if(sseCKey != null) {
-    		try {
-				this.sseCKey = sseCKey.getBytes(Constants.ISO_8859_1_ENCOING);
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalStateException("fail to read sseCkey", e);
-			}
-    	}
+    public void setSseCKey(String sseCKey) {
+        if (sseCKey != null) {
+            try {
+                this.sseCKey = sseCKey.getBytes(Constants.ISO_8859_1_ENCOING);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("fail to read sseCkey", e);
+            }
+        }
     }
-    
+
     /**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is not encoded using Base64.
+     * Set the key used in the SSE-C mode. The key is used to encrypt and
+     * decrypt an object. The value is not encoded using Base64.
      * 
-     * @param sseCKey Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKey
+     *            Key used in the SSE-C mode. The key is used to encrypt and
+     *            decrypt an object.
      */
-    public void setSseCKey(byte[] sseCKey)
-    {
-        this.sseCKey = sseCKey;
+    public void setSseCKey(byte[] sseCKey) {
+        if (null != sseCKey) {
+            this.sseCKey = sseCKey.clone();
+        } else {
+            this.sseCKey = null;
+        }
     }
-    
+
     /**
-     * Obtain the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is a Base64-encoded value.
+     * Obtain the key used in the SSE-C mode. The key is used to encrypt and
+     * decrypt an object. The value is a Base64-encoded value.
      * 
      * @return Key used in the SSE-C mode
      */
-	public String getSseCKeyBase64() {
-		return sseCKeyBase64;
-	}
+    public String getSseCKeyBase64() {
+        return sseCKeyBase64;
+    }
 
-	/**
-     * Set the key used in the SSE-C mode. The key is used to encrypt and decrypt an object. The value is a Base64-encoded value.
+    /**
+     * Set the key used in the SSE-C mode. The key is used to encrypt and
+     * decrypt an object. The value is a Base64-encoded value.
      * 
-     * @param sseCKeyBase64 Key used in the SSE-C mode. The key is used to encrypt and decrypt an object. 
+     * @param sseCKeyBase64
+     *            Key used in the SSE-C mode. The key is used to encrypt and
+     *            decrypt an object.
      */
-	public void setSseCKeyBase64(String sseCKeyBase64) {
-		this.sseCKeyBase64 = sseCKeyBase64;
-	}
+    public void setSseCKeyBase64(String sseCKeyBase64) {
+        this.sseCKeyBase64 = sseCKeyBase64;
+    }
 
-	@Override
-	public String toString() {
-		return "SseCHeader [algorithm=" + algorithm + ", sseCKey=" + Arrays.toString(sseCKey) + ", sseCKeyBase64=" + sseCKeyBase64 + "]";
-	}
-	
-	
+    @Override
+    public String toString() {
+        return "SseCHeader [algorithm=" + algorithm + ", sseCKey=" + Arrays.toString(sseCKey) + ", sseCKeyBase64="
+                + sseCKeyBase64 + "]";
+    }
+
 }
-
-

@@ -11,6 +11,7 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 /**
@@ -18,23 +19,27 @@ package com.obs.services.model;
  *
  */
 public class BucketEncryption extends HeaderResponse {
-    
+
     private SSEAlgorithmEnum sseAlgorithm;
-    
+
     private String kmsKeyId;
-    
-    public BucketEncryption() {}
+
+    public BucketEncryption() {
+    }
 
     /**
      * Constructor
-     * @param sseAlgorithm Bucket encryption algorithm
+     * 
+     * @param sseAlgorithm
+     *            Bucket encryption algorithm
      */
     public BucketEncryption(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
     }
-    
+
     /**
      * Obtain the bucket encryption algorithm.
+     * 
      * @return Bucket encryption algorithm
      */
     public SSEAlgorithmEnum getSseAlgorithm() {
@@ -43,14 +48,17 @@ public class BucketEncryption extends HeaderResponse {
 
     /**
      * Set the bucket encryption algorithm.
-     * @param sseAlgorithm Bucket encryption algorithm
+     * 
+     * @param sseAlgorithm
+     *            Bucket encryption algorithm
      */
     public void setSseAlgorithm(SSEAlgorithmEnum sseAlgorithm) {
         this.sseAlgorithm = sseAlgorithm;
     }
 
     /**
-     * Obtain the master key used in the SSE-KMS encryption. If the value is blank, the default master key is used.
+     * Obtain the master key used in the SSE-KMS encryption. If the value is
+     * blank, the default master key is used.
      * 
      * @return Master key used in the SSE-KMS encryption
      */
@@ -59,9 +67,11 @@ public class BucketEncryption extends HeaderResponse {
     }
 
     /**
-     * Set the master key used in the SSE-KMS encryption. If the value is blank, the default master key will be used.
+     * Set the master key used in the SSE-KMS encryption. If the value is blank,
+     * the default master key will be used.
      * 
-     * @param kmsKeyId Master key used in the SSE-KMS encryption
+     * @param kmsKeyId
+     *            Master key used in the SSE-KMS encryption
      */
     public void setKmsKeyId(String kmsKeyId) {
         this.kmsKeyId = kmsKeyId;
@@ -71,5 +81,5 @@ public class BucketEncryption extends HeaderResponse {
     public String toString() {
         return "BucketEncryption [sseAlgorithm=" + sseAlgorithm + ", kmsKeyId=" + kmsKeyId + "]";
     }
-    
+
 }

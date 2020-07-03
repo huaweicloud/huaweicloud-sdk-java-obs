@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -274,32 +275,32 @@ public class ObsConvertor extends V2Convertor {
         String eventTypeStr = "";
         if (eventType != null) {
             switch (eventType) {
-            case OBJECT_CREATED_ALL:
-                eventTypeStr = "ObjectCreated:*";
-                break;
-            case OBJECT_CREATED_PUT:
-                eventTypeStr = "ObjectCreated:Put";
-                break;
-            case OBJECT_CREATED_POST:
-                eventTypeStr = "ObjectCreated:Post";
-                break;
-            case OBJECT_CREATED_COPY:
-                eventTypeStr = "ObjectCreated:Copy";
-                break;
-            case OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD:
-                eventTypeStr = "ObjectCreated:CompleteMultipartUpload";
-                break;
-            case OBJECT_REMOVED_ALL:
-                eventTypeStr = "ObjectRemoved:*";
-                break;
-            case OBJECT_REMOVED_DELETE:
-                eventTypeStr = "ObjectRemoved:Delete";
-                break;
-            case OBJECT_REMOVED_DELETE_MARKER_CREATED:
-                eventTypeStr = "ObjectRemoved:DeleteMarkerCreated";
-                break;
-            default:
-                break;
+                case OBJECT_CREATED_ALL:
+                    eventTypeStr = "ObjectCreated:*";
+                    break;
+                case OBJECT_CREATED_PUT:
+                    eventTypeStr = "ObjectCreated:Put";
+                    break;
+                case OBJECT_CREATED_POST:
+                    eventTypeStr = "ObjectCreated:Post";
+                    break;
+                case OBJECT_CREATED_COPY:
+                    eventTypeStr = "ObjectCreated:Copy";
+                    break;
+                case OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD:
+                    eventTypeStr = "ObjectCreated:CompleteMultipartUpload";
+                    break;
+                case OBJECT_REMOVED_ALL:
+                    eventTypeStr = "ObjectRemoved:*";
+                    break;
+                case OBJECT_REMOVED_DELETE:
+                    eventTypeStr = "ObjectRemoved:Delete";
+                    break;
+                case OBJECT_REMOVED_DELETE_MARKER_CREATED:
+                    eventTypeStr = "ObjectRemoved:DeleteMarkerCreated";
+                    break;
+                default:
+                    break;
             }
         }
         return eventTypeStr;
@@ -310,17 +311,17 @@ public class ObsConvertor extends V2Convertor {
         String storageClassStr = "";
         if (storageClass != null) {
             switch (storageClass) {
-            case STANDARD:
-                storageClassStr = "STANDARD";
-                break;
-            case WARM:
-                storageClassStr = "WARM";
-                break;
-            case COLD:
-                storageClassStr = "COLD";
-                break;
-            default:
-                break;
+                case STANDARD:
+                    storageClassStr = "STANDARD";
+                    break;
+                case WARM:
+                    storageClassStr = "WARM";
+                    break;
+                case COLD:
+                    storageClassStr = "COLD";
+                    break;
+                default:
+                    break;
             }
         }
         return storageClassStr;
@@ -347,11 +348,11 @@ public class ObsConvertor extends V2Convertor {
         String groupGranteeStr = "";
         if (groupGrantee != null) {
             switch (groupGrantee) {
-            case ALL_USERS:
-                groupGranteeStr = "Everyone";
-                break;
-            default:
-                break;
+                case ALL_USERS:
+                    groupGranteeStr = "Everyone";
+                    break;
+                default:
+                    break;
             }
         }
         return groupGranteeStr;

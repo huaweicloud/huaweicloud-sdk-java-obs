@@ -11,17 +11,19 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.consensus;
 
 import com.obs.services.model.AuthTypeEnum;
 
 import java.util.Date;
+import java.util.Random;
 
 /**
  * 协议协商的缓存数据
  */
 public class CacheData {
-    private static final long VALID_PERIOD = (15 + (int)(5 * Math.random())) * 60 * 1000;
+    private static final long VALID_PERIOD = (15 + new Random(System.currentTimeMillis()).nextInt(5)) * 60 * 1000L;
 
     private AuthTypeEnum apiVersion;
     private long expirationTime;

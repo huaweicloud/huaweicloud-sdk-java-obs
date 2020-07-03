@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.utils;
 
 import java.io.IOException;
@@ -22,40 +23,32 @@ import java.util.Collections;
 import java.util.List;
 
 public final class SecureObjectInputStream extends ObjectInputStream {
-	
-	public static final List<String> ALLOWED_ClASS_NAMES = Collections.unmodifiableList(Arrays.asList(
-	        "java.util.ArrayList",
-	        "com.obs.services.model.PartEtag",
-	        "java.lang.Integer",
-	        "java.lang.Number",
-	        "java.util.Date",
-	        "com.obs.services.internal.ResumableClient$TmpFileStatus",
-	        "com.obs.services.internal.ResumableClient$UploadCheckPoint",
-	        "com.obs.services.internal.ResumableClient$FileStatus",
-	        "com.obs.services.internal.ResumableClient$UploadPart",
-	        "com.obs.services.internal.ResumableClient$DownloadCheckPoint",
-	        "com.obs.services.internal.ResumableClient$DownloadPart",
-	        "com.obs.services.internal.ResumableClient$ObjectStatus"
-	        ));
 
-	public SecureObjectInputStream() throws IOException, SecurityException {
-		super();
-	}
-	
-	public SecureObjectInputStream(InputStream in) throws IOException {
-		super(in);
-	}
+    public static final List<String> ALLOWED_CLASS_NAMES = Collections.unmodifiableList(
+            Arrays.asList("java.util.ArrayList", "com.obs.services.model.PartEtag", "java.lang.Integer",
+                    "java.lang.Number", "java.util.Date", "com.obs.services.internal.ResumableClient$TmpFileStatus",
+                    "com.obs.services.internal.ResumableClient$UploadCheckPoint",
+                    "com.obs.services.internal.ResumableClient$FileStatus",
+                    "com.obs.services.internal.ResumableClient$UploadPart",
+                    "com.obs.services.internal.ResumableClient$DownloadCheckPoint",
+                    "com.obs.services.internal.ResumableClient$DownloadPart",
+                    "com.obs.services.internal.ResumableClient$ObjectStatus"));
 
-	protected Class<?> resolveClass(ObjectStreamClass desc)
-	        throws IOException, ClassNotFoundException
-	    {
-	        String name = desc.getName();
-	        //白名单校验
-	        if(!ALLOWED_ClASS_NAMES.contains(name)) {
-	        	throw new ClassNotFoundException(name + "not find");
-	        }
-	        return super.resolveClass(desc);
-	    }
+    public SecureObjectInputStream() throws IOException, SecurityException {
+        super();
+    }
 
+    public SecureObjectInputStream(InputStream in) throws IOException {
+        super(in);
+    }
+
+    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        String name = desc.getName();
+        // 白名单校验
+        if (!ALLOWED_CLASS_NAMES.contains(name)) {
+            throw new ClassNotFoundException(name + "not find");
+        }
+        return super.resolveClass(desc);
+    }
 
 }

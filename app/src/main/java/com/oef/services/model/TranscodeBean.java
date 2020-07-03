@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,61 +21,69 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class TranscodeBean {
-	@JsonProperty(value = "status")
-	private String status;
-	
-	@JsonProperty(value = "agency")
-	private String agency;
-	
+    @JsonProperty(value = "status")
+    private String status;
+
+    @JsonProperty(value = "agency")
+    private String agency;
+
     public TranscodeBean() {
-    	
+
     }
-	
+
     /**
-	 * Constructor
-	 * @param status Policy status
-	 * @param agency IAM agency
-	 */
-	public TranscodeBean(String status, String agency) {
-		this.status = status;
-		this.agency = agency;
-	}
-	
-	/**
-	 * Obtain the policy status.
-	 * @return Policy status
-	 */
-	public String getStatus() {
-		return status;
-	}
-	
-	/**
-	 * Set the policy status.
-	 * @param status Policy status
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	/**
-	 * Obtain the IAM agency.
-	 * @return IAM agency
-	 */
-	public String getAgency() {
-		return agency;
-	}
-	
-	/**
-	 * Set the IAM agency.
-	 * @param agency IAM agency
-	 */
-	public void setAgency(String agency) {
-		this.agency = agency;
-	}
-	
-	@Override
-    public String toString()
-    {
+     * Constructor
+     * 
+     * @param status
+     *            Policy status
+     * @param agency
+     *            IAM agency
+     */
+    public TranscodeBean(String status, String agency) {
+        this.status = status;
+        this.agency = agency;
+    }
+
+    /**
+     * Obtain the policy status.
+     * 
+     * @return Policy status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Set the policy status.
+     * 
+     * @param status
+     *            Policy status
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * Obtain the IAM agency.
+     * 
+     * @return IAM agency
+     */
+    public String getAgency() {
+        return agency;
+    }
+
+    /**
+     * Set the IAM agency.
+     * 
+     * @param agency
+     *            IAM agency
+     */
+    public void setAgency(String agency) {
+        this.agency = agency;
+    }
+
+    @Override
+    public String toString() {
         return "TranscodeBean [status=" + status + ", agency=" + agency + "]";
     }
 }

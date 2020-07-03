@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.obs.services.exception.ObsException;
@@ -23,15 +24,19 @@ public interface TaskCallback<K, V> {
     /**
      * Callback when the task is executed successfully.
      *
-     * @param result Callback parameter. Generally, the return type of a specific operation is used.
+     * @param result
+     *            Callback parameter. Generally, the return type of a specific
+     *            operation is used.
      */
     void onSuccess(K result);
 
     /**
      * Callback when an exception is thrown during task execution.
      *
-     * @param exception     Exception information
-     * @param singleRequest The request that causes an exception
+     * @param exception
+     *            Exception information
+     * @param singleRequest
+     *            The request that causes an exception
      * 
      */
     void onException(ObsException exception, V singleRequest);

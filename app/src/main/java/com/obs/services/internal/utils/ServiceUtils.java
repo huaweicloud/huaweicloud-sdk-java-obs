@@ -1,9 +1,4 @@
 /**
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -36,7 +31,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -70,11 +64,11 @@ import okhttp3.Headers;
 public class ServiceUtils {
     private static final ILogger log = LoggerBuilder.getLogger(ServiceUtils.class);
 
-    protected static final String iso8601DateParserString = Constants.EXPIRATION_DATE_FORMATTER;
-    protected static final String iso8601DateMidnightParserString = "yyyy-MM-dd'T'00:00:00'Z'";
-    protected static final String iso8601DateParser_WalrusString = "yyyy-MM-dd'T'HH:mm:ss";
-    protected static final String rfc822DateParserString = Constants.HEADER_DATE_FORMATTER;
-    protected static final String _iso8601DateParserString = "yyyy-MM-dd";
+    protected static final String ISO_8601_TIME_PARSER_STRING = Constants.EXPIRATION_DATE_FORMATTER;
+    protected static final String ISO_8601_TIME_MIDNING_PARSER_STRING = "yyyy-MM-dd'T'00:00:00'Z'";
+    protected static final String ISO_8601_TIME_PARSER_WALRUS_STRING = "yyyy-MM-dd'T'HH:mm:ss";
+    protected static final String RFC_822_TIME_PARSER_STRING = Constants.HEADER_DATE_FORMATTER;
+    protected static final String ISO_8601_DATE_PARSER_STRING = "yyyy-MM-dd";
 
     private static Pattern pattern = Pattern
             .compile("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
@@ -117,55 +111,53 @@ public class ServiceUtils {
 
     public static Date parseIso8601Date(String dateString) throws ParseException {
         ParseException exception = null;
-        SimpleDateFormat iso8601DateParser = new SimpleDateFormat(iso8601DateParserString);
+        SimpleDateFormat iso8601TimeParser = new SimpleDateFormat(ISO_8601_TIME_PARSER_STRING);
         TimeZone gmt = Constants.GMT_TIMEZONE;
+        iso8601TimeParser.setTimeZone(gmt);
+        try {
+            return iso8601TimeParser.parse(dateString);
+        } catch (ParseException e) {
+            exception = e;
+        }
+        SimpleDateFormat iso8601TimeParserWalrus = new SimpleDateFormat(ISO_8601_TIME_PARSER_WALRUS_STRING);
+        iso8601TimeParserWalrus.setTimeZone(gmt);
+        try {
+            return iso8601TimeParserWalrus.parse(dateString);
+        } catch (ParseException e) {
+
+            exception = e;
+        }
+        SimpleDateFormat iso8601DateParser = new SimpleDateFormat(ISO_8601_DATE_PARSER_STRING);
         iso8601DateParser.setTimeZone(gmt);
         try {
             return iso8601DateParser.parse(dateString);
-        } catch (ParseException e) {
-            exception = e;
-        }
-        SimpleDateFormat iso8601DateParser_Walrus = new SimpleDateFormat(iso8601DateParser_WalrusString);
-        iso8601DateParser_Walrus.setTimeZone(gmt);
-        try {
-            return iso8601DateParser_Walrus.parse(dateString);
-        } catch (ParseException e) {
-
-            exception = e;
-        }
-        // Throw original exception if the Walrus work-around doesn't save us.
-
-        SimpleDateFormat _iso8601DateParser = new SimpleDateFormat(_iso8601DateParserString);
-        _iso8601DateParser.setTimeZone(gmt);
-        try {
-            return _iso8601DateParser.parse(dateString);
         } catch (Exception e) {
         }
         throw exception;
     }
 
     public static String formatIso8601Date(Date date) {
-        SimpleDateFormat iso8601DateParser = new SimpleDateFormat(iso8601DateParserString);
-        iso8601DateParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return iso8601DateParser.format(date);
+        SimpleDateFormat iso8601TimeParser = new SimpleDateFormat(ISO_8601_TIME_PARSER_STRING);
+        iso8601TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+        return iso8601TimeParser.format(date);
     }
 
     public static String formatIso8601MidnightDate(Date date) {
-        SimpleDateFormat iso8601DateParser = new SimpleDateFormat(iso8601DateMidnightParserString);
-        iso8601DateParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return iso8601DateParser.format(date);
+        SimpleDateFormat iso8601TimeParser = new SimpleDateFormat(ISO_8601_TIME_MIDNING_PARSER_STRING);
+        iso8601TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+        return iso8601TimeParser.format(date);
     }
 
     public static Date parseRfc822Date(String dateString) throws ParseException {
-        SimpleDateFormat rfc822DateParser = new SimpleDateFormat(rfc822DateParserString, Locale.US);
-        rfc822DateParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return rfc822DateParser.parse(dateString);
+        SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
+        rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+        return rfc822TimeParser.parse(dateString);
     }
 
     public static String formatRfc822Date(Date date) {
-        SimpleDateFormat rfc822DateParser = new SimpleDateFormat(rfc822DateParserString, Locale.US);
-        rfc822DateParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return rfc822DateParser.format(date);
+        SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
+        rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+        return rfc822TimeParser.format(date);
     }
 
     public static String signWithHmacSha1(String sk, String canonicalString) throws ServiceException {
@@ -176,22 +168,18 @@ public class ServiceUtils {
             throw new ServiceException("Unable to get bytes from secret string", e);
         }
 
-        // Acquire the MAC instance and initialize with the signing key.
         Mac mac = null;
         try {
             mac = Mac.getInstance(Constants.HMAC_SHA1_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
-            // should not happen
             throw new ServiceException("Could not find sha1 algorithm", e);
         }
         try {
             mac.init(signingKey);
         } catch (InvalidKeyException e) {
-            // also should not happen
             throw new RuntimeException("Could not initialize the MAC algorithm", e);
         }
 
-        // Compute the HMAC on the digest, and set it.
         try {
             return ServiceUtils.toBase64(mac.doFinal(canonicalString.getBytes(Constants.DEFAULT_ENCODING)));
         } catch (UnsupportedEncodingException e) {
@@ -223,13 +211,13 @@ public class ServiceUtils {
                     try {
                         value = ServiceUtils.parseRfc822Date(value.toString());
                     } catch (ParseException pe) {
-                        // Try ISO-8601 date format, just in case
+                        // Try ISO-8601
                         try {
                             value = ServiceUtils.parseIso8601Date(value.toString());
                         } catch (ParseException pe2) {
-                            // Log original exception if the work-around fails.
                             if (log.isWarnEnabled()) {
-                                log.warn("Date string is not RFC 822 compliant for metadata field " + key, pe);
+                                log.warn("Date string is not RFC 822 or ISO-8601 compliant for metadata field " + key,
+                                        pe);
                             }
                         }
                     }
@@ -246,12 +234,12 @@ public class ServiceUtils {
                             key = key.substring(headerPrefix.length(), key.length());
                         }
                         if (value instanceof List) {
-                            List<String> _values = new ArrayList<String>(values.size());
-                            for (String _value : values) {
-                                _values.add(
-                                        _value != null ? URLDecoder.decode(_value, Constants.DEFAULT_ENCODING) : null);
+                            List<String> metadataValues = new ArrayList<String>(values.size());
+                            for (String metadataValue : values) {
+                                metadataValues.add(metadataValue != null
+                                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
                             }
-                            value = _values;
+                            value = metadataValues;
                         } else {
                             value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
                         }
@@ -273,12 +261,12 @@ public class ServiceUtils {
                             key = key.substring(Constants.OBS_HEADER_PREFIX.length(), key.length());
                         }
                         if (value instanceof List) {
-                            List<String> _values = new ArrayList<String>(values.size());
-                            for (String _value : values) {
-                                _values.add(
-                                        _value != null ? URLDecoder.decode(_value, Constants.DEFAULT_ENCODING) : null);
+                            List<String> metadataValues = new ArrayList<String>(values.size());
+                            for (String metadataValue : values) {
+                                metadataValues.add(metadataValue != null
+                                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
                             }
-                            value = _values;
+                            value = metadataValues;
                         } else {
                             value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
                         }
@@ -309,17 +297,15 @@ public class ServiceUtils {
         if (log.isDebugEnabled()) {
             log.debug("Cleaning up REST metadata items");
         }
-        // FIXME
-//        Map<String, String> cleanMap = new IdentityHashMap<String, String>();
-        Map<String, String> cleanMap = new HashMap<String, String>();
-        
+        Map<String, String> cleanMap = new IdentityHashMap<String, String>();
+
         if (metadata != null) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
 
                 // Trim prefixes from keys.
-                key = key != null ? key.toString() : "";
+                key = key != null ? key : "";
                 if (key.toLowerCase().startsWith(headerPrefix)) {
                     try {
                         if (key.toLowerCase().startsWith(metadataPrefix)) {
@@ -332,7 +318,7 @@ public class ServiceUtils {
                         } else {
                             key = key.substring(headerPrefix.length(), key.length());
                         }
-                        value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
+                        value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Error to decode value of key:" + key);
@@ -351,7 +337,7 @@ public class ServiceUtils {
                         } else {
                             key = key.substring(Constants.OBS_HEADER_PREFIX.length(), key.length());
                         }
-                        value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
+                        value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Error to decode value of key:" + key);
@@ -370,42 +356,49 @@ public class ServiceUtils {
                 }
 
                 // FIXME
-//                cleanMap.put(new String(key), value);
-                cleanMap.put(key, value);
+                cleanMap.put(new StringBuilder(key).toString(), value);
             }
         }
         return cleanMap;
     }
 
     public static String toHex(byte[] data) {
-        StringBuilder sb = new StringBuilder(data.length * 2);
+        if (null == data) {
+            return null;
+        }
+        if (data.length <= 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder("");
         for (int i = 0; i < data.length; i++) {
-            String hex = Integer.toHexString(data[i]);
-            if (hex.length() == 1) {
-                // Append leading zero.
+            String hv = Integer.toHexString(data[i]);
+            if (hv.length() < 2) {
                 sb.append("0");
-            } else if (hex.length() == 8) {
-                // Remove ff prefix from negative numbers.
-                hex = hex.substring(6);
+            } else if (hv.length() == 8) {
+                hv = hv.substring(6);
             }
-            sb.append(hex);
+            sb.append(hv);
         }
         return sb.toString().toLowerCase(Locale.getDefault());
     }
 
     public static byte[] fromHex(String hexData) {
+        if (null == hexData) {
+            return null;
+        }
+
         if ((hexData.length() & 1) != 0 || hexData.replaceAll("[a-fA-F0-9]", "").length() > 0) {
             throw new java.lang.IllegalArgumentException("'" + hexData + "' is not a hex string");
         }
 
         byte[] result = new byte[(hexData.length() + 1) / 2];
         String hexNumber = null;
-        int stringOffset = 0;
-        int byteOffset = 0;
-        while (stringOffset < hexData.length()) {
-            hexNumber = hexData.substring(stringOffset, stringOffset + 2);
-            stringOffset += 2;
-            result[byteOffset++] = (byte) Integer.parseInt(hexNumber, 16);
+        int offset = 0;
+        int byteIndex = 0;
+        while (offset < hexData.length()) {
+            hexNumber = hexData.substring(offset, offset + 2);
+            offset += 2;
+            result[byteIndex++] = (byte) Integer.parseInt(hexNumber, 16);
         }
         return result;
     }
@@ -475,8 +468,9 @@ public class ServiceUtils {
     }
 
     public static byte[] computeMD5Hash(InputStream is) throws NoSuchAlgorithmException, IOException {
-        BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedInputStream bis = null;
         try {
+            bis = new BufferedInputStream(is);
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[16384];
             int bytesRead = -1;
@@ -485,7 +479,15 @@ public class ServiceUtils {
             }
             return messageDigest.digest();
         } finally {
-            closeStream(bis);
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(e);
+                    }
+                }
+            }
         }
     }
 
@@ -512,7 +514,15 @@ public class ServiceUtils {
             }
             return messageDigest.digest();
         } finally {
-            closeStream(bis);
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(e);
+                    }
+                }
+            }
         }
     }
 
@@ -537,20 +547,14 @@ public class ServiceUtils {
             return false;
         }
 
-        // Only lower-case letters, numbers, '.' or '-' characters allowed
         if (!Pattern.matches("^[a-z0-9][a-z0-9.-]+$", bucketName)) {
             return false;
         }
 
-        // Cannot be an IP address, i.e. must not contain four '.'-delimited
-        // sections with 1 to 3 digits each.
-        if (Pattern.matches("([0-9]{1,3}\\.){3}[0-9]{1,3}", bucketName)) {
+        if (Pattern.matches("(\\d{1,3}\\.){3}\\d{1,3}", bucketName)) {
             return false;
         }
 
-        // Components of name between '.' characters cannot start or end with
-        // '-',
-        // and cannot be empty
         String[] fragments = bucketName.split("\\.");
         for (int i = 0; i < fragments.length; i++) {
             if (Pattern.matches("^-.*", fragments[i]) || Pattern.matches(".*-$", fragments[i])
@@ -584,9 +588,9 @@ public class ServiceUtils {
         }
 
         // No dice using the standard approach, try loading alternatives...
-        String[] altXmlReaderClasspaths = new String[] { "org.apache.crimson.parser.XMLReaderImpl", // JDK
-                                                                                                    // 1.4
-                "org.xmlpull.v1.sax2.Driver", // Android
+        // JDK 1.4 and Android
+        String[] altXmlReaderClasspaths = new String[]{"org.apache.crimson.parser.XMLReaderImpl",
+            "org.xmlpull.v1.sax2.Driver"
         };
         for (int i = 0; i < altXmlReaderClasspaths.length; i++) {
             String xmlReaderClasspath = altXmlReaderClasspaths[i];
@@ -669,7 +673,15 @@ public class ServiceUtils {
                 }
                 ret = sb.toString();
             } finally {
-                closeStream(br);
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
                 closeStream(in);
             }
         }
@@ -765,14 +777,16 @@ public class ServiceUtils {
             obsProperties.setProperty(ObsConstraint.PROXY_WORKSTATION, config.getHttpProxy().getWorkstation());
         }
 
-        if(config instanceof ExtObsConfiguration) {
+        if (config instanceof ExtObsConfiguration) {
             // retry in okhttp
-            obsProperties.setProperty(ExtObsConstraint.IS_RETRY_ON_CONNECTION_FAILURE_IN_OKHTTP, String.valueOf(((ExtObsConfiguration)config).isRetryOnConnectionFailureInOkhttp()));
-            
+            obsProperties.setProperty(ExtObsConstraint.IS_RETRY_ON_CONNECTION_FAILURE_IN_OKHTTP,
+                    String.valueOf(((ExtObsConfiguration) config).isRetryOnConnectionFailureInOkhttp()));
+
             // retry on unexpected end exception
-            obsProperties.setProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION, String.valueOf(((ExtObsConfiguration)config).getMaxRetryOnUnexpectedEndException()));
+            obsProperties.setProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
+                    String.valueOf(((ExtObsConfiguration) config).getMaxRetryOnUnexpectedEndException()));
         }
-        
+
         return obsProperties;
     }
 
@@ -789,11 +803,11 @@ public class ServiceUtils {
             return;
         }
 
-        if(!deleteFileIgnoreException(new File(path))) {
+        if (!deleteFileIgnoreException(new File(path))) {
             log.warn("delete file '" + path + "' failed");
         }
     }
-    
+
     public static boolean deleteFileIgnoreException(File file) {
         if (null == file) {
             return true;
@@ -802,7 +816,7 @@ public class ServiceUtils {
         if (file.exists() && file.isFile()) {
             return file.delete();
         }
-        
+
         return true;
     }
 }

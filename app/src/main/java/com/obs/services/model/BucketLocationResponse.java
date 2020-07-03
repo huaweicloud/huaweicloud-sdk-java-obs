@@ -18,29 +18,25 @@ package com.obs.services.model;
  * Response to a request for obtaining the bucket location
  *
  */
-public class BucketLocationResponse extends HeaderResponse
-{
+public class BucketLocationResponse extends HeaderResponse {
     private String location;
-    
+
     public BucketLocationResponse(String location) {
-    	this.location = location;
+        this.location = location;
     }
-    
+
     /**
      * Obtain the bucket location.
+     * 
      * @return Bucket location
      */
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketLocationResponse [location=" + location + "]";
     }
-    
+
 }
-
-

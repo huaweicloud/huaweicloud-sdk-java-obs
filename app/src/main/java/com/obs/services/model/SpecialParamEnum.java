@@ -138,7 +138,12 @@ public enum SpecialParamEnum {
      * Set, obtain, or delete the encryption configuration of a bucket.
      */
     ENCRYPTION("encryption"),
-    
+
+    /**
+     * obtain folder contentSummary
+     */
+    LISTCONTENTSUMMARY("listcontentsummary"),
+
     /**
      * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
      */

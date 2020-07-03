@@ -22,7 +22,7 @@ package com.obs.services.model;
 public class SetBucketRequestPaymentRequest extends BaseBucketRequest {
 
     private RequestPaymentEnum payer;
-    
+
     public SetBucketRequestPaymentRequest() {
 
     }
@@ -34,19 +34,20 @@ public class SetBucketRequestPaymentRequest extends BaseBucketRequest {
 
     /**
      * Obtain the status of the requester-pays function.
+     * 
      * @return The status of the requester-pays function
      */
-    public RequestPaymentEnum getPayer()
-    {
+    public RequestPaymentEnum getPayer() {
         return payer;
     }
-    
+
     /**
      * Set the status of the requester-pays function.
-     * @param payer Status of the requester-pays function
+     * 
+     * @param payer
+     *            Status of the requester-pays function
      */
-    public void setPayer(RequestPaymentEnum payer)
-    {
+    public void setPayer(RequestPaymentEnum payer) {
         this.payer = payer;
     }
 

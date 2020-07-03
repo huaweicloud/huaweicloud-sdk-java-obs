@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.task;
 
 import java.util.Date;
@@ -23,11 +24,10 @@ import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.ProgressStatus;
 import com.obs.services.model.UploadProgressStatus;
 
+public class UploadTaskProgressStatus implements UploadProgressStatus {
 
-public class UploadTaskProgressStatus implements UploadProgressStatus{
-	
-	private final long progressInterval;
-	private final Date startDate;
+    private final long progressInterval;
+    private final Date startDate;
     private ConcurrentHashMap<String, ProgressStatus> taskTable = new ConcurrentHashMap<String, ProgressStatus>();
     private AtomicLong totalSize = new AtomicLong();
     private AtomicLong totalMilliseconds = new AtomicLong();
@@ -39,8 +39,8 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
     private AtomicLong taskTagSize = new AtomicLong();
 
     public UploadTaskProgressStatus(long progressInterval, Date startDate) {
-    	this.progressInterval = progressInterval;
-    	this.startDate = ServiceUtils.cloneDateIgnoreNull(startDate);
+        this.progressInterval = progressInterval;
+        this.startDate = ServiceUtils.cloneDateIgnoreNull(startDate);
     }
 
     public void execTaskIncrement() {
@@ -54,32 +54,32 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
     public void failTaskIncrement() {
         failTaskNum.incrementAndGet();
     }
-    
+
     public void setTaskTagSize(long taskTagSize) {
-    	this.taskTagSize = new AtomicLong(taskTagSize);
+        this.taskTagSize = new AtomicLong(taskTagSize);
     }
-    
+
     public long getTaskTagSize() {
-    	return taskTagSize.get();
+        return taskTagSize.get();
     }
 
     public void setTotalTaskNum(int totalNum) {
         this.totalTaskNum.set(totalNum);
     }
-    
+
     public boolean isRefreshprogress() {
-    	if(this.progressInterval <= 0) {
-    		return false;
-    	}
-    	
-    	long transferredSize = this.getTransferredSize();
-    	long taskTagSize = this.getTaskTagSize();
-    	if(transferredSize - taskTagSize >= progressInterval) {
-    		this.setTaskTagSize(transferredSize);
-    		return true;
-    	}else {
-    		return false;
-    	}
+        if (this.progressInterval <= 0) {
+            return false;
+        }
+
+        long transferredSize = this.getTransferredSize();
+        long taskTagSize = this.getTaskTagSize();
+        if (transferredSize - taskTagSize >= progressInterval) {
+            this.setTaskTagSize(transferredSize);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -111,104 +111,105 @@ public class UploadTaskProgressStatus implements UploadProgressStatus{
         return failTaskNum.get();
     }
 
-	@Override
-	public long getTotalSize() {
-		//任务未加载完毕时，返回-1
-		if(getTotalTaskNum() <= 0) {
-			return -1L;
-		}else {
-			return totalSize.get();
-		}
-	}
+    @Override
+    public long getTotalSize() {
+        // 任务未加载完毕时，返回-1
+        if (getTotalTaskNum() <= 0) {
+            return -1L;
+        } else {
+            return totalSize.get();
+        }
+    }
 
-	@Override
-	public long getTransferredSize() {
-		long transferredSize = this.endingTaskSize.get();
-		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(this.taskTable);
-		for(Entry<String, ProgressStatus> entry: taskStatusTable.entrySet()){
-			transferredSize += entry.getValue().getTransferredBytes();
-		}
-		return transferredSize;
-	}
+    @Override
+    public long getTransferredSize() {
+        long transferredSize = this.endingTaskSize.get();
+        ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(
+                this.taskTable);
+        for (Entry<String, ProgressStatus> entry : taskStatusTable.entrySet()) {
+            transferredSize += entry.getValue().getTransferredBytes();
+        }
+        return transferredSize;
+    }
 
-	@Override
-	public double getInstantaneousSpeed() {
-		if(this.taskTable != null) {
-			long instantaneousSpeed = 0;
-			for(Entry<String, ProgressStatus> entry: this.taskTable.entrySet()){
-				instantaneousSpeed += entry.getValue().getInstantaneousSpeed();
-			}
-			return instantaneousSpeed;
-		}else {
-			return -1d;
-		}
-	}
+    @Override
+    public double getInstantaneousSpeed() {
+        if (this.taskTable != null) {
+            long instantaneousSpeed = 0;
+            for (Entry<String, ProgressStatus> entry : this.taskTable.entrySet()) {
+                instantaneousSpeed += entry.getValue().getInstantaneousSpeed();
+            }
+            return instantaneousSpeed;
+        } else {
+            return -1d;
+        }
+    }
 
-	@Override
-	public double getAverageSpeed() {
-		if(this.totalMilliseconds.get() <= 0) {
-			return -1d;
-		}
-		return this.getTransferredSize() * 1000.0d / this.totalMilliseconds.get();
-	}
+    @Override
+    public double getAverageSpeed() {
+        if (this.totalMilliseconds.get() <= 0) {
+            return -1d;
+        }
+        return this.getTransferredSize() * 1000.0d / this.totalMilliseconds.get();
+    }
 
-	@Override
-	public ConcurrentHashMap<String, ProgressStatus> getTaskTable() {
-		ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(this.taskTable);
-		return taskStatusTable;
-	}
+    @Override
+    public ConcurrentHashMap<String, ProgressStatus> getTaskTable() {
+        ConcurrentHashMap<String, ProgressStatus> taskStatusTable = new ConcurrentHashMap<String, ProgressStatus>(
+                this.taskTable);
+        return taskStatusTable;
+    }
 
-	@Override
-	public ProgressStatus getTaskStatus(String key) {
-		return this.taskTable.get(key);
-	}
+    @Override
+    public ProgressStatus getTaskStatus(String key) {
+        return this.taskTable.get(key);
+    }
 
+    public void setTotalSize(long totalSize) {
+        this.totalSize = new AtomicLong(totalSize);
+    }
 
-	public void setTotalSize(long totalSize) {
-		this.totalSize = new AtomicLong(totalSize);
-	}
-	
-	public void addTotalSize(long bytes) {
-		this.totalSize.addAndGet(bytes);
-	}
+    public void addTotalSize(long bytes) {
+        this.totalSize.addAndGet(bytes);
+    }
 
-	public void setTaskTable(ConcurrentHashMap<String, ProgressStatus> taskTable) {
-		this.taskTable = taskTable;
-	}
-	
-	public void putTaskTable(String key, ProgressStatus status) {
-		this.taskTable.put(key, status);
-	}
-	
-	public void removeTaskTable(String key) {
-		if(null == this.taskTable) {
-			return;
-		}
-		this.taskTable.remove(key);
-	}
+    public void setTaskTable(ConcurrentHashMap<String, ProgressStatus> taskTable) {
+        this.taskTable = taskTable;
+    }
 
-	public long getTotalMilliseconds() {
-		return totalMilliseconds.get();
-	}
+    public void putTaskTable(String key, ProgressStatus status) {
+        this.taskTable.put(key, status);
+    }
 
-	public void setTotalMilliseconds(long totalMilliseconds) {
-		this.totalMilliseconds = new AtomicLong(totalMilliseconds);
-	}
+    public void removeTaskTable(String key) {
+        if (null == this.taskTable) {
+            return;
+        }
+        this.taskTable.remove(key);
+    }
 
-	public long getEndingTaskSize() {
-		return endingTaskSize.get();
-	}
+    public long getTotalMilliseconds() {
+        return totalMilliseconds.get();
+    }
 
-	public void setEndingTaskSize(long  endingTaskSize) {
-		this.endingTaskSize = new AtomicLong(endingTaskSize);
-	}
-	
-	public void addEndingTaskSize(long bytes) {
-		this.endingTaskSize.addAndGet(bytes);
-	}
+    public void setTotalMilliseconds(long totalMilliseconds) {
+        this.totalMilliseconds = new AtomicLong(totalMilliseconds);
+    }
 
-	public Date getStartDate() {
-		return ServiceUtils.cloneDateIgnoreNull(this.startDate);
-	}
+    public long getEndingTaskSize() {
+        return endingTaskSize.get();
+    }
+
+    public void setEndingTaskSize(long endingTaskSize) {
+        this.endingTaskSize = new AtomicLong(endingTaskSize);
+    }
+
+    public void addEndingTaskSize(long bytes) {
+        this.endingTaskSize.addAndGet(bytes);
+    }
+
+    public Date getStartDate() {
+        return ServiceUtils.cloneDateIgnoreNull(this.startDate);
+    }
 
 }

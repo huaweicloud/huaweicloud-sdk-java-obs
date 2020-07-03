@@ -15,23 +15,22 @@
 package com.obs.services.model;
 
 /**
- * Authentication type 
+ * Authentication type
  *
  */
-public enum AuthTypeEnum{
-	/**
-	 * V2 protocol
-	 */
-	V2,
-	/**
-	 * OBS protocol
-	 */
-	OBS,
-	
-	/**
-	 * V4 protocol
-	 */
-	@Deprecated
-	V4
-}
+public enum AuthTypeEnum {
+    /**
+     * V2 protocol
+     */
+    V2, 
+    /**
+     * OBS protocol
+     */
+    OBS,
 
+    /**
+     * V4 protocol
+     */
+    @Deprecated 
+    V4
+}

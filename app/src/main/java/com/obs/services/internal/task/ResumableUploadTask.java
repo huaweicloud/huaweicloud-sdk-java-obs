@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.task;
 
 import com.obs.services.ObsClient;
@@ -24,25 +25,26 @@ import com.obs.services.model.UploadFileRequest;
 import com.obs.services.model.UploadObjectsProgressListener;
 
 public class ResumableUploadTask implements Runnable {
-	
-	protected ObsClient obsClient;
-	
-    protected String bucketName;
-    
-    private UploadObjectsProgressListener progressListener;
-	
-	private int taskProgressInterval;
-	
-	private UploadFileRequest taskRequest;
-	
-	private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
 
-	private UploadTaskProgressStatus taskStatus;
-	
-	public ResumableUploadTask(ObsClient obsClient, String bucketName, UploadFileRequest taskRequest,
-            TaskCallback<PutObjectResult, PutObjectBasicRequest> callback, UploadObjectsProgressListener progressListener,
-            UploadTaskProgressStatus progressStatus, int taskProgressInterval) {
-		this.obsClient = obsClient;
+    protected ObsClient obsClient;
+
+    protected String bucketName;
+
+    private UploadObjectsProgressListener progressListener;
+
+    private int taskProgressInterval;
+
+    private UploadFileRequest taskRequest;
+
+    private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
+
+    private UploadTaskProgressStatus taskStatus;
+
+    public ResumableUploadTask(ObsClient obsClient, String bucketName, UploadFileRequest taskRequest,
+            TaskCallback<PutObjectResult, PutObjectBasicRequest> callback,
+            UploadObjectsProgressListener progressListener, UploadTaskProgressStatus progressStatus,
+            int taskProgressInterval) {
+        this.obsClient = obsClient;
         this.bucketName = bucketName;
         this.taskRequest = taskRequest;
         this.callback = callback;
@@ -50,8 +52,8 @@ public class ResumableUploadTask implements Runnable {
         this.taskStatus = progressStatus;
         this.taskProgressInterval = taskProgressInterval;
     }
-	
-	public ObsClient getObsClient() {
+
+    public ObsClient getObsClient() {
         return obsClient;
     }
 
@@ -66,7 +68,7 @@ public class ResumableUploadTask implements Runnable {
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     public UploadObjectsProgressListener getUploadObjectsProgressListener() {
         return progressListener;
     }
@@ -83,45 +85,42 @@ public class ResumableUploadTask implements Runnable {
         this.taskProgressInterval = taskProgressInterval;
     }
 
-	public UploadFileRequest getTaskRequest() {
-		return taskRequest;
-	}
+    public UploadFileRequest getTaskRequest() {
+        return taskRequest;
+    }
 
+    public void setTaskRequest(UploadFileRequest taskRequest) {
+        this.taskRequest = taskRequest;
+    }
 
-	public void setTaskRequest(UploadFileRequest taskRequest) {
-		this.taskRequest = taskRequest;
-	}
+    public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
+        return callback;
+    }
 
+    public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
+        this.callback = callback;
+    }
 
-	public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
-		return callback;
-	}
+    public UploadTaskProgressStatus getTaskStatus() {
+        return taskStatus;
+    }
 
+    public void setTaskStatus(UploadTaskProgressStatus taskStatus) {
+        this.taskStatus = taskStatus;
+    }
 
-	public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
-		this.callback = callback;
-	}
-
-	public UploadTaskProgressStatus getTaskStatus() {
-		return taskStatus;
-	}
-
-	public void setTaskStatus(UploadTaskProgressStatus taskStatus) {
-		this.taskStatus = taskStatus;
-	}
-	
-	private void ResumableUpload() {
-		try {
-			CompleteMultipartUploadResult result = obsClient.uploadFile(taskRequest);
-			taskStatus.succeedTaskIncrement();
-			PutObjectResult ret = new PutObjectResult(result.getBucketName(), result.getObjectKey()
-					, result.getEtag(), result.getVersionId(), result.getObjectUrl(), result.getResponseHeaders(), result.getStatusCode());
+    private void resumableUpload() {
+        try {
+            CompleteMultipartUploadResult result = obsClient.uploadFile(taskRequest);
+            taskStatus.succeedTaskIncrement();
+            PutObjectResult ret = new PutObjectResult(result.getBucketName(), result.getObjectKey(), result.getEtag(),
+                    result.getVersionId(), result.getObjectUrl(), result.getResponseHeaders(), result.getStatusCode());
             callback.onSuccess(ret);
         } catch (ObsException e) {
-        	taskStatus.failTaskIncrement();
+            taskStatus.failTaskIncrement();
             callback.onException(e, taskRequest);
         } finally {
-        	taskStatus.execTaskIncrement();
+            taskStatus.execTaskIncrement();
             if (progressListener != null) {
                 if (taskStatus.getExecTaskNum() % this.taskProgressInterval == 0) {
                     progressListener.progressChanged(taskStatus);
@@ -130,19 +129,19 @@ public class ResumableUploadTask implements Runnable {
                     progressListener.progressChanged(taskStatus);
                 }
             }
-            
-        	final String key = taskRequest.getObjectKey();
-        	ProgressStatus status = taskStatus.getTaskStatus(key);
-        	if(status != null) {
-        		taskStatus.addEndingTaskSize(status.getTransferredBytes());
-        	}
-        	taskStatus.removeTaskTable(key);
-        }
-	}
 
-	@Override
-	public void run() {
-		ResumableUpload();
-	}
+            final String key = taskRequest.getObjectKey();
+            ProgressStatus status = taskStatus.getTaskStatus(key);
+            if (status != null) {
+                taskStatus.addEndingTaskSize(status.getTransferredBytes());
+            }
+            taskStatus.removeTaskTable(key);
+        }
+    }
+
+    @Override
+    public void run() {
+        resumableUpload();
+    }
 
 }

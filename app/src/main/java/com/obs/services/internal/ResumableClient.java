@@ -279,6 +279,7 @@ public class ResumableClient {
             UploadPart uploadPart = uploadCheckPoint.uploadParts.get(partIndex);
             tr = new PartResult(partIndex + 1, uploadPart.offset, uploadPart.size);
             if (!uploadCheckPoint.isAbort) {
+                InputStream input = null;
                 try {
                     UploadPartRequest uploadPartRequest = new UploadPartRequest();
                     uploadPartRequest.setBucketName(uploadFileRequest.getBucketName());
@@ -292,7 +293,7 @@ public class ResumableClient {
                         uploadPartRequest.setFile(new File(uploadFileRequest.getUploadFile()));
                         uploadPartRequest.setOffset(uploadPart.offset);
                     } else {
-                        InputStream input = new FileInputStream(uploadFileRequest.getUploadFile());
+                        input = new FileInputStream(uploadFileRequest.getUploadFile());
                         long offset = uploadPart.offset;
                         long skipByte = input.skip(offset);
                         if (offset < skipByte) {
@@ -330,6 +331,10 @@ public class ResumableClient {
                     if (log.isErrorEnabled()) {
                         log.error(String.format("Task %d:%s upload part %d failed: ", id, "upload" + id, partIndex + 1),
                                 e);
+                    }
+                } finally {
+                    if (null != input) {
+                        input.close();
                     }
                 }
             } else {
@@ -436,8 +441,25 @@ public class ResumableClient {
                 UploadCheckPoint tmp = (UploadCheckPoint) in.readObject();
                 assign(tmp);
             } finally {
-                ServiceUtils.closeStream(in);
-                ServiceUtils.closeStream(fileInput);
+                if (null != in) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
+                
+                if (null != fileInput) {
+                    try {
+                        fileInput.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
             }
         }
 
@@ -456,8 +478,25 @@ public class ResumableClient {
                 outStream = new ObjectOutputStream(fileOutput);
                 outStream.writeObject(this);
             } finally {
-                ServiceUtils.closeStream(outStream);
-                ServiceUtils.closeStream(fileOutput);
+                if (null != outStream) {
+                    try {
+                        outStream.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
+                
+                if (null != fileOutput) {
+                    try {
+                        fileOutput.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
             }
         }
 
@@ -743,7 +782,11 @@ public class ResumableClient {
             ServiceUtils.deleteFileIgnoreException(downloadFileRequest.getCheckpointFile());
 
             File dfile = new File(downloadFileRequest.getDownloadFile());
-            dfile.getParentFile().mkdirs();
+            if (!dfile.getParentFile().mkdirs()) {
+                if (log.isWarnEnabled()) {
+                    log.warn("create parent directory failed.");
+                }
+            }
             new RandomAccessFile(dfile, "rw").close();
             if (downloadFileRequest.getProgressListener() != null) {
                 downloadFileRequest.getProgressListener().progressChanged(new DefaultProgressStatus(0, 0, 0, 0, 0));
@@ -839,8 +882,25 @@ public class ResumableClient {
                     output.write(buffer, 0, length);
                 }
             } finally {
-                ServiceUtils.closeStream(input);
-                ServiceUtils.closeStream(output);
+                if (null != input) {
+                    try {
+                        input.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
+                
+                if (null != output) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
             }
             if (!tmpfile.delete()) {
                 if (log.isErrorEnabled()) {
@@ -950,13 +1010,13 @@ public class ResumableClient {
                     if (log.isDebugEnabled()) {
                         log.debug("start task : " + downloadPart.toString());
                     }
-                    
+
                     // 标记启动一个子任务
-                    if(null != downloadFileRequest.getProgressListener()
+                    if (null != downloadFileRequest.getProgressListener()
                             && downloadFileRequest.getProgressListener() instanceof MonitorableProgressListener) {
-                        ((MonitorableProgressListener)downloadFileRequest.getProgressListener()).startOneTask();
+                        ((MonitorableProgressListener) downloadFileRequest.getProgressListener()).startOneTask();
                     }
-                    
+
                     output = new RandomAccessFile(downloadFileRequest.getTempDownloadFile(), "rw");
                     output.seek(downloadPart.offset);
 
@@ -1003,13 +1063,31 @@ public class ResumableClient {
                     }
                 } finally {
                     // 结束一个子任务
-                    if(null != this.downloadFileRequest.getProgressListener()
+                    if (null != this.downloadFileRequest.getProgressListener()
                             && this.downloadFileRequest.getProgressListener() instanceof MonitorableProgressListener) {
-                        ((MonitorableProgressListener)this.downloadFileRequest.getProgressListener()).finishOneTask();
+                        ((MonitorableProgressListener) this.downloadFileRequest.getProgressListener()).finishOneTask();
+                    }
+
+                    if (null != output) {
+                        try {
+                            output.close();
+                        } catch (IOException e) {
+                            if (log.isWarnEnabled()) {
+                                log.warn(e);
+                            }
+                        }
                     }
                     
-                    ServiceUtils.closeStream(output);
-                    ServiceUtils.closeStream(content);
+                    if (null != content) {
+                        try {
+                            content.close();
+                        } catch (IOException e) {
+                            if (log.isWarnEnabled()) {
+                                log.warn(e);
+                            }
+                        }
+                    }
+                    
                     if (log.isDebugEnabled()) {
                         log.debug("end task : " + downloadPart.toString());
                     }
@@ -1039,20 +1117,32 @@ public class ResumableClient {
         ObjectStatus objStatus = new ObjectStatus();
         objStatus.size = objectMetadata.getContentLength();
         objStatus.lastModified = objectMetadata.getLastModified();
-        objStatus.Etag = objectMetadata.getEtag();
+        objStatus.etag = objectMetadata.getEtag();
         downloadCheckPoint.objectStatus = objStatus;
         downloadCheckPoint.downloadParts = splitObject(downloadCheckPoint.objectStatus.size,
                 downloadFileRequest.getPartSize());
         File tmpfile = new File(downloadFileRequest.getTempDownloadFile());
         if (null != tmpfile.getParentFile()) {
-            tmpfile.getParentFile().mkdirs();
+            if (!tmpfile.getParentFile().mkdirs()) {
+                if (log.isWarnEnabled()) {
+                    log.warn("create parent directory for tempfile failed.");
+                }
+            }
         }
         RandomAccessFile randomAccessFile = null;
         try {
             randomAccessFile = new RandomAccessFile(tmpfile, "rw");
             randomAccessFile.setLength(downloadCheckPoint.objectStatus.size);
         } finally {
-            ServiceUtils.closeStream(randomAccessFile);
+            if (null != randomAccessFile) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(e);
+                    }
+                }
+            }
         }
         downloadCheckPoint.tmpFileStatus = new TmpFileStatus(downloadCheckPoint.objectStatus.size,
                 new Date(tmpfile.lastModified()), downloadFileRequest.getTempDownloadFile());
@@ -1075,7 +1165,7 @@ public class ResumableClient {
             partSize = size % 10000 == 0 ? size / 10000 : size / 10000 + 1;
         }
 
-        long offset = 0l;
+        long offset = 0L;
         for (int i = 0; offset < size; offset += partSize, i++) {
             DownloadPart downloadPart = new DownloadPart();
             downloadPart.partNumber = i;
@@ -1150,8 +1240,25 @@ public class ResumableClient {
                 DownloadCheckPoint info = (DownloadCheckPoint) in.readObject();
                 assign(info);
             } finally {
-                ServiceUtils.closeStream(in);
-                ServiceUtils.closeStream(fileIn);
+                if (null != in) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
+                
+                if (null != fileIn) {
+                    try {
+                        fileIn.close();
+                    } catch (IOException e) {
+                        if (log.isWarnEnabled()) {
+                            log.warn(e);
+                        }
+                    }
+                }
             }
         }
 
@@ -1179,7 +1286,7 @@ public class ResumableClient {
             }
             if (objectMetadata.getContentLength() != this.objectStatus.size
                     || !objectMetadata.getLastModified().equals(this.objectStatus.lastModified)
-                    || !objectMetadata.getEtag().equals(this.objectStatus.Etag)) {
+                    || !objectMetadata.getEtag().equals(this.objectStatus.etag)) {
                 return false;
             }
 
@@ -1251,13 +1358,13 @@ public class ResumableClient {
 
         public long size; // 桶中对象大小
         public Date lastModified; // 对象的最后修改时间
-        public String Etag; // 对象的Etag
+        public String etag; // 对象的Etag
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((Etag == null) ? 0 : Etag.hashCode());
+            result = prime * result + ((etag == null) ? 0 : etag.hashCode());
             result = prime * result + ((lastModified == null) ? 0 : lastModified.hashCode());
             result = prime * result + (int) (size ^ (size >>> 32));
             return result;

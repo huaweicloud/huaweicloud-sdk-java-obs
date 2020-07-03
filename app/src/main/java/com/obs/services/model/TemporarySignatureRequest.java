@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 import com.obs.services.internal.ObsConstraint;
@@ -33,8 +34,11 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Constructor
-     * @param method HTTP/HTTPS request method 
-     * @param expires Expiration time (in seconds)
+     * 
+     * @param method
+     *            HTTP/HTTPS request method
+     * @param expires
+     *            Expiration time (in seconds)
      */
     public TemporarySignatureRequest(HttpMethodEnum method, long expires) {
         this(method, null, null, null, expires);
@@ -42,11 +46,17 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Constructor
-     * @param method HTTP/HTTPS request method 
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param specialParam Special operator
-     * @param expires Expiration time (in seconds)
+     * 
+     * @param method
+     *            HTTP/HTTPS request method
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param specialParam
+     *            Special operator
+     * @param expires
+     *            Expiration time (in seconds)
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires) {
@@ -55,12 +65,19 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Constructor
-     * @param method HTTP/HTTPS request method 
-     * @param bucketName Bucket name
-     * @param objectKey Object name
-     * @param specialParam Special operator
-     * @param expires Expiration time (in seconds)
-     * @param requestDate Request date
+     * 
+     * @param method
+     *            HTTP/HTTPS request method
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param specialParam
+     *            Special operator
+     * @param expires
+     *            Expiration time (in seconds)
+     * @param requestDate
+     *            Request date
      */
     public TemporarySignatureRequest(HttpMethodEnum method, String bucketName, String objectKey,
             SpecialParamEnum specialParam, long expires, Date requestDate) {
@@ -73,15 +90,23 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
     }
 
     /**
-     * Obtain the validity period of the temporary authorization (in seconds). The devalue value is 5 minutes (value "300") and the maximum value is 7 days ("604800").
+     * Obtain the validity period of the temporary authorization (in seconds).
+     * The devalue value is 5 minutes (value "300") and the maximum value is 7
+     * days ("604800").
+     * 
      * @return Validity period
-     */    public long getExpires() {
+     */
+    public long getExpires() {
         return expires;
     }
 
     /**
-     * Obtain the validity period of the temporary authorization (in seconds). The devalue value is 5 minutes (value "300") and the maximum value is 7 days ("604800").
-     * @param expires Validity period
+     * Obtain the validity period of the temporary authorization (in seconds).
+     * The devalue value is 5 minutes (value "300") and the maximum value is 7
+     * days ("604800").
+     * 
+     * @param expires
+     *            Validity period
      */
     public void setExpires(long expires) {
         this.expires = expires;
@@ -89,22 +114,25 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Set the request time.
+     * 
      * @return Request time
      */
     public Date getRequestDate() {
-    	return ServiceUtils.cloneDateIgnoreNull(requestDate);
+        return ServiceUtils.cloneDateIgnoreNull(requestDate);
     }
 
-   /**
+    /**
      * Set the request time.
-     * @param requestDate Request date
+     * 
+     * @param requestDate
+     *            Request date
      */
     public void setRequestDate(Date requestDate) {
-    	if(null != requestDate) {
-    		this.requestDate = (Date) requestDate.clone();
-    	} else {
-    		this.requestDate = null;
-    	}
+        if (null != requestDate) {
+            this.requestDate = (Date) requestDate.clone();
+        } else {
+            this.requestDate = null;
+        }
     }
 
     @Override

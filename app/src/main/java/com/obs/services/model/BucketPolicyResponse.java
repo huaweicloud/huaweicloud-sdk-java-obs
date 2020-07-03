@@ -18,30 +18,25 @@ package com.obs.services.model;
  * Response to a request for obtaining a bucket policy
  *
  */
-public class BucketPolicyResponse extends HeaderResponse
-{
+public class BucketPolicyResponse extends HeaderResponse {
     private String policy;
-    
-    public BucketPolicyResponse(String policy) {
-		this.policy = policy;
-	}
 
-	/**
-     * Obtain a bucket policy. 
+    public BucketPolicyResponse(String policy) {
+        this.policy = policy;
+    }
+
+    /**
+     * Obtain a bucket policy.
+     * 
      * @return Bucket policy
      */
-    public String getPolicy()
-    {
+    public String getPolicy() {
         return policy;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BucketPolicyResponse [policy=" + policy + "]";
     }
-    
-    
+
 }
-
-

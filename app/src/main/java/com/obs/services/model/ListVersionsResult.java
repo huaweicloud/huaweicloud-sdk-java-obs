@@ -21,194 +21,185 @@ import java.util.List;
 /**
  * Response to a request for listing versioning objects in a bucket
  */
-public class ListVersionsResult extends HeaderResponse
-{
+public class ListVersionsResult extends HeaderResponse {
     private String bucketName;
-    
+
     private String prefix;
-    
+
     private String keyMarker;
-    
+
     private String nextKeyMarker;
-    
+
     private String versionIdMarker;
-    
+
     private String nextVersionIdMarker;
-    
+
     private String maxKeys;
-    
+
     private boolean isTruncated;
-    
+
     private VersionOrDeleteMarker[] versions;
-    
+
     private List<String> commonPrefixes;
-    
+
     private String location;
-    
+
     private String delimiter;
-    
+
     private boolean isAppendable;
-    
+
     public ListVersionsResult(String bucketName, String prefix, String keyMarker, String nextKeyMarker,
-			String versionIdMarker, String nextVersionIdMarker, String maxKeys, boolean isTruncated,
-			VersionOrDeleteMarker[] versions, List<String> commonPrefixes, String location, String delimiter) {
-		super();
-		this.bucketName = bucketName;
-		this.prefix = prefix;
-		this.keyMarker = keyMarker;
-		this.nextKeyMarker = nextKeyMarker;
-		this.versionIdMarker = versionIdMarker;
-		this.nextVersionIdMarker = nextVersionIdMarker;
-		this.maxKeys = maxKeys;
-		this.isTruncated = isTruncated;
-		this.versions = versions;
-		this.commonPrefixes = commonPrefixes;
-		this.location = location;
-		this.delimiter = delimiter;
-	}
+            String versionIdMarker, String nextVersionIdMarker, String maxKeys, boolean isTruncated,
+            VersionOrDeleteMarker[] versions, List<String> commonPrefixes, String location, String delimiter) {
+        super();
+        this.bucketName = bucketName;
+        this.prefix = prefix;
+        this.keyMarker = keyMarker;
+        this.nextKeyMarker = nextKeyMarker;
+        this.versionIdMarker = versionIdMarker;
+        this.nextVersionIdMarker = nextVersionIdMarker;
+        this.maxKeys = maxKeys;
+        this.isTruncated = isTruncated;
+        if (null != versions) {
+            this.versions = versions.clone();
+        } else {
+            this.versions = null;
+        }
+        this.commonPrefixes = commonPrefixes;
+        this.location = location;
+        this.delimiter = delimiter;
+    }
 
-
-	/**
+    /**
      * Obtain the bucket name.
+     * 
      * @return Bucket name
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
-    
+
     /**
      * Obtain the object name prefix used for listing versioning objects.
+     * 
      * @return Object name prefix used for listing versioning objects
      */
-    public String getPrefix()
-    {
+    public String getPrefix() {
         return prefix;
     }
-    
-    
+
     /**
-     * Obtain the start position for listing versioning objects (sorted by object name).
+     * Obtain the start position for listing versioning objects (sorted by
+     * object name).
+     * 
      * @return Start position for listing objects
      */
-    public String getKeyMarker()
-    {
+    public String getKeyMarker() {
         return keyMarker;
     }
-    
-    
+
     /**
-     * Obtain the start position for listing versioning objects (sorted by version ID).
+     * Obtain the start position for listing versioning objects (sorted by
+     * version ID).
+     * 
      * @return Start position for listing objects
      */
-    public String getVersionIdMarker()
-    {
+    public String getVersionIdMarker() {
         return versionIdMarker;
     }
-    
+
     /**
-     * Obtain the maximum number of versioning objects to be listed. 
+     * Obtain the maximum number of versioning objects to be listed.
+     * 
      * @return Maximum number of versioning objects to be listed
      */
-    public String getMaxKeys()
-    {
+    public String getMaxKeys() {
         return maxKeys;
     }
-    
-    
+
     /**
-     * Check whether the query result list is truncated. Value "true" indicates that the results are incomplete while value "false" indicates that the results are complete.
+     * Check whether the query result list is truncated. Value "true" indicates
+     * that the results are incomplete while value "false" indicates that the
+     * results are complete.
+     * 
      * @return Truncation identifier
      */
-    public boolean isTruncated()
-    {
+    public boolean isTruncated() {
         return isTruncated;
     }
-    
-    
+
     /**
      * Obtain the versioning object array in the bucket.
-     * @return Versioning object array in the bucket. For details, see {@link VersionOrDeleteMarker}.
+     * 
+     * @return Versioning object array in the bucket. For details, see
+     *         {@link VersionOrDeleteMarker}.
      */
-    public VersionOrDeleteMarker[] getVersions()
-    {
-        return versions;
+    public VersionOrDeleteMarker[] getVersions() {
+        if (null != versions) {
+            return versions.clone(); 
+        }
+        return null;
     }
-    
-    
+
     /**
      * Start position for next listing (sorted by object name)
+     * 
      * @return Start position for next listing
      */
-    public String getNextKeyMarker()
-    {
+    public String getNextKeyMarker() {
         return nextKeyMarker;
     }
 
-
     /**
      * Obtain the start position for next listing (sorted by version ID).
+     * 
      * @return Start position for next listing
      */
-    public String getNextVersionIdMarker()
-    {
+    public String getNextVersionIdMarker() {
         return nextVersionIdMarker;
     }
 
-    
     /**
      * Obtain the list of prefixes to the names of grouped objects.
      * 
      * @return List of prefixes to the names of grouped objects
      */
-    public List<String> getCommonPrefixes()
-    {
-    	if(commonPrefixes == null) {
-    		commonPrefixes = new ArrayList<String>();
-    	}
+    public List<String> getCommonPrefixes() {
+        if (commonPrefixes == null) {
+            commonPrefixes = new ArrayList<String>();
+        }
         return commonPrefixes;
     }
-    
+
     /**
      * Obtain the bucket location.
+     * 
      * @return Bucket location
      */
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
-
-
 
     /**
      * Obtain the character for grouping object names.
      * 
      * @return Character for grouping object names
      */
-    public String getDelimiter()
-    {
+    public String getDelimiter() {
         return delimiter;
     }
-    
-	public boolean isAppendable() {
-		return isAppendable;
-	}
 
-    
+    public boolean isAppendable() {
+        return isAppendable;
+    }
 
-	@Override
-	public String toString() {
-		return "ListVersionsResult [bucketName=" + bucketName + ", prefix=" + prefix + ", keyMarker=" + keyMarker
-				+ ", nextKeyMarker=" + nextKeyMarker + ", versionIdMarker=" + versionIdMarker + ", nextVersionIdMarker="
-				+ nextVersionIdMarker + ", maxKeys=" + maxKeys + ", isTruncated=" + isTruncated + ", versions="
-				+ Arrays.toString(versions) + ", commonPrefixes=" + commonPrefixes + ", location=" + location
-				+ ", delimiter=" + delimiter + "]";
-	}
+    @Override
+    public String toString() {
+        return "ListVersionsResult [bucketName=" + bucketName + ", prefix=" + prefix + ", keyMarker=" + keyMarker
+                + ", nextKeyMarker=" + nextKeyMarker + ", versionIdMarker=" + versionIdMarker + ", nextVersionIdMarker="
+                + nextVersionIdMarker + ", maxKeys=" + maxKeys + ", isTruncated=" + isTruncated + ", versions="
+                + Arrays.toString(versions) + ", commonPrefixes=" + commonPrefixes + ", location=" + location
+                + ", delimiter=" + delimiter + "]";
+    }
 
-
-	
-    
 }
-
-

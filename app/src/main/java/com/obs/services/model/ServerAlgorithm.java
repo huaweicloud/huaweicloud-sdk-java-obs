@@ -11,55 +11,48 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
  * SSE-C encryption algorithm
  */
 @Deprecated
-public final class ServerAlgorithm
-{
+public final class ServerAlgorithm {
     /**
      * SSE-C supports only AES256.
      */
     public static final ServerAlgorithm AES256 = new ServerAlgorithm("AES256");
-    
+
     private String serverAlgorithm = "";
-    
-    private ServerAlgorithm(String serverAlgorithm)
-    {
+
+    private ServerAlgorithm(String serverAlgorithm) {
         this.serverAlgorithm = serverAlgorithm;
     }
-    
-    public String getServerAlgorithm()
-    {
+
+    public String getServerAlgorithm() {
         return serverAlgorithm;
     }
-    
-    public static ServerAlgorithm parseServerAlgorithm(String str)
-    {
+
+    public static ServerAlgorithm parseServerAlgorithm(String str) {
         ServerAlgorithm serverAlgorithm = null;
-        
-        if (null != str && str.equals(AES256.toString()))
-        {
+
+        if (null != str && str.equals(AES256.toString())) {
             serverAlgorithm = AES256;
         }
         return serverAlgorithm;
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return serverAlgorithm;
     }
-    
-    public boolean equals(Object obj)
-    {
+
+    public boolean equals(Object obj) {
         return (obj instanceof ServerAlgorithm) && toString().equals(obj.toString());
     }
-    
-    public int hashCode()
-    {
+
+    public int hashCode() {
         return serverAlgorithm.hashCode();
     }
 }

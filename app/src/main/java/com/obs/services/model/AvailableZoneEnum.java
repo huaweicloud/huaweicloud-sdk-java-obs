@@ -11,32 +11,33 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 /**
- *  Bucket cluster type
+ * Bucket cluster type
  *
  */
 public enum AvailableZoneEnum {
-	
-	MULTI_AZ("3az");
-	
-	private String code;
 
-	private AvailableZoneEnum(String code) {
-		this.code = code;
-	}
+    MULTI_AZ("3az");
 
-	public String getCode() {
-		return code;
-	}
+    private String code;
 
-	public static AvailableZoneEnum getValueFromCode(String code) {
-		for (AvailableZoneEnum val : AvailableZoneEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    private AvailableZoneEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public static AvailableZoneEnum getValueFromCode(String code) {
+        for (AvailableZoneEnum val : AvailableZoneEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

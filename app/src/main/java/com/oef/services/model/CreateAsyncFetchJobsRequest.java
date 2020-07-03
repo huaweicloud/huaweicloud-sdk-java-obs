@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import java.io.UnsupportedEncodingException;
@@ -25,240 +26,272 @@ import com.obs.services.internal.utils.ServiceUtils;
  *
  */
 public class CreateAsyncFetchJobsRequest {
-	@JsonProperty(value = "url")
-	private String url;
-	
-	@JsonProperty(value = "bucket")
-	private String bucket;
-	
-	@JsonProperty(value = "host")
-	private String host;
-	
-	@JsonProperty(value = "key")
-	private String key;
-	
-	@JsonProperty(value = "md5")
-	private String md5;
+    @JsonProperty(value = "url")
+    private String url;
 
-	@JsonProperty(value = "callbackurl")
-	private String callBackUrl;
-	
-	@JsonProperty(value = "callbackbody")
-	private String callBackBody;
-	
-	@JsonProperty(value = "callbackbodytype")
-	private String callBackBodyType;
-	
-	@JsonProperty(value = "callbackhost")
-	private String callBackHost;
-	
-	@JsonProperty(value = "file_type")
-	private String fileType;
-	
-	@JsonProperty(value = "ignore_same_key")
-	private boolean ignoreSameKey;
-	
-	
-	
-	public CreateAsyncFetchJobsRequest(){
-	}
-	
-	/**
-	 * Constructor
-	 * @param url URL to be fetched. You can set multiple URLs and separate them with semicolons (;).
-	 * @param bucket Bucket name
-	 */
-	public CreateAsyncFetchJobsRequest(String url, String bucket){
-		this.setUrl(url);
-		this.setBucketName(bucket);
-	}
+    @JsonProperty(value = "bucket")
+    private String bucket;
 
-	/**
-	 * Obtain the URL.
-	 * @return url
-	 */
-	public String getUrl() {
-		return url;
-	}
+    @JsonProperty(value = "host")
+    private String host;
 
-	/**
-	 * Set the URL.
-	 * @param url
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    @JsonProperty(value = "key")
+    private String key;
 
-	/**
-	 * Obtain the bucket name.
-	 * @return Bucket name
-	 */
-	public String getBucketName() {
-		return bucket;
-	}
+    @JsonProperty(value = "md5")
+    private String md5;
 
-	/**
-	 * Set the bucket name.
-	 * @param bucket Bucket name
-	 */
-	public void setBucketName(String bucket) {
-		this.bucket = bucket;
-	}
+    @JsonProperty(value = "callbackurl")
+    private String callBackUrl;
 
-	/**
-	 * Obtain the host used for downloading data from a specified URL.
-	 * @return Host used for downloading data from a specified URL
-	 */
-	public String getHost() {
-		return host;
-	}
+    @JsonProperty(value = "callbackbody")
+    private String callBackBody;
 
-	/**
-	 * Set the host used for downloading data from a specified URL.
-	 * @param host Host used for downloading data from a specified URL
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
+    @JsonProperty(value = "callbackbodytype")
+    private String callBackBodyType;
 
-	/**
-	 * Obtain the object name.
-	 * @return Object name
-	 */
-	public String getObjectKey() {
-		return key;
-	}
+    @JsonProperty(value = "callbackhost")
+    private String callBackHost;
 
-	/**
-	 * Set the object name.
-	 * @param key Object name
-	 */
-	public void setObjectKey(String key) {
-		this.key = key;
-	}
+    @JsonProperty(value = "file_type")
+    private String fileType;
 
-	/**
-	 * Obtain the MD5 file.
-	 * @return File MD5
-	 */
-	public String getMd5() {
-		return md5;
-	}
+    @JsonProperty(value = "ignore_same_key")
+    private boolean ignoreSameKey;
 
-	/**
-	 * Set the MD5 file.
-	 * @param md5
-	 */
-	public void setMd5(String md5) {
-		this.md5 = md5;
-	}
+    public CreateAsyncFetchJobsRequest() {
+    }
 
-	/**
-	 * Obtain the callback URL.
-	 * @return Callback URL.
-	 */
-	public String getCallBackUrl() {
-		return callBackUrl;
-	}
+    /**
+     * Constructor
+     * 
+     * @param url
+     *            URL to be fetched. You can set multiple URLs and separate them
+     *            with semicolons (;).
+     * @param bucket
+     *            Bucket name
+     */
+    public CreateAsyncFetchJobsRequest(String url, String bucket) {
+        this.setUrl(url);
+        this.setBucketName(bucket);
+    }
 
-	/**
-	 * Set the callback URL.
-	 * @param callBackUrl Callback URL.
-	 */
-	public void setCallBackUrl(String callBackUrl) {
-		this.callBackUrl = callBackUrl;
-	}
+    /**
+     * Obtain the URL.
+     * 
+     * @return url
+     */
+    public String getUrl() {
+        return url;
+    }
 
-	/**
-	 * Obtain the callback body.
-	 * @return Callback body
-	 */
-	public String getCallBackBody() {
-		return callBackBody;
-	}
+    /**
+     * Set the URL.
+     * 
+     * @param url
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	/**
-	 * Set the callback body (Base64 encoded).
-	 * @param callBackBody Callback body
-	 * @throws ServiceException
-	 */
-	public void setCallBackBody(String callBackBody) throws ServiceException {
-		try {
-			this.callBackBody = ServiceUtils.toBase64(callBackBody.getBytes(Constants.DEFAULT_ENCODING));
-		} catch (UnsupportedEncodingException e) {
-			throw new ServiceException("Unable to get bytes from canonical string", e);
-		};
-	}
-	
-	/**
-	 * Obtain the content type of the callback body.
-	 * @return Content type of the callback body
-	 */
-	public String getCallbackBodyType() {
-		return callBackBodyType;
-	}
+    /**
+     * Obtain the bucket name.
+     * 
+     * @return Bucket name
+     */
+    public String getBucketName() {
+        return bucket;
+    }
 
-	/**
-	 * Set the content type of the callback body.
-	 * @param callBackBodyType Content type of the callback body
-	 */
-	public void setCallbackBodyType(String callBackBodyType) {
-		this.callBackBodyType = callBackBodyType;
-	}
+    /**
+     * Set the bucket name.
+     * 
+     * @param bucket
+     *            Bucket name
+     */
+    public void setBucketName(String bucket) {
+        this.bucket = bucket;
+    }
 
-	/**
-	 * Obtain the host used for callback.
-	 * @return Host used for callback
-	 */
-	public String getCallBackHost() {
-		return callBackHost;
-	}
+    /**
+     * Obtain the host used for downloading data from a specified URL.
+     * 
+     * @return Host used for downloading data from a specified URL
+     */
+    public String getHost() {
+        return host;
+    }
 
-	/**
-	 * Set the host used for callback.
-	 * @param callBackHost Host used for callback
-	 */
-	public void setCallBackHost(String callBackHost) {
-		this.callBackHost = callBackHost;
-	}
+    /**
+     * Set the host used for downloading data from a specified URL.
+     * 
+     * @param host
+     *            Host used for downloading data from a specified URL
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	/**
-	 * Obtain the storage file type
-	 * @return Storage file type
-	 */
-	public String getFileType() {
-		return fileType;
-	}
+    /**
+     * Obtain the object name.
+     * 
+     * @return Object name
+     */
+    public String getObjectKey() {
+        return key;
+    }
 
-	/**
-	 * Set the storage file type
-	 * @param fileType Storage file type
-	 */
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
-	}
+    /**
+     * Set the object name.
+     * 
+     * @param key
+     *            Object name
+     */
+    public void setObjectKey(String key) {
+        this.key = key;
+    }
 
-	/**
-	 * If a file with the same name already exists in the namespace, the current fetch job is canceled.
-	 * @return ignoreSameKey
-	 */
-	public boolean isignoreSameKey() {
-		return ignoreSameKey;
-	}
+    /**
+     * Obtain the MD5 file.
+     * 
+     * @return File MD5
+     */
+    public String getMd5() {
+        return md5;
+    }
 
-	/**
-	 * @param ignoreSameKey
-	 */
-	public void setignoreSameKey(boolean ignoreSameKey) {
-		this.ignoreSameKey = ignoreSameKey;
-	}
+    /**
+     * Set the MD5 file.
+     * 
+     * @param md5
+     */
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
 
-	@Override
-	public String toString() {
-		return "CreateAsyncFetchJobsRequest [url=" + url + ", bucket=" + bucket + ", host=" + host + ", key=" + key 
-				+ ", md5=" + md5 + ", callBackUrl=" + callBackUrl + ", callBackBody=" + callBackBody 
-				+ ", callBackBodyType=" + callBackBodyType + ", callBackHost=" + callBackHost 
-				+ ", fileType=" + fileType + ", ignoreSameKey=" + ignoreSameKey + "]";
-	}
+    /**
+     * Obtain the callback URL.
+     * 
+     * @return Callback URL.
+     */
+    public String getCallBackUrl() {
+        return callBackUrl;
+    }
+
+    /**
+     * Set the callback URL.
+     * 
+     * @param callBackUrl
+     *            Callback URL.
+     */
+    public void setCallBackUrl(String callBackUrl) {
+        this.callBackUrl = callBackUrl;
+    }
+
+    /**
+     * Obtain the callback body.
+     * 
+     * @return Callback body
+     */
+    public String getCallBackBody() {
+        return callBackBody;
+    }
+
+    /**
+     * Set the callback body (Base64 encoded).
+     * 
+     * @param callBackBody
+     *            Callback body
+     * @throws ServiceException
+     */
+    public void setCallBackBody(String callBackBody) throws ServiceException {
+        try {
+            this.callBackBody = ServiceUtils.toBase64(callBackBody.getBytes(Constants.DEFAULT_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+            throw new ServiceException("Unable to get bytes from canonical string", e);
+        }
+    }
+
+    /**
+     * Obtain the content type of the callback body.
+     * 
+     * @return Content type of the callback body
+     */
+    public String getCallbackBodyType() {
+        return callBackBodyType;
+    }
+
+    /**
+     * Set the content type of the callback body.
+     * 
+     * @param callBackBodyType
+     *            Content type of the callback body
+     */
+    public void setCallbackBodyType(String callBackBodyType) {
+        this.callBackBodyType = callBackBodyType;
+    }
+
+    /**
+     * Obtain the host used for callback.
+     * 
+     * @return Host used for callback
+     */
+    public String getCallBackHost() {
+        return callBackHost;
+    }
+
+    /**
+     * Set the host used for callback.
+     * 
+     * @param callBackHost
+     *            Host used for callback
+     */
+    public void setCallBackHost(String callBackHost) {
+        this.callBackHost = callBackHost;
+    }
+
+    /**
+     * Obtain the storage file type
+     * 
+     * @return Storage file type
+     */
+    public String getFileType() {
+        return fileType;
+    }
+
+    /**
+     * Set the storage file type
+     * 
+     * @param fileType
+     *            Storage file type
+     */
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    /**
+     * If a file with the same name already exists in the namespace, the current
+     * fetch job is canceled.
+     * 
+     * @return ignoreSameKey
+     */
+    public boolean isignoreSameKey() {
+        return ignoreSameKey;
+    }
+
+    /**
+     * @param ignoreSameKey
+     */
+    public void setignoreSameKey(boolean ignoreSameKey) {
+        this.ignoreSameKey = ignoreSameKey;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateAsyncFetchJobsRequest [url=" + url + ", bucket=" + bucket + ", host=" + host + ", key=" + key
+                + ", md5=" + md5 + ", callBackUrl=" + callBackUrl + ", callBackBody=" + callBackBody
+                + ", callBackBodyType=" + callBackBodyType + ", callBackHost=" + callBackHost + ", fileType=" + fileType
+                + ", ignoreSameKey=" + ignoreSameKey + "]";
+    }
 
 }

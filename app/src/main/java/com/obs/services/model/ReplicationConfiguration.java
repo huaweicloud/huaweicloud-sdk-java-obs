@@ -73,19 +73,19 @@ public class ReplicationConfiguration extends HeaderResponse {
         }
 
         /**
-         * 获取历史对象复制规则状态
+         * Obtain the replication status of historical objects.
          * 
-         * @return 规则状态
+         * @return Rule status
          */
         public HistoricalObjectReplicationEnum getHistoricalObjectReplication() {
             return historicalObjectReplication;
         }
 
         /**
-         * 设置历史对象复制规则
+         * Set historical object replication rule.
          * 
          * @param historicalObjectReplication
-         *            规则状态
+         *            Rule status
          */
         public void setHistoricalObjectReplication(HistoricalObjectReplicationEnum historicalObjectReplication) {
             this.historicalObjectReplication = historicalObjectReplication;

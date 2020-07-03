@@ -11,6 +11,7 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 import java.util.List;
@@ -19,106 +20,107 @@ import java.util.List;
  * Response to a request for obtaining bucket metadata
  *
  */
-public class BucketMetadataInfoResult extends OptionsInfoResult
-{
-    
+public class BucketMetadataInfoResult extends OptionsInfoResult {
+
     private StorageClassEnum storageClass;
-    
+
     private String location;
-    
+
     private String obsVersion;
-    
+
     private AvailableZoneEnum availableZone;
-    
+
     private String epid;
 
     private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
-    
-	public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
-			List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
-			String obsVersion) {
-		super(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders);
-		this.storageClass = storageClass;
-		this.location = location;
-		this.obsVersion = obsVersion;
-	}
-	
-	public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
-			List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
-			String obsVersion, AvailableZoneEnum availableZone) {
-		this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
-		this.availableZone = availableZone;
-	}
 
-	public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
-			List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
-			String obsVersion, AvailableZoneEnum availableZone, String epid, BucketTypeEnum bucketType) {
-		this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
-		this.availableZone = availableZone;
-		this.epid = epid;
-		this.bucketType = bucketType;
-	}
-	
-	
+    public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
+            List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
+            String obsVersion) {
+        super(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders);
+        this.storageClass = storageClass;
+        this.location = location;
+        this.obsVersion = obsVersion;
+    }
 
-	/**
-     * Obtain the bucket storage class. 
+    public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
+            List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
+            String obsVersion, AvailableZoneEnum availableZone) {
+        this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
+        this.availableZone = availableZone;
+    }
+
+    public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
+            List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
+            String obsVersion, AvailableZoneEnum availableZone, String epid, BucketTypeEnum bucketType) {
+        this(allowOrigin, allowHeaders, maxAge, allowMethods, exposeHeaders, storageClass, location, obsVersion);
+        this.availableZone = availableZone;
+        this.epid = epid;
+        this.bucketType = bucketType;
+    }
+
+    /**
+     * Obtain the bucket storage class.
+     * 
      * @return Bucket storage class
      */
     @Deprecated
-    public String getDefaultStorageClass()
-    {
+    public String getDefaultStorageClass() {
         return this.storageClass == null ? null : storageClass.getCode();
     }
-    
+
     /**
-     * Obtain the bucket storage class. 
+     * Obtain the bucket storage class.
+     * 
      * @return Bucket storage class
      */
     public StorageClassEnum getBucketStorageClass() {
-    	return this.storageClass;
+        return this.storageClass;
     }
-    
+
     /**
      * Obtain the bucket location.
+     * 
      * @return Bucket location
      */
-	public String getLocation() {
-		return location;
-	}
-	
-	/**
-	 * Obtain the OBS version.
-	 * @return OBS version
-	 */
-	public String getObsVersion() {
-		return obsVersion;
-	}
-	
-	/**
-	 * Obtain the enterprise ID of a bucket.
-	 * @return Enterprise ID
-	 */
-	public String getEpid() {
-	    return epid;
-	}
-	
-	/**
-	 * Obtain the bucket cluster type.
-	 * @return Bucket cluster type
-	 */
-	public AvailableZoneEnum getAvailableZone() {
-		return this.availableZone;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	@Override
-	public String toString() {
-		return "BucketMetadataInfoResult [storageClass=" + storageClass + ", location=" + location + ", obsVersion="
-				+ obsVersion + ", bucketType="+ bucketType.name() + "]";
-	}
+    /**
+     * Obtain the OBS version.
+     * 
+     * @return OBS version
+     */
+    public String getObsVersion() {
+        return obsVersion;
+    }
 
+    /**
+     * Obtain the enterprise ID of a bucket.
+     * 
+     * @return Enterprise ID
+     */
+    public String getEpid() {
+        return epid;
+    }
 
-	public BucketTypeEnum getBucketType() {
-		return bucketType;
-	}
+    /**
+     * Obtain the bucket cluster type.
+     * 
+     * @return Bucket cluster type
+     */
+    public AvailableZoneEnum getAvailableZone() {
+        return this.availableZone;
+    }
+
+    @Override
+    public String toString() {
+        return "BucketMetadataInfoResult [storageClass=" + storageClass + ", location=" + location + ", obsVersion="
+                + obsVersion + ", bucketType=" + bucketType.name() + "]";
+    }
+
+    public BucketTypeEnum getBucketType() {
+        return bucketType;
+    }
 }

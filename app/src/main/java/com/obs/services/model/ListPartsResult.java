@@ -20,180 +20,166 @@ import java.util.List;
 /**
  * Response to a request for listing uploaded parts
  */
-public class ListPartsResult extends HeaderResponse
-{
+public class ListPartsResult extends HeaderResponse {
     private String bucket;
-    
-    private String key;
-    
-    private String uploadId;
-    
-    private Owner initiator;
-    
-    private Owner owner;
-    
-    private StorageClassEnum storageClass;
-    
-    private List<Multipart> multipartList;
-    
-    private Integer maxParts;
-    
-    private boolean isTruncated;
-    
-    private String partNumberMarker;
-    
-    private String nextPartNumberMarker;
-    
-    
-    public ListPartsResult(String bucket, String key, String uploadId, Owner initiator, Owner owner,
-			StorageClassEnum storageClass, List<Multipart> multipartList, Integer maxParts, boolean isTruncated,
-			String partNumberMarker, String nextPartNumberMarker) {
-		super();
-		this.bucket = bucket;
-		this.key = key;
-		this.uploadId = uploadId;
-		this.initiator = initiator;
-		this.owner = owner;
-		this.storageClass = storageClass;
-		this.multipartList = multipartList;
-		this.maxParts = maxParts;
-		this.isTruncated = isTruncated;
-		this.partNumberMarker = partNumberMarker;
-		this.nextPartNumberMarker = nextPartNumberMarker;
-	}
 
-	/**
+    private String key;
+
+    private String uploadId;
+
+    private Owner initiator;
+
+    private Owner owner;
+
+    private StorageClassEnum storageClass;
+
+    private List<Multipart> multipartList;
+
+    private Integer maxParts;
+
+    private boolean isTruncated;
+
+    private String partNumberMarker;
+
+    private String nextPartNumberMarker;
+
+    public ListPartsResult(String bucket, String key, String uploadId, Owner initiator, Owner owner,
+            StorageClassEnum storageClass, List<Multipart> multipartList, Integer maxParts, boolean isTruncated,
+            String partNumberMarker, String nextPartNumberMarker) {
+        super();
+        this.bucket = bucket;
+        this.key = key;
+        this.uploadId = uploadId;
+        this.initiator = initiator;
+        this.owner = owner;
+        this.storageClass = storageClass;
+        this.multipartList = multipartList;
+        this.maxParts = maxParts;
+        this.isTruncated = isTruncated;
+        this.partNumberMarker = partNumberMarker;
+        this.nextPartNumberMarker = nextPartNumberMarker;
+    }
+
+    /**
      * Obtain the name of the bucket to which the multipart upload belongs.
+     * 
      * @return Name of the bucket to which the multipart upload belongs
      */
-    public String getBucket()
-    {
+    public String getBucket() {
         return bucket;
     }
-    
+
     /**
      * Obtain the name of the object involved in the multipart upload.
+     * 
      * @return Name of the object involved in the multipart upload
      */
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
-    
-    
+
     /**
      * Obtain the multipart upload ID.
+     * 
      * @return Multipart upload ID
      */
-    public String getUploadId()
-    {
+    public String getUploadId() {
         return uploadId;
     }
-    
-    
+
     /**
      * Creator of the multipart upload
+     * 
      * @return Creator of the multipart upload
      */
-    public Owner getInitiator()
-    {
+    public Owner getInitiator() {
         return initiator;
     }
-    
-    
+
     /**
      * Query the creator of the multipart upload.
+     * 
      * @return Owner of the multipart upload
      */
-    public Owner getOwner()
-    {
+    public Owner getOwner() {
         return owner;
     }
-    
-    
+
     /**
      * Obtain the storage class of the object involved in the multipart upload.
+     * 
      * @return Storage class of the object involved in the multipart upload
      */
     @Deprecated
-    public String getStorageClass()
-    {
+    public String getStorageClass() {
         return this.storageClass == null ? null : this.storageClass.getCode();
     }
-    
-    
+
     /**
      * Obtain the storage class of the object involved in the multipart upload.
+     * 
      * @return Storage class of the object involved in the multipart upload
      */
-    public StorageClassEnum getObjectStorageClass()
-    {
+    public StorageClassEnum getObjectStorageClass() {
         return storageClass;
     }
-    
-    
+
     /**
      * Obtain the maximum number of uploaded parts to be listed.
+     * 
      * @return Maximum number of uploaded parts to be listed
      */
-    public Integer getMaxParts()
-    {
+    public Integer getMaxParts() {
         return maxParts;
     }
-    
-    
+
     /**
      * Obtain the list of uploaded parts.
+     * 
      * @return List of uploaded parts
      */
-    public List<Multipart> getMultipartList()
-    {
-        if(this.multipartList == null){
+    public List<Multipart> getMultipartList() {
+        if (this.multipartList == null) {
             this.multipartList = new ArrayList<Multipart>();
         }
         return multipartList;
     }
-    
-
 
     /**
-     * Check whether the query result list is truncated. Value "true" indicates that the results are incomplete while value "false" indicates that the results are complete.
+     * Check whether the query result list is truncated. Value "true" indicates
+     * that the results are incomplete while value "false" indicates that the
+     * results are complete.
+     * 
      * @return Truncation identifier
      */
-    public boolean isTruncated()
-    {
+    public boolean isTruncated() {
         return isTruncated;
     }
 
-
     /**
      * Obtain the start position for listing parts.
+     * 
      * @return Start position for listing parts
      */
-    public String getPartNumberMarker()
-    {
+    public String getPartNumberMarker() {
         return partNumberMarker;
     }
 
-
     /**
      * Obtain the start position for next listing.
+     * 
      * @return Start position for next listing
      */
-    public String getNextPartNumberMarker()
-    {
+    public String getNextPartNumberMarker() {
         return nextPartNumberMarker;
     }
 
-
     @Override
-    public String toString()
-    {
-        return "ListPartsResult [bucket=" + bucket + ", key=" + key + ", uploadId=" + uploadId + ", initiator=" + initiator + ", owner="
-            + owner + ", storageClass=" + storageClass + ", multipartList=" + multipartList + ", maxParts=" + maxParts + ", isTruncated="
-            + isTruncated + ", partNumberMarker=" + partNumberMarker + ", nextPartNumberMarker=" + nextPartNumberMarker + "]";
+    public String toString() {
+        return "ListPartsResult [bucket=" + bucket + ", key=" + key + ", uploadId=" + uploadId + ", initiator="
+                + initiator + ", owner=" + owner + ", storageClass=" + storageClass + ", multipartList=" + multipartList
+                + ", maxParts=" + maxParts + ", isTruncated=" + isTruncated + ", partNumberMarker=" + partNumberMarker
+                + ", nextPartNumberMarker=" + nextPartNumberMarker + "]";
     }
-    
+
 }
-
-

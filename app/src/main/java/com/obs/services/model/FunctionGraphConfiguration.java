@@ -11,6 +11,7 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 public class FunctionGraphConfiguration extends AbstractNotification {
 
     private String functionGraph;
-    
+
     public FunctionGraphConfiguration() {
 
     }
@@ -30,10 +31,14 @@ public class FunctionGraphConfiguration extends AbstractNotification {
     /**
      * Constructor
      * 
-     * @param id            Event notification configuration ID
-     * @param filter        Filtering rules
-     * @param functionGraph FunctionGraph URN
-     * @param events        List of event types that need to be notified
+     * @param id
+     *            Event notification configuration ID
+     * @param filter
+     *            Filtering rules
+     * @param functionGraph
+     *            FunctionGraph URN
+     * @param events
+     *            List of event types that need to be notified
      */
     public FunctionGraphConfiguration(String id, Filter filter, String functionGraph, List<EventTypeEnum> events) {
         super(id, filter, events);
@@ -53,7 +58,8 @@ public class FunctionGraphConfiguration extends AbstractNotification {
     /**
      * Set the FunctionGraph URN.
      * 
-     * @param functionGraph FunctionGraph URN
+     * @param functionGraph
+     *            FunctionGraph URN
      */
     public void setFunctionGraph(String functionGraph) {
         this.functionGraph = functionGraph;
@@ -61,8 +67,8 @@ public class FunctionGraphConfiguration extends AbstractNotification {
 
     @Override
     public String toString() {
-        return "FunctionGraphConfiguration [id=" + id + ", functionGraph=" + functionGraph + ", events=" + events + ", filter="
-                + filter + "]";
+        return "FunctionGraphConfiguration [id=" + id + ", functionGraph=" + functionGraph + ", events=" + events
+                + ", filter=" + filter + "]";
     }
 
 }

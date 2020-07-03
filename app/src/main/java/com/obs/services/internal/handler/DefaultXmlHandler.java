@@ -1,10 +1,4 @@
 /**
- * 
- * JetS3t : Java S3 Toolkit
- * Project hosted at http://bitbucket.org/jmurty/jets3t/
- *
- * Copyright 2006-2010 James Murty
- * 
  * Copyright 2019 Huawei Technologies Co.,Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
@@ -17,49 +11,49 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.obs.services.internal.handler;
 
-import java.util.LinkedList;
+package com.obs.services.internal.handler;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-public abstract class DefaultXmlHandler extends DefaultHandler{
+public abstract class DefaultXmlHandler extends DefaultHandler {
 
-	private StringBuilder currText = null;
-	private final LinkedList<String> context = new LinkedList<String>();
+    private StringBuilder currText = null;
 
-	public void startDocument() {
-		return;
-	}
+    @Override
+    public void startDocument() {
+        return;
+    }
 
-	public void endDocument() {
-		return;
-	}
+    @Override
+    public void endDocument() {
+        return;
+    }
 
-	public void startElement(String uri, String name, String qName, Attributes attrs) {
-		this.currText = new StringBuilder();
-		this.startElement(name, attrs);
-	}
+    @Override
+    public void startElement(String uri, String name, String qName, Attributes attrs) {
+        this.currText = new StringBuilder();
+        this.startElement(name, attrs);
+    }
 
-	public void startElement(String name, Attributes attrs) {
-		this.startElement(name);
-	}
+    public void startElement(String name, Attributes attrs) {
+        this.startElement(name);
+    }
 
-	public void startElement(String name) {
-		context.add(name);
-	}
+    public void startElement(String name) {
+        return;
+    }
 
-	public void endElement(String uri, String name, String qName) {
-		String elementText = this.currText.toString();
-		this.endElement(name, elementText);
-	}
+    @Override
+    public void endElement(String uri, String name, String qName) {
+        String elementText = this.currText.toString();
+        this.endElement(name, elementText);
+    }
 
-	public void endElement(String name, String content) {
-		context.removeLast();
-	}
+    public abstract void endElement(String name, String content);
 
-	public void characters(char ch[], int start, int length) {
-		this.currText.append(ch, start, length);
-	}
+    public void characters(char[] ch, int start, int length) {
+        this.currText.append(ch, start, length);
+    }
 }

@@ -11,6 +11,7 @@
 * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 * specific language governing permissions and limitations under the License.
 **/
+
 package com.obs.services.model;
 
 import java.util.ArrayList;
@@ -20,54 +21,58 @@ import java.util.List;
  * Bucket notification configuration
  *
  */
-public class BucketNotificationConfiguration extends HeaderResponse
-{
+public class BucketNotificationConfiguration extends HeaderResponse {
     private List<TopicConfiguration> topicConfigurations;
     private List<FunctionGraphConfiguration> functionGraphConfigurations;
-    
-    public BucketNotificationConfiguration(){
-        
+
+    public BucketNotificationConfiguration() {
+
     }
-    
+
     /**
      * Add event notification configuration.
-     * @param topicConfiguration Event notification configuration
+     * 
+     * @param topicConfiguration
+     *            Event notification configuration
      * @return Bucket notification configuration
      */
-    public BucketNotificationConfiguration addTopicConfiguration(TopicConfiguration topicConfiguration){
+    public BucketNotificationConfiguration addTopicConfiguration(TopicConfiguration topicConfiguration) {
         this.getTopicConfigurations().add(topicConfiguration);
         return this;
     }
-    
+
     /**
      * Add FunctionGraph notification configuration.
-     * @param functionGraphConfiguration FunctionGraph notification configuration
+     * 
+     * @param functionGraphConfiguration
+     *            FunctionGraph notification configuration
      * @return Event notification configuration of the bucket
      */
-    public BucketNotificationConfiguration addFunctionGraphConfiguration(FunctionGraphConfiguration functionGraphConfiguration){
+    public BucketNotificationConfiguration addFunctionGraphConfiguration(
+            FunctionGraphConfiguration functionGraphConfiguration) {
         this.getFunctionGraphConfigurations().add(functionGraphConfiguration);
         return this;
     }
-    
+
     /**
      * Obtain the list of event notification configurations
+     * 
      * @return List of event notification configurations
      */
-    public List<TopicConfiguration> getTopicConfigurations()
-    {
-        if(this.topicConfigurations == null){
+    public List<TopicConfiguration> getTopicConfigurations() {
+        if (this.topicConfigurations == null) {
             this.topicConfigurations = new ArrayList<TopicConfiguration>();
         }
         return topicConfigurations;
     }
-    
+
     /**
      * Obtain the list of FunctionGraph notification configurations
+     * 
      * @return List of FunctionGraph notification configurations
      */
-    public List<FunctionGraphConfiguration> getFunctionGraphConfigurations()
-    {
-        if(this.functionGraphConfigurations == null){
+    public List<FunctionGraphConfiguration> getFunctionGraphConfigurations() {
+        if (this.functionGraphConfigurations == null) {
             this.functionGraphConfigurations = new ArrayList<FunctionGraphConfiguration>();
         }
         return functionGraphConfigurations;
@@ -75,19 +80,21 @@ public class BucketNotificationConfiguration extends HeaderResponse
 
     /**
      * Configure event notification.
-     * @param topicConfigurations Event notification configuration list
+     * 
+     * @param topicConfigurations
+     *            Event notification configuration list
      */
-    public void setTopicConfigurations(List<TopicConfiguration> topicConfigurations)
-    {
+    public void setTopicConfigurations(List<TopicConfiguration> topicConfigurations) {
         this.topicConfigurations = topicConfigurations;
     }
-    
+
     /**
      * Set the list of FunctionGraph notification configurations.
-     * @param functionGraphConfigurations List of FunctionGraph notification configurations
+     * 
+     * @param functionGraphConfigurations
+     *            List of FunctionGraph notification configurations
      */
-    public void setFunctionGraphConfigurations(List<FunctionGraphConfiguration> functionGraphConfigurations)
-    {
+    public void setFunctionGraphConfigurations(List<FunctionGraphConfiguration> functionGraphConfigurations) {
         this.functionGraphConfigurations = functionGraphConfigurations;
     }
 
@@ -96,5 +103,5 @@ public class BucketNotificationConfiguration extends HeaderResponse
         return "BucketNotificationConfiguration [topicConfigurations=" + topicConfigurations
                 + ", functionGraphConfigurations=" + functionGraphConfigurations + "]";
     }
-    
+
 }

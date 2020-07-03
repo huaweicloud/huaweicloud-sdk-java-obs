@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,58 +21,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class OefExceptionMessage {
-	@JsonProperty(value = "message")
-	private String message;
-	
-	@JsonProperty(value = "code")
-	private String code;
-	
-	@JsonProperty(value = "request_id")
-	private String request_id;
-	
-	public OefExceptionMessage() {
-		
-	}
-	
-	/**
-	 * 构造函数
-	 * @param message 错误信息
-	 * @param code 错误码
-	 * @param request_id 请求ID
-	 */
-	public OefExceptionMessage(String message, String code, String request_id) {
-		this.message = message;
-		this.code = code;
-		this.request_id = request_id;
-	}
+    @JsonProperty(value = "message")
+    private String message;
 
-	public String getMessage() {
-		return message;
-	}
+    @JsonProperty(value = "code")
+    private String code;
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    @JsonProperty(value = "request_id")
+    private String requestId;
 
-	public String getCode() {
-		return code;
-	}
+    public OefExceptionMessage() {
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    }
 
-	public String getRequest_id() {
-		return request_id;
-	}
+    /**
+     * 构造函数
+     * 
+     * @param message
+     *            错误信息
+     * @param code
+     *            错误码
+     * @param requestId
+     *            请求ID
+     */
+    public OefExceptionMessage(String message, String code, String requestId) {
+        this.message = message;
+        this.code = code;
+        this.requestId = requestId;
+    }
 
-	public void setRequest_id(String request_id) {
-		this.request_id = request_id;
-	}
-	
-	@Override
-    public String toString()
-    {
-        return "OefExceptionMessage [message=" + message + ", code=" + code + ", request_id" + request_id + "]";
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    @Override
+    public String toString() {
+        return "OefExceptionMessage [message=" + message + ", code=" + code + ", request_id" + requestId + "]";
     }
 }

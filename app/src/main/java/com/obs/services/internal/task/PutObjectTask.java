@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.internal.task;
 
 import com.obs.services.ObsClient;
@@ -23,25 +24,26 @@ import com.obs.services.model.TaskCallback;
 import com.obs.services.model.UploadObjectsProgressListener;
 
 public class PutObjectTask implements Runnable {
-	
+
     protected ObsClient obsClient;
-	
+
     protected String bucketName;
-    
+
     private UploadObjectsProgressListener progressListener;
-	
-	private int taskProgressInterval;
-	
-	private PutObjectRequest taskRequest;
-	
-	private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
-	
-	private UploadTaskProgressStatus taskStatus;
+
+    private int taskProgressInterval;
+
+    private PutObjectRequest taskRequest;
+
+    private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
+
+    private UploadTaskProgressStatus taskStatus;
 
     public PutObjectTask(ObsClient obsClient, String bucketName, PutObjectRequest taskRequest,
-            TaskCallback<PutObjectResult, PutObjectBasicRequest> callback, UploadObjectsProgressListener progressListener,
-            UploadTaskProgressStatus progressStatus, int taskProgressInterval) {
-    	this.obsClient = obsClient;
+            TaskCallback<PutObjectResult, PutObjectBasicRequest> callback,
+            UploadObjectsProgressListener progressListener, UploadTaskProgressStatus progressStatus,
+            int taskProgressInterval) {
+        this.obsClient = obsClient;
         this.bucketName = bucketName;
         this.taskRequest = taskRequest;
         this.callback = callback;
@@ -49,7 +51,7 @@ public class PutObjectTask implements Runnable {
         this.taskStatus = progressStatus;
         this.taskProgressInterval = taskProgressInterval;
     }
-    
+
     public ObsClient getObsClient() {
         return obsClient;
     }
@@ -65,7 +67,7 @@ public class PutObjectTask implements Runnable {
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     public UploadObjectsProgressListener getUploadObjectsProgressListener() {
         return progressListener;
     }
@@ -73,7 +75,7 @@ public class PutObjectTask implements Runnable {
     public void setUploadObjectsProgressListener(UploadObjectsProgressListener progressListener) {
         this.progressListener = progressListener;
     }
-    
+
     public int getTaskProgressInterval() {
         return taskProgressInterval;
     }
@@ -81,43 +83,43 @@ public class PutObjectTask implements Runnable {
     public void setTaskProgressInterval(int taskProgressInterval) {
         this.taskProgressInterval = taskProgressInterval;
     }
-	
-	public PutObjectRequest getTaskRequest() {
-		return taskRequest;
-	}
 
-	public void setTaskRequest(PutObjectRequest taskRequest) {
-		this.taskRequest = taskRequest;
-	}
+    public PutObjectRequest getTaskRequest() {
+        return taskRequest;
+    }
 
-	public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
-		return callback;
-	}
+    public void setTaskRequest(PutObjectRequest taskRequest) {
+        this.taskRequest = taskRequest;
+    }
 
-	public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
-		this.callback = callback;
-	}
+    public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
+        return callback;
+    }
 
-	public UploadTaskProgressStatus getTaskStatus() {
-		return taskStatus;
-	}
+    public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
+        this.callback = callback;
+    }
 
-	public void setTaskStatus(UploadTaskProgressStatus taskStatus) {
-		this.taskStatus = taskStatus;
-	}
+    public UploadTaskProgressStatus getTaskStatus() {
+        return taskStatus;
+    }
 
-	private void putObjects() {
-		try {
-			PutObjectResult result = obsClient.putObject(taskRequest);
-			taskStatus.succeedTaskIncrement();
-			PutObjectResult ret = new PutObjectResult(result.getBucketName(), result.getObjectKey()
-					, result.getEtag(), result.getVersionId(), result.getObjectUrl(), result.getResponseHeaders(), result.getStatusCode());
+    public void setTaskStatus(UploadTaskProgressStatus taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    private void putObjects() {
+        try {
+            PutObjectResult result = obsClient.putObject(taskRequest);
+            taskStatus.succeedTaskIncrement();
+            PutObjectResult ret = new PutObjectResult(result.getBucketName(), result.getObjectKey(), result.getEtag(),
+                    result.getVersionId(), result.getObjectUrl(), result.getResponseHeaders(), result.getStatusCode());
             callback.onSuccess(ret);
         } catch (ObsException e) {
-        	taskStatus.failTaskIncrement();
+            taskStatus.failTaskIncrement();
             callback.onException(e, taskRequest);
         } finally {
-        	taskStatus.execTaskIncrement();
+            taskStatus.execTaskIncrement();
             if (progressListener != null) {
                 if (taskStatus.getExecTaskNum() % this.taskProgressInterval == 0) {
                     progressListener.progressChanged(taskStatus);
@@ -126,17 +128,17 @@ public class PutObjectTask implements Runnable {
                     progressListener.progressChanged(taskStatus);
                 }
             }
-        	//更新已完成任务的大小信息，移除不在线程中的任务进度信息
-        	final String key = taskRequest.getObjectKey();
-        	ProgressStatus status = taskStatus.getTaskStatus(key);
-        	if(status != null) {
-        		taskStatus.addEndingTaskSize(status.getTransferredBytes());
-        	}
-        	taskStatus.removeTaskTable(key);
+            // 更新已完成任务的大小信息，移除不在线程中的任务进度信息
+            final String key = taskRequest.getObjectKey();
+            ProgressStatus status = taskStatus.getTaskStatus(key);
+            if (status != null) {
+                taskStatus.addEndingTaskSize(status.getTransferredBytes());
+            }
+            taskStatus.removeTaskTable(key);
         }
-	}
+    }
 
-	@Override
+    @Override
     public void run() {
         putObjects();
     }

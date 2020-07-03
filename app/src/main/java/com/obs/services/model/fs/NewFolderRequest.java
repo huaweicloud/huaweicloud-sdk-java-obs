@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model.fs;
 
 import com.obs.services.model.PutObjectBasicRequest;
@@ -19,23 +20,24 @@ import com.obs.services.model.PutObjectBasicRequest;
  * Parameters in a folder creation request
  *
  */
-public class NewFolderRequest extends PutObjectBasicRequest{
-	
-	public NewFolderRequest() {
-		super();
-	}
-	
-	/**
-	 * Constructor
-	 * @param bucketName Bucket name
-	 * @param objectKey Folder name
-	 */
-	public NewFolderRequest(String bucketName, String objectKey) {
-		super();
-		this.bucketName = bucketName;
-		this.objectKey = objectKey;
-	}
-	
-}	
+public class NewFolderRequest extends PutObjectBasicRequest {
 
+    public NewFolderRequest() {
+        super();
+    }
 
+    /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Folder name
+     */
+    public NewFolderRequest(String bucketName, String objectKey) {
+        super();
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+    }
+
+}

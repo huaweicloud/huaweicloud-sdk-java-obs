@@ -21,22 +21,26 @@ package com.obs.services.model;
  *
  */
 public class SetBucketVersioningRequest extends BaseBucketRequest {
-    
+
     private VersioningStatusEnum status;
-    
+
     public SetBucketVersioningRequest() {
-        
+
     }
+
     public SetBucketVersioningRequest(String bucketName, VersioningStatusEnum status) {
         super(bucketName);
         this.status = status;
     }
+
     public VersioningStatusEnum getStatus() {
         return status;
     }
+
     public void setStatus(VersioningStatusEnum status) {
         this.status = status;
     }
+
     @Override
     public String toString() {
         return "SetBucketVersioningRequest [status=" + status + ", getBucketName()=" + getBucketName()

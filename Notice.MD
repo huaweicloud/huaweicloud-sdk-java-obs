@@ -6,17 +6,6 @@ Warranty Disclaimer
 THE OPEN SOURCE SOFTWARE IN THIS PRODUCT IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY WARRANTY, WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE APPLICABLE LICENSES FOR MORE DETAILS.
 
 Copyright Notice and License Texts   
-Software: JetS3t 0.9.4   
-Copyright notice:    
-Copyright 1999-2005 The Apache Software Foundation   
-Copyright 1999-2015 The Apache Software Foundation   
-Copyright (c) 2000 - 2015 The Legion of the Bouncy Castle Inc. (http:www.bouncycastle.org)   
-Copyright (c)  2003-2004  David Vignoni.   
-Copyright 2002-2013 The Apache Software Foundation   
-Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)   
-Copyright (c) 2001 The Apache Software Foundation.  All rights reserved.   
-Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.   
-
 
 License: Apache License V2.0
                                  Apache License
@@ -254,10 +243,6 @@ Copyright 2007-2019 the FasterXML.com.
 License: Apache License V2.0
 Please see above.
 
-
-License: Apache License V2.0
-Please see above.
-
 Software: java-xmlbuilder-1.2	
 Copyright notice:   
 Copyright 2008-2014 James Murty (www.jamesmurty.com)  
@@ -265,14 +250,15 @@ Copyright 2008-2014 James Murty (www.jamesmurty.com)
 License: Apache License V2.0
 Please see above.
 
-Software: log4j-api-2.12.0	
+Software: log4j-api-2.13.2	
 Copyright notice:   
 Copyright 1999-2017 The Apache Software Foundation  
 Copyright 1999-2017 Apache Software Foundation  
 
 License: Apache License V2.0
 Please see above.  
-Software: log4j-core-2.12.0	  
+
+Software: log4j-core-2.13.2	  
 Copyright notice:   
 Copyright 1999-2017 The Apache Software Foundation  
 Copyright 1999-2012 Apache Software Foundation  
@@ -281,8 +267,7 @@ Copyright 2005-2006 Tim Fennell
 License: Apache License V2.0
 Please see above.  
 
-
-Software: okhttp-3.14.2	
+Software: okhttp-3.14.4	
 Copyright notice:   
 Copyright (C) 2012 Google Inc.  
 Copyright (C) 2011 The Android Open Source Project  

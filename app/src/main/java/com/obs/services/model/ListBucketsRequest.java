@@ -15,37 +15,38 @@
 package com.obs.services.model;
 
 /**
- * Parameters in a request for listing buckets 
+ * Parameters in a request for listing buckets
  *
  */
 public class ListBucketsRequest {
-	private boolean queryLocation = true;
+    private boolean queryLocation = true;
 
-	private BucketTypeEnum bucketType;
+    private BucketTypeEnum bucketType;
 
-	public boolean isQueryLocation() {
-		return queryLocation;
-	}
+    public boolean isQueryLocation() {
+        return queryLocation;
+    }
 
-	/**
-	 * Specify whether to list the region information of all buckets.
-	 * @param queryLocation Whether to list the region information of all buckets
-	 */
-	public void setQueryLocation(boolean queryLocation) {
-		this.queryLocation = queryLocation;
-	}
+    /**
+     * Specify whether to list the region information of all buckets.
+     * 
+     * @param queryLocation
+     *            Whether to list the region information of all buckets
+     */
+    public void setQueryLocation(boolean queryLocation) {
+        this.queryLocation = queryLocation;
+    }
 
-	@Override
-	public String toString() {
-		return "ListBucketsRequest [queryLocation=" + queryLocation + "]";
-	}
+    @Override
+    public String toString() {
+        return "ListBucketsRequest [queryLocation=" + queryLocation + "]";
+    }
 
-	public BucketTypeEnum getBucketType() {
-		return bucketType;
-	}
+    public BucketTypeEnum getBucketType() {
+        return bucketType;
+    }
 
-
-	public void setBucketType(BucketTypeEnum bucketType) {
-		this.bucketType = bucketType;
-	}
+    public void setBucketType(BucketTypeEnum bucketType) {
+        this.bucketType = bucketType;
+    }
 }

@@ -17,8 +17,7 @@ package com.obs.services.model;
 /**
  * HTTP/HTTPS request method
  */
-public enum HttpMethodEnum
-{
+public enum HttpMethodEnum {
     /**
      * GET method, normally used for query
      */
@@ -48,40 +47,31 @@ public enum HttpMethodEnum
      * OPTIONS method, normally used for preflight
      */
     OPTIONS("Options");
-    
+
     private String operationType;
-    
-    private HttpMethodEnum(String operationType)
-    {
-        if (operationType == null)
-        {
+
+    private HttpMethodEnum(String operationType) {
+        if (operationType == null) {
             throw new IllegalArgumentException("operation type code is null");
         }
         this.operationType = operationType;
     }
-    
-    public String getOperationType()
-    {
+
+    public String getOperationType() {
         return this.operationType.toUpperCase();
     }
-    
-    public static HttpMethodEnum getValueFromStringCode(String operationType)
-    {
-        if (operationType == null)
-        {
+
+    public static HttpMethodEnum getValueFromStringCode(String operationType) {
+        if (operationType == null) {
             throw new IllegalArgumentException("operation type is null");
         }
-        
-        for (HttpMethodEnum installMode : HttpMethodEnum.values())
-        {
-            if (installMode.getOperationType().equals(operationType.toUpperCase()))
-            {
+
+        for (HttpMethodEnum installMode : HttpMethodEnum.values()) {
+            if (installMode.getOperationType().equals(operationType.toUpperCase())) {
                 return installMode;
             }
         }
-        
+
         throw new IllegalArgumentException("operation type is illegal");
     }
 }
-
-

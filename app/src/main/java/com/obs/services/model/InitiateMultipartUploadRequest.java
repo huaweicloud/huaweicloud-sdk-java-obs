@@ -17,132 +17,138 @@ package com.obs.services.model;
 /**
  * Parameters in a request for initializing a multipart upload
  */
-public class InitiateMultipartUploadRequest extends PutObjectBasicRequest
-{
+public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
     private ObjectMetadata metadata;
-    
+
     private int expires;
-    
-    public InitiateMultipartUploadRequest(){
-        
+
+    public InitiateMultipartUploadRequest() {
+
     }
-    
+
     /**
      * Constructor
-     * @param bucketName Name of the bucket to which the multipart upload belongs
-     @param objectKey Name of the object involved in the multipart upload
+     * 
+     * @param bucketName
+     *            Name of the bucket to which the multipart upload belongs
+     * @param objectKey
+     *            Name of the object involved in the multipart upload
      */
-    public InitiateMultipartUploadRequest(String bucketName, String objectKey)
-    {
+    public InitiateMultipartUploadRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }
 
     /**
-     * Obtain the expiration time of the object generated after the multipart upload is complete.
+     * Obtain the expiration time of the object generated after the multipart
+     * upload is complete.
+     * 
      * @return Expiration time of the object
      */
-	public int getExpires() {
-		return expires;
-	}
+    public int getExpires() {
+        return expires;
+    }
 
-	/**
-	 * Set the expiration time of the object generated after the multipart upload is complete. The value must be an integer.
-	 * @param expires Expiration time of the object
-	 */
-	public void setExpires(int expires) {
-		this.expires = expires;
-	}
-    
+    /**
+     * Set the expiration time of the object generated after the multipart
+     * upload is complete. The value must be an integer.
+     * 
+     * @param expires
+     *            Expiration time of the object
+     */
+    public void setExpires(int expires) {
+        this.expires = expires;
+    }
+
     /**
      * Obtain the name of the bucket to which the multipart upload belongs.
      * 
      * @return Name of the bucket to which the multipart upload belongs
      */
-    public String getBucketName()
-    {
+    public String getBucketName() {
         return bucketName;
     }
-    
+
     /**
      * Set the name for the bucket to which the multipart upload belongs.
      * 
-     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param bucketName
+     *            Name of the bucket to which the multipart upload belongs
      */
-    public void setBucketName(String bucketName)
-    {
+    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-    
+
     /**
      * Obtain the name of the object involved in the multipart upload.
      * 
      * @return Name of the object involved in the multipart upload
      */
-    public String getObjectKey()
-    {
+    public String getObjectKey() {
         return objectKey;
     }
-    
+
     /**
      * Set the name for the object involved in the multipart upload.
      * 
-     @param objectKey Name of the object involved in the multipart upload
+     * @param objectKey
+     *            Name of the object involved in the multipart upload
      */
-    public void setObjectKey(String objectKey)
-    {
+    public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
-    
+
     /**
-     * Set the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * Set the redirection link which can redirect the request to another object
+     * in the bucket or to an external URL.
      * 
      * @return Redirection link
      */
     @Deprecated
-    public String getWebSiteRedirectLocation()
-    {
+    public String getWebSiteRedirectLocation() {
         return this.metadata != null ? this.metadata.getWebSiteRedirectLocation() : null;
     }
-    
+
     /**
-     * Obtain the redirection link which can redirect the request to another object in the bucket or to an external URL. 
+     * Obtain the redirection link which can redirect the request to another
+     * object in the bucket or to an external URL.
      * 
-     * @param webSiteRedirectLocation Redirection link
+     * @param webSiteRedirectLocation
+     *            Redirection link
      */
     @Deprecated
-    public void setWebSiteRedirectLocation(String webSiteRedirectLocation)
-    {
-        if(this.metadata != null) {
-        	this.metadata.setWebSiteRedirectLocation(webSiteRedirectLocation);
+    public void setWebSiteRedirectLocation(String webSiteRedirectLocation) {
+        if (this.metadata != null) {
+            this.metadata.setWebSiteRedirectLocation(webSiteRedirectLocation);
         }
     }
-    
-	/**
-     * Set object properties, including customized metadata. "content-type" is supported.
+
+    /**
+     * Set object properties, including customized metadata. "content-type" is
+     * supported.
+     * 
      * @return Object properties
      */
-    public ObjectMetadata getMetadata()
-    {
+    public ObjectMetadata getMetadata() {
         return metadata;
     }
 
     /**
-     * Obtain object properties, including customized metadata. "content-type" is supported.
-     * @param metadata Object properties
+     * Obtain object properties, including customized metadata. "content-type"
+     * is supported.
+     * 
+     * @param metadata
+     *            Object properties
      */
-    public void setMetadata(ObjectMetadata metadata)
-    {
+    public void setMetadata(ObjectMetadata metadata) {
         this.metadata = metadata;
     }
 
-	@Override
-	public String toString() {
-		return "InitiateMultipartUploadRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", acl=" + acl
-				+ ", sseKmsHeader=" + sseKmsHeader + ", sseCHeader=" + sseCHeader + ", metadata=" + metadata
-				+ ", expires=" + expires + "]";
-	}
-    
+    @Override
+    public String toString() {
+        return "InitiateMultipartUploadRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", acl=" + acl
+                + ", sseKmsHeader=" + sseKmsHeader + ", sseCHeader=" + sseCHeader + ", metadata=" + metadata
+                + ", expires=" + expires + "]";
+    }
+
 }
-
-

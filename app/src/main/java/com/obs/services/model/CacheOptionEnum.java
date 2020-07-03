@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.obs.services.model;
 
 /**
@@ -19,27 +20,28 @@ package com.obs.services.model;
  */
 public enum CacheOptionEnum {
 
-	/**
-	 * Prioritize performance of the read-ahead cache, but the consistency is not ensured.
-	 */
-	 PERFORMANCE("cache-with-performance");
-	
-	private String code;
-	
-	private CacheOptionEnum(String code) {
-		this.code = code;
-	}
+    /**
+     * Prioritize performance of the read-ahead cache, but the consistency is
+     * not ensured.
+     */
+    PERFORMANCE("cache-with-performance");
 
-	public String getCode() {
-		return code;
-	}
-	
-	public static CacheOptionEnum getValueFromCode(String code) {
-		for (CacheOptionEnum val : CacheOptionEnum.values()) {
-			if (val.code.equals(code)) {
-				return val;
-			}
-		}
-		return null;
-	}
+    private String code;
+
+    private CacheOptionEnum(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public static CacheOptionEnum getValueFromCode(String code) {
+        for (CacheOptionEnum val : CacheOptionEnum.values()) {
+            if (val.code.equals(code)) {
+                return val;
+            }
+        }
+        return null;
+    }
 }

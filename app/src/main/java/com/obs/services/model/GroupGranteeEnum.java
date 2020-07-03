@@ -17,7 +17,7 @@ package com.obs.services.model;
 import com.obs.services.internal.Constants;
 
 /**
- * Type of the user group 
+ * Type of the user group
  *
  */
 public enum GroupGranteeEnum {
@@ -29,29 +29,25 @@ public enum GroupGranteeEnum {
     /**
      * OBS authorized user group, indicating all users who own OBS accounts
      */
-    @Deprecated
-    AUTHENTICATED_USERS,
+    @Deprecated AUTHENTICATED_USERS,
 
     /**
      * Log delivery group, indicating common users who can configure access logs
      */
-    @Deprecated
-    LOG_DELIVERY;
-    
-	public String getCode() {
-		return this.name();
-	}
+    @Deprecated LOG_DELIVERY;
 
-	public static GroupGranteeEnum getValueFromCode(String code) {
-		if("Everyone".equals(code) || Constants.ALL_USERS_URI.equals(code)) {
-			return ALL_USERS;
-		}else if(Constants.AUTHENTICATED_USERS_URI.equals(code)) {
-			return AUTHENTICATED_USERS;
-		}else if(Constants.LOG_DELIVERY_URI.equals(code)) {
-			return LOG_DELIVERY;
-		}
-		return null;
-	}
+    public String getCode() {
+        return this.name();
+    }
+
+    public static GroupGranteeEnum getValueFromCode(String code) {
+        if ("Everyone".equals(code) || Constants.ALL_USERS_URI.equals(code)) {
+            return ALL_USERS;
+        } else if (Constants.AUTHENTICATED_USERS_URI.equals(code)) {
+            return AUTHENTICATED_USERS;
+        } else if (Constants.LOG_DELIVERY_URI.equals(code)) {
+            return LOG_DELIVERY;
+        }
+        return null;
+    }
 }
-
-

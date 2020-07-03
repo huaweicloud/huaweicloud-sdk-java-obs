@@ -11,6 +11,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.oef.services.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,87 +22,98 @@ import com.obs.services.model.HeaderResponse;
  *
  */
 public class QueryExtensionPolicyResult extends HeaderResponse {
-	@JsonProperty(value = "fetch")
-	private FetchBean fetch;
-	
-	@JsonProperty(value = "transcode")
-	private TranscodeBean transcode;
-	
-	@JsonProperty(value = "compress")
-	private CompressBean compress;
-	
-	public QueryExtensionPolicyResult() {
-		fetch = new FetchBean();
-		transcode = new TranscodeBean();
-		compress = new CompressBean();
-	}
-	
-	/**
-	 * Constructor
-	 * @param fetch Content of the asynchronous fetch policy
-	 * @param transcode Content of the asynchronous transcode policy
-	 * @param compress Content of the file compression policy
-	 */
-	public QueryExtensionPolicyResult(FetchBean fetch, TranscodeBean transcode, CompressBean compress) {
-		this.fetch = fetch;
-		this.transcode = transcode;
-		this.compress = compress;
-	}
+    @JsonProperty(value = "fetch")
+    private FetchBean fetch;
 
-	/**
-	 * Obtain the content of the asynchronous fetch policy.
-	 * @return Content of the asynchronous fetch policy
-	 */
-	public FetchBean getFetch() {
-		return fetch;
-	}
+    @JsonProperty(value = "transcode")
+    private TranscodeBean transcode;
 
-	/**
-	 * Set the content of the asynchronous fetch policy.
-	 * @param fetch Content of the asynchronous fetch policy
-	 */
-	public void setFetch(FetchBean fetch) {
-		this.fetch = fetch;
-	}
+    @JsonProperty(value = "compress")
+    private CompressBean compress;
 
-	/**
-	 * Obtain the content of the asynchronous transcode policy.
-	 * @return Content of the asynchronous transcode policy
-	 */
-	public TranscodeBean getTranscode() {
-		return transcode;
-	}
+    public QueryExtensionPolicyResult() {
+        fetch = new FetchBean();
+        transcode = new TranscodeBean();
+        compress = new CompressBean();
+    }
 
-	/**
-	 * Set the content of the asynchronous transcode policy.
-	 * @param transcode Content of the asynchronous transcode policy
-	 */
-	public void setTranscode(TranscodeBean transcode) {
-		this.transcode = transcode;
-	}
+    /**
+     * Constructor
+     * 
+     * @param fetch
+     *            Content of the asynchronous fetch policy
+     * @param transcode
+     *            Content of the asynchronous transcode policy
+     * @param compress
+     *            Content of the file compression policy
+     */
+    public QueryExtensionPolicyResult(FetchBean fetch, TranscodeBean transcode, CompressBean compress) {
+        this.fetch = fetch;
+        this.transcode = transcode;
+        this.compress = compress;
+    }
 
-	/**
-	 * Obtain the content of the file compression policy.
-	 * @return Content of the file compression policy
-	 */
-	public CompressBean getCompress() {
-		return compress;
-	}
+    /**
+     * Obtain the content of the asynchronous fetch policy.
+     * 
+     * @return Content of the asynchronous fetch policy
+     */
+    public FetchBean getFetch() {
+        return fetch;
+    }
 
-	/**
-	 * Set the content of the file compression policy.
-	 * @param compress Content of the file compression policy
-	 */
-	public void setCompress(CompressBean compress) {
-		this.compress = compress;
-	}
-	
+    /**
+     * Set the content of the asynchronous fetch policy.
+     * 
+     * @param fetch
+     *            Content of the asynchronous fetch policy
+     */
+    public void setFetch(FetchBean fetch) {
+        this.fetch = fetch;
+    }
 
-	@Override
-    public String toString()
-    {
-        return "ExtensionPolicyResult [fetch status=" + fetch.getStatus() + ", fetch agency=" + fetch.getAgency() 
-            + ", transcode status=" + transcode.getStatus() + ", transcode agency=" + transcode.getAgency() 
-            + ", compress status=" + compress.getStatus() + ", compress agency=" + compress.getAgency() +"]";
+    /**
+     * Obtain the content of the asynchronous transcode policy.
+     * 
+     * @return Content of the asynchronous transcode policy
+     */
+    public TranscodeBean getTranscode() {
+        return transcode;
+    }
+
+    /**
+     * Set the content of the asynchronous transcode policy.
+     * 
+     * @param transcode
+     *            Content of the asynchronous transcode policy
+     */
+    public void setTranscode(TranscodeBean transcode) {
+        this.transcode = transcode;
+    }
+
+    /**
+     * Obtain the content of the file compression policy.
+     * 
+     * @return Content of the file compression policy
+     */
+    public CompressBean getCompress() {
+        return compress;
+    }
+
+    /**
+     * Set the content of the file compression policy.
+     * 
+     * @param compress
+     *            Content of the file compression policy
+     */
+    public void setCompress(CompressBean compress) {
+        this.compress = compress;
+    }
+
+    @Override
+    public String toString() {
+        return "ExtensionPolicyResult [fetch status=" + fetch.getStatus() + ", fetch agency=" + fetch.getAgency()
+                + ", transcode status=" + transcode.getStatus() + ", transcode agency=" + transcode.getAgency()
+                + ", compress status=" + compress.getStatus() + ", compress agency=" + compress.getAgency() + "]";
     }
 }
