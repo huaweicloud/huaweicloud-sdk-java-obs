@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up JDK 1.7
+    - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
-        java-version: 1.7
+        java-version: 1.8
     - name: 编译常规的 Java SDK
       run: mvn clean install -f pom-java.xml
     - name: 创建存放Java SDK的目录(esdk-obs-java-cn-on-github)
