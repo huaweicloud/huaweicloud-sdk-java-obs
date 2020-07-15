@@ -458,13 +458,14 @@ public class RequestConvertor extends RestStorageService {
                 contentType = Mimetypes.getInstance().getMimetype(request.getFile());
             }
 
+            long fileSize = request.getFile().length();
+            
             try {
                 request.setInput(new FileInputStream(request.getFile()));
             } catch (FileNotFoundException e) {
                 throw new IllegalArgumentException("File doesnot exist");
             }
 
-            long fileSize = request.getFile().length();
             if (request.getOffset() > 0 && request.getOffset() < fileSize) {
                 contentLengthValue = (contentLengthValue > 0 && contentLengthValue <= fileSize - request.getOffset())
                         ? contentLengthValue : fileSize - request.getOffset();
