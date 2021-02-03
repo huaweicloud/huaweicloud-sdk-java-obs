@@ -95,7 +95,7 @@ public class AsyncTimeout extends Timeout {
 	
 	private static final Random RANDOM = new Random(System.currentTimeMillis());
 	
-	private Locker locker;
+	private final Locker locker;
 	
 	private int id;
 	
@@ -107,7 +107,7 @@ public class AsyncTimeout extends Timeout {
 		}
 	}
 	
-	Locker getLocker() {
+	private Locker getLocker() {
 		return this.locker;
 	}
 	
