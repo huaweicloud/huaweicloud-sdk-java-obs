@@ -28,6 +28,10 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.ObsClient;
+
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -59,7 +63,7 @@ import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
  * {@link IOException} if the call was canceled.
  */
 public final class RetryAndFollowUpInterceptor implements Interceptor {
-	private static final Logger logger = LogManager.getLogger(RetryAndFollowUpInterceptor.class);
+	private static final ILogger logger = LoggerBuilder.getLogger(RetryAndFollowUpInterceptor.class);
 	
   /**
    * How many redirects and auth challenges should we attempt? Chrome follows 21 redirects; Firefox,
@@ -150,8 +154,11 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       } finally {
     	  if(logger.isDebugEnabled()
     			  && null != chain.request()) {
-    		  logger.debug("Request '{} {} {}, followUpCount={}, cost={}', Response '{}'", chain.request().method(), chain.request().url(), !(closeActiveExchange),
-    				  followUpCount, System.currentTimeMillis() - start, response);
+    		  logger.debug("Request '" + chain.request().method() + " " 
+    			  + chain.request().url() + " " + !(closeActiveExchange) 
+    			  + ", followUpCount=" + followUpCount 
+    			  + ", cost=" + (System.currentTimeMillis() - start) 
+    			  + "', Response '" + response + "'");
     	  }
     	  
     	  if(closeActiveExchange) {
