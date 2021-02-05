@@ -15,6 +15,19 @@
  */
 package okhttp3.internal.http;
 
+import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
+import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import static okhttp3.internal.Util.closeQuietly;
+import static okhttp3.internal.Util.sameConnection;
+import static okhttp3.internal.http.StatusLine.HTTP_PERM_REDIRECT;
+import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -22,11 +35,12 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.security.cert.CertificateException;
+
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -41,25 +55,12 @@ import okhttp3.internal.connection.RouteException;
 import okhttp3.internal.connection.Transmitter;
 import okhttp3.internal.http2.ConnectionShutdownException;
 
-import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
-import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
-import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
-import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
-import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
-import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
-import static okhttp3.internal.Util.closeQuietly;
-import static okhttp3.internal.Util.sameConnection;
-import static okhttp3.internal.http.StatusLine.HTTP_PERM_REDIRECT;
-import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
-
 /**
  * This interceptor recovers from failures and follows redirects as necessary. It may throw an
  * {@link IOException} if the call was canceled.
  */
 public final class RetryAndFollowUpInterceptor implements Interceptor {
-	private static final Logger logger = LogManager.getLogger(RetryAndFollowUpInterceptor.class);
+	private static final ILogger logger = LoggerBuilder.getLogger(RetryAndFollowUpInterceptor.class);
 	
   /**
    * How many redirects and auth challenges should we attempt? Chrome follows 21 redirects; Firefox,
@@ -150,8 +151,11 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
       } finally {
     	  if(logger.isDebugEnabled()
     			  && null != chain.request()) {
-    		  logger.debug("Request '{} {} {}, followUpCount={}, cost={}', Response '{}'", chain.request().method(), chain.request().url(), !(closeActiveExchange),
-    				  followUpCount, System.currentTimeMillis() - start, response);
+    		  logger.debug("Request '" + chain.request().method() + " " 
+        			  + chain.request().url() + " " + !(closeActiveExchange) 
+        			  + ", followUpCount=" + followUpCount 
+        			  + ", cost=" + (System.currentTimeMillis() - start) 
+        			  + "', Response '" + response + "'");
     	  }
     	  
     	  if(closeActiveExchange) {
