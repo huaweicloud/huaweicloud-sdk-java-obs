@@ -86,17 +86,7 @@ public class ObsConvertor extends V2Convertor {
         if (algorithm.equals(SSEAlgorithmEnum.KMS.getCode())) {
             kmsKeyId = encryption.getKmsKeyId();
         }
-        try {
-            XMLBuilder builder = XMLBuilder.create("ServerSideEncryptionConfiguration").e("Rule")
-                    .e("ApplyServerSideEncryptionByDefault");
-            builder.e("SSEAlgorithm").t(algorithm);
-            if (ServiceUtils.isValid(kmsKeyId)) {
-                builder.e("KMSMasterKeyID").t(kmsKeyId);
-            }
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for bucketEncryption", e);
-        }
+        return transBucketEcryptionXML(algorithm, kmsKeyId);
     }
 
     @Override
@@ -128,30 +118,35 @@ public class ObsConvertor extends V2Convertor {
                 GrantAndPermission[] grants = c.getTargetGrants();
                 if (grants.length > 0) {
                     XMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
-                    for (GrantAndPermission gap : grants) {
-                        GranteeInterface grantee = gap.getGrantee();
-                        Permission permission = gap.getPermission();
-                        if (permission != null) {
-                            XMLBuilder subBuilder = null;
-                            if (grantee instanceof CanonicalGrantee) {
-                                subBuilder = XMLBuilder.create("Grantee").element("ID")
-                                        .text(ServiceUtils.toValid(grantee.getIdentifier()));
-                            } else if (grantee instanceof GroupGrantee) {
-                                subBuilder = XMLBuilder.create("Grantee").element("Canned")
-                                        .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
-                            }
-
-                            if (subBuilder != null) {
-                                grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
-                                        .text(ServiceUtils.toValid(permission.getPermissionString()));
-                            }
-                        }
-                    }
+                    transGrantsBuilder(grants, grantsBuilder);
                 }
             }
             return builder.asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for BucketLoggingConfiguration", e);
+        }
+    }
+
+    private void transGrantsBuilder(GrantAndPermission[] grants, XMLBuilder grantsBuilder)
+            throws ParserConfigurationException, FactoryConfigurationError {
+        for (GrantAndPermission gap : grants) {
+            GranteeInterface grantee = gap.getGrantee();
+            Permission permission = gap.getPermission();
+            if (permission != null) {
+                XMLBuilder subBuilder = null;
+                if (grantee instanceof CanonicalGrantee) {
+                    subBuilder = XMLBuilder.create("Grantee").element("ID")
+                            .text(ServiceUtils.toValid(grantee.getIdentifier()));
+                } else if (grantee instanceof GroupGrantee) {
+                    subBuilder = XMLBuilder.create("Grantee").element("Canned")
+                            .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
+                }
+
+                if (subBuilder != null) {
+                    grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
+                            .text(ServiceUtils.toValid(permission.getPermissionString()));
+                }
+            }
         }
     }
 

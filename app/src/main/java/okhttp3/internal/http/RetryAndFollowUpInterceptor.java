@@ -15,19 +15,6 @@
  */
 package okhttp3.internal.http;
 
-import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
-import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
-import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
-import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
-import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
-import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
-import static okhttp3.internal.Util.closeQuietly;
-import static okhttp3.internal.Util.sameConnection;
-import static okhttp3.internal.http.StatusLine.HTTP_PERM_REDIRECT;
-import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -35,12 +22,11 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.security.cert.CertificateException;
-
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -55,12 +41,25 @@ import okhttp3.internal.connection.RouteException;
 import okhttp3.internal.connection.Transmitter;
 import okhttp3.internal.http2.ConnectionShutdownException;
 
+import static java.net.HttpURLConnection.HTTP_CLIENT_TIMEOUT;
+import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
+import static java.net.HttpURLConnection.HTTP_MOVED_TEMP;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
+import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import static okhttp3.internal.Util.closeQuietly;
+import static okhttp3.internal.Util.sameConnection;
+import static okhttp3.internal.http.StatusLine.HTTP_PERM_REDIRECT;
+import static okhttp3.internal.http.StatusLine.HTTP_TEMP_REDIRECT;
+
 /**
  * This interceptor recovers from failures and follows redirects as necessary. It may throw an
  * {@link IOException} if the call was canceled.
  */
 public final class RetryAndFollowUpInterceptor implements Interceptor {
-	private static final ILogger logger = LoggerBuilder.getLogger(RetryAndFollowUpInterceptor.class);
+	private static final Logger logger = LogManager.getLogger(RetryAndFollowUpInterceptor.class);
 	
   /**
    * How many redirects and auth challenges should we attempt? Chrome follows 21 redirects; Firefox,
@@ -83,87 +82,83 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     Response priorResponse = null;
     while (true) {
       transmitter.prepareToConnect(request);
-      
+
       boolean closeActiveExchange = true;
       long start = System.currentTimeMillis();
       Response response = null;
       try {
-    	  if (transmitter.isCanceled()) {
-    	        throw new IOException("Canceled");
-    	      }
+          if (transmitter.isCanceled()) {
+              throw new IOException("Canceled");
+            }
 
-    	      try {
-    	        response = realChain.proceed(request, transmitter, null);
-    	      } catch (RouteException e) {
-    	        // The attempt to connect via a route failed. The request will not have been sent.
-    	        if (!recover(e.getLastConnectException(), transmitter, false, request)) {
-    	          throw e.getFirstConnectException();
-    	        }
-    	        continue;
-    	      } catch (IOException e) {
-    	        // An attempt to communicate with a server failed. The request may have been sent.
-    	        boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
-    	        if (!recover(e, transmitter, requestSendStarted, request)) throw e;
-    	        continue;
-    	      } finally {
-    	        // The network call threw an exception. Release any resources.
-//    	        if (!success) {
-//    	          transmitter.exchangeDoneDueToException();
-//    	        }
-    	      }
+            try {
+              response = realChain.proceed(request, transmitter, null);
+            } catch (RouteException e) {
+              // The attempt to connect via a route failed. The request will not have been sent.
+              if (!recover(e.getLastConnectException(), transmitter, false, request)) {
+                throw e.getFirstConnectException();
+              }
+              continue;
+            } catch (IOException e) {
+              // An attempt to communicate with a server failed. The request may have been sent.
+              boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
+              if (!recover(e, transmitter, requestSendStarted, request)) throw e;
+              continue;
+            } finally {
+              // The network call threw an exception. Release any resources.
+//              if (!success) {
+//                transmitter.exchangeDoneDueToException();
+//              }
+            }
 
-    	      // Attach the prior response if it exists. Such responses never have a body.
-    	      if (priorResponse != null) {
-    	        response = response.newBuilder()
-    	            .priorResponse(priorResponse.newBuilder()
-    	                    .body(null)
-    	                    .build())
-    	            .build();
-    	      }
+            // Attach the prior response if it exists. Such responses never have a body.
+            if (priorResponse != null) {
+              response = response.newBuilder()
+                  .priorResponse(priorResponse.newBuilder()
+                          .body(null)
+                          .build())
+                  .build();
+            }
 
-    	      Exchange exchange = Internal.instance.exchange(response);
-    	      Route route = exchange != null ? exchange.connection().route() : null;
-    	      Request followUp = followUpRequest(response, route);
+            Exchange exchange = Internal.instance.exchange(response);
+            Route route = exchange != null ? exchange.connection().route() : null;
+            Request followUp = followUpRequest(response, route);
 
-    	      if (followUp == null) {
-    	        if (exchange != null && exchange.isDuplex()) {
-    	          transmitter.timeoutEarlyExit();
-    	        }
-    	        
-    	        closeActiveExchange = false;
-    	        return response;
-    	      }
+            if (followUp == null) {
+              if (exchange != null && exchange.isDuplex()) {
+                transmitter.timeoutEarlyExit();
+              }
+              
+              closeActiveExchange = false;
+              return response;
+            }
 
-    	      RequestBody followUpBody = followUp.body();
-    	      if (followUpBody != null && followUpBody.isOneShot()) {
-    	    	  closeActiveExchange = false;
-    	        return response;
-    	      }
+            RequestBody followUpBody = followUp.body();
+            if (followUpBody != null && followUpBody.isOneShot()) {
+                closeActiveExchange = false;
+              return response;
+            }
 
-    	      closeQuietly(response.body());
+            closeQuietly(response.body());
 
-    	      if (++followUpCount > MAX_FOLLOW_UPS) {
-    	        throw new ProtocolException("Too many follow-up requests: " + followUpCount);
-    	      }
+            if (++followUpCount > MAX_FOLLOW_UPS) {
+              throw new ProtocolException("Too many follow-up requests: " + followUpCount);
+            }
 
-    	      request = followUp;
-    	      priorResponse = response;
+            request = followUp;
+            priorResponse = response;
       } finally {
-    	  if(logger.isDebugEnabled()
-    			  && null != chain.request()) {
-    		  logger.debug("Request '" + chain.request().method() + " " 
-    			  + chain.request().url() + " " + !(closeActiveExchange) 
-    			  + ", followUpCount=" + followUpCount 
-    			  + ", cost=" + (System.currentTimeMillis() - start) 
-    			  + "', Response '" + response + "'");
-    	  }
-    	  
-    	  if(closeActiveExchange) {
-    		  Exchange exchange = transmitter.getExchange();
-    		  if (null != exchange) {
-    			  exchange.detachWithViolence();
-    		  }
-    	  }
+          if(logger.isDebugEnabled()) {
+              logger.debug("Request '{} {} {}, followUpCount={}, cost={}', Response '{}'", chain.request().method(), chain.request().url(), !(closeActiveExchange), 
+                      followUpCount, System.currentTimeMillis() - start, response); 
+          }
+          
+          if (closeActiveExchange) {
+              Exchange exchange = transmitter.getExchange();
+              if (null != exchange) {
+                  exchange.detachWithViolence();
+              }
+          }
       }
     }
   }
@@ -360,7 +355,8 @@ public final class RetryAndFollowUpInterceptor implements Interceptor {
     // https://tools.ietf.org/html/rfc7231#section-7.1.3
     // currently ignores a HTTP-date, and assumes any non int 0 is a delay
     if (header.matches("\\d+")) {
-      return Integer.valueOf(header);
+        return Integer.parseInt(header);
+//      return Integer.valueOf(header);
     }
 
     return Integer.MAX_VALUE;

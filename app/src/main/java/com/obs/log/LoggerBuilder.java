@@ -17,7 +17,10 @@ package com.obs.log;
 import java.lang.reflect.Method;
 
 public class LoggerBuilder {
-
+    
+    private static final java.util.logging.Logger ILOG = 
+            java.util.logging.Logger.getLogger(LoggerBuilder.class.getName());
+    
     static class GetLoggerHolder {
         static Class<?> logManagerClass;
         static Class<?> loggerClass;
@@ -37,7 +40,7 @@ public class LoggerBuilder {
                         loggerClass = Class.forName("java.util.logging.Logger");
                         getLoggerClass = GetLoggerHolder.loggerClass.getMethod("getLogger", String.class);
                     } catch (NoSuchMethodException | SecurityException | ClassNotFoundException exx) {
-
+                        ILOG.warning(exx.getMessage());
                     }
                 }
             }
@@ -49,6 +52,7 @@ public class LoggerBuilder {
             try {
                 return new Logger(((Method) GetLoggerHolder.getLoggerClass).invoke(null, name));
             } catch (Exception e) {
+                ILOG.warning(e.getMessage());
             }
         }
         return new Logger(null);

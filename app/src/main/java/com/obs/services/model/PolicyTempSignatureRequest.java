@@ -92,12 +92,12 @@ public class PolicyTempSignatureRequest extends AbstractTemporarySignatureReques
     public String generatePolicy() {
         Date requestDate = new Date();
         SimpleDateFormat expirationDateFormat = ServiceUtils.getExpirationDateFormat();
-        Date expiryDate = this.expiryDate;
-        if (expiryDate == null) {
-            expiryDate = new Date(requestDate.getTime()
+        Date expiry = this.expiryDate;
+        if (expiry == null) {
+            expiry = new Date(requestDate.getTime()
                     + (this.expires <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS : this.expires) * 1000);
         }
-        String expiration = expirationDateFormat.format(expiryDate);
+        String expiration = expirationDateFormat.format(expiry);
         StringBuilder policy = new StringBuilder();
         policy.append("{\"expiration\":").append("\"").append(expiration).append("\",").append("\"conditions\":[");
         if (this.conditions != null && !this.conditions.isEmpty()) {

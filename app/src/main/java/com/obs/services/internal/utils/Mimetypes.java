@@ -41,10 +41,16 @@ public class Mimetypes {
     private Mimetypes() {
         extensionToMimetypeMap = new HashMap<String, String>();
         addApplicationMimetype(extensionToMimetypeMap);
-        addApplicationXMimetype(extensionToMimetypeMap);
+        addApplicationXMimetypeOne(extensionToMimetypeMap);
+        addApplicationXMimetypeTwo(extensionToMimetypeMap);
+        addApplicationXMimetypeThree(extensionToMimetypeMap);
+        addApplicationXMimetypeFour(extensionToMimetypeMap);
+
         addApplicationVNDMimetype(extensionToMimetypeMap);
         addDrawingMimetype(extensionToMimetypeMap);
-        addTextMimetype(extensionToMimetypeMap);
+        addXMLTextMimetype(extensionToMimetypeMap);
+        addOtherTextMimetype(extensionToMimetypeMap);
+
         addJavaMimetype(extensionToMimetypeMap);
         addMessageMimetype(extensionToMimetypeMap);
         addVideoMimetype(extensionToMimetypeMap);
@@ -61,6 +67,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("p7s", "application/pkcs7-signature");
         extensionToMimetypeMap.put("cu", "application/cu-seeme");
         extensionToMimetypeMap.put("gz", "application/gzip");
+        extensionToMimetypeMap.put("zip", "application/zip");
         extensionToMimetypeMap.put("hta", "application/hta");
         extensionToMimetypeMap.put("ai", "application/postscript");
         extensionToMimetypeMap.put("ps", "application/postscript");
@@ -82,12 +89,41 @@ public class Mimetypes {
         extensionToMimetypeMap.put("spl", "application/futuresplash");
         extensionToMimetypeMap.put("ssm", "application/streamingmedia");
         extensionToMimetypeMap.put("pdf", "application/pdf");
+        extensionToMimetypeMap.put("rat", "application/rat-file");
     }
-    
-    private static void addApplicationXMimetype(Map<String, String> extensionToMimetypeMap) {
+
+    private static void addApplicationXMimetypeOne(Map<String, String> extensionToMimetypeMap) {
+        extensionToMimetypeMap.put("cer", "application/x-x509-ca-cert");
+        extensionToMimetypeMap.put("crt", "application/x-x509-ca-cert");
+        extensionToMimetypeMap.put("der", "application/x-x509-ca-cert");
+        extensionToMimetypeMap.put("7z", "application/x-7z-compressed");
+        extensionToMimetypeMap.put("deb", "application/x-debian-package");
+        extensionToMimetypeMap.put("wmz", "application/x-ms-wmz");
+        extensionToMimetypeMap.put("woff", "application/x-font-woff");
+        extensionToMimetypeMap.put("xap", "application/x-silverlight-app");
+        extensionToMimetypeMap.put("man", "application/x-troff-man");
+        extensionToMimetypeMap.put("mfp", "application/x-shockwave-flash");
+        extensionToMimetypeMap.put("p7b", "application/x-pkcs7-certificates");
+        extensionToMimetypeMap.put("spc", "application/x-pkcs7-certificates");
+        extensionToMimetypeMap.put("p7r", "application/x-pkcs7-certreqresp");
+        extensionToMimetypeMap.put("ins", "application/x-internet-signup");
+        extensionToMimetypeMap.put("iso", "application/x-iso9660-image");
+        extensionToMimetypeMap.put("isp", "application/x-internet-signup");
+        extensionToMimetypeMap.put("lar", "application/x-laplayer-reg");
+        extensionToMimetypeMap.put("rar", "application/x-rar-compressed");
+        extensionToMimetypeMap.put("swf", "application/x-shockwave-flash");
+        extensionToMimetypeMap.put("ttf", "application/x-font-ttf");
+        extensionToMimetypeMap.put("wmd", "application/x-ms-wmd");
+        extensionToMimetypeMap.put("exe", "application/x-msdownload");
+        extensionToMimetypeMap.put("dll", "application/x-msdownload");
+        extensionToMimetypeMap.put("js", "application/x-javascript");
+        extensionToMimetypeMap.put("mocha", "application/x-javascript");
+        extensionToMimetypeMap.put("ls", "application/x-javascript");
+        extensionToMimetypeMap.put("latex", "application/x-latex");
+        extensionToMimetypeMap.put("torrent", "application/x-bittorrent");
+        extensionToMimetypeMap.put("vpg", "application/x-vpeg005");
         extensionToMimetypeMap.put("001", "application/x-001");
         extensionToMimetypeMap.put("301", "application/x-301");
-        extensionToMimetypeMap.put("7z", "application/x-7z-compressed");
         extensionToMimetypeMap.put("906", "application/x-906");
         extensionToMimetypeMap.put("anv", "application/x-anv");
         extensionToMimetypeMap.put("a11", "application/x-a11");
@@ -100,25 +136,23 @@ public class Mimetypes {
         extensionToMimetypeMap.put("cdf", "application/x-netcdf");
         extensionToMimetypeMap.put("cdr", "application/x-cdr");
         extensionToMimetypeMap.put("cel", "application/x-cel");
-        extensionToMimetypeMap.put("cer", "application/x-x509-ca-cert");
+    }
+
+    private static void addApplicationXMimetypeTwo(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("cg4", "application/x-g4");
         extensionToMimetypeMap.put("cgm", "application/x-cgm");
         extensionToMimetypeMap.put("cit", "application/x-cit");
         extensionToMimetypeMap.put("cmp", "application/x-cmp");
         extensionToMimetypeMap.put("cmx", "application/x-cmx");
         extensionToMimetypeMap.put("cot", "application/x-cot");
-        extensionToMimetypeMap.put("crt", "application/x-x509-ca-cert");
         extensionToMimetypeMap.put("csi", "application/x-csi");
         extensionToMimetypeMap.put("cut", "application/x-cut");
         extensionToMimetypeMap.put("dbf", "application/x-dbf");
         extensionToMimetypeMap.put("dbm", "application/x-dbm");
         extensionToMimetypeMap.put("dbx", "application/x-dbx");
         extensionToMimetypeMap.put("dcx", "application/x-dcx");
-        extensionToMimetypeMap.put("deb", "application/x-debian-package");
-        extensionToMimetypeMap.put("der", "application/x-x509-ca-cert");
         extensionToMimetypeMap.put("dgn", "application/x-dgn");
         extensionToMimetypeMap.put("dib", "application/x-dib");
-        extensionToMimetypeMap.put("dll", "application/x-msdownload");
         extensionToMimetypeMap.put("drw", "application/x-drw");
         extensionToMimetypeMap.put("dvi", "application/x-dvi");
         extensionToMimetypeMap.put("dwf", "application/x-dwf");
@@ -128,7 +162,6 @@ public class Mimetypes {
         extensionToMimetypeMap.put("emf", "application/x-emf");
         extensionToMimetypeMap.put("epi", "application/x-epi");
         extensionToMimetypeMap.put("etd", "application/x-ebx");
-        extensionToMimetypeMap.put("exe", "application/x-msdownload");
         extensionToMimetypeMap.put("frm", "application/x-frm");
         extensionToMimetypeMap.put("g4", "application/x-g4");
         extensionToMimetypeMap.put("gbr", "application/x-gbr");
@@ -144,25 +177,19 @@ public class Mimetypes {
         extensionToMimetypeMap.put("iff", "application/x-iff");
         extensionToMimetypeMap.put("ig4", "application/x-g4");
         extensionToMimetypeMap.put("igs", "application/x-igs");
-        extensionToMimetypeMap.put("iii", "application/x-iphone");
         extensionToMimetypeMap.put("img", "application/x-img");
-        extensionToMimetypeMap.put("ins", "application/x-internet-signup");
-        extensionToMimetypeMap.put("iso", "application/x-iso9660-image");
-        extensionToMimetypeMap.put("isp", "application/x-internet-signup");
-        extensionToMimetypeMap.put("js", "application/x-javascript");
-        extensionToMimetypeMap.put("lar", "application/x-laplayer-reg");
-        extensionToMimetypeMap.put("latex", "application/x-latex");
+        extensionToMimetypeMap.put("iii", "application/x-iphone");
+    }
+
+    private static void addApplicationXMimetypeThree(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("lbm", "application/x-lbm");
-        extensionToMimetypeMap.put("ls", "application/x-javascript");
         extensionToMimetypeMap.put("ltr", "application/x-ltr");
         extensionToMimetypeMap.put("ppm", "application/x-ppm");
         extensionToMimetypeMap.put("pr", "application/x-pr");
         extensionToMimetypeMap.put("prn", "application/x-prn");
         extensionToMimetypeMap.put("prt", "application/x-prt");
         extensionToMimetypeMap.put("ptn", "application/x-ptn");
-        extensionToMimetypeMap.put("rar", "application/x-rar-compressed");
         extensionToMimetypeMap.put("ras", "application/x-ras");
-        extensionToMimetypeMap.put("rat", "application/rat-file");
         extensionToMimetypeMap.put("rtf", "application/x-rtf");
         extensionToMimetypeMap.put("red", "application/x-red");
         extensionToMimetypeMap.put("rgb", "application/x-rgb");
@@ -176,17 +203,12 @@ public class Mimetypes {
         extensionToMimetypeMap.put("slb", "application/x-slb");
         extensionToMimetypeMap.put("sld", "application/x-sld");
         extensionToMimetypeMap.put("smk", "application/x-smk");
-        extensionToMimetypeMap.put("spc", "application/x-pkcs7-certificates");
         extensionToMimetypeMap.put("sty", "application/x-sty");
-        extensionToMimetypeMap.put("swf", "application/x-shockwave-flash");
         extensionToMimetypeMap.put("tar", "application/x-tar");
         extensionToMimetypeMap.put("tdf", "application/x-tdf");
         extensionToMimetypeMap.put("tg4", "application/x-tg4");
         extensionToMimetypeMap.put("tga", "application/x-tga");
-        extensionToMimetypeMap.put("torrent", "application/x-bittorrent");
-        extensionToMimetypeMap.put("ttf", "application/x-font-ttf");
         extensionToMimetypeMap.put("vda", "application/x-vda");
-        extensionToMimetypeMap.put("vpg", "application/x-vpeg005");
         extensionToMimetypeMap.put("vst", "application/x-vst");
         extensionToMimetypeMap.put("wb1", "application/x-wb1");
         extensionToMimetypeMap.put("wb2", "application/x-wb2");
@@ -195,14 +217,14 @@ public class Mimetypes {
         extensionToMimetypeMap.put("wk4", "application/x-wk4");
         extensionToMimetypeMap.put("wkq", "application/x-wkq");
         extensionToMimetypeMap.put("wks", "application/x-wks");
-        extensionToMimetypeMap.put("wmd", "application/x-ms-wmd");
         extensionToMimetypeMap.put("wmf", "application/x-wmf");
-        extensionToMimetypeMap.put("wmz", "application/x-ms-wmz");
-        extensionToMimetypeMap.put("woff", "application/x-font-woff");
         extensionToMimetypeMap.put("wp6", "application/x-wp6");
         extensionToMimetypeMap.put("wpd", "application/x-wpd");
         extensionToMimetypeMap.put("wpg", "application/x-wpg");
         extensionToMimetypeMap.put("wq1", "application/x-wq1");
+    }
+
+    private static void addApplicationXMimetypeFour(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("wr1", "application/x-wr1");
         extensionToMimetypeMap.put("wri", "application/x-wri");
         extensionToMimetypeMap.put("wrk", "application/x-wrk");
@@ -210,23 +232,16 @@ public class Mimetypes {
         extensionToMimetypeMap.put("ws2", "application/x-ws");
         extensionToMimetypeMap.put("x_b", "application/x-x_b");
         extensionToMimetypeMap.put("x_t", "application/x-x_t");
-        extensionToMimetypeMap.put("xap", "application/x-silverlight-app");
         extensionToMimetypeMap.put("xlw", "application/x-xlw");
         extensionToMimetypeMap.put("xwd", "application/x-xwd");
-        extensionToMimetypeMap.put("zip", "application/zip");
         extensionToMimetypeMap.put("uin", "application/x-icq");
         extensionToMimetypeMap.put("mac", "application/x-mac");
-        extensionToMimetypeMap.put("man", "application/x-troff-man");
-        extensionToMimetypeMap.put("mfp", "application/x-shockwave-flash");
         extensionToMimetypeMap.put("mi", "application/x-mi");
         extensionToMimetypeMap.put("mil", "application/x-mil");
-        extensionToMimetypeMap.put("mocha", "application/x-javascript");
         extensionToMimetypeMap.put("mxp", "application/x-mmxp");
         extensionToMimetypeMap.put("nrf", "application/x-nrf");
         extensionToMimetypeMap.put("out", "application/x-out");
         extensionToMimetypeMap.put("p12", "application/x-pkcs12");
-        extensionToMimetypeMap.put("p7b", "application/x-pkcs7-certificates");
-        extensionToMimetypeMap.put("p7r", "application/x-pkcs7-certreqresp");
         extensionToMimetypeMap.put("pc5", "application/x-pc5");
         extensionToMimetypeMap.put("pci", "application/x-pci");
         extensionToMimetypeMap.put("pcl", "application/x-pcl");
@@ -237,7 +252,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("pl", "application/x-perl");
         extensionToMimetypeMap.put("plt", "application/x-plt");
     }
-    
+
     private static void addApplicationVNDMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("pko", "application/vnd.ms-pki.pko");
         extensionToMimetypeMap.put("vdx", "application/vnd.visio");
@@ -289,26 +304,47 @@ public class Mimetypes {
         extensionToMimetypeMap.put("sst", "application/vnd.ms-pki.certstore");
         extensionToMimetypeMap.put("stl", "application/vnd.ms-pki.stl");
     }
-    
+
     private static void addDrawingMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("907", "drawing/907");
         extensionToMimetypeMap.put("slk", "drawing/x-slk");
         extensionToMimetypeMap.put("top", "drawing/x-top");
     }
-    
-    private static void addTextMimetype(Map<String, String> extensionToMimetypeMap) {
-        extensionToMimetypeMap.put("323", "text/h323");
-        extensionToMimetypeMap.put("asa", "text/asa");
-        extensionToMimetypeMap.put("asp", "text/asp");
-        extensionToMimetypeMap.put("biz", "text/xml");
-        extensionToMimetypeMap.put("cml", "text/xml");
-        extensionToMimetypeMap.put("css", "text/css");
-        extensionToMimetypeMap.put("csv", "text/csv");
+
+    private static void addXMLTextMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("dcd", "text/xml");
         extensionToMimetypeMap.put("dtd", "text/xml");
         extensionToMimetypeMap.put("ent", "text/xml");
-        extensionToMimetypeMap.put("etx", "text/x-setext");
+        extensionToMimetypeMap.put("biz", "text/xml");
+        extensionToMimetypeMap.put("cml", "text/xml");
         extensionToMimetypeMap.put("fo", "text/xml");
+        extensionToMimetypeMap.put("tld", "text/xml");
+        extensionToMimetypeMap.put("tsd", "text/xml");
+        extensionToMimetypeMap.put("vml", "text/xml");
+        extensionToMimetypeMap.put("vxml", "text/xml");
+        extensionToMimetypeMap.put("wsdl", "text/xml");
+        extensionToMimetypeMap.put("xdr", "text/xml");
+        extensionToMimetypeMap.put("xml", "text/xml");
+        extensionToMimetypeMap.put("xq", "text/xml");
+        extensionToMimetypeMap.put("xql", "text/xml");
+        extensionToMimetypeMap.put("xsd", "text/xml");
+        extensionToMimetypeMap.put("xsl", "text/xml");
+        extensionToMimetypeMap.put("xslt", "text/xml");
+        extensionToMimetypeMap.put("math", "text/xml");
+        extensionToMimetypeMap.put("mml", "text/xml");
+        extensionToMimetypeMap.put("mtx", "text/xml");
+        extensionToMimetypeMap.put("rdf", "text/xml");
+        extensionToMimetypeMap.put("spp", "text/xml");
+        extensionToMimetypeMap.put("xquery", "text/xml");
+    }
+
+    private static void addOtherTextMimetype(Map<String, String> extensionToMimetypeMap) {
+        extensionToMimetypeMap.put("323", "text/h323");
+        extensionToMimetypeMap.put("asa", "text/asa");
+        extensionToMimetypeMap.put("asp", "text/asp");
+        extensionToMimetypeMap.put("css", "text/css");
+        extensionToMimetypeMap.put("csv", "text/csv");
+        extensionToMimetypeMap.put("etx", "text/x-setext");
         extensionToMimetypeMap.put("htc", "text/x-component");
         extensionToMimetypeMap.put("htm", "text/html");
         extensionToMimetypeMap.put("html", "text/html");
@@ -318,55 +354,37 @@ public class Mimetypes {
         extensionToMimetypeMap.put("ini", "text/plain");
         extensionToMimetypeMap.put("jsp", "text/html");
         extensionToMimetypeMap.put("log", "text/plain");
-        extensionToMimetypeMap.put("math", "text/xml");
-        extensionToMimetypeMap.put("mml", "text/xml");
-        extensionToMimetypeMap.put("mtx", "text/xml");
         extensionToMimetypeMap.put("odc", "text/x-ms-odc");
         extensionToMimetypeMap.put("plg", "text/html");
         extensionToMimetypeMap.put("r3t", "text/vnd.rn-realtext3d");
-        extensionToMimetypeMap.put("rdf", "text/xml");
         extensionToMimetypeMap.put("rt", "text/vnd.rn-realtext");
         extensionToMimetypeMap.put("sgm", "text/sgml");
         extensionToMimetypeMap.put("sgml", "text/sgml");
-        extensionToMimetypeMap.put("spp", "text/xml");
         extensionToMimetypeMap.put("stm", "text/html");
         extensionToMimetypeMap.put("wml", "text/vnd.wap.wml");
         extensionToMimetypeMap.put("sol", "text/plain");
         extensionToMimetypeMap.put("sor", "text/plain");
-        extensionToMimetypeMap.put("tld", "text/xml");
-        extensionToMimetypeMap.put("tsd", "text/xml");
         extensionToMimetypeMap.put("txt", "text/plain");
         extensionToMimetypeMap.put("uls", "text/iuls");
         extensionToMimetypeMap.put("vcf", "text/x-vcard");
-        extensionToMimetypeMap.put("vml", "text/xml");
-        extensionToMimetypeMap.put("vxml", "text/xml");
         extensionToMimetypeMap.put("wsc", "text/scriptlet");
-        extensionToMimetypeMap.put("wsdl", "text/xml");
-        extensionToMimetypeMap.put("xdr", "text/xml");
         extensionToMimetypeMap.put("xhtml", "text/html");
-        extensionToMimetypeMap.put("xml", "text/xml");
-        extensionToMimetypeMap.put("xq", "text/xml");
-        extensionToMimetypeMap.put("xql", "text/xml");
-        extensionToMimetypeMap.put("xquery", "text/xml");
-        extensionToMimetypeMap.put("xsd", "text/xml");
-        extensionToMimetypeMap.put("xsl", "text/xml");
-        extensionToMimetypeMap.put("xslt", "text/xml");
         extensionToMimetypeMap.put("yaml", "text/yaml");
         extensionToMimetypeMap.put("yml", "text/yaml");
     }
-    
+
     private static void addJavaMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("class", "java/*");
         extensionToMimetypeMap.put("java", "java/*");
     }
-    
+
     private static void addMessageMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("eml", "message/rfc822");
         extensionToMimetypeMap.put("mht", "message/rfc822");
         extensionToMimetypeMap.put("mhtml", "message/rfc822");
         extensionToMimetypeMap.put("nws", "message/rfc822");
     }
-    
+
     private static void addVideoMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("IVF", "video/x-ivf");
         extensionToMimetypeMap.put("asf", "video/x-ms-asf");
@@ -399,7 +417,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("wmv", "video/x-ms-wmv");
         extensionToMimetypeMap.put("wmx", "video/x-ms-wmx");
     }
-    
+
     private static void addImageMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("fax", "image/fax");
         extensionToMimetypeMap.put("gif", "image/gif");
@@ -420,7 +438,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("xbm", "image/x-xbitmap");
         extensionToMimetypeMap.put("xpm", "image/x-xpixmap");
     }
-    
+
     private static void addAudioMimetype(Map<String, String> extensionToMimetypeMap) {
         extensionToMimetypeMap.put("aac", "audio/x-aac");
         extensionToMimetypeMap.put("acp", "audio/x-mei-aac");
@@ -457,7 +475,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("wma", "audio/x-ms-wma");
         extensionToMimetypeMap.put("xpl", "audio/scpls");
     }
-    
+
     private static class MimetypesHolder {
         private static Mimetypes mimetypes = new Mimetypes();
     }

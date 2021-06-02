@@ -18,9 +18,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+
 import okhttp3.Response;
 
 public class HttpMethodReleaseInputStream extends InputStream implements InputStreamWrapper {
+    private static final ILogger log = LoggerBuilder.getLogger(HttpMethodReleaseInputStream.class);
     private InputStream inputStream = null;
     private Response httpResponse = null;
     private boolean flag = false;
@@ -34,7 +38,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             try {
                 response.close();
             } catch (Exception ee) {
-                // ignore
+                log.warn("io close failed.", ee);
             }
             this.inputStream = new ByteArrayInputStream(new byte[] {});
         }
@@ -68,6 +72,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             try {
                 closeConnection();
             } catch (IOException ignored) {
+                log.warn("io close failed.", ignored);
             }
             throw e;
         }
@@ -88,6 +93,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             try {
                 closeConnection();
             } catch (IOException ignored) {
+                log.warn("io close failed.", ignored);
             }
             throw e;
         }
@@ -101,6 +107,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
             try {
                 closeConnection();
             } catch (IOException ignored) {
+                log.warn("io close failed.", ignored);
             }
             throw e;
         }

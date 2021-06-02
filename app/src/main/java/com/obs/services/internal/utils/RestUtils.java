@@ -48,11 +48,11 @@ import javax.net.ssl.X509TrustManager;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ObsProperties;
-import com.obs.services.internal.RestStorageService;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.ext.ExtObsConstraint;
 import com.obs.services.model.HttpProtocolTypeEnum;
@@ -71,6 +71,7 @@ public class RestUtils {
 
     private static final ILogger log = LoggerBuilder.getLogger(RestUtils.class);
 
+    //CHECKSTYLE:OFF
     private static Pattern chinesePattern = Pattern.compile("[\u4e00-\u9fa5]");
 
     private static final HostnameVerifier ALLOW_ALL_HOSTNAME = new HostnameVerifier() {
@@ -100,35 +101,39 @@ public class RestUtils {
 
         StringBuilder result = new StringBuilder();
         try {
-
-            if (chineseOnly) {
-                for (int i = 0; i < input.length(); i++) {
-                    char ch = input.charAt(i);
-                    String s = Character.toString(ch);
-                    Matcher m = chinesePattern.matcher(s);
-                    if (m != null && m.find()) {
-                        result.append(URLEncoder.encode(s, Constants.DEFAULT_ENCODING));
-                    } else {
-                        result.append(ch);
-                    }
-                }
-            } else {
-                for (int i = 0; i < input.length(); i++) {
-                    char ch = input.charAt(i);
-                    if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_'
-                            || ch == '-' || ch == '~' || ch == '.') {
-                        result.append(ch);
-                    } else if (ch == '/') {
-                        result.append("%2F");
-                    } else {
-                        result.append(URLEncoder.encode(Character.toString(ch), Constants.DEFAULT_ENCODING));
-                    }
-                }
-            }
+            tryEncode(input, chineseOnly, result);
         } catch (UnsupportedEncodingException e) {
             throw new ServiceException("Unable to encode input: " + input);
         }
         return result.toString();
+    }
+
+    private static void tryEncode(CharSequence input, boolean chineseOnly, StringBuilder result)
+            throws UnsupportedEncodingException {
+        if (chineseOnly) {
+            for (int i = 0; i < input.length(); i++) {
+                char ch = input.charAt(i);
+                String s = Character.toString(ch);
+                Matcher m = chinesePattern.matcher(s);
+                if (m != null && m.find()) {
+                    result.append(URLEncoder.encode(s, Constants.DEFAULT_ENCODING));
+                } else {
+                    result.append(ch);
+                }
+            }
+        } else {
+            for (int i = 0; i < input.length(); i++) {
+                char ch = input.charAt(i);
+                if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_'
+                        || ch == '-' || ch == '~' || ch == '.') {
+                    result.append(ch);
+                } else if (ch == '/') {
+                    result.append("%2F");
+                } else {
+                    result.append(URLEncoder.encode(Character.toString(ch), Constants.DEFAULT_ENCODING));
+                }
+            }
+        }
     }
 
     public static String encodeUrlString(String path) throws ServiceException {
@@ -318,8 +323,8 @@ public class RestUtils {
 
     }
 
-    public static OkHttpClient.Builder initHttpClientBuilder(final RestStorageService restStorageService,
-            ObsProperties obsProperties, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
+    public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties, 
+            KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
             Dispatcher httpDispatcher) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
@@ -335,30 +340,7 @@ public class RestUtils {
         // OkHttpClient.Builder().addNetworkInterceptor(new
         // RemoveDirtyConnIntercepter());
 
-        if (httpDispatcher == null) {
-            int maxConnections = obsProperties.getIntProperty(ObsConstraint.HTTP_MAX_CONNECT,
-                    ObsConstraint.HTTP_MAX_CONNECT_VALUE);
-            httpDispatcher = new Dispatcher();
-            httpDispatcher.setMaxRequests(maxConnections);
-            httpDispatcher.setMaxRequestsPerHost(maxConnections);
-            builder.dispatcher(httpDispatcher);
-        } else {
-            try {
-                Method m = builder.getClass().getMethod("dispatcher", httpDispatcher.getClass());
-                m.invoke(builder, httpDispatcher);
-            } catch (Exception e) {
-                if (log.isWarnEnabled()) {
-                    log.warn("invoke " + httpDispatcher.getClass() + ".dispatcher() failed.", e);
-                }
-                try {
-                    Class<?> c = Class.forName("okhttp3.AbsDispatcher");
-                    Method m = builder.getClass().getMethod("dispatcher", c);
-                    m.invoke(builder, httpDispatcher);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
+        initHttpDispatcher(obsProperties, httpDispatcher, builder);
 
         ConnectionPool pool = new ConnectionPool(
                 obsProperties.getIntProperty(ObsConstraint.HTTP_MAX_IDLE_CONNECTIONS,
@@ -403,7 +385,7 @@ public class RestUtils {
                 trustManager = (X509TrustManager) tm[0];
             } else {
                 trustManager = TRUST_ALL_MANAGER;
-                tm = new TrustManager[] { trustManager };
+                tm = new TrustManager[] {trustManager};
             }
             String provider = obsProperties.getStringProperty(ObsConstraint.SSL_PROVIDER, "");
             SSLContext sslContext = null;
@@ -431,8 +413,36 @@ public class RestUtils {
         return builder;
     }
 
+    private static void initHttpDispatcher(ObsProperties obsProperties, Dispatcher httpDispatcher,
+            OkHttpClient.Builder builder) {
+        if (httpDispatcher == null) {
+            int maxConnections = obsProperties.getIntProperty(ObsConstraint.HTTP_MAX_CONNECT,
+                    ObsConstraint.HTTP_MAX_CONNECT_VALUE);
+            httpDispatcher = new Dispatcher();
+            httpDispatcher.setMaxRequests(maxConnections);
+            httpDispatcher.setMaxRequestsPerHost(maxConnections);
+            builder.dispatcher(httpDispatcher);
+        } else {
+            try {
+                Method m = builder.getClass().getMethod("dispatcher", httpDispatcher.getClass());
+                m.invoke(builder, httpDispatcher);
+            } catch (Exception e) {
+                if (log.isWarnEnabled()) {
+                    log.warn("invoke " + httpDispatcher.getClass() + ".dispatcher() failed.", e);
+                }
+                try {
+                    Class<?> c = Class.forName("okhttp3.AbsDispatcher");
+                    Method m = builder.getClass().getMethod("dispatcher", c);
+                    m.invoke(builder, httpDispatcher);
+                } catch (Exception ex) {
+                    throw new ObsException("invoke okhttp3.AbsDispatcher.dispatcher failed", ex);
+                }
+            }
+        }
+    }
+
     public static void initHttpProxy(OkHttpClient.Builder builder, String proxyHostAddress, int proxyPort,
-            final String proxyUser, final String proxyPassword, String proxyDomain, String proxyWorkstation) {
+            final String proxyUser, final String proxyPassword) {
         if (proxyHostAddress != null && proxyPort != -1) {
             if (log.isInfoEnabled()) {
                 log.info("Using Proxy: " + proxyHostAddress + ":" + proxyPort);

@@ -317,11 +317,11 @@ public final class Transmitter {
       return exchange != null;
     }
   }
-
+  
   public Exchange getExchange() {
 	  return exchange;
-  }
-  
+	  }
+
   /**
    * Immediately closes the socket connection if it's currently held. Use this to interrupt an
    * in-flight request from any thread. It's the caller's responsibility to close the request body

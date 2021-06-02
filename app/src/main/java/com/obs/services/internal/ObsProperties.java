@@ -32,7 +32,7 @@ public class ObsProperties implements Serializable {
         if (propertyValue == null) {
             this.clearProperty(propertyName);
         } else {
-            this.properties.put(propertyName, trim(propertyValue));
+            this.properties.setProperty(propertyName, trim(propertyValue));
         }
     }
 

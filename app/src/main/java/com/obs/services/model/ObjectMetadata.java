@@ -32,6 +32,14 @@ public class ObjectMetadata extends HeaderResponse {
 
     private String contentEncoding;
 
+    private String contentDisposition;
+    
+    private String cacheControl;
+    
+    private String contentLanguage;
+    
+    private String expires;
+    
     private String etag;
 
     private String contentMd5;
@@ -163,6 +171,87 @@ public class ObjectMetadata extends HeaderResponse {
         this.contentEncoding = contentEncoding;
     }
 
+    /**
+     * 
+     * @return
+     * 
+     * @since 3.20.7
+     */
+    public String getContentDisposition() {
+        return contentDisposition;
+    }
+
+    /**
+     * 设置对象的Content-Disposition
+     * 
+     * @param contentDisposition
+     * 
+     * @since 3.20.7
+     */
+    public void setContentDisposition(String contentDisposition) {
+        this.contentDisposition = contentDisposition;
+    }
+
+    /**
+     * 
+     * @return
+     * 
+     * @since 3.20.7
+     */
+    public String getCacheControl() {
+        return cacheControl;
+    }
+
+    /**
+     * 
+     * @param cacheControl
+     * 
+     * @since 3.20.7
+     */
+    public void setCacheControl(String cacheControl) {
+        this.cacheControl = cacheControl;
+    }
+
+    /**
+     * 
+     * @return
+     * 
+     * @since 3.20.7
+     */
+    public String getContentLanguage() {
+        return contentLanguage;
+    }
+
+    /**
+     * 
+     * @param contentLanguage
+     * 
+     * @since 3.20.7
+     */
+    public void setContentLanguage(String contentLanguage) {
+        this.contentLanguage = contentLanguage;
+    }
+
+    /**
+     * 
+     * @return
+     * 
+     * @since 3.20.7
+     */
+    public String getExpires() {
+        return expires;
+    }
+
+    /**
+     * 
+     * @param expires
+     * 
+     * @since 3.20.7
+     */
+    public void setExpires(String expires) {
+        this.expires = expires;
+    }
+    
     /**
      * Obtain the content length of an object.
      * 
@@ -303,10 +392,13 @@ public class ObjectMetadata extends HeaderResponse {
 
     @Override
     public String toString() {
-        return "ObjectMetadata [metadata=" + this.getMetadata() + ", lastModified=" + lastModified + ", contentLength="
-                + contentLength + ", contentType=" + contentType + ", contentEncoding=" + contentEncoding + ", etag="
-                + etag + ", contentMd5=" + contentMd5 + ", storageClass=" + storageClass + ", webSiteRedirectLocation="
-                + webSiteRedirectLocation + ", nextPosition=" + nextPosition + ", appendable=" + appendable + "]";
+        return "ObjectMetadata [metadata=" + this.getMetadata() + ", lastModified=" + lastModified 
+                + ", contentDisposition=" + contentDisposition + ", cacheControl=" + cacheControl 
+                + ", expires=" + expires + ", contentLength=" + contentLength + ", contentType=" 
+                + contentType + ", contentEncoding=" + contentEncoding + ", etag=" + etag 
+                + ", contentMd5=" + contentMd5 + ", storageClass=" + storageClass 
+                + ", webSiteRedirectLocation=" + webSiteRedirectLocation + ", nextPosition=" 
+                + nextPosition + ", appendable=" + appendable + "]";
     }
 
 }

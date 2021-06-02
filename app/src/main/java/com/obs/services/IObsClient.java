@@ -122,6 +122,7 @@ import com.obs.services.model.WebsiteConfiguration;
 /**
  * Basic OBS interface
  */
+//CHECKSTYLE:OFF
 public interface IObsClient {
 
     /**
@@ -1765,7 +1766,6 @@ public interface IObsClient {
      *             fails to be called or access to OBS fails
      *
      */
-    @Deprecated
     RestoreObjectStatus restoreObject(RestoreObjectRequest request) throws ObsException;
 
     /**

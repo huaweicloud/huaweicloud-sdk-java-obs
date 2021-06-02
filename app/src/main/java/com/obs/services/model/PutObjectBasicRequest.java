@@ -186,7 +186,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
         }
         domainId = domainId.trim();
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (domainIds != null && domainIds.contains(domainId)) {
+        if (domainIds != null) {
             domainIds.remove(domainId);
         }
     }

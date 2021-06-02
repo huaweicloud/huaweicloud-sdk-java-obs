@@ -16,7 +16,7 @@ package com.obs.services.model;
 
 import java.util.Date;
 
-@Deprecated
+
 public class V4TemporarySignatureRequest extends TemporarySignatureRequest {
 
     public V4TemporarySignatureRequest() {

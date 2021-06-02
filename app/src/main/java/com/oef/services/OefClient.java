@@ -14,25 +14,20 @@
 
 package com.oef.services;
 
-import java.util.Date;
 import com.obs.log.ILogger;
-import com.obs.log.InterfaceLogBean;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.ObsClient;
 import com.obs.services.ObsConfiguration;
 import com.obs.services.exception.ObsException;
-import com.obs.services.internal.Constants;
 import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HeaderResponse;
 import com.oef.services.model.CreateAsyncFetchJobsRequest;
 import com.oef.services.model.CreateAsynchFetchJobsResult;
 import com.oef.services.model.PutExtensionPolicyRequest;
-import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
+import com.oef.services.model.QueryExtensionPolicyResult;
 
 /**
  * OEF client
@@ -204,59 +199,4 @@ public class OefClient extends ObsClient implements IOefClient {
                     }
                 });
     }
-
-    private abstract class ActionCallbackWithResult<T> {
-
-        abstract T action() throws ServiceException;
-
-        void authTypeNegotiate(String bucketName) throws ServiceException {
-            AuthTypeEnum authTypeEnum = OefClient.this.getApiVersion(bucketName);
-            OefClient.this.getProviderCredentials().setThreadLocalAuthType(authTypeEnum);
-        }
-    }
-
-    private <T> T doActionWithResult(String action, String bucketName, ActionCallbackWithResult<T> callback)
-            throws ObsException {
-        if (!this.isCname()) {
-            ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
-        }
-        InterfaceLogBean reqBean = new InterfaceLogBean(action, this.getEndpoint(), "");
-        try {
-            long start = System.currentTimeMillis();
-            if (this.isAuthTypeNegotiation()) {
-                callback.authTypeNegotiate(bucketName);
-            }
-            T ret = callback.action();
-            reqBean.setRespTime(new Date());
-            reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);
-            if (ILOG.isInfoEnabled()) {
-                ILOG.info(reqBean);
-            }
-            if (ILOG.isInfoEnabled()) {
-                ILOG.info("ObsClient [" + action + "] cost " + (System.currentTimeMillis() - start) + " ms");
-            }
-            return ret;
-        } catch (ServiceException e) {
-
-            ObsException ex = ServiceUtils.changeFromServiceException(e);
-            if (ex.getResponseCode() >= 400 && ex.getResponseCode() < 500) {
-                if (ILOG.isWarnEnabled()) {
-                    reqBean.setRespTime(new Date());
-                    reqBean.setResultCode(String.valueOf(e.getResponseCode()));
-                    ILOG.warn(reqBean);
-                }
-            } else if (ILOG.isErrorEnabled()) {
-                reqBean.setRespTime(new Date());
-                reqBean.setResultCode(String.valueOf(ex.getResponseCode()));
-                ILOG.error(reqBean);
-            }
-            throw ex;
-        } finally {
-            if (this.isAuthTypeNegotiation()) {
-                this.getProviderCredentials().removeThreadLocalAuthType();
-            }
-            AccessLoggerUtils.printLog();
-        }
-    }
-
 }

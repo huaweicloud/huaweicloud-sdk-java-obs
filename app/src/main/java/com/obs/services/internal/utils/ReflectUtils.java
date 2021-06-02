@@ -15,19 +15,13 @@
 package com.obs.services.internal.utils;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.nio.charset.StandardCharsets;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
-import com.obs.services.ObsClient;
-import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ServiceException;
 
 public class ReflectUtils {
@@ -43,12 +37,13 @@ public class ReflectUtils {
 
     private static Object jdkNewDecoder;
 
-    private static Map<String, Field> fields = new ConcurrentHashMap<String, Field>();
-
     static {
         try {
             androidBase64Class = Class.forName("android.util.Base64");
         } catch (ClassNotFoundException e) {
+            if (ILOG.isTraceEnabled()) {
+                ILOG.trace("class not found.", e);
+            }
         }
 
         try {
@@ -56,7 +51,9 @@ public class ReflectUtils {
             jdkNewEncoder = base64.getMethod("getEncoder").invoke(null);
             jdkNewDecoder = base64.getMethod("getDecoder").invoke(null);
         } catch (ClassNotFoundException e) {
-            ILOG.warn("class not found exception.", e);
+            if (ILOG.isTraceEnabled()) {
+                ILOG.trace("class not found exception.", e);
+            }
         } catch (IllegalAccessException e) {
             ILOG.warn("illegal access exception.", e);
         } catch (IllegalArgumentException e) {
@@ -72,13 +69,17 @@ public class ReflectUtils {
         try {
             jdkBase64EncoderClass = Class.forName("sun.misc.BASE64Encoder");
         } catch (ClassNotFoundException e) {
-            ILOG.warn("class not found exception.", e);
+            if (ILOG.isTraceEnabled()) {
+                ILOG.trace("class not found exception.", e);
+            }
         }
 
         try {
             jdkBase64DecoderClass = Class.forName("sun.misc.BASE64Decoder");
         } catch (ClassNotFoundException e) {
-            ILOG.warn("class not found exception.", e);
+            if (ILOG.isTraceEnabled()) {
+                ILOG.trace("class not found exception.", e);
+            }
         }
     }
 
@@ -95,7 +96,7 @@ public class ReflectUtils {
         if (jdkNewEncoder != null) {
             try {
                 Method m = jdkNewEncoder.getClass().getMethod("encode", byte[].class);
-                return new String((byte[]) m.invoke(jdkNewEncoder, data), "UTF-8").replaceAll("\\s", "");
+                return new String((byte[]) m.invoke(jdkNewEncoder, data), StandardCharsets.UTF_8).replaceAll("\\s", "");
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
@@ -118,7 +119,7 @@ public class ReflectUtils {
         if (androidBase64Class != null) {
             try {
                 Method m = androidBase64Class.getMethod("decode", byte[].class, int.class);
-                return (byte[]) m.invoke(null, b64Data.getBytes("UTF-8"), 2);
+                return (byte[]) m.invoke(null, b64Data.getBytes(StandardCharsets.UTF_8), 2);
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
@@ -127,7 +128,7 @@ public class ReflectUtils {
         if (jdkNewDecoder != null) {
             try {
                 Method m = jdkNewDecoder.getClass().getMethod("decode", byte[].class);
-                return (byte[]) m.invoke(jdkNewDecoder, b64Data.getBytes("UTF-8"));
+                return (byte[]) m.invoke(jdkNewDecoder, b64Data.getBytes(StandardCharsets.UTF_8));
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
@@ -143,43 +144,4 @@ public class ReflectUtils {
         }
         throw new ServiceException("Failed to find a base64 decoder");
     }
-
-    public static void setInnerClient(final Object obj, final ObsClient obsClient) {
-        if (obj != null && obsClient != null) {
-            final Class<?> clazz = obj.getClass();
-            final String name = clazz.getName();
-            
-            // fix findbugs: DP_DO_INSIDE_DO_PRIVILEGED
-            AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    Field f = fields.get(name);
-                    try {
-                        if (f == null) {
-                            f = getFieldFromClass(clazz, "innerClient");
-                            f.setAccessible(true);
-                            fields.put(name, f);
-                        }
-                        f.set(obj, obsClient);
-                    } catch (Exception e) {
-                        throw new ObsException(e.getMessage(), e);
-                    }
-                    return null;
-                }
-                
-            });
-        }
-    }
-
-    private static Field getFieldFromClass(Class<?> clazz, String key) {
-        do {
-            try {
-                return clazz.getDeclaredField(key);
-            } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
-            }
-        } while (clazz != null);
-        return null;
-    }
-
 }

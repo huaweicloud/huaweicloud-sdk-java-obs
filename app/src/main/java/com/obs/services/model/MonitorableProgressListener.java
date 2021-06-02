@@ -33,7 +33,8 @@ public abstract class MonitorableProgressListener implements ProgressListener {
     /**
      * Check whether the request task is running.
      * <br>
-     * This method is used by the parent thread to monitor whether the current thread has completely stopped running after the current thread executes the interrupt() method.
+     * This method is used by the parent thread to monitor whether the current thread has completely stopped
+     *  running after the current thread executes the interrupt() method.
      * 
      * @return If there are still running subtasks, true is returned. Otherwise, false is returned.
      * @since 3.20.3
@@ -43,30 +44,37 @@ public abstract class MonitorableProgressListener implements ProgressListener {
     }
 
     /**
-     * Wait until the request task is completely executed. Before the task execution completes, this method is blocked.<br>
+     * Wait until the request task is completely executed. Before the task execution completes, 
+     * this method is blocked.<br>
      * <br>
-     * This method is used to check whether the upload subtask is complete after the current thread executes the interrupt() method.<br>
+     * This method is used to check whether the upload subtask is complete after the current thread
+     *  executes the interrupt() method.<br>
      * 
      * @return If the task is complete, true is returned. Otherwise, false is returned.
      * @since 3.20.3
      * @throws InterruptedException
-     * This exception is thrown when the thread is in waiting, sleep, or occupied state before or during the activity and the thread is interrupted.
+     * This exception is thrown when the thread is in waiting, sleep, 
+     * or occupied state before or during the activity and the thread is interrupted.
      */
     public final boolean waitingFinish() throws InterruptedException {
         return waitingFinish(-1L);
     }
 
     /**
-     * Wait until the request task is completely executed. Before the task is completely executed, the method is blocked until the timeout interval is exceeded.<br>
+     * Wait until the request task is completely executed. Before the task is completely executed, 
+     * the method is blocked until the timeout interval is exceeded.<br>
      * <br>
-     * This method is used to check whether the upload subtask is complete after the current thread executes the interrupt() method.<br>
+     * This method is used to check whether the upload subtask is complete after the current thread
+     *  executes the interrupt() method.<br>
      * 
      * @param timeout
-     *            Timeout interval, in milliseconds. If the parameter value is smaller than or equal to 0, the waiting never times out.
+     *            Timeout interval, in milliseconds. If the parameter value is smaller than or equal to 0, 
+     *            the waiting never times out.
      * @return If the task is complete, true is returned. Otherwise, false is returned.
      * @since 3.20.3
      * @throws InterruptedException
-     * This exception is thrown when the thread is in waiting, sleep, or occupied state before or during the activity and the thread is interrupted.
+     * This exception is thrown when the thread is in waiting, sleep, or occupied state before or during
+     *  the activity and the thread is interrupted.
      */
     public final boolean waitingFinish(long timeout) throws InterruptedException {
         long start = System.currentTimeMillis();
@@ -90,8 +98,10 @@ public abstract class MonitorableProgressListener implements ProgressListener {
     /**
      * Start a subtask.<br>
      * <br>
-     * <b>Note: Generally, users are not advised to call this method, because calling this method may lead to failures of the waitingFinish and isRunning methods.
-     * The SDK uses this method to adjust the number of running subtasks. The user determines whether the requested task is complete.</b><br>
+     * <b>Note: Generally, users are not advised to call this method, 
+     * because calling this method may lead to failures of the waitingFinish and isRunning methods.
+     * The SDK uses this method to adjust the number of running subtasks. 
+     * The user determines whether the requested task is complete.</b><br>
      * <br>
      * <b>Reference: </b>{@link #waitingFinish(long)}, {@link #isRunning()}
      * 
@@ -104,8 +114,10 @@ public abstract class MonitorableProgressListener implements ProgressListener {
     /**
      * End a subtask.<br>
      * <br>
-     * <b>Note: Generally, users are not advised to call this method, because calling this method may lead to failures of the waitingFinish and isRunning methods.
-     * The SDK uses this method to adjust the number of running subtasks. The user determines whether the requested task is complete.</b><br>
+     * <b>Note: Generally, users are not advised to call this method, 
+     * because calling this method may lead to failures of the waitingFinish and isRunning methods.
+     * The SDK uses this method to adjust the number of running subtasks. 
+     * The user determines whether the requested task is complete.</b><br>
      * <br>
      * <b>Reference: </b>{@link #waitingFinish(long)}, {@link #isRunning()}
      * 

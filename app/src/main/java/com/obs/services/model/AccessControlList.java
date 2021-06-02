@@ -53,25 +53,21 @@ public class AccessControlList extends HeaderResponse {
     /**
      * Pre-defined access control policy: authenticated-read
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_AUTHENTICATED_READ = new AccessControlList();
 
     /**
      * Pre-defined access control policy: bucket-owner-read
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_READ = new AccessControlList();
 
     /**
      * Pre-defined access control policy: bucket-owner-full-control
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_FULL_CONTROL = new AccessControlList();
 
     /**
      * Pre-defined access control policy: log-delivery-write
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_LOG_DELIVERY_WRITE = new AccessControlList();
 
     private Set<GrantAndPermission> grants;

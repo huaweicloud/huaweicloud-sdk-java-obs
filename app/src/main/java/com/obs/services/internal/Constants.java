@@ -16,7 +16,7 @@ package com.obs.services.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -126,19 +126,19 @@ public class Constants {
     public static final Map<AuthTypeEnum, AbstractAuthentication> AUTHTICATION_MAP;
 
     static {
-        Map<AuthTypeEnum, IHeaders> headersMap = new HashMap<AuthTypeEnum, IHeaders>();
+        Map<AuthTypeEnum, IHeaders> headersMap = new EnumMap<>(AuthTypeEnum.class);
         headersMap.put(AuthTypeEnum.V2, V2Headers.getInstance());
         headersMap.put(AuthTypeEnum.V4, V2Headers.getInstance());
         headersMap.put(AuthTypeEnum.OBS, ObsHeaders.getInstance());
         HEADERS_MAP = Collections.unmodifiableMap(headersMap);
 
-        Map<AuthTypeEnum, IConvertor> convertorMap = new HashMap<AuthTypeEnum, IConvertor>();
+        Map<AuthTypeEnum, IConvertor> convertorMap = new EnumMap<>(AuthTypeEnum.class);
         convertorMap.put(AuthTypeEnum.V2, V2Convertor.getInstance());
         convertorMap.put(AuthTypeEnum.V4, V2Convertor.getInstance());
         convertorMap.put(AuthTypeEnum.OBS, ObsConvertor.getInstance());
         CONVERTOR_MAP = Collections.unmodifiableMap(convertorMap);
 
-        Map<AuthTypeEnum, AbstractAuthentication> authticationMap = new HashMap<AuthTypeEnum, AbstractAuthentication>();
+        Map<AuthTypeEnum, AbstractAuthentication> authticationMap = new EnumMap<>(AuthTypeEnum.class);
         authticationMap.put(AuthTypeEnum.V2, V2Authentication.getInstance());
         authticationMap.put(AuthTypeEnum.OBS, ObsAuthentication.getInstance());
         AUTHTICATION_MAP = Collections.unmodifiableMap(authticationMap);
@@ -198,7 +198,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.20.6.2";
+    public static final String OBS_SDK_VERSION = "3.21.4";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -240,6 +240,10 @@ public class Constants {
 
     public static final String POSIX = "POSIX";
 
+    public static final long MAX_PART_SIZE = 5 * 1024 * 1024 * 1024L;
+
+    public static final long MIN_PART_SIZE = 100 * 1024L;
+
     public static final List<String> ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(
             Arrays.asList("content-type", "content-md5", "content-length", "content-language", "expires", "origin",
                     "cache-control", "content-disposition", "content-encoding", "x-default-storage-class", "location",
@@ -252,20 +256,22 @@ public class Constants {
                     "cache-control", "content-disposition", "content-encoding", "access-control-request-method",
                     "access-control-request-headers", "success-action-redirect", "x-default-storage-class", "location",
                     "date", "etag", "range", "host", "if-modified-since", "if-unmodified-since", "if-match",
-                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type", "accept-encoding"));
+                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type", 
+                    "accept-encoding"));
 
     public static final List<String> ALLOWED_RESOURCE_PARAMTER_NAMES = Collections.unmodifiableList(
             Arrays.asList("acl", "backtosource", "policy", "torrent", "logging", "location", "storageinfo", "quota",
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
-                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh", "mirrorbacktosource",
+                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh", 
+                    "mirrorbacktosource",
                     /**
                      * File System API
                      */
-                    "append", "position", "truncate", "modify", "rename", "length", "name", "fileinterface", "readahead",
-                    "response-content-type", "response-content-language", "response-expires", "response-cache-control",
-                    "response-content-disposition", "response-content-encoding", "x-image-save-bucket",
-                    "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id", "x-oss-process",
-                    "ignore-sign-in-query","listcontentsummary"));
+                    "append", "position", "truncate", "modify", "rename", "length", "name", "fileinterface", 
+                    "readahead", "response-content-type", "response-content-language", "response-expires", 
+                    "response-cache-control", "response-content-disposition", "response-content-encoding", 
+                    "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id", 
+                    "x-oss-process", "ignore-sign-in-query","listcontentsummary"));
 
 }

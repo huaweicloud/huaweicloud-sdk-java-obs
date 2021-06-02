@@ -1,9 +1,7 @@
+Version 3.21.4
 
-[![HitCount](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs.svg)](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs)
-[![Build Status](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs.svg?branch=master)](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs)
-[![Coverage Status](https://coveralls.io/repos/github/huaweicloud/huaweicloud-sdk-java-obs/badge.svg?branch=master)](https://coveralls.io/github/huaweicloud/huaweicloud-sdk-java-obs?branch=master)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.huaweicloud/huaweicloud-sdk-java-obs/badge.svg)](https://search.maven.org/search?q=g:com.huaweicloud%20AND%20a:esdk-obs-java) 
+1. Fixed a known issue
+
 -----------------------------------------------------------------------------------
 
 Version 3.20.6
@@ -52,7 +50,7 @@ Third-party dependencies:
 
 -----------------------------------------------------------------------------------
 
-Version 3.19.7
+Version 3.19.7.1
 
 New features:
 1. Added the IObsCredentialsProvider interface to provide methods for obtaining AK/SK methods and actively refreshing AK/SK.
@@ -61,31 +59,16 @@ New features:
    b. Get AK/SK from the environment variable: EnvironmentVariableObsCredentialsProvider;
    c. Get AK/SK from the ECS service: EcsObsCredentialsProvider.
 3. Support the content-type setting of the svp format file, and set the value to image/svg+xml.
-4. Update the third-party dependencies:
-   a. replace jackson-core 2.9.8 with jackson-core 2.9.9
-   b. replace jackson-databind 2.9.8 with jackson-databind 2.9.9
-   c. replace jackson-annotations 2.9.8 with jackson-core 2.9.9
-
-Resolved issues:
 
 -----------------------------------------------------------------------------------
 
-Version 3.19.5.3
+Version 3.19.5.x
 
-New features:
-
-
-Resolved issues:
-
------------------------------------------------------------------------------------
-
-Version 3.19.5.2
-
-New features:
-
-
-Resolved issues:
-1. Updated the copyright notice.
+Third-party dependencies:
+1. replace okhttp 3.10.0 with okhttp 3.11.0
+2. replace jackson-core 2.9.8 with jackson-core 2.9.9
+3. replace jackson-databind 2.9.8 with jackson-databind 2.9.9
+4. replace jackson-annotations 2.9.8 with jackson-core 2.9.9
 
 -----------------------------------------------------------------------------------
 

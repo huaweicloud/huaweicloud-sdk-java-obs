@@ -178,49 +178,6 @@ License: Apache License V2.0
    See the License for the specific language governing permissions and
    limitations under the License.
 
-
-Software: aws-sdk-java 1.11.490  
-Copyright notice:    
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-- XML parsing and utility functions from JetS3t - Copyright 2006-2009 James Murty.  
-- PKCS#1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
-
-License: Apache License V2.0
-Please see above.
-
-Software: aws-sdk-java 1.10.30  
-Copyright notice:   
-Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-Copyright 2010-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-Amazon Modifications: Copyright 2014 Amazon.com, Inc. or its affiliates.   
-Copyright (c) 1998-2010 AOL Inc.  
-Copyright 2012-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-Copyright 2013-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-Copyright 2010-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.  
-- XML parsing and utility functions from JetS3t - Copyright 2006-2009 James Murty.  
-- JSON parsing and utility functions from JSON.org - Copyright 2002 JSON.org.  
-- PKCS1 PEM encoded private key parsing and utility functions from oauth.googlecode.com - Copyright 1998-2010 AOL Inc.  
-Copyright 2014-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.   
-
-License: Apache License V2.0   
-Please see above.  
-
-Software: com.android.tools.build:gradle 3.2.1
-Copyright notice:   
-Copyright 2011 the original author or authors.  
-Copyright (c) 2012, The Android Open Source Project  
-
-License: Apache License V2.0   
-Please see above.  
-
-Software: aliyun-oss-sdk 2.6.1  
-Copyright notice:   
-Copyright (C) Alibaba Cloud Computing  
-
-
-License: Apache License V2.0
-Please see above.
-
 Software: jackson-annotations-2.11.1
 Copyright notice:   
 Copyright 2007-2019 the FasterXML.com.  

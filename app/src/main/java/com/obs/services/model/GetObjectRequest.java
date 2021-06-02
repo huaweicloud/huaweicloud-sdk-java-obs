@@ -439,9 +439,13 @@ public class GetObjectRequest extends GenericRequest {
     }
     
     /**
-     * Obtain the response to whether to automatically decompress the object compressed using gzip. The default response is false, indicating that the object is not automatically decompressed.<br>
-     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after receiving the request.<br>
-     * If the Accept-Encoding header is manually set in a request, the object will not be automatically decompressed.
+     * Obtain the response to whether to automatically decompress the object compressed using gzip. 
+     * The default response is false, indicating that the object is not automatically decompressed.<br>
+     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, 
+     * okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after
+     *  receiving the request.<br>
+     * If the Accept-Encoding header is manually set in a request, 
+     * the object will not be automatically decompressed.
      * @see okhttp3.internal.http.BridgeInterceptor
      * @return 
      * @since 3.20.5
@@ -451,9 +455,13 @@ public class GetObjectRequest extends GenericRequest {
     }
 
     /**
-     * Set the response to whether to automatically decompress the object compressed using gzip. The default response is false, indicating that the object is not automatically decompressed.<br>
-     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after receiving the request.<br>
-     * If the Accept-Encoding header is manually set in a request, the object will not be automatically decompressed.
+     * Set the response to whether to automatically decompress the object compressed using gzip. 
+     * The default response is false, indicating that the object is not automatically decompressed.<br>
+     * Description: OBS SDK uses okhttp. If Accept-Encoding is not set in a request, 
+     * okhttp automatically adds the Accept-Encoding:gzip header and decompresses the object after
+     *  receiving the request.<br>
+     * If the Accept-Encoding header is manually set in a request, 
+     * the object will not be automatically decompressed.
      * @see okhttp3.internal.http.BridgeInterceptor
      * @param autoUnzipResponse
      * @since 3.20.5

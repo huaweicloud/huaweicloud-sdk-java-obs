@@ -14,45 +14,25 @@
 
 package com.obs.services.internal.task;
 
-import com.obs.services.ObsClient;
+import com.obs.services.AbstractClient;
 import com.obs.services.model.TaskProgressListener;
 
-public abstract class AbstractObsTask implements Runnable {
+public abstract class AbstractObsTask extends AbstractTask {
 
-    protected ObsClient obsClient;
-    protected String bucketName;
-    protected DefaultTaskProgressStatus progressStatus;
-    protected TaskProgressListener progressListener;
-    protected int taskProgressInterval;
+    private DefaultTaskProgressStatus progressStatus;
+    private TaskProgressListener progressListener;
+    private int taskProgressInterval;
 
-    public AbstractObsTask(ObsClient obsClient, String bucketName) {
-        this.obsClient = obsClient;
-        this.bucketName = bucketName;
+    public AbstractObsTask(AbstractClient obsClient, String bucketName) {
+        super(obsClient, bucketName);
     }
 
-    public AbstractObsTask(ObsClient obsClient, String bucketName, DefaultTaskProgressStatus progressStatus,
+    public AbstractObsTask(AbstractClient obsClient, String bucketName, DefaultTaskProgressStatus progressStatus,
             TaskProgressListener progressListener, int taskProgressInterval) {
-        this.obsClient = obsClient;
-        this.bucketName = bucketName;
+        super(obsClient, bucketName);
         this.progressStatus = progressStatus;
         this.progressListener = progressListener;
         this.taskProgressInterval = taskProgressInterval;
-    }
-
-    public ObsClient getObsClient() {
-        return obsClient;
-    }
-
-    public void setObsClient(ObsClient obsClient) {
-        this.obsClient = obsClient;
-    }
-
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     public DefaultTaskProgressStatus getProgressStatus() {

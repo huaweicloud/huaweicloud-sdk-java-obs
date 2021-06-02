@@ -23,13 +23,7 @@ import com.obs.services.internal.ObsConstraint;
  * Parameters in a part upload request
  * 
  */
-public class UploadPartRequest extends GenericRequest {
-    private String uploadId;
-
-    private String bucketName;
-
-    private String objectKey;
-
+public class UploadPartRequest extends AbstractMultipartRequest {
     private int partNumber;
 
     private Long partSize;
@@ -53,6 +47,7 @@ public class UploadPartRequest extends GenericRequest {
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     public UploadPartRequest() {
+        super();
     }
 
     /**
@@ -64,8 +59,9 @@ public class UploadPartRequest extends GenericRequest {
      *            Name of the object involved in the multipart upload
      */
     public UploadPartRequest(String bucketName, String objectKey) {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
     }
 
     /**
@@ -79,8 +75,9 @@ public class UploadPartRequest extends GenericRequest {
      *            File name to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, String fileName) {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.file = new File(fileName);
     }
 
@@ -95,8 +92,9 @@ public class UploadPartRequest extends GenericRequest {
      *            File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, File file) {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.file = file;
     }
 
@@ -113,8 +111,9 @@ public class UploadPartRequest extends GenericRequest {
      *            Data stream to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, InputStream input) {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.partSize = partSize;
         this.input = input;
     }
@@ -135,8 +134,9 @@ public class UploadPartRequest extends GenericRequest {
      *            File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, long offset, File file) {
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.partSize = partSize;
         this.offset = offset;
         this.file = file;
@@ -200,63 +200,6 @@ public class UploadPartRequest extends GenericRequest {
      */
     public void setPartNumber(int partNumber) {
         this.partNumber = partNumber;
-    }
-
-    /**
-     * Obtain the multipart upload ID.
-     * 
-     * @return Multipart upload ID
-     */
-    public String getUploadId() {
-        return uploadId;
-    }
-
-    /**
-     * Set the multipart upload ID.
-     * 
-     * @param uploadId
-     *            Multipart upload ID
-     */
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     * 
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     * 
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the name of the object involved in the multipart upload.
-     * 
-     * @return Name of the object involved in the multipart upload
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the name for the object involved in the multipart upload.
-     * 
-     * @param objectKey
-     *            Name of the object involved in the multipart upload
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**
@@ -429,7 +372,8 @@ public class UploadPartRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "UploadPartRequest [uploadId=" + uploadId + ", bucketName=" + bucketName + ", objectKey=" + objectKey
+        return "UploadPartRequest [uploadId=" + this.getUploadId() + ", bucketName=" + this.getBucketName() 
+                + ", objectKey=" + this.getObjectKey()
                 + ", partNumber=" + partNumber + ", partSize=" + partSize + ", offset=" + offset + ", sseCHeader="
                 + sseCHeader + ", contentMd5=" + contentMd5 + ", attachMd5=" + attachMd5 + ", file=" + file + ", input="
                 + input + "]";

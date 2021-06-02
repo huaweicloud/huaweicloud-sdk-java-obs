@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -176,7 +176,6 @@ public class ObsConfiguration implements Cloneable {
      * 
      * @return Whether to enable path-style access to OBS.
      */
-    @Deprecated
     public boolean isDisableDnsBucket() {
         return this.isPathStyle();
     }
@@ -190,7 +189,6 @@ public class ObsConfiguration implements Cloneable {
      * @param disableDns
      *            Whether to enable path-style access to OBS.
      */
-    @Deprecated
     public void setDisableDnsBucket(boolean disableDns) {
         this.setPathStyle(disableDns);
     }
@@ -342,7 +340,6 @@ public class ObsConfiguration implements Cloneable {
      * 
      * @return Whether to enable path-style access to OBS.
      */
-    @Deprecated
     public boolean isPathStyle() {
         return pathStyle;
     }
@@ -356,7 +353,6 @@ public class ObsConfiguration implements Cloneable {
      * @param pathStyle
      *            Whether to enable path-style access to OBS.
      */
-    @Deprecated
     public void setPathStyle(boolean pathStyle) {
         this.pathStyle = pathStyle;
     }
@@ -472,7 +468,6 @@ public class ObsConfiguration implements Cloneable {
      * 
      * @return Port number of the HTTP request
      */
-    @Deprecated
     public int getEndpointHttpPort() {
         return endpointHttpPort;
     }
@@ -483,7 +478,6 @@ public class ObsConfiguration implements Cloneable {
      * @param endpointHttpPort
      *            Port number of the HTTP request
      */
-    @Deprecated
     public void setEndpointHttpPort(int endpointHttpPort) {
         this.endpointHttpPort = endpointHttpPort;
     }
@@ -493,7 +487,6 @@ public class ObsConfiguration implements Cloneable {
      * 
      * @return Port number of the HTTPS request
      */
-    @Deprecated
     public int getEndpointHttpsPort() {
         return endpointHttpsPort;
     }
@@ -504,7 +497,6 @@ public class ObsConfiguration implements Cloneable {
      * @param endpointHttpsPort
      *            Port number of the HTTPS request
      */
-    @Deprecated
     public void setEndpointHttpsPort(int endpointHttpsPort) {
         this.endpointHttpsPort = endpointHttpsPort;
     }
@@ -515,7 +507,6 @@ public class ObsConfiguration implements Cloneable {
      * @param httpsOnly
      *            Identifier specifying whether to use HTTPS to connect OBS
      */
-    @Deprecated
     public void setHttpsOnly(boolean httpsOnly) {
         this.httpsOnly = httpsOnly;
     }
@@ -525,7 +516,6 @@ public class ObsConfiguration implements Cloneable {
      * 
      * @return Identifier specifying whether to use HTTPS to connect OBS
      */
-    @Deprecated
     public boolean isHttpsOnly() {
         return httpsOnly;
     }

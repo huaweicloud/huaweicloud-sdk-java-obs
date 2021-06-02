@@ -67,21 +67,6 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
         return calendar.getTime();
     }
 
-    @Override
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    @Override
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    @Override
-    public String getSecurityToken() {
-        return securityToken;
-    }
-
     public Date getExpiryDate() {
         return ServiceUtils.cloneDateIgnoreNull(this.expiryDate);
     }

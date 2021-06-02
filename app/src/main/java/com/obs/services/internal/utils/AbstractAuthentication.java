@@ -56,78 +56,11 @@ public abstract class AbstractAuthentication {
         return new DefaultAuthentication(canonicalString, canonicalString, auth);
     }
 
-    @SuppressWarnings("unchecked")
     public final String makeServiceCanonicalString(String method, String resource, Map<String, String> headersMap,
             String expires, List<String> serviceResourceParameterNames) throws UnsupportedEncodingException {
-        StringBuilder canonicalStringBuf = new StringBuilder();
-        canonicalStringBuf.append(method).append("\n");
-
-        String dateHeader = Constants.CommonHeaders.DATE.toLowerCase();
-        String contentTypeHeader = Constants.CommonHeaders.CONTENT_TYPE.toLowerCase();
-        String contentMd5Header = Constants.CommonHeaders.CONTENT_MD5.toLowerCase();
         String headerPrefix = this.getIHeaders().headerPrefix();
-        String headerMetaPrefix = this.getIHeaders().headerMetaPrefix();
-
-        SortedMap<String, Object> interestingHeaders = new TreeMap<String, Object>();
-        if (null != headersMap) {
-            for (Map.Entry<String, String> entry : headersMap.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-
-                if (null == key) {
-                    continue;
-                }
-
-                String lk = key.toLowerCase(Locale.getDefault());
-
-                if (lk.equals(contentTypeHeader) || lk.equals(contentMd5Header) || lk.equals(dateHeader)) {
-                    interestingHeaders.put(lk, value);
-                } else if (lk.startsWith(headerPrefix)) {
-                    List<String> values = null;
-                    if (interestingHeaders.containsKey(lk)) {
-                        values = (List<String>) interestingHeaders.get(lk);
-                    } else {
-                        values = new ArrayList<String>();
-                        interestingHeaders.put(lk, values);
-                    }
-                    values.add(value);
-                }
-            }
-        }
-        if (interestingHeaders.containsKey(this.getIHeaders().dateHeader())) {
-            interestingHeaders.put(dateHeader, "");
-        }
-
-        if (expires != null) {
-            interestingHeaders.put(dateHeader, expires);
-        }
-
-        if (!interestingHeaders.containsKey(contentTypeHeader)) {
-            interestingHeaders.put(contentTypeHeader, "");
-        }
-        if (!interestingHeaders.containsKey(contentMd5Header)) {
-            interestingHeaders.put(contentMd5Header, "");
-        }
-
-        for (Map.Entry<String, Object> entry : interestingHeaders.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            if (value instanceof List) {
-                value = ServiceUtils.join((List<String>) value, ",", true);
-            } else if (value == null) {
-                value = "";
-            }
-
-            if (key.startsWith(headerMetaPrefix)) {
-                canonicalStringBuf.append(key).append(':').append(value.toString().trim());
-            } else if (key.startsWith(headerPrefix)) {
-                canonicalStringBuf.append(key).append(':').append(value);
-            } else {
-                canonicalStringBuf.append(value);
-            }
-            canonicalStringBuf.append("\n");
-        }
+        SortedMap<String, Object> interestingHeaders = transHeaders(headersMap, headerPrefix, expires);
+        StringBuilder canonicalStringBuf = transCanonicalString(method, headerPrefix, interestingHeaders);
 
         int queryIndex = resource.indexOf('?');
         if (queryIndex < 0) {
@@ -168,5 +101,86 @@ public abstract class AbstractAuthentication {
         }
 
         return canonicalStringBuf.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private StringBuilder transCanonicalString(String method, String headerPrefix,
+            SortedMap<String, Object> interestingHeaders) {
+        StringBuilder canonicalStringBuf = new StringBuilder();
+        canonicalStringBuf.append(method).append("\n");
+        
+        String headerMetaPrefix = this.getIHeaders().headerMetaPrefix();
+        
+        for (Map.Entry<String, Object> entry : interestingHeaders.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value instanceof List) {
+                value = ServiceUtils.join((List<String>) value, ",", true);
+            } else if (value == null) {
+                value = "";
+            }
+
+            if (key.startsWith(headerMetaPrefix)) {
+                canonicalStringBuf.append(key).append(':').append(value.toString().trim());
+            } else if (key.startsWith(headerPrefix)) {
+                canonicalStringBuf.append(key).append(':').append(value);
+            } else {
+                canonicalStringBuf.append(value);
+            }
+            canonicalStringBuf.append("\n");
+        }
+        return canonicalStringBuf;
+    }
+
+    @SuppressWarnings("unchecked")
+    private SortedMap<String, Object> transHeaders(Map<String, String> headersMap,
+            String headerPrefix, String expires) {
+        String dateHeader = Constants.CommonHeaders.DATE.toLowerCase();
+        String contentTypeHeader = Constants.CommonHeaders.CONTENT_TYPE.toLowerCase();
+        String contentMd5Header = Constants.CommonHeaders.CONTENT_MD5.toLowerCase();
+        
+        SortedMap<String, Object> interestingHeaders = new TreeMap<String, Object>();
+        if (null != headersMap) {
+            for (Map.Entry<String, String> entry : headersMap.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+
+                if (null == key) {
+                    continue;
+                }
+
+                String lk = key.toLowerCase(Locale.getDefault());
+
+                if (lk.equals(contentTypeHeader) || lk.equals(contentMd5Header) || lk.equals(dateHeader)) {
+                    interestingHeaders.put(lk, value);
+                } else if (lk.startsWith(headerPrefix)) {
+                    List<String> values = null;
+                    if (interestingHeaders.containsKey(lk)) {
+                        values = (List<String>) interestingHeaders.get(lk);
+                    } else {
+                        values = new ArrayList<String>();
+                        interestingHeaders.put(lk, values);
+                    }
+                    values.add(value);
+                }
+            }
+        }
+        if (interestingHeaders.containsKey(this.getIHeaders().dateHeader())) {
+            interestingHeaders.put(dateHeader, "");
+        }
+
+        if (expires != null) {
+            interestingHeaders.put(dateHeader, expires);
+        }
+
+        if (!interestingHeaders.containsKey(contentTypeHeader)) {
+            interestingHeaders.put(contentTypeHeader, "");
+        }
+        if (!interestingHeaders.containsKey(contentMd5Header)) {
+            interestingHeaders.put(contentMd5Header, "");
+        }
+        
+        return interestingHeaders;
     }
 }

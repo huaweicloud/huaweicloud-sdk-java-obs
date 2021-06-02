@@ -14,25 +14,14 @@
 
 package com.obs.log;
 
-import com.obs.services.internal.utils.AccessLoggerUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
-public class Log4jLogger implements ILogger {
-    private final Object logger;
-
-    private static class LoggerMethodHolder {
-        private static Method info;
-
-        private static Method warn;
-
-        private static Method debug;
-
-        private static Method trace;
-
-        private static Method error;
-
+public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
+    private static final Logger ILOG = Logger.getLogger(Log4jLogger.class.getName());
+    
+    private static class Log4jLoggerMethodHolder extends LoggerMethodHolder {
         private static Method isEnabledFor;
 
         private static Class<?> priority;
@@ -47,12 +36,6 @@ public class Log4jLogger implements ILogger {
         static {
             try {
                 if (LoggerBuilder.GetLoggerHolder.loggerClass != null) {
-                    info = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("info", Object.class, Throwable.class);
-                    warn = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("warn", Object.class, Throwable.class);
-                    error = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("error", Object.class, Throwable.class);
-                    debug = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("debug", Object.class, Throwable.class);
-                    trace = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("trace", Object.class, Throwable.class);
-
                     priority = Class.forName("org.apache.log4j.Priority");
                     isEnabledFor = LoggerBuilder.GetLoggerHolder.loggerClass.getMethod("isEnabledFor", priority);
 
@@ -65,216 +48,62 @@ public class Log4jLogger implements ILogger {
                 }
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException
                     | IllegalAccessException | NoSuchFieldException e) {
+                ILOG.warning(e.getMessage());
             }
         }
     }
 
     Log4jLogger(Object logger) {
-        this.logger = logger;
+        super(logger);
     }
 
     public boolean isInfoEnabled() {
         try {
-            return this.logger != null && LoggerMethodHolder.infoLevel != null
-                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.infoLevel));
+            return this.logger != null && Log4jLoggerMethodHolder.infoLevel != null
+                    && (Boolean) (Log4jLoggerMethodHolder.isEnabledFor.invoke(this.logger, 
+                            Log4jLoggerMethodHolder.infoLevel));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return false;
-        }
-    }
-
-    public void info(CharSequence msg) {
-        if (this.logger != null && LoggerMethodHolder.info != null) {
-            try {
-                LoggerMethodHolder.info.invoke(this.logger, msg, null);
-                AccessLoggerUtils.appendLog(msg, "info");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void info(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.info != null) {
-            try {
-                LoggerMethodHolder.info.invoke(this.logger, obj, null);
-                AccessLoggerUtils.appendLog(obj, "info");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void info(Object obj, Throwable e) {
-        if (this.logger != null && LoggerMethodHolder.info != null) {
-            try {
-                LoggerMethodHolder.info.invoke(this.logger, obj, e);
-                AccessLoggerUtils.appendLog(obj, "info");
-            } catch (Exception ex) {
-            }
         }
     }
 
     public boolean isWarnEnabled() {
         try {
-            return this.logger != null && LoggerMethodHolder.warnLevel != null
-                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.warnLevel));
+            return this.logger != null && Log4jLoggerMethodHolder.warnLevel != null
+                    && (Boolean) (Log4jLoggerMethodHolder.isEnabledFor.invoke(this.logger, 
+                            Log4jLoggerMethodHolder.warnLevel));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return false;
-        }
-    }
-
-    public void warn(CharSequence msg) {
-        if (this.logger != null && LoggerMethodHolder.warn != null) {
-            try {
-                LoggerMethodHolder.warn.invoke(this.logger, msg, null);
-                AccessLoggerUtils.appendLog(msg, "warn");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void warn(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.warn != null) {
-            try {
-                LoggerMethodHolder.warn.invoke(this.logger, obj, null);
-                AccessLoggerUtils.appendLog(obj, "warn");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void warn(Object obj, Throwable e) {
-        if (this.logger != null && LoggerMethodHolder.warn != null) {
-            try {
-                LoggerMethodHolder.warn.invoke(this.logger, obj, e);
-                AccessLoggerUtils.appendLog(obj, "warn");
-            } catch (Exception ex) {
-            }
         }
     }
 
     public boolean isErrorEnabled() {
         try {
-            return this.logger != null && LoggerMethodHolder.errorLevel != null
-                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.errorLevel));
+            return this.logger != null && Log4jLoggerMethodHolder.errorLevel != null
+                    && (Boolean) (Log4jLoggerMethodHolder.isEnabledFor.invoke(this.logger, 
+                            Log4jLoggerMethodHolder.errorLevel));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return false;
-        }
-    }
-
-    public void error(CharSequence msg) {
-        if (this.logger != null && LoggerMethodHolder.error != null) {
-            try {
-                LoggerMethodHolder.error.invoke(this.logger, msg, null);
-                AccessLoggerUtils.appendLog(msg, "error");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void error(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.error != null) {
-            try {
-                LoggerMethodHolder.error.invoke(this.logger, obj, null);
-                AccessLoggerUtils.appendLog(obj, "error");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void error(Object obj, Throwable e) {
-        if (this.logger != null && LoggerMethodHolder.error != null) {
-            try {
-                LoggerMethodHolder.error.invoke(this.logger, obj, e);
-                AccessLoggerUtils.appendLog(obj, "error");
-            } catch (Exception ex) {
-            }
         }
     }
 
     public boolean isDebugEnabled() {
         try {
-            return this.logger != null && LoggerMethodHolder.debugLevel != null
-                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.debugLevel));
+            return this.logger != null && Log4jLoggerMethodHolder.debugLevel != null
+                    && (Boolean) (Log4jLoggerMethodHolder.isEnabledFor.invoke(this.logger, 
+                            Log4jLoggerMethodHolder.debugLevel));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return false;
-        }
-    }
-
-    public void debug(CharSequence msg) {
-        if (this.logger != null && LoggerMethodHolder.debug != null) {
-            try {
-                LoggerMethodHolder.debug.invoke(this.logger, msg, null);
-                AccessLoggerUtils.appendLog(msg, "debug");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void debug(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.debug != null) {
-            try {
-                LoggerMethodHolder.debug.invoke(this.logger, obj, null);
-                AccessLoggerUtils.appendLog(obj, "debug");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void debug(Object obj, Throwable e) {
-        if (this.logger != null && LoggerMethodHolder.debug != null) {
-            try {
-                LoggerMethodHolder.debug.invoke(this.logger, obj, e);
-                AccessLoggerUtils.appendLog(obj, "debug");
-            } catch (Exception ex) {
-            }
         }
     }
 
     public boolean isTraceEnabled() {
         try {
-            return this.logger != null && LoggerMethodHolder.traceLevel != null
-                    && (Boolean) (LoggerMethodHolder.isEnabledFor.invoke(this.logger, LoggerMethodHolder.traceLevel));
+            return this.logger != null && Log4jLoggerMethodHolder.traceLevel != null
+                    && (Boolean) (Log4jLoggerMethodHolder.isEnabledFor.invoke(this.logger, 
+                            Log4jLoggerMethodHolder.traceLevel));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return false;
         }
     }
-
-    public void trace(CharSequence msg) {
-        if (this.logger != null && LoggerMethodHolder.trace != null) {
-            try {
-                LoggerMethodHolder.trace.invoke(this.logger, msg, null);
-                AccessLoggerUtils.appendLog(msg, "trace");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void trace(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.trace != null) {
-            try {
-                LoggerMethodHolder.trace.invoke(this.logger, obj, null);
-                AccessLoggerUtils.appendLog(obj, "trace");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void trace(Object obj, Throwable e) {
-        if (this.logger != null && LoggerMethodHolder.trace != null) {
-            try {
-                LoggerMethodHolder.trace.invoke(this.logger, obj, e);
-                AccessLoggerUtils.appendLog(obj, "trace");
-            } catch (Exception ex) {
-            }
-        }
-    }
-
-    public void accessRecord(Object obj) {
-        if (this.logger != null && LoggerMethodHolder.info != null) {
-            try {
-                LoggerMethodHolder.info.invoke(this.logger, obj, null);
-            } catch (Exception ex) {
-            }
-        }
-    }
-
 }

@@ -21,6 +21,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ProgressManager;
 
 public class ProgressInputStream extends FilterInputStream {
@@ -46,7 +47,7 @@ public class ProgressInputStream extends FilterInputStream {
 
     protected final void abortWhileThreadIsInterrupted() {
         if (Thread.interrupted()) {
-            throw new RuntimeException("Abort io due to thread interrupted");
+            throw new ObsException("Abort io due to thread interrupted");
         }
     }
 

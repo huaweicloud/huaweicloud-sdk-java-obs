@@ -28,7 +28,8 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 
 public class RepeatableRequestEntity extends RequestBody implements Closeable {
-    private static final ILogger INTERFACE_LOG = LoggerBuilder.getLogger("com.obs.services.internal.RestStorageService");
+    private static final ILogger INTERFACE_LOG = 
+            LoggerBuilder.getLogger("com.obs.services.internal.RestStorageService");
 
     private String contentType;
     private long contentLength = -1;
