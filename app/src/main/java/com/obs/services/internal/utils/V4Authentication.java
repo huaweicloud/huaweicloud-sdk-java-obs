@@ -23,6 +23,7 @@ import com.obs.services.internal.security.ProviderCredentials;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -74,15 +75,15 @@ public class V4Authentication {
     }
 
     public static String caculateSignature(String stringToSign, String shortDate, String sk) throws Exception {
-        byte[] dateKey = V4Authentication.hmac_sha256Encode(("AWS4" + sk).getBytes(Constants.DEFAULT_ENCODING),
+        byte[] dateKey = V4Authentication.hmacSha256Encode(("AWS4" + sk).getBytes(StandardCharsets.UTF_8),
                 shortDate);
-        byte[] dataRegionKey = V4Authentication.hmac_sha256Encode(dateKey, ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE);
+        byte[] dataRegionKey = V4Authentication.hmacSha256Encode(dateKey, ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE);
 
-        byte[] dateRegionServiceKey = V4Authentication.hmac_sha256Encode(dataRegionKey, Constants.SERVICE);
+        byte[] dateRegionServiceKey = V4Authentication.hmacSha256Encode(dataRegionKey, Constants.SERVICE);
 
-        byte[] signingKey = V4Authentication.hmac_sha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
+        byte[] signingKey = V4Authentication.hmacSha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
 
-        return V4Authentication.byteToHex(V4Authentication.hmac_sha256Encode(signingKey, stringToSign));
+        return V4Authentication.byteToHex(V4Authentication.hmacSha256Encode(signingKey, stringToSign));
     }
 
     public static IAuthentication makeServiceCanonicalString(String method, Map<String, String> headers,
@@ -103,7 +104,7 @@ public class V4Authentication {
                     .append("\n").append(scope).append("\n")
                     .append(V4Authentication.byteToHex(V4Authentication.sha256encode(canonicalRequest))).toString();
             String signature = V4Authentication
-                    .byteToHex(V4Authentication.hmac_sha256Encode(v4.getSigningKey(), stringToSign));
+                    .byteToHex(V4Authentication.hmacSha256Encode(v4.getSigningKey(), stringToSign));
             String auth = new StringBuilder(Constants.V4_ALGORITHM).append(" Credential=").append(v4.ak).append("/")
                     .append(scope).append(",SignedHeaders=").append(signedAndCanonicalList.get(0)).append(",Signature=")
                     .append(signature).toString();
@@ -182,7 +183,7 @@ public class V4Authentication {
             }
             int j = 0;
 
-            StringBuilder tempStr = new StringBuilder(query);
+            StringBuilder tempStr = new StringBuilder();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
@@ -219,29 +220,29 @@ public class V4Authentication {
         String shortDate = this.nowISOtime.split("[T]")[0];
         String keyString = "AWS4" + this.sk;
         try {
-            byte[] dateKey = V4Authentication.hmac_sha256Encode(keyString.getBytes(Constants.DEFAULT_ENCODING),
+            byte[] dateKey = V4Authentication.hmacSha256Encode(keyString.getBytes(StandardCharsets.UTF_8),
                     shortDate);
-            byte[] dateRegionKey = V4Authentication.hmac_sha256Encode(dateKey, this.region);
-            byte[] dateRegionServiceKey = V4Authentication.hmac_sha256Encode(dateRegionKey, Constants.SERVICE);
-            return V4Authentication.hmac_sha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
+            byte[] dateRegionKey = V4Authentication.hmacSha256Encode(dateKey, this.region);
+            byte[] dateRegionServiceKey = V4Authentication.hmacSha256Encode(dateRegionKey, Constants.SERVICE);
+            return V4Authentication.hmacSha256Encode(dateRegionServiceKey, Constants.REQUEST_TAG);
         } catch (Exception e) {
             throw new ServiceException("Get sign string for v4 aurhentication error", e);
         }
     }
 
-    public static byte[] hmac_sha256Encode(byte[] key, String data)
+    public static byte[] hmacSha256Encode(byte[] key, String data)
             throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException {
         Mac sha256HMAC = Mac.getInstance(Constants.HMAC_SHA256_ALGORITHM);
         SecretKeySpec secretkey = new SecretKeySpec(key, Constants.HMAC_SHA256_ALGORITHM);
         sha256HMAC.init(secretkey);
-        return sha256HMAC.doFinal(data.getBytes(Constants.DEFAULT_ENCODING));
+        return sha256HMAC.doFinal(data.getBytes(StandardCharsets.UTF_8));
     }
 
     public static byte[] sha256encode(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest digest;
         byte[] hash = null;
         digest = MessageDigest.getInstance("SHA-256");
-        hash = digest.digest(str.getBytes(Constants.DEFAULT_ENCODING));
+        hash = digest.digest(str.getBytes(StandardCharsets.UTF_8));
 
         return hash;
     }

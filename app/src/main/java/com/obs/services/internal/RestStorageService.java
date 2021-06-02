@@ -16,7 +16,6 @@ package com.obs.services.internal;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Method;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -29,21 +28,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManagerFactory;
 
 import com.obs.log.ILogger;
 import com.obs.log.InterfaceLogBean;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.consensus.CacheManager;
-import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.ext.ExtObsConstraint;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.UnrecoverableIOException;
@@ -60,18 +52,16 @@ import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpMethodEnum;
 
 import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Dispatcher;
 import okhttp3.Headers;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public abstract class RestStorageService {
+public abstract class RestStorageService extends RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
 
-    private static final Set<Class<? extends IOException>> NON_RETRIABLE_CLASSES = new HashSet<Class<? extends IOException>>();
+    private static final Set<Class<? extends IOException>> NON_RETRIABLE_CLASSES = 
+            new HashSet<Class<? extends IOException>>();
 
     private static final String REQUEST_TIMEOUT_CODE = "RequestTimeout";
 
@@ -84,25 +74,7 @@ public abstract class RestStorageService {
         NON_RETRIABLE_CLASSES.add(SSLException.class);
         NON_RETRIABLE_CLASSES.add(ConnectException.class);
     }
-
-    protected OkHttpClient httpClient;
-
-    protected AtomicBoolean shuttingDown = new AtomicBoolean(false);
-
-    protected ObsProperties obsProperties;
-
-    protected volatile ProviderCredentials credentials;
-
-    protected KeyManagerFactory keyManagerFactory;
-
-    protected TrustManagerFactory trustManagerFactory;
-
-    protected CacheManager apiVersionCache;
-
-    protected SegmentLock segmentLock;
-
-    protected Semaphore semaphore;
-
+    
     private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<HashMap<String, String>>();
 
     // switch of using standard http headers
@@ -115,7 +87,7 @@ public abstract class RestStorageService {
     /**
      * set switch of using standard http headers
      * 
-     * @param CAN_USE_STANDARD_HTTP_HEADERS
+     * @param canUseStandardHTTPHeadersMap
      *            A Boolean variable to control switch of using http standard
      *            headers
      */
@@ -126,7 +98,7 @@ public abstract class RestStorageService {
     /**
      * set user headers
      * 
-     * @param userHeaders
+     * @param userHeadersMap
      *            A HashMap<String,String></String,String>
      */
     public void setUserHeaders(HashMap<String, String> userHeadersMap) {
@@ -140,98 +112,52 @@ public abstract class RestStorageService {
      *            Request in OKHttp3.0
      */
     private void addUserHeaderToRequest(Request.Builder builder) {
-        HashMap<String, String> userHeaderMap = userHeaders.get();
-        // check headers
+        Map<String, String> userHeaderMap = formatMetadataAndHeader(userHeaders.get());
         for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (!ServiceUtils.isValid(key)) {
-                continue;
-            }
-            key = key.trim();
-            if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
-                    && !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
-                            .contains(key.toLowerCase(Locale.getDefault()))) {
-                key = this.getRestMetadataPrefix() + key;
-            }
-            try {
-                if (key.startsWith(this.getRestMetadataPrefix())) {
-                    key = RestUtils.uriEncode(key, true);
-                }
-                builder.addHeader(key, RestUtils.uriEncode(value == null ? "" : value, true));
-            } catch (ServiceException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Ignore metadata key:" + key);
-                }
+            builder.addHeader(entry.getKey(), entry.getValue());
+            if (log.isDebugEnabled()) {
+                log.debug("Added request header to connection: " + entry.getKey() + "=" + entry.getValue());
             }
         }
     }
 
-    protected void initHttpClient(Dispatcher httpDispatcher) {
-
-        OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(this, obsProperties, keyManagerFactory,
-                trustManagerFactory, httpDispatcher);
-
-        if (this.obsProperties.getBoolProperty(ObsConstraint.PROXY_ISABLE, true)) {
-            String proxyHostAddress = this.obsProperties.getStringProperty(ObsConstraint.PROXY_HOST, null);
-            int proxyPort = this.obsProperties.getIntProperty(ObsConstraint.PROXY_PORT, -1);
-            String proxyUser = this.obsProperties.getStringProperty(ObsConstraint.PROXY_UNAME, null);
-            String proxyPassword = this.obsProperties.getStringProperty(ObsConstraint.PROXY_PAWD, null);
-            String proxyDomain = this.obsProperties.getStringProperty(ObsConstraint.PROXY_DOMAIN, null);
-            String proxyWorkstation = this.obsProperties.getStringProperty(ObsConstraint.PROXY_WORKSTATION, null);
-            RestUtils.initHttpProxy(builder, proxyHostAddress, proxyPort, proxyUser, proxyPassword, proxyDomain,
-                    proxyWorkstation);
-        }
-
-        this.httpClient = builder.build();
-        // Fix okhttp bug
-        int maxConnections = this.obsProperties.getIntProperty(ObsConstraint.HTTP_MAX_CONNECT,
-                ObsConstraint.HTTP_MAX_CONNECT_VALUE);
-        this.semaphore = new Semaphore(maxConnections);
-    }
-
-    protected void shutdownImpl() {
-        if (shuttingDown.compareAndSet(false, true)) {
-            this.credentials = null;
-            this.obsProperties = null;
-            if (this.httpClient != null) {
+    private Map<String, String> formatMetadataAndHeader(Map<String, String> metadataAndHeader) {
+        Map<String, String> format = new HashMap<String, String>();
+        if (metadataAndHeader != null) {
+            for (Map.Entry<String, String> entry : metadataAndHeader.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (!ServiceUtils.isValid(key)) {
+                    continue;
+                }
+                key = key.trim();
+                if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
+                        && !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
+                                .contains(key.toLowerCase(Locale.getDefault()))) {
+                    key = this.getRestMetadataPrefix() + key;
+                }
                 try {
-                    Method dispatcherMethod = httpClient.getClass().getMethod("dispatcher");
-                    if (dispatcherMethod != null) {
-                        Method m = dispatcherMethod.invoke(httpClient).getClass().getDeclaredMethod("executorService");
-                        // fix findbugs: DP_DO_INSIDE_DO_PRIVILEGED
-                        // m.setAccessible(true);
-                        Object exeService = m.invoke(httpClient.dispatcher());
-                        if (exeService instanceof ExecutorService) {
-                            ExecutorService executorService = (ExecutorService) exeService;
-                            executorService.shutdown();
-                        }
+                    if (key.startsWith(this.getRestMetadataPrefix())) {
+                        key = RestUtils.uriEncode(key, true);
                     }
-                } catch (Exception e) {
-                    // ignore
-                    if (log.isWarnEnabled()) {
-                        log.warn("shows some exceptions at the time of shutdown httpClient. ", e);
+                    format.put(key, RestUtils.uriEncode(value == null ? "" : value, true));
+                } catch (ServiceException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Ignore key:" + key);
                     }
                 }
-                if (httpClient.connectionPool() != null) {
-                    httpClient.connectionPool().evictAll();
-                }
-                httpClient = null;
             }
         }
-        if (apiVersionCache != null) {
-            apiVersionCache.clear();
-            apiVersionCache = null;
-        }
-        if (segmentLock != null) {
-            segmentLock.clear();
-            segmentLock = null;
-        }
+        
+        return format;
     }
-
-    protected boolean retryRequest(IOException exception, int executionCount, int retryMaxCount, Request request,
+    
+    
+    protected boolean retryRequest(IOException exception, RetryCounter retryCounter, Request request,
             Call call) {
-        if (executionCount > retryMaxCount) {
+        retryCounter.addErrorCount();
+        
+        if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
             return false;
         }
         if (NON_RETRIABLE_CLASSES.contains(exception.getClass())) {
@@ -251,9 +177,11 @@ public abstract class RestStorageService {
         return true;
     }
 
-    private boolean retryRequestForUnexpectedException(IOException exception, int executionCount, int retryMaxCount,
+    private boolean retryRequestForUnexpectedException(IOException exception, RetryCounter retryCounter,
             Call call) {
-        if (null == exception || executionCount > retryMaxCount) {
+        retryCounter.addErrorCount();
+        
+        if (null == exception || retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
             return false;
         }
 
@@ -268,15 +196,14 @@ public abstract class RestStorageService {
         return true;
     }
 
-    private ServiceException handleThrowable(Request request, Response response, InterfaceLogBean reqBean, Call call,
+    private ServiceException handleThrowable(Request request, Response response, Call call,
             Throwable t) {
-
         ServiceException serviceException = (t instanceof ServiceException) ? (ServiceException) t
                 : new ServiceException("Request Error: " + t, t);
         serviceException.setRequestHost(request.header(CommonHeaders.HOST));
         serviceException.setRequestVerb(request.method());
         serviceException.setRequestPath(request.url().toString());
-
+        
         if (response != null) {
             ServiceUtils.closeStream(response);
             serviceException.setResponseCode(response.code());
@@ -292,18 +219,13 @@ public abstract class RestStorageService {
         }
 
         if (log.isWarnEnabled()) {
-            log.warn(serviceException);
+            log.warn("exception message.", serviceException);
         }
 
         if (call != null) {
             call.cancel();
         }
         return serviceException;
-    }
-
-    private void performRequestAsync(final Request request, final RequestContext context,
-            final ObsCallback<Response, ServiceException> callback) throws InterruptedException {
-        this.performRequestAsync(request, context, callback, false);
     }
 
     private boolean isLocationHostOnly(String location) {
@@ -322,249 +244,6 @@ public abstract class RestStorageService {
         return isOnlyHost;
     }
 
-    private void performRequestAsync(final Request request, final RequestContext context,
-            final ObsCallback<Response, ServiceException> callback, final boolean isOEF) throws InterruptedException {
-
-        Call call = httpClient.newCall(request);
-        final long start = System.currentTimeMillis();
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    int responseCode = response.code();
-                    context.reqBean.setRespParams("[responseCode: " + responseCode + "][request-id: "
-                            + response.header(getIHeaders().requestIdHeader(), "") + "]");
-
-                    String contentType = response.header(CommonHeaders.CONTENT_TYPE);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Response for '" + context.method + "'. Content-Type: " + contentType
-                                + ", ResponseCode:" + responseCode + ", Headers: " + response.headers());
-                    }
-                    if (log.isTraceEnabled()) {
-                        if (response.body() != null) {
-                            log.trace("Entity length: " + response.body().contentLength());
-                        }
-                    }
-
-                    if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
-                        String location = response.header(CommonHeaders.LOCATION);
-                        if (!ServiceUtils.isValid(location)) {
-                            ServiceException exception = new ServiceException("Try to redirect, but location is null!");
-                            context.reqBean.setResponseInfo("Request Error:" + exception.getMessage(),
-                                    "|" + responseCode + "|" + response.message() + "|");
-                            throw exception;
-                        }
-
-                        if (location.indexOf("?") < 0) {
-                            location = addRequestParametersToUrlPath(location, context.requestParameters, isOEF);
-                        }
-
-                        context.internalErrorCount++;
-
-                        if (context.internalErrorCount > context.retryMaxCount) {
-                            String xmlMessage = null;
-                            try {
-                                if (response.body() != null) {
-                                    xmlMessage = response.body().string();
-                                }
-                            } catch (IOException e) {
-                            }
-                            throw new ServiceException("Exceeded 3xx redirect limit (" + context.retryMaxCount + ").",
-                                    xmlMessage);
-                        } else {
-                            ServiceUtils.closeStream(response);
-                        }
-
-                        if (context.doSignature && isLocationHostOnly(location)) {
-                            performRequestAsync(authorizeHttpRequest(request, context.bucketName, location), context,
-                                    callback);
-                        } else {
-                            Request.Builder builder = request.newBuilder();
-                            RestStorageService.this.setHost(builder, request, location);
-                            performRequestAsync(builder.build(), context, callback);
-                        }
-                        return;
-                    } else if ((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
-                        String xmlMessage = null;
-                        try {
-                            if (response.body() != null) {
-                                xmlMessage = response.body().string();
-                            }
-                        } catch (IOException e) {
-                        }
-                        ServiceException exception = new ServiceException("Request Error.", xmlMessage);
-                        if (REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
-                            context.internalErrorCount++;
-                            if (context.internalErrorCount < context.retryMaxCount) {
-                                if (log.isWarnEnabled()) {
-                                    log.warn("Retrying connection that failed with RequestTimeout error"
-                                            + ", attempt number " + context.internalErrorCount + " of "
-                                            + context.retryMaxCount);
-                                }
-                                performRequestAsync(authorizeHttpRequest(request, context.bucketName, null), context,
-                                        callback);
-                                return;
-                            }
-                            if (log.isErrorEnabled()) {
-                                log.error("Exceeded maximum number of retries for RequestTimeout errors: "
-                                        + context.retryMaxCount);
-                            }
-                        }
-                        throw exception;
-                    } else if (responseCode >= 500) {
-                        context.reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
-                        if (log.isErrorEnabled()) {
-                            log.error(context.reqBean);
-                        }
-                        context.internalErrorCount++;
-                        sleepOnInternalError(context.internalErrorCount, context.retryMaxCount, response,
-                                context.reqBean);
-                        performRequestAsync(authorizeHttpRequest(request, context.bucketName, null), context, callback);
-                        return;
-                    }
-                    if (log.isInfoEnabled()) {
-                        context.reqBean.setRespTime(new Date());
-                        context.reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);
-                        log.info(context.reqBean);
-                    }
-                    callback.onSuccess(response);
-                } catch (Throwable t) {
-                    ServiceException s = handleThrowable(request, response, context.reqBean, call, t);
-                    callback.onFailure(s);
-                } finally {
-                    if (log.isInfoEnabled()) {
-                        log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                try {
-                    if (e instanceof UnrecoverableIOException) {
-                        if (context.lastException != null) {
-                            throw context.lastException;
-                        } else {
-                            throw e;
-                        }
-                    }
-                    context.lastException = e;
-                    context.internalErrorCount++;
-                    if (retryRequest(e, context.internalErrorCount, context.retryMaxCount, request, call)) {
-                        long delayMs = 50L * (int) Math.pow(2, context.internalErrorCount);
-                        Thread.sleep(delayMs);
-                        performRequestAsync(authorizeHttpRequest(request, context.bucketName, null), context, callback);
-                        return;
-                    }
-
-                    if ((e instanceof ConnectException) || (e instanceof InterruptedIOException)) {
-                        ServiceException se = new ServiceException("Request error. ", e);
-                        se.setResponseCode(408);
-                        se.setErrorCode("RequestTimeOut");
-                        se.setErrorMessage(e.getMessage());
-                        se.setResponseStatus("Request error. ");
-                        throw se;
-                    }
-                    throw e;
-                } catch (Throwable t) {
-                    ServiceException s = handleThrowable(request, null, context.reqBean, call, t);
-                    callback.onFailure(s);
-                } finally {
-                    if (log.isInfoEnabled()) {
-                        log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
-                    }
-                }
-            }
-        });
-    }
-
-    private static class RequestContext {
-        InterfaceLogBean reqBean;
-        String method;
-        int retryMaxCount;
-        int internalErrorCount = 0;
-        String bucketName;
-        Exception lastException;
-        boolean doSignature;
-        Map<String, String> requestParameters;
-    }
-
-    private static class ResponseContext {
-        Response response;
-        ServiceException ex;
-    }
-
-    protected void performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature, ObsCallback<Response, ServiceException> callback)
-                    throws ServiceException, InterruptedException {
-        InterfaceLogBean reqBean = new InterfaceLogBean("performRequest", "", "");
-
-        if (log.isDebugEnabled()) {
-            log.debug("Performing " + request.method() + " request for '" + request.url());
-            log.debug("Headers: " + request.headers());
-        }
-        RequestContext context = new RequestContext();
-        context.reqBean = reqBean;
-        context.method = request.method();
-        context.retryMaxCount = obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
-                ObsConstraint.HTTP_RETRY_MAX_VALUE);
-        context.bucketName = bucketName;
-        context.requestParameters = requestParameters;
-        context.doSignature = doSignature;
-
-        if (doSignature) {
-            request = authorizeHttpRequest(request, bucketName, null);
-        } else {
-            Request.Builder builder = request.newBuilder();
-            builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
-            this.setHost(builder, request, null);
-            request = builder.build();
-        }
-        this.performRequestAsync(request, context, callback);
-    }
-
-    protected Response performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature) throws ServiceException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final ResponseContext context = new ResponseContext();
-        try {
-            this.performRequestAsync(request, requestParameters, bucketName, doSignature,
-                    new ObsCallback<Response, ServiceException>() {
-
-                        @Override
-                        public void onSuccess(Response result) {
-                            context.response = result;
-                            latch.countDown();
-                        }
-
-                        @Override
-                        public void onFailure(ServiceException e) {
-                            context.ex = e;
-                            latch.countDown();
-                        }
-                    });
-            latch.await();
-        } catch (InterruptedException e) {
-            throw new ServiceException(e);
-        }
-
-        if (context.ex != null) {
-            throw context.ex;
-        }
-
-        return context.response;
-    }
-
-    protected Response performRequestAsync(Request request, Map<String, String> requestParameters, String bucketName)
-            throws ServiceException {
-        return this.performRequestAsync(request, requestParameters, bucketName, true);
-    }
-
-    protected Response performRequesttWithoutSignatureAsync(Request request, Map<String, String> requestParameters,
-            String bucketName) throws ServiceException {
-        return this.performRequestAsync(request, requestParameters, bucketName, false);
-    }
-
     protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName)
             throws ServiceException {
         return performRequest(request, requestParameters, bucketName, true);
@@ -580,10 +259,422 @@ public abstract class RestStorageService {
         return this.performRequest(request, requestParameters, bucketName, doSignature, false);
     }
 
+    private static final class RetryCounter {
+        private int errorCount = 0;
+        private int retryMaxCount = 0;
+        
+        public RetryCounter(int retryMaxCount) {
+            super();
+            this.retryMaxCount = retryMaxCount;
+        }
+        
+        public int getErrorCount() {
+            return errorCount;
+        }
+        
+        public void addErrorCount() {
+            this.errorCount++;
+        }
+        
+        public int getRetryMaxCount() {
+            return retryMaxCount;
+        }
+    }
+    
+    private static final class RetryController {
+        private RetryCounter errorRetryCounter = null;
+        private RetryCounter unexpectedErrorRetryCounter = null;
+        private Exception lastException = null;
+        private boolean wasRecentlyRedirected = false;
+        
+        public RetryController(RetryCounter errorRetryCounter, RetryCounter unexpectedErrorRetryCounter,
+                boolean wasRecentlyRedirected) {
+            super();
+            this.errorRetryCounter = errorRetryCounter;
+            this.unexpectedErrorRetryCounter = unexpectedErrorRetryCounter;
+            this.wasRecentlyRedirected = wasRecentlyRedirected;
+        }
+        
+        public Exception getLastException() {
+            return lastException;
+        }
+        
+        public void setLastException(Exception lastException) {
+            this.lastException = lastException;
+        }
+        
+        public RetryCounter getErrorRetryCounter() {
+            return errorRetryCounter;
+        }
+        
+        public RetryCounter getUnexpectedErrorRetryCounter() {
+            return unexpectedErrorRetryCounter;
+        }
+
+        public boolean isWasRecentlyRedirected() {
+            return wasRecentlyRedirected;
+        }
+
+        public void setWasRecentlyRedirected(boolean wasRecentlyRedirected) {
+            this.wasRecentlyRedirected = wasRecentlyRedirected;
+        }
+    }
+    
+    private static final class RequestInfo {
+        private Request request = null;
+        private Response response = null;
+        private Call call = null;
+        private InterfaceLogBean reqBean;
+        
+        public RequestInfo(Request request, InterfaceLogBean reqBean) {
+            super();
+            this.request = request;
+            this.reqBean = reqBean;
+        }
+
+        public Request getRequest() {
+            return request;
+        }
+
+        public void setRequest(Request request) {
+            this.request = request;
+        }
+
+        public Response getResponse() {
+            return response;
+        }
+
+        public void setResponse(Response response) {
+            this.response = response;
+        }
+
+        public Call getCall() {
+            return call;
+        }
+
+        public void setCall(Call call) {
+            this.call = call;
+        }
+
+        public InterfaceLogBean getReqBean() {
+            return reqBean;
+        }
+    }
+    
     protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName,
             boolean doSignature, boolean isOEF) throws ServiceException {
-        Response response = null;
+        RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
+        try {
+            tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo);
+        } catch (Throwable t) {
+            ServiceException serviceException = this.handleThrowable(requestInfo.getRequest(),
+                    requestInfo.getResponse(), requestInfo.getCall(), t);
+            throw serviceException;
+        }
 
+        if (log.isInfoEnabled()) {
+            requestInfo.getReqBean().setRespTime(new Date());
+            requestInfo.getReqBean().setResultCode(Constants.RESULTCODE_SUCCESS);
+            log.info(requestInfo.getReqBean());
+        }
+        return requestInfo.getResponse();
+    }
+
+    private void tryRequest(Map<String, String> requestParameters, String bucketName, boolean doSignature,
+            boolean isOEF, RequestInfo requestInfo) throws Exception {
+        requestInfo.setRequest(initRequest(requestInfo.getRequest()));
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Performing " + requestInfo.getRequest().method() 
+                    + " request for '" + requestInfo.getRequest().url());
+            log.debug("Headers: " + requestInfo.getRequest().headers());
+        }
+
+        RetryController retryController = new RetryController(new RetryCounter(
+                obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
+                ObsConstraint.HTTP_RETRY_MAX_VALUE)), 
+                new RetryCounter(obsProperties.getIntProperty(
+                        ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
+                        ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION)),
+                false);
+        
+        do {
+            if (!retryController.isWasRecentlyRedirected()) {
+                requestInfo.setRequest(addBaseHeaders(requestInfo.getRequest(), bucketName, doSignature));
+            } else {
+                retryController.setWasRecentlyRedirected(false);
+            }
+
+            requestInfo.setCall(httpClient.newCall(requestInfo.getRequest()));
+            requestInfo.setResponse(executeRequest(requestInfo.getCall(), 
+                    requestInfo.getRequest(), retryController));
+            if (null == requestInfo.getResponse()) {
+                continue;
+            }
+
+            int responseCode = requestInfo.getResponse().code();
+            requestInfo.getReqBean().setRespParams("[responseCode: " + responseCode + "][request-id: "
+                    + requestInfo.getResponse().header(this.getIHeaders().requestIdHeader(), "") + "]");
+
+            String contentType = requestInfo.getResponse().header(CommonHeaders.CONTENT_TYPE);
+            if (log.isDebugEnabled()) {
+                log.debug("Response for '" + requestInfo.getRequest().method() + "'. Content-Type: " + contentType
+                        + ", ResponseCode:" + responseCode 
+                        + ", Headers: " + requestInfo.getResponse().headers());
+            }
+            if (log.isTraceEnabled()) {
+                if (requestInfo.getResponse().body() != null) {
+                    log.trace("Entity length: " + requestInfo.getResponse().body().contentLength());
+                }
+            }
+
+            if (isOEF && Mimetypes.MIMETYPE_JSON.equalsIgnoreCase(contentType)) {
+                transOEFResponse(requestInfo.getResponse(), requestInfo.getReqBean(),
+                        retryController.getErrorRetryCounter().getErrorCount(), responseCode);
+                break;
+            } else {
+                if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
+                    requestInfo.setRequest(handleRedirectResponse(requestInfo.getRequest(), 
+                            requestParameters, bucketName, doSignature, isOEF,
+                            requestInfo.getReqBean(), requestInfo.getResponse(), retryController));
+                } else if ((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
+                    handleRequestErrorResponse(requestInfo.getResponse(), retryController);
+                    continue;
+                } else if (responseCode >= 500) {
+                    handleServerErrorResponse(requestInfo.getReqBean(), 
+                            requestInfo.getResponse(), retryController, responseCode);
+                } else {
+                    break;
+                }
+            }
+
+        } while (true);
+    }
+
+    private void handleRequestErrorResponse(Response response, RetryController retryController) {
+        ServiceException exception = createServiceException("Request Error.", response);
+        
+        if (!REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
+            throw exception;
+        }
+        
+        retryController.getErrorRetryCounter().addErrorCount();
+        if (retryController.getErrorRetryCounter().getErrorCount() 
+                < retryController.getErrorRetryCounter().getRetryMaxCount()) {
+            if (log.isWarnEnabled()) {
+                log.warn("Retrying connection that failed with RequestTimeout error"
+                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount() 
+                        + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
+            }
+            return;
+        } else {
+            if (log.isErrorEnabled()) {
+                log.error("Exceeded maximum number of retries for RequestTimeout errors: "
+                        + retryController.getErrorRetryCounter().getRetryMaxCount());
+            }
+            
+            throw exception;
+        }
+    }
+    
+    private void handleServerErrorResponse(InterfaceLogBean reqBean, Response response, RetryController retryController,
+            int responseCode) {
+        reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
+        if (log.isErrorEnabled()) {
+            log.error(reqBean);
+        }
+        
+        doRetry(response, 
+                "Encountered too many 5xx errors (" 
+                + retryController.getErrorRetryCounter().getErrorCount() 
+                + "), aborting request.", 
+                retryController.getErrorRetryCounter());
+        
+        sleepBeforeRetry(retryController.getErrorRetryCounter().getErrorCount());
+    }
+
+    private Request handleRedirectResponse(Request request, Map<String, String> requestParameters, String bucketName,
+            boolean doSignature, boolean isOEF, InterfaceLogBean reqBean, Response response,
+            RetryController retryController) {
+        int responseCode = response.code();
+        String location = response.header(CommonHeaders.LOCATION);
+        if (!ServiceUtils.isValid(location)) {
+            ServiceException exception = new ServiceException("Try to redirect, but location is null!");
+            reqBean.setResponseInfo("Request Error:" + exception.getMessage(),
+                    "|" + responseCode + "|" + response.message() + "|");
+            throw exception;
+        }
+
+        request = createRedirectRequest(request, requestParameters, bucketName, doSignature, isOEF,
+                responseCode, location);
+
+        retryController.setWasRecentlyRedirected(true);
+        
+        doRetry(response, 
+                "Exceeded 3xx redirect limit (" 
+                + retryController.getErrorRetryCounter().getRetryMaxCount() 
+                + ").", 
+                retryController.getErrorRetryCounter());
+        return request;
+    }
+
+    private Response executeRequest(Call call, 
+            Request request,
+            RetryController retryController) throws Exception {
+        long start = System.currentTimeMillis();
+        
+        try {
+            semaphore.acquire();
+            return call.execute();
+        } catch (IOException e) {
+            if (e instanceof UnrecoverableIOException) {
+                if (retryController.getLastException() != null) {
+                    throw retryController.getLastException();
+                } else {
+                    throw e;
+                }
+            }
+            retryController.setLastException(e);
+
+            retryOnIOException(e, 
+                    request, 
+                    retryController, 
+                    call);
+            
+            if (log.isWarnEnabled()) {
+                log.warn("Retrying connection that failed with error"
+                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount() 
+                        + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
+            }
+            return null;
+        } finally {
+            semaphore.release();
+            if (log.isInfoEnabled()) {
+                log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
+            }
+        }
+    }
+    
+    private void retryOnIOException(IOException e,
+            Request request,
+            RetryController retryController, 
+            Call call) throws Exception {
+
+        // for example:Caused by: java.io.IOException: unexpected
+        // end of stream on Connection{...}
+        if (retryRequestForUnexpectedException(e, retryController.getUnexpectedErrorRetryCounter(), call)) {
+            if (log.isErrorEnabled()) {
+                log.error("unexpected end of stream excepiton.");
+            }
+            return;
+        }
+
+        if (retryRequest(e, retryController.getErrorRetryCounter(), request, call)) {
+            sleepBeforeRetry(retryController.getErrorRetryCounter().getErrorCount());
+            return;
+        }
+
+        if ((e instanceof ConnectException) || (e instanceof InterruptedIOException)) {
+            ServiceException se = new ServiceException("Request error. ", e);
+            se.setResponseCode(408);
+            se.setErrorCode("RequestTimeOut");
+            se.setErrorMessage(e.getMessage());
+            se.setResponseStatus("Request error. ");
+            throw se;
+        }
+        throw e;
+    }
+    
+    private void doRetry(Response response, String message, RetryCounter retryCounter) {
+        retryCounter.addErrorCount();
+        if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
+            throw createServiceException(message, response);
+        }
+        ServiceUtils.closeStream(response);
+    }
+
+    private ServiceException createServiceException(String message, Response response) {
+        String xmlMessage = readResponseMessage(response);
+        ServiceException exception = new ServiceException(message, xmlMessage);
+        return exception;
+    }
+
+    private String readResponseMessage(Response response) {
+        String xmlMessage = null;
+        try {
+            if (response.body() != null) {
+                xmlMessage = response.body().string();
+            }
+        } catch (IOException e) {
+            log.warn("read response body failed.", e);
+        }
+        return xmlMessage;
+    }
+
+    private Request createRedirectRequest(Request request, Map<String, String> requestParameters, String bucketName,
+            boolean doSignature, boolean isOEF, int responseCode, String location) {
+        if (location.indexOf("?") < 0) {
+            location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
+        }
+
+        if (doSignature && isLocationHostOnly(location)) {
+            request = authorizeHttpRequest(request, bucketName, location);
+        } else {
+            Request.Builder builder = request.newBuilder();
+
+            if (responseCode == 302
+                    && HttpMethodEnum.GET.getOperationType().equalsIgnoreCase(request.method())) {
+                Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION)
+                        .build();
+                builder.headers(headers);
+            }
+
+            this.setHost(builder, request, location);
+
+            request = builder.build();
+        }
+        return request;
+    }
+
+    private void transOEFResponse(Response response, InterfaceLogBean reqBean,
+            int internalErrorCount, int responseCode) {
+        if ((responseCode >= 400 && responseCode < 500)) {
+            String xmlMessage = readResponseMessage(response);
+
+            OefExceptionMessage oefException = (OefExceptionMessage) JSONChange
+                    .jsonToObj(new OefExceptionMessage(), ServiceUtils.toValid(xmlMessage));
+            ServiceException exception = new ServiceException(
+                    "Request Error." + ServiceUtils.toValid(xmlMessage));
+            exception.setErrorMessage(oefException.getMessage());
+            exception.setErrorCode(oefException.getCode());
+            exception.setErrorRequestId(oefException.getRequestId());
+
+            throw exception;
+        } else if (responseCode >= 500) {
+            reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
+            if (log.isErrorEnabled()) {
+                log.error(reqBean);
+            }
+            throw createServiceException("Encountered too many 5xx errors (" + internalErrorCount 
+                    + "), aborting request.", 
+                    response);
+        } 
+    }
+
+    private Request addBaseHeaders(Request request, String bucketName, boolean doSignature) {
+        if (doSignature) {
+            request = authorizeHttpRequest(request, bucketName, null);
+        } else {
+            Request.Builder builder = request.newBuilder();
+            builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
+            this.setHost(builder, request, null);
+            builder.header(CommonHeaders.USER_AGENT, Constants.USER_AGENT_VALUE);
+            request = builder.build();
+        }
+        return request;
+    }
+
+    private Request initRequest(Request request) {
         if (userHeaders.get() != null && userHeaders.get().size() > 0) {
             // create a new Builder from current Request
             Request.Builder builderTmp = request.newBuilder();
@@ -592,233 +683,7 @@ public abstract class RestStorageService {
             // build new request
             request = builderTmp.build();
         }
-
-        InterfaceLogBean reqBean = new InterfaceLogBean("performRequest", "", "");
-        Call call = null;
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("Performing " + request.method() + " request for '" + request.url());
-                log.debug("Headers: " + request.headers());
-            }
-
-            boolean completedWithoutRecoverableError = false;
-            int internalErrorCount = 0;
-            int unexpectedErrorCount = 0;
-            boolean wasRecentlyRedirected = false;
-            Exception lastException = null;
-            int responseCode = -1;
-            int retryMaxCount = obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
-                    ObsConstraint.HTTP_RETRY_MAX_VALUE);
-            int unexpectedRetryMaxCount = obsProperties.getIntProperty(
-                    ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
-                    ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION);
-            do {
-                if (!wasRecentlyRedirected) {
-                    if (doSignature) {
-                        request = authorizeHttpRequest(request, bucketName, null);
-                    } else {
-                        Request.Builder builder = request.newBuilder();
-                        builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
-                        this.setHost(builder, request, null);
-                        builder.header(CommonHeaders.USER_AGENT, Constants.USER_AGENT_VALUE);
-                        request = builder.build();
-                    }
-                } else {
-                    wasRecentlyRedirected = false;
-                }
-                long start = System.currentTimeMillis();
-
-                call = httpClient.newCall(request);
-                try {
-                    semaphore.acquire();
-                    response = call.execute();
-                } catch (IOException e) {
-                    if (e instanceof UnrecoverableIOException) {
-                        if (lastException != null) {
-                            throw lastException;
-                        } else {
-                            throw e;
-                        }
-                    }
-                    lastException = e;
-
-                    // for example:Caused by: java.io.IOException: unexpected
-                    // end of stream on Connection{...}
-                    if (retryRequestForUnexpectedException(e, ++unexpectedErrorCount, unexpectedRetryMaxCount, call)) {
-                        if (log.isErrorEnabled()) {
-                            log.error("unexpected end of stream excepiton.");
-                        }
-                        continue;
-                    }
-
-                    if (retryRequest(e, ++internalErrorCount, retryMaxCount, request, call)) {
-                        long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
-                        Thread.sleep(delayMs);
-                        continue;
-                    }
-
-                    if ((e instanceof ConnectException) || (e instanceof InterruptedIOException)) {
-                        ServiceException se = new ServiceException("Request error. ", e);
-                        se.setResponseCode(408);
-                        se.setErrorCode("RequestTimeOut");
-                        se.setErrorMessage(e.getMessage());
-                        se.setResponseStatus("Request error. ");
-                        throw se;
-                    }
-                    throw e;
-                } finally {
-                    semaphore.release();
-                    if (log.isInfoEnabled()) {
-                        log.info("OkHttp cost " + (System.currentTimeMillis() - start) + " ms to apply http request");
-                    }
-                }
-
-                responseCode = response.code();
-                reqBean.setRespParams("[responseCode: " + responseCode + "][request-id: "
-                        + response.header(this.getIHeaders().requestIdHeader(), "") + "]");
-
-                String contentType = response.header(CommonHeaders.CONTENT_TYPE);
-                if (log.isDebugEnabled()) {
-                    log.debug("Response for '" + request.method() + "'. Content-Type: " + contentType
-                            + ", ResponseCode:" + responseCode + ", Headers: " + response.headers());
-                }
-                if (log.isTraceEnabled()) {
-                    if (response.body() != null) {
-                        log.trace("Entity length: " + response.body().contentLength());
-                    }
-                }
-
-                if (isOEF && Mimetypes.MIMETYPE_JSON.equalsIgnoreCase(contentType)) {
-                    if ((responseCode >= 400 && responseCode < 500)) {
-                        String xmlMessage = null;
-                        try {
-                            if (response.body() != null) {
-                                xmlMessage = response.body().string();
-                            }
-                        } catch (IOException e) {
-                        }
-
-                        OefExceptionMessage oefException = (OefExceptionMessage) JSONChange
-                                .jsonToObj(new OefExceptionMessage(), ServiceUtils.toValid(xmlMessage));
-                        ServiceException exception = new ServiceException(
-                                "Request Error." + ServiceUtils.toValid(xmlMessage));
-                        exception.setErrorMessage(oefException.getMessage());
-                        exception.setErrorCode(oefException.getCode());
-                        exception.setErrorRequestId(oefException.getRequestId());
-
-                        throw exception;
-                    } else if (responseCode >= 500) {
-                        reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
-                        if (log.isErrorEnabled()) {
-                            log.error(reqBean);
-                        }
-                        String xmlMessage = null;
-                        try {
-                            if (response.body() != null) {
-                                xmlMessage = response.body().string();
-                            }
-                        } catch (IOException e) {
-                        }
-                        ServiceException exception = new ServiceException(
-                                "Encountered too many 5xx errors (" + internalErrorCount + "), aborting request.",
-                                xmlMessage);
-                        throw exception;
-                    } else {
-                        completedWithoutRecoverableError = true;
-                    }
-                } else {
-                    if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
-                        String location = response.header(CommonHeaders.LOCATION);
-                        if (!ServiceUtils.isValid(location)) {
-                            ServiceException exception = new ServiceException("Try to redirect, but location is null!");
-                            reqBean.setResponseInfo("Request Error:" + exception.getMessage(),
-                                    "|" + responseCode + "|" + response.message() + "|");
-                            throw exception;
-                        }
-
-                        if (location.indexOf("?") < 0) {
-                            location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
-                        }
-
-                        if (doSignature && isLocationHostOnly(location)) {
-                            request = authorizeHttpRequest(request, bucketName, location);
-                        } else {
-                            Request.Builder builder = request.newBuilder();
-
-                            if (responseCode == 302
-                                    && HttpMethodEnum.GET.getOperationType().equalsIgnoreCase(request.method())) {
-                                Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION)
-                                        .build();
-                                builder.headers(headers);
-                            }
-
-                            this.setHost(builder, request, location);
-
-                            request = builder.build();
-                        }
-
-                        internalErrorCount++;
-                        wasRecentlyRedirected = true;
-                        if (internalErrorCount > retryMaxCount) {
-                            String xmlMessage = null;
-                            try {
-                                if (response.body() != null) {
-                                    xmlMessage = response.body().string();
-                                }
-                            } catch (IOException e) {
-                            }
-                            throw new ServiceException("Exceeded 3xx redirect limit (" + retryMaxCount + ").",
-                                    xmlMessage);
-                        }
-                        ServiceUtils.closeStream(response);
-                    } else if ((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
-                        String xmlMessage = null;
-                        try {
-                            if (response.body() != null) {
-                                xmlMessage = response.body().string();
-                            }
-                        } catch (IOException e) {
-                        }
-                        ServiceException exception = new ServiceException("Request Error.", xmlMessage);
-                        if (REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
-                            internalErrorCount++;
-                            if (internalErrorCount < retryMaxCount) {
-                                if (log.isWarnEnabled()) {
-                                    log.warn("Retrying connection that failed with RequestTimeout error"
-                                            + ", attempt number " + internalErrorCount + " of " + retryMaxCount);
-                                }
-                                continue;
-                            }
-                            if (log.isErrorEnabled()) {
-                                log.error("Exceeded maximum number of retries for RequestTimeout errors: "
-                                        + retryMaxCount);
-                            }
-                        }
-                        throw exception;
-                    } else if (responseCode >= 500) {
-                        reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
-                        if (log.isErrorEnabled()) {
-                            log.error(reqBean);
-                        }
-                        internalErrorCount++;
-                        sleepOnInternalError(internalErrorCount, retryMaxCount, response, reqBean);
-                    } else {
-                        completedWithoutRecoverableError = true;
-                    }
-                }
-
-            } while (!completedWithoutRecoverableError);
-        } catch (Throwable t) {
-            ServiceException serviceException = this.handleThrowable(request, response, reqBean, call, t);
-            throw serviceException;
-        }
-
-        if (log.isInfoEnabled()) {
-            reqBean.setRespTime(new Date());
-            reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);
-            log.info(reqBean);
-        }
-        return response;
+        return request;
     }
 
     protected String getRestMetadataPrefix() {
@@ -857,6 +722,21 @@ public abstract class RestStorageService {
         return uri;
     }
 
+    private Date parseDate(Request request, boolean isV4) {
+        String dateHeader = this.getIHeaders().dateHeader();
+        String date = request.header(dateHeader);
+        
+        if (date != null) {
+            try {
+                return isV4 ? ServiceUtils.getLongDateFormat().parse(date) : ServiceUtils.parseRfc822Date(date);
+            } catch (ParseException e) {
+                throw new ServiceException(dateHeader + " is not well-format", e);
+            }
+        } else {
+            return new Date();
+        }
+    }
+    
     protected Request authorizeHttpRequest(Request request, String bucketName, String url) throws ServiceException {
 
         Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build();
@@ -880,19 +760,10 @@ public abstract class RestStorageService {
             return request;
         }
 
-        String dateHeader = this.getIHeaders().dateHeader();
-        String date = request.header(dateHeader);
-        Date now = null;
         boolean isV4 = providerCredentials.getAuthType() == AuthTypeEnum.V4;
-        if (date != null) {
-            try {
-                now = isV4 ? ServiceUtils.getLongDateFormat().parse(date) : ServiceUtils.parseRfc822Date(date);
-            } catch (ParseException e) {
-                throw new ServiceException(dateHeader + " is not well-format", e);
-            }
-        } else {
-            now = new Date();
-        }
+        
+        Date now = parseDate(request, isV4);
+        
         builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
 
         BasicSecurityKey securityKey = providerCredentials.getSecurityKey();
@@ -1101,32 +972,16 @@ public abstract class RestStorageService {
         return performRequestWithoutSignature(builder.build(), requestParameters, bucketName);
     }
 
-    protected void shutdown() {
-        this.shutdownImpl();
-    }
-
-    protected void sleepOnInternalError(int internalErrorCount, int retryMaxCount, Response response,
-            InterfaceLogBean reqBean) throws ServiceException {
-        String xmlMessage = null;
-        if (internalErrorCount <= retryMaxCount) {
-            ServiceUtils.closeStream(response);
-            long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
-            if (log.isWarnEnabled()) {
-                log.warn("Encountered " + internalErrorCount + " Internal Server error(s), will retry in " + delayMs
-                        + "ms");
-            }
-            try {
-                Thread.sleep(delayMs);
-            } catch (InterruptedException e) {
-            }
-        } else {
-            try {
-                xmlMessage = response.body().string();
-            } catch (IOException e) {
-            }
-            ServiceException exception = new ServiceException(
-                    "Encountered too many 5xx errors (" + internalErrorCount + "), aborting request.", xmlMessage);
-            throw exception;
+    private void sleepBeforeRetry(int internalErrorCount) {
+        long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
+        if (log.isWarnEnabled()) {
+            log.warn("Encountered " + internalErrorCount + " Internal Server error(s), will retry in " + delayMs
+                    + "ms");
+        }
+        try {
+            Thread.sleep(delayMs);
+        } catch (InterruptedException e) {
+            log.warn("thread sleep failed.", e);
         }
     }
 
@@ -1152,151 +1007,13 @@ public abstract class RestStorageService {
     }
 
     protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata) {
-        Map<String, String> convertedMetadata = new HashMap<String, String>();
-        if (metadata != null) {
-            for (Map.Entry<String, String> entry : metadata.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (!ServiceUtils.isValid(key)) {
-                    continue;
-                }
-                key = key.trim();
-                if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
-                        && !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
-                                .contains(key.toLowerCase(Locale.getDefault()))) {
-                    key = this.getRestMetadataPrefix() + key;
-                }
-                try {
-                    if (key.startsWith(this.getRestMetadataPrefix())) {
-                        key = RestUtils.uriEncode(key, true);
-                    }
-                    convertedMetadata.put(key, RestUtils.uriEncode(value == null ? "" : value, true));
-                } catch (ServiceException e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Ignore metadata key:" + key);
-                    }
-                }
-            }
-        }
+        Map<String, String> convertedMetadata = formatMetadataAndHeader(metadata);
         for (Map.Entry<String, String> entry : convertedMetadata.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
-                log.debug("Added request header to connection: " + entry.getKey() + "=" + entry.getValue());
+                log.debug("Added metadata to connection: " + entry.getKey() + "=" + entry.getValue());
             }
         }
-    }
-
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body) throws ServiceException {
-        return this.setupConnection(method, bucketName, objectKey, requestParameters, body, false);
-    }
-
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body, boolean isOEF) throws ServiceException {
-        return this.setupConnection(method, bucketName, objectKey, requestParameters, body, isOEF, false);
-    }
-
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body, boolean isOEF, boolean isListBuckets)
-                    throws ServiceException {
-
-        boolean pathStyle = this.isPathStyle();
-        String endPoint = this.getEndpoint();
-        boolean isCname = this.isCname();
-        String hostname = (isCname || isListBuckets) ? endPoint
-                : ServiceUtils.generateHostnameForBucket(RestUtils.encodeUrlString(bucketName), pathStyle, endPoint);
-        String resourceString = "/";
-        if (hostname.equals(endPoint) && !isCname && bucketName.length() > 0) {
-            resourceString += RestUtils.encodeUrlString(bucketName);
-        }
-        if (objectKey != null) {
-            resourceString += ((pathStyle && !isCname) ? "/" : "") + RestUtils.encodeUrlString(objectKey);
-        }
-
-        String url = null;
-        if (getHttpsOnly()) {
-            int securePort = this.getHttpsPort();
-            String securePortStr = securePort == 443 ? "" : ":" + securePort;
-            url = "https://" + hostname + securePortStr + resourceString;
-        } else {
-            int insecurePort = this.getHttpPort();
-            String insecurePortStr = insecurePort == 80 ? "" : ":" + insecurePort;
-            url = "http://" + hostname + insecurePortStr + resourceString;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("OBS URL: " + url);
-        }
-        url = addRequestParametersToUrlPath(url, requestParameters, isOEF);
-
-        Request.Builder builder = new Request.Builder();
-        builder.url(url);
-        if (body == null) {
-            body = RequestBody.create(null, "");
-        }
-        switch (method) {
-            case PUT:
-                builder.put(body);
-                break;
-            case POST:
-                builder.post(body);
-                break;
-            case HEAD:
-                builder.head();
-                break;
-            case GET:
-                builder.get();
-                break;
-            case DELETE:
-                builder.delete(body);
-                break;
-            case OPTIONS:
-                builder.method("OPTIONS", null);
-                break;
-            default:
-                throw new IllegalArgumentException("Unrecognised HTTP method name: " + method);
-        }
-
-        if (!this.isKeepAlive()) {
-            builder.addHeader("Connection", "Close");
-        }
-
-        return builder;
-    }
-
-    protected String addRequestParametersToUrlPath(String urlPath, Map<String, String> requestParameters) {
-        return this.addRequestParametersToUrlPath(urlPath, requestParameters, false);
-    }
-
-    protected String addRequestParametersToUrlPath(String urlPath, Map<String, String> requestParameters, boolean isOEF)
-            throws ServiceException {
-        StringBuilder urlPathBuilder = new StringBuilder(urlPath);
-        if (requestParameters != null) {
-            for (Map.Entry<String, String> entry : requestParameters.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (isOEF) {
-                    if (isPathStyle()) {
-                        urlPathBuilder.append("/").append(key);
-                    } else {
-                        urlPathBuilder.append(key);
-                    }
-                } else {
-                    urlPathBuilder.append((urlPathBuilder.indexOf("?") < 0 ? "?" : "&"))
-                            .append(RestUtils.encodeUrlString(key));
-                }
-                if (ServiceUtils.isValid(value)) {
-                    urlPathBuilder.append("=").append(RestUtils.encodeUrlString(value));
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added request parameter: " + key + "=" + value);
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added request parameter without value: " + key);
-                    }
-                }
-            }
-        }
-        return urlPathBuilder.toString();
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
@@ -1333,40 +1050,12 @@ public abstract class RestStorageService {
         return Constants.CONVERTOR_MAP.get(this.getProviderCredentials().getAuthType());
     }
 
-    protected boolean isKeepAlive() {
-        return this.obsProperties.getBoolProperty(ObsConstraint.KEEP_ALIVE, true);
-    }
-
-    protected String getEndpoint() {
-        return this.obsProperties.getStringProperty(ObsConstraint.END_POINT, "");
-    }
-
-    protected boolean isPathStyle() {
-        return this.obsProperties.getBoolProperty(ObsConstraint.DISABLE_DNS_BUCKET, false);
-    }
-
-    protected int getHttpPort() {
-        return this.obsProperties.getIntProperty(ObsConstraint.HTTP_PORT, ObsConstraint.HTTP_PORT_VALUE);
-    }
-
-    protected int getHttpsPort() {
-        return this.obsProperties.getIntProperty(ObsConstraint.HTTPS_PORT, ObsConstraint.HTTPS_PORT_VALUE);
-    }
-
-    protected boolean getHttpsOnly() {
-        return this.obsProperties.getBoolProperty(ObsConstraint.HTTPS_ONLY, true);
-    }
-
     protected boolean isAuthTypeNegotiation() {
         return this.obsProperties.getBoolProperty(ObsConstraint.AUTH_TYPE_NEGOTIATION, true);
     }
 
     protected CacheManager getApiVersionCache() {
         return apiVersionCache;
-    }
-
-    protected boolean isCname() {
-        return this.obsProperties.getBoolProperty(ObsConstraint.IS_CNAME, false);
     }
 
     protected String getFileSystemDelimiter() {

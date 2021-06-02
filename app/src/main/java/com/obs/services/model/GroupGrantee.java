@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -33,7 +33,6 @@ public class GroupGrantee implements GranteeInterface {
     /**
      * 日志投递用户组，一般用户配置访问日志
      */
-    @Deprecated
     public static final GroupGrantee LOG_DELIVERY = new GroupGrantee(GroupGranteeEnum.LOG_DELIVERY);
 
     private GroupGranteeEnum groupGranteeType;
@@ -43,7 +42,7 @@ public class GroupGrantee implements GranteeInterface {
 
     /**
      * 构造函数
-     * 
+     *
      * @param uri
      *            代表被授权用户组的URI
      */
@@ -57,7 +56,7 @@ public class GroupGrantee implements GranteeInterface {
 
     /**
      * 设置代表被授权用户组的URI
-     * 
+     *
      * @param uri
      *            代表被授权用户组的URI
      */
@@ -68,7 +67,7 @@ public class GroupGrantee implements GranteeInterface {
 
     /**
      * 获取代表被授权用户组的URI
-     * 
+     *
      * @return 代表被授权用户组的URI
      */
     @Override
@@ -78,7 +77,7 @@ public class GroupGrantee implements GranteeInterface {
 
     /**
      * 获取被授权用户组的类型
-     * 
+     *
      * @return 被授权用户组的类型
      */
     public GroupGranteeEnum getGroupGranteeType() {
@@ -105,15 +104,12 @@ public class GroupGrantee implements GranteeInterface {
             return false;
         }
         GroupGrantee other = (GroupGrantee) obj;
-        if (groupGranteeType != other.groupGranteeType) {
-            return false;
-        }
-        return true;
+        return groupGranteeType == other.groupGranteeType;
     }
 
     /**
      * 返回对象描述信息
-     * 
+     *
      * @return 返回对象描述字符串
      */
     @Override

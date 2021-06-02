@@ -43,6 +43,8 @@ public class ListPartsResult extends HeaderResponse {
 
     private String nextPartNumberMarker;
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public ListPartsResult(String bucket, String key, String uploadId, Owner initiator, Owner owner,
             StorageClassEnum storageClass, List<Multipart> multipartList, Integer maxParts, boolean isTruncated,
             String partNumberMarker, String nextPartNumberMarker) {
@@ -60,6 +62,94 @@ public class ListPartsResult extends HeaderResponse {
         this.nextPartNumberMarker = nextPartNumberMarker;
     }
 
+    private ListPartsResult(Builder builder) {
+        super();
+        this.bucket = builder.bucket;
+        this.key = builder.key;
+        this.uploadId = builder.uploadId;
+        this.initiator = builder.initiator;
+        this.owner = builder.owner;
+        this.storageClass = builder.storageClass;
+        this.multipartList = builder.multipartList;
+        this.maxParts = builder.maxParts;
+        this.isTruncated = builder.isTruncated;
+        this.partNumberMarker = builder.partNumberMarker;
+        this.nextPartNumberMarker = builder.nextPartNumberMarker;
+    }
+    
+    public static final class Builder {
+        private String bucket;
+        private String key;
+        private String uploadId;
+        private Owner initiator;
+        private Owner owner;
+        private StorageClassEnum storageClass;
+        private List<Multipart> multipartList;
+        private Integer maxParts;
+        private boolean isTruncated;
+        private String partNumberMarker;
+        private String nextPartNumberMarker;
+        
+        public Builder bucket(String bucket) {
+            this.bucket = bucket;
+            return this;
+        }
+        
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+        
+        public Builder uploadId(String uploadId) {
+            this.uploadId = uploadId;
+            return this;
+        }
+        
+        public Builder initiator(Owner initiator) {
+            this.initiator = initiator;
+            return this;
+        }
+        
+        public Builder owner(Owner owner) {
+            this.owner = owner;
+            return this;
+        }
+        
+        public Builder storageClass(StorageClassEnum storageClass) {
+            this.storageClass = storageClass;
+            return this;
+        }
+        
+        public Builder multipartList(List<Multipart> multipartList) {
+            this.multipartList = multipartList;
+            return this;
+        }
+        
+        public Builder maxParts(Integer maxParts) {
+            this.maxParts = maxParts;
+            return this;
+        }
+        
+        public Builder isTruncated(boolean isTruncated) {
+            this.isTruncated = isTruncated;
+            return this;
+        }
+        
+        public Builder partNumberMarker(String partNumberMarker) {
+            this.partNumberMarker = partNumberMarker;
+            return this;
+        }
+        
+        public Builder nextPartNumberMarker(String nextPartNumberMarker) {
+            this.nextPartNumberMarker = nextPartNumberMarker;
+            return this;
+        }
+        
+        public ListPartsResult builder() {
+            return new ListPartsResult(this);
+        }
+    }
+    
     /**
      * 获取分段上传任务所属的桶名
      * 

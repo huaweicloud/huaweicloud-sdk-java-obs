@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -27,9 +27,8 @@ public class CanonicalGrantee implements GranteeInterface {
 
     /**
      * 构造函数
-     * 
-     * @param identifier
-     *            被授权用户的DomainId
+     *
+     * @param identifier 被授权用户的DomainId
      */
     public CanonicalGrantee(String identifier) {
         this.grantId = identifier;
@@ -37,9 +36,8 @@ public class CanonicalGrantee implements GranteeInterface {
 
     /**
      * 设置被授权用户的DomainId
-     * 
-     * @param canonicalGrantId
-     *            被授权用户的DomainId
+     *
+     * @param canonicalGrantId 被授权用户的DomainId
      */
     public void setIdentifier(String canonicalGrantId) {
         this.grantId = canonicalGrantId;
@@ -47,7 +45,7 @@ public class CanonicalGrantee implements GranteeInterface {
 
     /**
      * 获取被授权用户的DomainId
-     * 
+     *
      * @return 被授权用户的DomainId
      */
     public String getIdentifier() {
@@ -56,21 +54,18 @@ public class CanonicalGrantee implements GranteeInterface {
 
     /**
      * 设置被授权用户的用户名
-     * 
-     * @param displayName
-     *            被授权用户的用户名
+     *
+     * @param displayName 被授权用户的用户名
      */
-    @Deprecated
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     /**
      * 获取被授权用户的用户名
-     * 
+     *
      * @return 被授权用户的用户名
      */
-    @Deprecated
     public String getDisplayName() {
         return this.displayName;
     }
@@ -96,13 +91,10 @@ public class CanonicalGrantee implements GranteeInterface {
         }
         CanonicalGrantee other = (CanonicalGrantee) obj;
         if (grantId == null) {
-            if (other.grantId != null) {
-                return false;
-            }
-        } else if (!grantId.equals(other.grantId)) {
-            return false;
+            return other.grantId == null;
+        } else {
+            return grantId.equals(other.grantId);
         }
-        return true;
     }
 
     public String toString() {

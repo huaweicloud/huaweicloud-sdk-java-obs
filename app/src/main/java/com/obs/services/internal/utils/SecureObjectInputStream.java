@@ -26,13 +26,14 @@ public final class SecureObjectInputStream extends ObjectInputStream {
 
     public static final List<String> ALLOWED_CLASS_NAMES = Collections.unmodifiableList(
             Arrays.asList("java.util.ArrayList", "com.obs.services.model.PartEtag", "java.lang.Integer",
-                    "java.lang.Number", "java.util.Date", "com.obs.services.internal.ResumableClient$TmpFileStatus",
-                    "com.obs.services.internal.ResumableClient$UploadCheckPoint",
-                    "com.obs.services.internal.ResumableClient$FileStatus",
-                    "com.obs.services.internal.ResumableClient$UploadPart",
-                    "com.obs.services.internal.ResumableClient$DownloadCheckPoint",
-                    "com.obs.services.internal.ResumableClient$DownloadPart",
-                    "com.obs.services.internal.ResumableClient$ObjectStatus"));
+                    "java.lang.Number", "java.util.Date",
+                    "com.obs.services.internal.DownloadResumableClient$TmpFileStatus",
+                    "com.obs.services.internal.UploadResumableClient$UploadCheckPoint",
+                    "com.obs.services.internal.UploadResumableClient$FileStatus",
+                    "com.obs.services.internal.UploadResumableClient$UploadPart",
+                    "com.obs.services.internal.DownloadResumableClient$DownloadCheckPoint",
+                    "com.obs.services.internal.DownloadResumableClient$DownloadPart",
+                    "com.obs.services.internal.DownloadResumableClient$ObjectStatus"));
 
     public SecureObjectInputStream() throws IOException, SecurityException {
         super();

@@ -62,7 +62,6 @@ public enum SpecialParamEnum {
     /**
      * 获取/设置桶的存储策略
      */
-    @Deprecated
     STORAGEPOLICY("storagePolicy"),
     /**
      * 获取/设置桶的存储类型

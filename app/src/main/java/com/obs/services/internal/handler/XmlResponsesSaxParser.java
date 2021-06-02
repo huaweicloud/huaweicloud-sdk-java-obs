@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -116,7 +117,7 @@ public class XmlResponsesSaxParser {
         BufferedReader br = null;
         try {
             StringBuilder listingDocBuffer = new StringBuilder();
-            br = new BufferedReader(new InputStreamReader(inputStream, Constants.DEFAULT_ENCODING));
+            br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
             char[] buf = new char[8192];
             int read = -1;
@@ -128,7 +129,7 @@ public class XmlResponsesSaxParser {
             if (log.isTraceEnabled()) {
                 log.trace("Response entity: " + listingDoc);
             }
-            return new ByteArrayInputStream(listingDoc.getBytes(Constants.DEFAULT_ENCODING));
+            return new ByteArrayInputStream(listingDoc.getBytes(StandardCharsets.UTF_8));
         } catch (Throwable t) {
             throw new ServiceException("Failed to sanitize XML document destined", t);
         } finally {
@@ -137,7 +138,7 @@ public class XmlResponsesSaxParser {
                     br.close();
                 } catch (IOException e) {
                     if (log.isWarnEnabled()) {
-                        log.warn(e);
+                        log.warn("close failed.", e);
                     }
                 }
             }
@@ -181,9 +182,9 @@ public class XmlResponsesSaxParser {
 
         private final List<String> commonPrefixes = new ArrayList<String>();
 
-        private ObsObject currentExtenedCommonPrefix;
+        private ObsObject currentExtendCommonPrefix;
 
-        private final List<ObsObject> extenedCommonPrefixes = new ArrayList<ObsObject>();
+        private final List<ObsObject> extendCommonPrefixes = new ArrayList<ObsObject>();
 
         private String bucketName;
 
@@ -221,8 +222,13 @@ public class XmlResponsesSaxParser {
             return commonPrefixes;
         }
 
+        @Deprecated
         public List<ObsObject> getExtenedCommonPrefixes() {
-            return extenedCommonPrefixes;
+            return getExtendCommonPrefixes();
+        }
+
+        public List<ObsObject> getExtendCommonPrefixes() {
+            return extendCommonPrefixes;
         }
 
         public String getRequestPrefix() {
@@ -254,7 +260,7 @@ public class XmlResponsesSaxParser {
                 currentOwner = new Owner();
             } else if (name.equals("CommonPrefixes")) {
                 insideCommonPrefixes = true;
-                currentExtenedCommonPrefix = new ObsObject();
+                currentExtendCommonPrefix = new ObsObject();
             }
         }
 
@@ -283,10 +289,31 @@ public class XmlResponsesSaxParser {
             }
 
             if (null != currentObject) {
-                if (name.equals("Key")) {
-                    currentObject.setObjectKey(elementText);
-                    lastKey = elementText;
-                } else if (name.equals("LastModified")) {
+                setCurrentObjectProperties(name, elementText);
+            }
+
+            if (null != currentExtendCommonPrefix) {
+                if (insideCommonPrefixes && name.equals("Prefix")) {
+                    commonPrefixes.add(elementText);
+                    currentExtendCommonPrefix.setObjectKey(elementText);
+                } else if (insideCommonPrefixes && name.equals("MTime")) {
+                    currentExtendCommonPrefix.getMetadata()
+                            .setLastModified(new Date(Long.parseLong(elementText) * 1000));
+                }
+            }
+
+            if (name.equals("CommonPrefixes")) {
+                extendCommonPrefixes.add(currentExtendCommonPrefix);
+                insideCommonPrefixes = false;
+            }
+        }
+
+        private void setCurrentObjectProperties(String name, String elementText) {
+            if (name.equals("Key")) {
+                currentObject.setObjectKey(elementText);
+                lastKey = elementText;
+            } else if (name.equals("LastModified")) {
+                if (!insideCommonPrefixes) {
                     try {
                         currentObject.getMetadata().setLastModified(ServiceUtils.parseIso8601Date(elementText));
                     } catch (ParseException e) {
@@ -295,36 +322,21 @@ public class XmlResponsesSaxParser {
                                     + elementText, e);
                         }
                     }
-                } else if (name.equals("ETag")) {
-                    currentObject.getMetadata().setEtag(elementText);
-                } else if (name.equals("Size")) {
-                    currentObject.getMetadata().setContentLength(Long.parseLong(elementText));
-                } else if (name.equals("StorageClass")) {
-                    currentObject.getMetadata().setObjectStorageClass(StorageClassEnum.getValueFromCode(elementText));
-                } else if (name.equals("ID")) {
-                    if (currentOwner == null) {
-                        currentOwner = new Owner();
-                    }
-                    currentObject.setOwner(currentOwner);
-                    currentOwner.setId(elementText);
-                } else if (name.equals("Type")) {
-                    currentObject.getMetadata().setAppendable("Appendable".equals(elementText));
                 }
-            }
-
-            if (null != currentExtenedCommonPrefix) {
-                if (insideCommonPrefixes && name.equals("Prefix")) {
-                    commonPrefixes.add(elementText);
-                    currentExtenedCommonPrefix.setObjectKey(elementText);
-                } else if (insideCommonPrefixes && name.equals("MTime")) {
-                    currentExtenedCommonPrefix.getMetadata()
-                            .setLastModified(new Date(Long.parseLong(elementText) * 1000));
+            } else if (name.equals("ETag")) {
+                currentObject.getMetadata().setEtag(elementText);
+            } else if (name.equals("Size")) {
+                currentObject.getMetadata().setContentLength(Long.parseLong(elementText));
+            } else if (name.equals("StorageClass")) {
+                currentObject.getMetadata().setObjectStorageClass(StorageClassEnum.getValueFromCode(elementText));
+            } else if (name.equals("ID")) {
+                if (currentOwner == null) {
+                    currentOwner = new Owner();
                 }
-            }
-
-            if (name.equals("CommonPrefixes")) {
-                extenedCommonPrefixes.add(currentExtenedCommonPrefix);
-                insideCommonPrefixes = false;
+                currentObject.setOwner(currentOwner);
+                currentOwner.setId(elementText);
+            } else if (name.equals("Type")) {
+                currentObject.getMetadata().setAppendable("Appendable".equals(elementText));
             }
         }
     }
@@ -839,36 +851,9 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void endElement(String name, String content) {
-            if (name.equals("Name")) {
-                bucketName = content;
-            } else if (!insideCommonPrefixes && name.equals("Prefix")) {
-                requestPrefix = content;
-            } else if (name.equals("KeyMarker")) {
-                keyMarker = content;
-            } else if (name.equals("NextKeyMarker")) {
-                nextMarker = content;
-            } else if (name.equals("VersionIdMarker")) {
-                versionIdMarker = content;
-            } else if (name.equals("NextVersionIdMarker")) {
-                nextVersionIdMarker = content;
-            } else if (name.equals("MaxKeys")) {
-                requestMaxKeys = Long.parseLong(content);
-            } else if (name.equals("IsTruncated")) {
-                listingTruncated = Boolean.valueOf(content);
-            } else if (name.equals("Delimiter")) {
-                delimiter = content;
-            } else if (name.equals("Version")) {
-                VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
-                        lastModified, owner, etag, size, StorageClassEnum.getValueFromCode(storageClass), false,
-                        isAppendable);
-                items.add(item);
-                this.reset();
-            } else if (name.equals("DeleteMarker")) {
-                VersionOrDeleteMarker item = new VersionOrDeleteMarker(bucketName, key, versionId, isLatest,
-                        lastModified, owner, null, 0, null, true, false);
-                items.add(item);
-                this.reset();
-            } else if (name.equals("Key")) {
+            setBaseInfo(name, content);
+
+            if (name.equals("Key")) {
                 key = content;
             } else if (name.equals("VersionId")) {
                 versionId = content;
@@ -906,7 +891,64 @@ public class XmlResponsesSaxParser {
             } else if (name.equals("CommonPrefixes")) {
                 insideCommonPrefixes = false;
             }
+
+            addVersionOrDeleteMarker(name);
         }
+
+        private void setBaseInfo(String name, String content) {
+            if (name.equals("Name")) {
+                bucketName = content;
+            } else if (!insideCommonPrefixes && name.equals("Prefix")) {
+                requestPrefix = content;
+            } else if (name.equals("KeyMarker")) {
+                keyMarker = content;
+            } else if (name.equals("NextKeyMarker")) {
+                nextMarker = content;
+            } else if (name.equals("VersionIdMarker")) {
+                versionIdMarker = content;
+            } else if (name.equals("NextVersionIdMarker")) {
+                nextVersionIdMarker = content;
+            } else if (name.equals("MaxKeys")) {
+                requestMaxKeys = Long.parseLong(content);
+            } else if (name.equals("IsTruncated")) {
+                listingTruncated = Boolean.valueOf(content);
+            } else if (name.equals("Delimiter")) {
+                delimiter = content;
+            }
+        }
+
+        private void addVersionOrDeleteMarker(String name) {
+            VersionOrDeleteMarker.Builder builder = new VersionOrDeleteMarker.Builder()
+                    .bucketName(bucketName)
+                    .key(key)
+                    .versionId(versionId)
+                    .isLatest(isLatest)
+                    .lastModified(lastModified)
+                    .owner(owner);
+
+            if (name.equals("Version")) {
+                VersionOrDeleteMarker item = builder.etag(etag)
+                        .size(size)
+                        .storageClass(StorageClassEnum.getValueFromCode(storageClass))
+                        .isDeleteMarker(false)
+                        .appendable(isAppendable)
+                        .builder();
+
+                items.add(item);
+                this.reset();
+            } else if (name.equals("DeleteMarker")) {
+                VersionOrDeleteMarker item = builder.etag(null)
+                        .size(0)
+                        .storageClass(null)
+                        .isDeleteMarker(true)
+                        .appendable(false)
+                        .builder();
+
+                items.add(item);
+                this.reset();
+            }
+        }
+
     }
 
     public static class OwnerHandler extends SimpleHandler {
@@ -1012,6 +1054,7 @@ public class XmlResponsesSaxParser {
             try {
                 this.initiatedDate = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
+                log.warn("date parse failed.", e);
             }
         }
 
@@ -1027,10 +1070,12 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void controlReturned(SimpleHandler childHandler) {
-            if (isInInitiator) {
-                this.initiator = ((OwnerHandler) childHandler).getOwner();
-            } else {
-                this.owner = ((OwnerHandler) childHandler).getOwner();
+            if (childHandler instanceof OwnerHandler) {
+                if (isInInitiator) {
+                    this.initiator = ((OwnerHandler) childHandler).getOwner();
+                } else {
+                    this.owner = ((OwnerHandler) childHandler).getOwner();
+                }
             }
         }
 
@@ -1126,7 +1171,9 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void controlReturned(SimpleHandler childHandler) {
-            uploads.add(((MultipartUploadHandler) childHandler).getMultipartUpload());
+            if (childHandler instanceof MultipartUploadHandler) {
+                uploads.add(((MultipartUploadHandler) childHandler).getMultipartUpload());
+            }
         }
 
         public void endDelimiter(String content) {
@@ -1199,6 +1246,7 @@ public class XmlResponsesSaxParser {
             try {
                 this.lastModified = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
+                log.warn("date parse failed.", e);
             }
         }
 
@@ -1233,6 +1281,7 @@ public class XmlResponsesSaxParser {
             try {
                 this.lastModified = ServiceUtils.parseIso8601Date(content);
             } catch (ParseException e) {
+                log.warn("date parse failed.", e);
             }
         }
 
@@ -1330,7 +1379,7 @@ public class XmlResponsesSaxParser {
         public void controlReturned(SimpleHandler childHandler) {
             if (childHandler instanceof PartResultHandler) {
                 parts.add(((PartResultHandler) childHandler).getMultipartPart());
-            } else {
+            } else if (childHandler instanceof OwnerHandler) {
                 if (isInInitiator) {
                     initiator = ((OwnerHandler) childHandler).getOwner();
                 } else {
@@ -1510,7 +1559,8 @@ public class XmlResponsesSaxParser {
 
         private DeleteObjectsResult result;
 
-        private List<DeleteObjectsResult.DeleteObjectResult> deletedObjectResults = new ArrayList<DeleteObjectsResult.DeleteObjectResult>();
+        private List<DeleteObjectsResult.DeleteObjectResult> deletedObjectResults =
+                new ArrayList<DeleteObjectsResult.DeleteObjectResult>();
 
         private List<DeleteObjectsResult.ErrorResult> errorResults = new ArrayList<DeleteObjectsResult.ErrorResult>();
 
@@ -1552,8 +1602,9 @@ public class XmlResponsesSaxParser {
             } else if ("Message".equals(name)) {
                 message = content;
             } else if ("Deleted".equals(name)) {
-                DeleteObjectsResult.DeleteObjectResult r = new DeleteObjectsResult.DeleteObjectResult(key, version, withDeleteMarker,
-                        deleteMarkerVersion);
+                DeleteObjectsResult.DeleteObjectResult r =
+                        new DeleteObjectsResult.DeleteObjectResult(key, version, withDeleteMarker,
+                                deleteMarkerVersion);
                 deletedObjectResults.add(r);
                 key = version = deleteMarkerVersion = null;
                 withDeleteMarker = false;

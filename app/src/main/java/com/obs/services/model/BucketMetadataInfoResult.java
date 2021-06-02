@@ -17,22 +17,22 @@ package com.obs.services.model;
 import java.util.List;
 
 /**
- * 获取桶元数据信息的响应结果buc
+ * 获取桶元数据信息的响应结果
  *
  */
 public class BucketMetadataInfoResult extends OptionsInfoResult {
 
-    private StorageClassEnum storageClass;
+    protected StorageClassEnum storageClass;
 
-    private String location;
+    protected String location;
 
-    private String obsVersion;
+    protected String obsVersion;
 
-    private AvailableZoneEnum availableZone;
+    protected AvailableZoneEnum availableZone;
 
-    private String epid;
+    protected String epid;
 
-    private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
+    protected BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
 
     public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
             List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
@@ -43,6 +43,8 @@ public class BucketMetadataInfoResult extends OptionsInfoResult {
         this.obsVersion = obsVersion;
     }
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
             List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
             String obsVersion, AvailableZoneEnum availableZone) {
@@ -50,6 +52,8 @@ public class BucketMetadataInfoResult extends OptionsInfoResult {
         this.availableZone = availableZone;
     }
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public BucketMetadataInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge,
             List<String> allowMethods, List<String> exposeHeaders, StorageClassEnum storageClass, String location,
             String obsVersion, AvailableZoneEnum availableZone, String epid, BucketTypeEnum bucketType) {
@@ -59,6 +63,94 @@ public class BucketMetadataInfoResult extends OptionsInfoResult {
         this.bucketType = bucketType;
     }
 
+    protected BucketMetadataInfoResult() {
+        super();
+    }
+    
+    private BucketMetadataInfoResult(Builder builder) {
+        super(builder.allowOrigin, builder.allowHeaders, builder.maxAge, builder.allowMethods, builder.exposeHeaders);
+        this.storageClass = builder.storageClass;
+        this.location = builder.location;
+        this.obsVersion = builder.obsVersion;
+        this.availableZone = builder.availableZone;
+        this.epid = builder.epid;
+        this.bucketType = builder.bucketType;
+    }
+    
+    public static final class Builder {
+        private String allowOrigin;
+        private List<String> allowHeaders;
+        private int maxAge;
+        private List<String> allowMethods;
+        private List<String> exposeHeaders;
+        private StorageClassEnum storageClass;
+        private String location;
+        private String obsVersion;
+        private AvailableZoneEnum availableZone;
+        private String epid;
+        private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
+        
+        public Builder allowOrigin(String allowOrigin) {
+            this.allowOrigin = allowOrigin;
+            return this;
+        }
+        
+        public Builder allowHeaders(List<String> allowHeaders) {
+            this.allowHeaders = allowHeaders;
+            return this;
+        }
+        
+        public Builder maxAge(int maxAge) {
+            this.maxAge = maxAge;
+            return this;
+        }
+        
+        public Builder allowMethods(List<String> allowMethods) {
+            this.allowMethods = allowMethods;
+            return this;
+        }
+        
+        public Builder exposeHeaders(List<String> exposeHeaders) {
+            this.exposeHeaders = exposeHeaders;
+            return this;
+        }
+        
+        public Builder storageClass(StorageClassEnum storageClass) {
+            this.storageClass = storageClass;
+            return this;
+        }
+        
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+        
+        public Builder obsVersion(String obsVersion) {
+            this.obsVersion = obsVersion;
+            return this;
+        }
+        
+        public Builder availableZone(AvailableZoneEnum availableZone) {
+            this.availableZone = availableZone;
+            return this;
+        }
+        
+        public Builder epid(String epid) {
+            this.epid = epid;
+            return this;
+        }
+        
+        public Builder bucketType(BucketTypeEnum bucketType) {
+            this.bucketType = bucketType;
+            return this;
+        }
+        
+        public BucketMetadataInfoResult build() {
+            return new BucketMetadataInfoResult(this);
+        }
+    }
+    
+    
     /**
      * 获取桶的存储类型
      * 
@@ -128,4 +220,5 @@ public class BucketMetadataInfoResult extends OptionsInfoResult {
     public BucketTypeEnum getBucketType() {
         return bucketType;
     }
+
 }

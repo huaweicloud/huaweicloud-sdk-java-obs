@@ -69,6 +69,8 @@ public class VersionOrDeleteMarker {
      * @param appendable
      *            对象是否可被追加写
      */
+    @Deprecated
+    //CHECKSTYLE:OFF
     public VersionOrDeleteMarker(String bucketName, String key, String versionId, boolean isLatest, Date lastModified,
             Owner owner, String etag, long size, StorageClassEnum storageClass, boolean isDeleteMarker,
             boolean appendable) {
@@ -89,6 +91,101 @@ public class VersionOrDeleteMarker {
         this.appendable = appendable;
     }
 
+    private VersionOrDeleteMarker(Builder builder) {
+        this.bucketName = builder.bucketName;
+        this.key = builder.key;
+        this.versionId = builder.versionId;
+        this.isLatest = builder.isLatest;
+        if (null != builder.lastModified) {
+            this.lastModified = (Date) builder.lastModified.clone();
+        } else {
+            this.lastModified = null;
+        }
+        this.owner = builder.owner;
+        this.etag = builder.etag;
+        this.size = builder.size;
+        this.storageClass = builder.storageClass;
+        this.isDeleteMarker = builder.isDeleteMarker;
+        this.appendable = builder.appendable;
+    }
+    
+    public static final class Builder {
+        private String bucketName;
+        private String key;
+        private String versionId;
+        private boolean isLatest;
+        private Date lastModified;
+        private Owner owner;
+        private String etag;
+        private long size;
+        private StorageClassEnum storageClass;
+        private boolean isDeleteMarker;
+        private boolean appendable;
+        
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+        
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+        
+        public Builder versionId(String versionId) {
+            this.versionId = versionId;
+            return this;
+        }
+        
+        public Builder isLatest(boolean isLatest) {
+            this.isLatest = isLatest;
+            return this;
+        }
+        
+        public Builder lastModified(Date lastModified) {
+            if (null != lastModified) {
+                this.lastModified = (Date) lastModified.clone();
+            } else {
+                this.lastModified = null;
+            }
+            return this;
+        }
+        
+        public Builder owner(Owner owner) {
+            this.owner = owner;
+            return this;
+        }
+        
+        public Builder etag(String etag) {
+            this.etag = etag;
+            return this;
+        }
+        
+        public Builder size(long size) {
+            this.size = size;
+            return this;
+        }
+        
+        public Builder storageClass(StorageClassEnum storageClass) {
+            this.storageClass = storageClass;
+            return this;
+        }
+        
+        public Builder isDeleteMarker(boolean isDeleteMarker) {
+            this.isDeleteMarker = isDeleteMarker;
+            return this;
+        }
+        
+        public Builder appendable(boolean appendable) {
+            this.appendable = appendable;
+            return this;
+        }
+        
+        public VersionOrDeleteMarker builder() {
+            return new VersionOrDeleteMarker(this);
+        }
+    }
+    
     /**
      * 获取对象名
      * 

@@ -14,10 +14,8 @@
 
 package com.obs.services.model;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
-import com.obs.services.internal.Constants;
 
 /**
  * SSE-C加解密头域信息
@@ -71,7 +69,7 @@ public class SseCHeader {
         if (null != this.sseCKey) {
             return this.sseCKey.clone(); 
         }
-        return null;
+        return new byte[0];
     }
 
     /**
@@ -83,11 +81,7 @@ public class SseCHeader {
     @Deprecated
     public void setSseCKey(String sseCKey) {
         if (sseCKey != null) {
-            try {
-                this.sseCKey = sseCKey.getBytes(Constants.ISO_8859_1_ENCOING);
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalStateException("fail to read sseCkey", e);
-            }
+            this.sseCKey = sseCKey.getBytes(StandardCharsets.ISO_8859_1);
         }
     }
 

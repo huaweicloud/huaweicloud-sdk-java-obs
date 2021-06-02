@@ -53,25 +53,21 @@ public class AccessControlList extends HeaderResponse {
     /**
      * 预定义访问策略 授权用户读私有写（authenticated-read）
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_AUTHENTICATED_READ = new AccessControlList();
 
     /**
      * 预定义访问策略 桶所有者读对象所有者读写（ bucket-owner-read）
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_READ = new AccessControlList();
 
     /**
      * 预定义访问策略 桶所有者读写对象所有者读写（ bucket-owner-full-control）
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_BUCKET_OWNER_FULL_CONTROL = new AccessControlList();
 
     /**
      * 预定义访问策略 日志投递组写（ log-delivery-write）
      */
-    @Deprecated
     public static final AccessControlList REST_CANNED_LOG_DELIVERY_WRITE = new AccessControlList();
 
     private Set<GrantAndPermission> grants;

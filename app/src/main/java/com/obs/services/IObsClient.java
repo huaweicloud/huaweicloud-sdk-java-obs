@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -13,12 +13,12 @@
  */
 
 package com.obs.services;
-
+ 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
+ 
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.AccessControlList;
@@ -118,12 +118,13 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
 import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
-
+ 
 /**
  * OBS基础接口
  */
+//CHECKSTYLE:OFF
 public interface IObsClient {
-
+ 
     /**
      * 
      * 刷新临时访问密钥
@@ -137,7 +138,7 @@ public interface IObsClient {
      * 
      */
     void refresh(String accessKey, String secretKey, String securityToken);
-
+ 
     /**
      * 生成临时授权访问参数
      * 
@@ -148,7 +149,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     TemporarySignatureResponse createTemporarySignature(TemporarySignatureRequest request);
-
+ 
     /**
      * 生成基于浏览器表单的授权访问参数
      * 
@@ -159,7 +160,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     PostSignatureResponse createPostSignature(PostSignatureRequest request) throws ObsException;
-
+ 
     /**
      * 创建桶 <br>
      * <p>
@@ -182,7 +183,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsBucket createBucket(String bucketName) throws ObsException;
-
+ 
     /**
      * 创建桶 <br>
      * 按照用户指定的桶名和指定的区域创建一个新桶。
@@ -209,7 +210,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsBucket createBucket(String bucketName, String location) throws ObsException;
-
+ 
     /**
      * 创建桶<br>
      * 按照用户指定的桶名和指定的区域创建一个新桶。
@@ -233,7 +234,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsBucket createBucket(ObsBucket bucket) throws ObsException;
-
+ 
     /**
      * 创建桶<br>
      * <p>
@@ -257,7 +258,7 @@ public interface IObsClient {
      * 
      */
     ObsBucket createBucket(CreateBucketRequest request) throws ObsException;
-
+ 
     /**
      * 重命名文件/目录，只有并行文件系统支持该接口
      * 
@@ -272,7 +273,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     RenameObjectResult renameObject(String bucketName, String objectKey, String newObjectKey) throws ObsException;
-
+ 
     /**
      * 重命名文件/目录，只有并行文件系统支持该接口
      * 
@@ -284,7 +285,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     RenameObjectResult renameObject(final RenameObjectRequest request) throws ObsException;
-
+ 
     /**
      * 截断文件，只有并行文件系统支持该接口
      * 
@@ -299,7 +300,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     TruncateObjectResult truncateObject(String bucketName, String objectKey, long newLength) throws ObsException;
-
+ 
     /**
      * 截断文件，只有并行文件系统支持该接口
      * 
@@ -311,7 +312,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     TruncateObjectResult truncateObject(final TruncateObjectRequest request) throws ObsException;
-
+ 
     /**
      * 修改写文件内容，只有并行文件系统支持该接口
      * 
@@ -328,7 +329,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ModifyObjectResult modifyObject(String bucketName, String objectKey, long position, File file) throws ObsException;
-
+ 
     /**
      * 修改写文件内容，只有并行文件系统支持该接口
      * 
@@ -346,7 +347,7 @@ public interface IObsClient {
      */
     ModifyObjectResult modifyObject(String bucketName, String objectKey, long position, InputStream input)
             throws ObsException;
-
+ 
     /**
      * 修改写文件内容，只有并行文件系统支持该接口
      * 
@@ -357,7 +358,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ModifyObjectResult modifyObject(ModifyObjectRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶列表
      * 
@@ -368,7 +369,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     List<ObsBucket> listBuckets(ListBucketsRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶列表
      * 
@@ -379,7 +380,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ListBucketsResult listBucketsV2(ListBucketsRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶
      * 
@@ -390,7 +391,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucket(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶
      * 
@@ -402,7 +403,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucket(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 列举桶内的对象
      * 
@@ -413,7 +414,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectListing listObjects(ListObjectsRequest request) throws ObsException;
-
+ 
     /**
      * 列举桶内的对象
      * 
@@ -424,7 +425,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectListing listObjects(String bucketName) throws ObsException;
-
+ 
     /**
      * 判断桶是否存在
      * 
@@ -435,7 +436,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     boolean headBucket(String bucketName) throws ObsException;
-
+ 
     /**
      * 判断桶是否存在
      * 
@@ -447,7 +448,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     boolean headBucket(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 列举桶内多版本对象
      * 
@@ -458,7 +459,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ListVersionsResult listVersions(ListVersionsRequest request) throws ObsException;
-
+ 
     /**
      * 列举桶内多版本对象
      * 
@@ -469,7 +470,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ListVersionsResult listVersions(String bucketName) throws ObsException;
-
+ 
     /**
      * 列举桶内多版本对象
      * 
@@ -482,7 +483,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ListVersionsResult listVersions(String bucketName, long maxKeys) throws ObsException;
-
+ 
     /**
      * 列举桶内多版本对象
      * 
@@ -504,7 +505,7 @@ public interface IObsClient {
      */
     ListVersionsResult listVersions(String bucketName, String prefix, String delimiter, String keyMarker,
             String versionIdMarker, long maxKeys) throws ObsException;
-
+ 
     /**
      * 获取桶元数据
      * 
@@ -515,7 +516,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketMetadataInfoResult getBucketMetadata(BucketMetadataInfoRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶访问权限
      * 
@@ -526,7 +527,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     AccessControlList getBucketAcl(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶访问权限
      * 
@@ -538,7 +539,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     AccessControlList getBucketAcl(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的访问权限<br>
      * 
@@ -551,7 +552,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketAcl(String bucketName, AccessControlList acl) throws ObsException;
-
+ 
     /**
      * 设置桶的访问权限<br>
      * 
@@ -563,7 +564,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketAcl(SetBucketAclRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶区域位置
      * 
@@ -574,7 +575,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     String getBucketLocation(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶区域位置
      * 
@@ -586,7 +587,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketLocationResponse getBucketLocation(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶区域位置
      * 
@@ -597,7 +598,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketLocationResponse getBucketLocationV2(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的存量信息
      * 
@@ -608,7 +609,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketStorageInfo getBucketStorageInfo(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的存量信息
      * 
@@ -620,7 +621,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketStorageInfo getBucketStorageInfo(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶配额
      * 
@@ -631,7 +632,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketQuota getBucketQuota(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶配额
      * 
@@ -643,7 +644,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketQuota getBucketQuota(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶配额
      * 
@@ -656,7 +657,7 @@ public interface IObsClient {
      * @return 公共响应头信息
      */
     HeaderResponse setBucketQuota(String bucketName, BucketQuota bucketQuota) throws ObsException;
-
+ 
     /**
      * 设置桶配额
      * 
@@ -668,7 +669,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketQuota(SetBucketQuotaRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶存储类型
      * 
@@ -679,7 +680,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketStoragePolicyConfiguration getBucketStoragePolicy(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶存储类型
      * 
@@ -691,7 +692,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketStoragePolicyConfiguration getBucketStoragePolicy(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶存储类型
      * 
@@ -705,7 +706,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketStoragePolicy(String bucketName, BucketStoragePolicyConfiguration bucketStorage)
             throws ObsException;
-
+ 
     /**
      * 设置桶存储类型
      * 
@@ -717,7 +718,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketStoragePolicy(SetBucketStoragePolicyRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的跨域资源共享（CORS）配置
      * 
@@ -730,7 +731,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketCors(String bucketName, BucketCors bucketCors) throws ObsException;
-
+ 
     /**
      * 设置桶的跨域资源共享（CORS）配置
      * 
@@ -742,7 +743,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketCors(SetBucketCorsRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的跨域资源共享（CORS）配置
      * 
@@ -753,7 +754,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketCors getBucketCors(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的跨域资源共享（CORS）配置
      * 
@@ -765,7 +766,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketCors getBucketCors(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶的跨域资源共享（CORS）配置
      * 
@@ -776,7 +777,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketCors(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶的跨域资源共享（CORS）配置
      * 
@@ -788,7 +789,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketCors(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的日志管理配置
      * 
@@ -799,7 +800,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketLoggingConfiguration getBucketLogging(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的日志管理配置
      * 
@@ -811,10 +812,10 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketLoggingConfiguration getBucketLogging(BaseBucketRequest request) throws ObsException;
-
+ 
     HeaderResponse setBucketLoggingConfiguration(String bucketName, BucketLoggingConfiguration loggingConfiguration,
             boolean updateTargetACLifRequired) throws ObsException;
-
+ 
     /**
      * 设置桶的日志管理配置<br>
      * 
@@ -828,7 +829,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketLogging(String bucketName, BucketLoggingConfiguration loggingConfiguration)
             throws ObsException;
-
+ 
     /**
      * 设置桶的日志管理配置<br>
      * 
@@ -840,7 +841,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketLogging(SetBucketLoggingRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的多版本状态
      * 
@@ -854,7 +855,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketVersioning(String bucketName, BucketVersioningConfiguration versioningConfiguration)
             throws ObsException;
-
+ 
     /**
      * 设置桶的多版本状态
      * 
@@ -866,7 +867,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketVersioning(SetBucketVersioningRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的多版本状态
      * 
@@ -877,7 +878,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketVersioningConfiguration getBucketVersioning(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的多版本状态
      * 
@@ -889,7 +890,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketVersioningConfiguration getBucketVersioning(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的请求者付费状态
      * 
@@ -902,7 +903,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketRequestPayment(String bucketName, RequestPaymentEnum payer) throws ObsException;
-
+ 
     /**
      * 设置桶的请求者付费状态
      * 
@@ -914,7 +915,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketRequestPayment(SetBucketRequestPaymentRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的请求者付费状态
      * 
@@ -926,7 +927,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     RequestPaymentConfiguration getBucketRequestPayment(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的请求者付费状态
      * 
@@ -938,7 +939,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     RequestPaymentConfiguration getBucketRequestPayment(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的生命周期配置
      * 
@@ -949,7 +950,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     LifecycleConfiguration getBucketLifecycle(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的生命周期配置
      * 
@@ -961,7 +962,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     LifecycleConfiguration getBucketLifecycle(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的生命周期配置
      * 
@@ -974,7 +975,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketLifecycle(String bucketName, LifecycleConfiguration lifecycleConfig) throws ObsException;
-
+ 
     /**
      * 设置桶的生命周期配置
      * 
@@ -986,7 +987,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketLifecycle(SetBucketLifecycleRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶的生命周期配置
      * 
@@ -997,7 +998,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketLifecycle(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶的生命周期配置
      * 
@@ -1009,7 +1010,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketLifecycle(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶策略
      * 
@@ -1020,7 +1021,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     String getBucketPolicy(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶策略
      * 
@@ -1032,7 +1033,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     String getBucketPolicy(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶策略<br>
      * 
@@ -1043,7 +1044,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketPolicyResponse getBucketPolicyV2(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶策略<br>
      * 
@@ -1055,7 +1056,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketPolicyResponse getBucketPolicyV2(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶策略
      * 
@@ -1068,7 +1069,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketPolicy(String bucketName, String policy) throws ObsException;
-
+ 
     /**
      * 设置桶策略
      * 
@@ -1080,7 +1081,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketPolicy(SetBucketPolicyRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶策略
      * 
@@ -1091,7 +1092,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketPolicy(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶策略
      * 
@@ -1103,7 +1104,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketPolicy(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的website（托管）配置
      * 
@@ -1114,7 +1115,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     WebsiteConfiguration getBucketWebsite(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的website（托管）配置
      * 
@@ -1126,7 +1127,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     WebsiteConfiguration getBucketWebsite(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的website（托管）配置
      * 
@@ -1139,7 +1140,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketWebsite(String bucketName, WebsiteConfiguration websiteConfig) throws ObsException;
-
+ 
     /**
      * 设置桶的website（托管）配置
      * 
@@ -1151,7 +1152,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketWebsite(SetBucketWebsiteRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶的website（托管）配置
      * 
@@ -1162,7 +1163,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketWebsite(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶的website（托管）配置
      * 
@@ -1174,7 +1175,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketWebsite(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶标签
      * 
@@ -1185,7 +1186,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketTagInfo getBucketTagging(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶标签
      * 
@@ -1197,7 +1198,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketTagInfo getBucketTagging(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶标签
      * 
@@ -1210,7 +1211,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketTagging(String bucketName, BucketTagInfo bucketTagInfo) throws ObsException;
-
+ 
     /**
      * 设置桶标签
      * 
@@ -1222,7 +1223,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketTagging(SetBucketTaggingRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶标签
      * 
@@ -1233,7 +1234,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketTagging(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶标签
      * 
@@ -1245,7 +1246,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketTagging(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶加密配置
      * 
@@ -1256,7 +1257,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketEncryption getBucketEncryption(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶加密配置
      * 
@@ -1268,7 +1269,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketEncryption getBucketEncryption(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶加密配置
      * 
@@ -1281,7 +1282,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketEncryption(String bucketName, BucketEncryption bucketEncryption) throws ObsException;
-
+ 
     /**
      * 设置桶加密配置
      * 
@@ -1293,7 +1294,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketEncryption(SetBucketEncryptionRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶加密配置
      * 
@@ -1304,7 +1305,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketEncryption(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶加密配置
      * 
@@ -1316,7 +1317,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketEncryption(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的跨Region复制配置
      * 
@@ -1331,7 +1332,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketReplication(String bucketName, ReplicationConfiguration replicationConfiguration)
             throws ObsException;
-
+ 
     /**
      * 设置桶的跨Region复制配置
      * 
@@ -1343,7 +1344,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketReplication(SetBucketReplicationRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的跨Region复制配置
      * 
@@ -1354,7 +1355,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ReplicationConfiguration getBucketReplication(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的跨Region复制配置
      * 
@@ -1366,7 +1367,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     ReplicationConfiguration getBucketReplication(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶的跨Region复制配置
      * 
@@ -1377,7 +1378,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketReplication(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶的跨Region复制配置
      * 
@@ -1389,7 +1390,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketReplication(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶的消息通知配置
      * 
@@ -1400,7 +1401,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketNotificationConfiguration getBucketNotification(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶的消息通知配置
      * 
@@ -1412,7 +1413,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketNotificationConfiguration getBucketNotification(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 设置桶的消息通知配置
      * 
@@ -1426,7 +1427,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketNotification(String bucketName,
             BucketNotificationConfiguration bucketNotificationConfiguration) throws ObsException;
-
+ 
     /**
      * 设置桶的消息通知配置
      * 
@@ -1438,7 +1439,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketNotification(SetBucketNotificationRequest request) throws ObsException;
-
+ 
     /**
      * 上传对象
      * 
@@ -1456,7 +1457,7 @@ public interface IObsClient {
      */
     PutObjectResult putObject(String bucketName, String objectKey, InputStream input, ObjectMetadata metadata)
             throws ObsException;
-
+ 
     /**
      * 上传对象
      * 
@@ -1471,7 +1472,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     PutObjectResult putObject(String bucketName, String objectKey, InputStream input) throws ObsException;
-
+ 
     /**
      * 上传对象
      * 
@@ -1482,7 +1483,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     PutObjectResult putObject(PutObjectRequest request) throws ObsException;
-
+ 
     /**
      * 上传对象
      * 
@@ -1497,7 +1498,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     PutObjectResult putObject(String bucketName, String objectKey, File file) throws ObsException;
-
+ 
     /**
      * 上传对象
      * 
@@ -1515,7 +1516,7 @@ public interface IObsClient {
      */
     PutObjectResult putObject(String bucketName, String objectKey, File file, ObjectMetadata metadata)
             throws ObsException;
-
+ 
     /**
      * 追加上传对象
      * 
@@ -1526,7 +1527,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     AppendObjectResult appendObject(AppendObjectRequest request) throws ObsException;
-
+ 
     /**
      * 上传文件，支持断点续传模式
      * 
@@ -1537,7 +1538,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     CompleteMultipartUploadResult uploadFile(UploadFileRequest uploadFileRequest) throws ObsException;
-
+ 
     /**
      * 批量上传文件
      * 
@@ -1548,7 +1549,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     UploadProgressStatus putObjects(PutObjectsRequest request) throws ObsException;
-
+ 
     /**
      * 判断对象是否存在
      * 
@@ -1561,7 +1562,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     boolean doesObjectExist(String buckeName, String objectKey) throws ObsException;
-
+ 
     /**
      * 判断对象是否存在
      * 
@@ -1572,7 +1573,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     boolean doesObjectExist(GetObjectMetadataRequest request) throws ObsException;
-
+ 
     /**
      * 下载文件，支持断点续传模式
      * 
@@ -1583,7 +1584,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     DownloadFileResult downloadFile(DownloadFileRequest downloadFileRequest) throws ObsException;
-
+ 
     /**
      * 下载对象
      * 
@@ -1594,7 +1595,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsObject getObject(GetObjectRequest request) throws ObsException;
-
+ 
     /**
      * 下载对象
      * 
@@ -1609,7 +1610,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsObject getObject(String bucketName, String objectKey, String versionId) throws ObsException;
-
+ 
     /**
      * 下载对象
      * 
@@ -1622,7 +1623,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObsObject getObject(String bucketName, String objectKey) throws ObsException;
-
+ 
     /**
      * 获取对象属性
      * 
@@ -1633,7 +1634,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectMetadata getObjectMetadata(GetObjectMetadataRequest request) throws ObsException;
-
+ 
     /**
      * 获取对象属性
      * 
@@ -1648,7 +1649,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectMetadata getObjectMetadata(String bucketName, String objectKey, String versionId) throws ObsException;
-
+ 
     /**
      * 获取对象属性
      * 
@@ -1661,7 +1662,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectMetadata getObjectMetadata(String bucketName, String objectKey) throws ObsException;
-
+ 
     /**
      * 设置对象属性
      * 
@@ -1672,7 +1673,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ObjectMetadata setObjectMetadata(SetObjectMetadataRequest request) throws ObsException;
-
+ 
     /**
      * 取回归档存储对象
      * 
@@ -1683,9 +1684,8 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      * 
      */
-    @Deprecated
     RestoreObjectStatus restoreObject(RestoreObjectRequest request) throws ObsException;
-
+ 
     /**
      * 取回归档存储对象
      * 
@@ -1697,7 +1697,7 @@ public interface IObsClient {
      * 
      */
     RestoreObjectResult restoreObjectV2(RestoreObjectRequest request) throws ObsException;
-
+ 
     /**
      * 批量取回归档存储对象
      * 
@@ -1709,9 +1709,9 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      * 
      */
-
+ 
     TaskProgressStatus restoreObjects(RestoreObjectsRequest request) throws ObsException;
-
+ 
     /**
      * 删除对象
      * 
@@ -1725,9 +1725,9 @@ public interface IObsClient {
      * @throws ObsException
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
-
+ 
     DeleteObjectResult deleteObject(String bucketName, String objectKey, String versionId) throws ObsException;
-
+ 
     /**
      * 删除对象
      * 
@@ -1740,7 +1740,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     DeleteObjectResult deleteObject(String bucketName, String objectKey) throws ObsException;
-
+ 
     /**
      * 删除对象
      * 
@@ -1752,7 +1752,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     DeleteObjectResult deleteObject(DeleteObjectRequest request) throws ObsException;
-
+ 
     /**
      * 批量删除对象
      * 
@@ -1763,7 +1763,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     DeleteObjectsResult deleteObjects(DeleteObjectsRequest deleteObjectsRequest) throws ObsException;
-
+ 
     /**
      * 获取对象访问权限
      * 
@@ -1778,7 +1778,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     AccessControlList getObjectAcl(String bucketName, String objectKey, String versionId) throws ObsException;
-
+ 
     /**
      * 获取对象访问权限
      * 
@@ -1791,7 +1791,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     AccessControlList getObjectAcl(String bucketName, String objectKey) throws ObsException;
-
+ 
     /**
      * 获取对象访问权限
      * 
@@ -1803,7 +1803,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     AccessControlList getObjectAcl(GetObjectAclRequest request) throws ObsException;
-
+ 
     /**
      * 设置对象访问权限
      * 
@@ -1821,7 +1821,7 @@ public interface IObsClient {
      */
     HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl, String versionId)
             throws ObsException;
-
+ 
     /**
      * 设置对象访问权限
      * 
@@ -1836,7 +1836,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl) throws ObsException;
-
+ 
     /**
      * 设置对象访问权限
      * 
@@ -1848,7 +1848,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setObjectAcl(SetObjectAclRequest request) throws ObsException;
-
+ 
     /**
      * 复制对象
      * 
@@ -1859,7 +1859,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     CopyObjectResult copyObject(CopyObjectRequest request) throws ObsException;
-
+ 
     /**
      * 复制对象
      * 
@@ -1877,7 +1877,7 @@ public interface IObsClient {
      */
     CopyObjectResult copyObject(String sourceBucketName, String sourceObjectKey, String destBucketName,
             String destObjectKey) throws ObsException;
-
+ 
     /**
      * 初始化分段上传任务
      * 
@@ -1888,7 +1888,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     InitiateMultipartUploadResult initiateMultipartUpload(InitiateMultipartUploadRequest request) throws ObsException;
-
+ 
     /**
      * 取消分段上传任务
      * 
@@ -1899,7 +1899,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse abortMultipartUpload(AbortMultipartUploadRequest request) throws ObsException;
-
+ 
     /**
      * 上传段
      * 
@@ -1919,7 +1919,7 @@ public interface IObsClient {
      */
     UploadPartResult uploadPart(String bucketName, String objectKey, String uploadId, int partNumber, InputStream input)
             throws ObsException;
-
+ 
     /**
      * 上传段
      * 
@@ -1939,7 +1939,7 @@ public interface IObsClient {
      */
     UploadPartResult uploadPart(String bucketName, String objectKey, String uploadId, int partNumber, File file)
             throws ObsException;
-
+ 
     /**
      * 上传段
      * 
@@ -1950,7 +1950,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     UploadPartResult uploadPart(UploadPartRequest request) throws ObsException;
-
+ 
     /**
      * 复制段
      * 
@@ -1961,7 +1961,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     CopyPartResult copyPart(CopyPartRequest request) throws ObsException;
-
+ 
     /**
      * 合并段
      * 
@@ -1972,7 +1972,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request) throws ObsException;
-
+ 
     /**
      * 列举已上传段
      * 
@@ -1983,7 +1983,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ListPartsResult listParts(ListPartsRequest request) throws ObsException;
-
+ 
     /**
      * 列举未完成的分段上传任务
      * 
@@ -1994,7 +1994,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request) throws ObsException;
-
+ 
     /**
      * 预读对象
      * 
@@ -2005,7 +2005,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ReadAheadResult readAheadObjects(ReadAheadRequest request) throws ObsException;
-
+ 
     /**
      * 删除预读的缓存
      * 
@@ -2018,7 +2018,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ReadAheadResult deleteReadAheadObjects(String bucketName, String prefix) throws ObsException;
-
+ 
     /**
      * 查询预读任务的进度
      * 
@@ -2031,7 +2031,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     ReadAheadQueryResult queryReadAheadObjectsTask(String bucketName, String taskId) throws ObsException;
-
+ 
     /**
      * 设置桶归档对象直读策略
      * 
@@ -2044,7 +2044,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse setBucketDirectColdAccess(String bucketName, BucketDirectColdAccess access) throws ObsException;
-
+ 
     /**
      * 设置桶归档对象直读策略
      * 
@@ -2056,7 +2056,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse setBucketDirectColdAccess(SetBucketDirectColdAccessRequest request) throws ObsException;
-
+ 
     /**
      * 获取桶归档对象直读策略
      * 
@@ -2067,7 +2067,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     BucketDirectColdAccess getBucketDirectColdAccess(String bucketName) throws ObsException;
-
+ 
     /**
      * 获取桶归档对象直读策略
      * 
@@ -2079,7 +2079,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     BucketDirectColdAccess getBucketDirectColdAccess(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 删除桶归档对象直读策略
      * 
@@ -2090,7 +2090,7 @@ public interface IObsClient {
      *             OBS SDK自定义异常，当调用接口失败、访问OBS失败时抛出该异常
      */
     HeaderResponse deleteBucketDirectColdAccess(String bucketName) throws ObsException;
-
+ 
     /**
      * 删除桶归档对象直读策略
      * 
@@ -2102,7 +2102,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketDirectColdAccess(BaseBucketRequest request) throws ObsException;
-
+ 
     /**
      * 关闭OBS客户端，释放连接资源
      * 
@@ -2110,5 +2110,5 @@ public interface IObsClient {
      *             客户端关闭异常
      */
     void close() throws IOException;
-
+ 
 }

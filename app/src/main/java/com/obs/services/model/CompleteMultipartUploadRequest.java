@@ -20,17 +20,11 @@ import java.util.List;
 /**
  * 合并段的请求参数
  */
-public class CompleteMultipartUploadRequest extends GenericRequest {
-    private String uploadId;
-
-    private String bucketName;
-
-    private String objectKey;
-
+public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
     private List<PartEtag> partEtag;
 
     public CompleteMultipartUploadRequest() {
-
+        super();
     }
 
     /**
@@ -47,67 +41,11 @@ public class CompleteMultipartUploadRequest extends GenericRequest {
      */
     public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId,
             List<PartEtag> partEtag) {
-        this.uploadId = uploadId;
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setUploadId(uploadId);
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.partEtag = partEtag;
-    }
-
-    /**
-     * 获取分段上传任务的ID号
-     * 
-     * @return 分段上传任务的ID号
-     */
-    public String getUploadId() {
-        return uploadId;
-    }
-
-    /**
-     * 设置分段上传任务的ID号
-     * 
-     * @param uploadId
-     *            分段上传任务的ID号
-     */
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
-    }
-
-    /**
-     * 获取分段上传任务所属的桶名
-     * 
-     * @return 分段上传任务所属的桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置分段上传任务所属的桶名
-     * 
-     * @param bucketName
-     *            分段上传任务所属的桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取分段上传任务所属的对象名
-     * 
-     * @return 分段上传任务所属的对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置分段上传任务所属的对象名
-     * 
-     * @param objectKey
-     *            分段上传任务所属的对象名
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**
@@ -134,8 +72,9 @@ public class CompleteMultipartUploadRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "CompleteMultipartUploadRequest [uploadId=" + uploadId + ", bucketName=" + bucketName + ", objectKey="
-                + objectKey + ", partEtag=" + partEtag + "]";
+        return "CompleteMultipartUploadRequest [uploadId=" + this.getUploadId() 
+                + ", bucketName=" + this.getBucketName() + ", objectKey="
+                + this.getObjectKey() + ", partEtag=" + partEtag + "]";
     }
 
 }

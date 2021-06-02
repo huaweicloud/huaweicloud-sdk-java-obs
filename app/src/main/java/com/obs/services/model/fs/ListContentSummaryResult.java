@@ -23,7 +23,7 @@ import java.util.List;
  * 列举目录统计信息的响应结果
  */
 public class ListContentSummaryResult extends HeaderResponse {
-    List<FolderContentSummary> folderContentSummaries;
+    private List<FolderContentSummary> folderContentSummaries;
 
     private String bucketName;
 
@@ -41,6 +41,8 @@ public class ListContentSummaryResult extends HeaderResponse {
 
     private String location;
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public ListContentSummaryResult(List<FolderContentSummary> folderContentSummaries, String bucketName,
         boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
         String location) {
@@ -56,6 +58,80 @@ public class ListContentSummaryResult extends HeaderResponse {
         this.location = location;
     }
 
+    private ListContentSummaryResult(Builder builder) {
+        super();
+        this.folderContentSummaries = builder.folderContentSummaries;
+        this.bucketName = builder.bucketName;
+        this.truncated = builder.truncated;
+        this.prefix = builder.prefix;
+        this.marker = builder.marker;
+        this.maxKeys = builder.maxKeys;
+        this.delimiter = builder.delimiter;
+        this.nextMarker = builder.nextMarker;
+        this.location = builder.location;
+    }
+    
+    public static final class Builder {
+        private List<FolderContentSummary> folderContentSummaries;
+        private String bucketName;
+        private boolean truncated;
+        private String prefix;
+        private String marker;
+        private int maxKeys;
+        private String delimiter;
+        private String nextMarker;
+        private String location;
+        
+        public Builder folderContentSummaries(List<FolderContentSummary> folderContentSummaries) {
+            this.folderContentSummaries = folderContentSummaries;
+            return this;
+        }
+        
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+        
+        public Builder truncated(boolean truncated) {
+            this.truncated = truncated;
+            return this;
+        }
+        
+        public Builder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+        
+        public Builder marker(String marker) {
+            this.marker = marker;
+            return this;
+        }
+        
+        public Builder maxKeys(int maxKeys) {
+            this.maxKeys = maxKeys;
+            return this;
+        }
+        
+        public Builder delimiter(String delimiter) {
+            this.delimiter = delimiter;
+            return this;
+        }
+        
+        public Builder nextMarker(String nextMarker) {
+            this.nextMarker = nextMarker;
+            return this;
+        }
+        
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+        
+        public ListContentSummaryResult builder() {
+            return new ListContentSummaryResult(this);
+        }
+    }
+    
     /**
      * 获取下次请求的起始位置
      * @return 下次请求的起始位置标识

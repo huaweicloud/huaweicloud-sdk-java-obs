@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.obs.services.internal.Constants;
-import com.obs.services.internal.InternalHeaderResponse;
+import com.obs.services.internal.service.InternalHeaderResponse;
 
 /**
  * 公共的响应结果，包含RequestId，响应头信息，

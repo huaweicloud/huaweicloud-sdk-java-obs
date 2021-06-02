@@ -17,14 +17,13 @@ package com.obs.services.internal.task;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.ProgressStatus;
 import com.obs.services.model.UploadProgressStatus;
 
-public class UploadTaskProgressStatus implements UploadProgressStatus {
+public class UploadTaskProgressStatus extends DefaultTaskProgressStatus implements UploadProgressStatus {
 
     private final long progressInterval;
     private final Date startDate;
@@ -32,27 +31,11 @@ public class UploadTaskProgressStatus implements UploadProgressStatus {
     private AtomicLong totalSize = new AtomicLong();
     private AtomicLong totalMilliseconds = new AtomicLong();
     private AtomicLong endingTaskSize = new AtomicLong();
-    private AtomicInteger execTaskNum = new AtomicInteger();
-    private AtomicInteger succeedTaskNum = new AtomicInteger();
-    private AtomicInteger failTaskNum = new AtomicInteger();
-    private AtomicInteger totalTaskNum = new AtomicInteger();
     private AtomicLong taskTagSize = new AtomicLong();
 
     public UploadTaskProgressStatus(long progressInterval, Date startDate) {
         this.progressInterval = progressInterval;
         this.startDate = ServiceUtils.cloneDateIgnoreNull(startDate);
-    }
-
-    public void execTaskIncrement() {
-        execTaskNum.incrementAndGet();
-    }
-
-    public void succeedTaskIncrement() {
-        succeedTaskNum.incrementAndGet();
-    }
-
-    public void failTaskIncrement() {
-        failTaskNum.incrementAndGet();
     }
 
     public void setTaskTagSize(long taskTagSize) {
@@ -63,52 +46,19 @@ public class UploadTaskProgressStatus implements UploadProgressStatus {
         return taskTagSize.get();
     }
 
-    public void setTotalTaskNum(int totalNum) {
-        this.totalTaskNum.set(totalNum);
-    }
-
     public boolean isRefreshprogress() {
         if (this.progressInterval <= 0) {
             return false;
         }
 
         long transferredSize = this.getTransferredSize();
-        long taskTagSize = this.getTaskTagSize();
-        if (transferredSize - taskTagSize >= progressInterval) {
+        long taskSize = this.getTaskTagSize();
+        if (transferredSize - taskSize >= progressInterval) {
             this.setTaskTagSize(transferredSize);
             return true;
         } else {
             return false;
         }
-    }
-
-    @Override
-    public int getExecPercentage() {
-        if (totalTaskNum.get() <= 0) {
-            return -1;
-        } else {
-            return execTaskNum.get() * 100 / totalTaskNum.get();
-        }
-    }
-
-    @Override
-    public int getTotalTaskNum() {
-        return totalTaskNum.get();
-    }
-
-    @Override
-    public int getExecTaskNum() {
-        return execTaskNum.get();
-    }
-
-    @Override
-    public int getSucceedTaskNum() {
-        return succeedTaskNum.get();
-    }
-
-    @Override
-    public int getFailTaskNum() {
-        return failTaskNum.get();
     }
 
     @Override

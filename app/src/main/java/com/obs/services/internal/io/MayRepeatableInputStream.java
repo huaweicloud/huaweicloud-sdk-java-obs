@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ServiceException;
 
 public class MayRepeatableInputStream extends FilterInputStream {
@@ -74,7 +75,7 @@ public class MayRepeatableInputStream extends FilterInputStream {
 
     protected final void throwExceptionWhileInterrupted() {
         if (Thread.interrupted()) {
-            throw new RuntimeException("Abort io due to thread interrupted");
+            throw new ObsException("Abort io due to thread interrupted");
         }
     }
 

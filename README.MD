@@ -1,8 +1,39 @@
-[![HitCount](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs.svg)](http://hits.dwyl.com/sqxxr@vipqqcom/huaweicloud/huaweicloud-sdk-java-obs)
-[![Build Status](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs.svg?branch=master_cn)](https://travis-ci.org/huaweicloud/huaweicloud-sdk-java-obs)
-[![Coverage Status](https://coveralls.io/repos/github/huaweicloud/huaweicloud-sdk-java-obs/badge.svg?branch=master)](https://coveralls.io/github/huaweicloud/huaweicloud-sdk-java-obs?branch=master_cn)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.huaweicloud/huaweicloud-sdk-java-obs/badge.svg)](https://search.maven.org/search?q=g:com.huaweicloud%20AND%20a:esdk-obs-java) 
+Version 3.21.4
+
+1. 修复了一个已知问题
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.7
+新特性：
+1. 上传对象时，新增支持指定3个请求头：Content-Disposition，Cache-Control, Expires；
+
+三方依赖:
+1. 使用jackson-core 2.11.1 替代jackson-core 2.10.0
+2. 使用 jackson-databind 2.11.1 替代jackson-databind 2.10.0
+3. 使用 jackson-annotations 2.11.1 替代jackson-annotations 2.10.0
+4. 使用java-xmlbuilder 1.3 替代java-xmlbuilder 1.2
+5. 使用 okhttp 3.14.9 替代okhttp 3.14.4
+5. 使用 okio 1.17.5 替代okio 1.17.2
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.6
+修复问题：
+1. 修复日志级别无法动态刷新的问题；
+2. 优化下载gzip文件时，默认不自动解压；
+
+三方依赖:
+1. 使用 okhttp 3.14.4 替代okhttp 3.14.2
+2. 使用 log4j-core 2.13.2 替代 log4j-core 2.12.0
+3. 使用 log4j-api 2.13.2 替代  log4j-api 2.12.0
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.3
+新特性：
+1. 支持请求者付费
+2. 去掉默认的log4j配置
 
 -----------------------------------------------------------------------------------
 
@@ -19,7 +50,7 @@ Version 3.19.11
 
 三方依赖:
 1. 使用 log4j-core 2.12.0 替代 log4j-core 2.8.2
-2. 使用 log4j-api 2.12.0 替代 jackson-databind 2.8.2
+2. 使用 log4j-api 2.12.0 替代  log4j-api 2.8.2
 3. 使用 java-xmlbuilder 1.2 替代 java-xmlbuilder 1.1
 
 -----------------------------------------------------------------------------------
@@ -33,41 +64,24 @@ Version 3.19.9
 
 -----------------------------------------------------------------------------------
 
-Version 3.19.7
+Version 3.19.7.1
 
 新特性：
-
 1. 添加IObsCredentialsProvider接口，提供获取AK/SK方法和主动刷新AK/SK的方法；
 2. 添加IObsCredentialsProvider接口的三种实现方式：
    a. 用户传入AK/SK：BasicObsCredentialsProvider；
    b. 从环境变量读取AK/SK：EnvironmentVariableObsCredentialsProvider；
    c. 从ECS服务获取AK/SK：EcsObsCredentialsProvider。
-3. 支持svp格式文件的content-type设置，设置值为image/svg+xml；
-4. 更新第三方依赖：
-   a. 使用 jackson-core 2.9.9 替代 jackson-core 2.9.8
-   b. 使用 jackson-databind 2.9.9 替代 jackson-databind 2.9.8
-   c. 使用 jackson-annotations 2.9.9 替代 jackson-core 2.9.8
-
-修复问题：
+3. 支持svp格式文件的content-type设置，设置值为image/svg+xml。
 
 -----------------------------------------------------------------------------------
+Version 3.19.5.x
 
-Version 3.19.5.3
-
-新特性：
-
-
-修复问题：
-
------------------------------------------------------------------------------------
-
-Version 3.19.5.2
-
-新特性：
-
-
-修复问题：
-1. 更新版本声明；
+三方依赖:
+1. 使用okhttp 3.11.0替代okhttp 3.10.0
+2. 使用 jackson-core 2.9.9 替代 jackson-core 2.9.8
+3. 使用 jackson-databind 2.9.9 替代 jackson-databind 2.9.8
+4. 使用 jackson-annotations 2.9.9 替代 jackson-core 2.9.8
 
 -----------------------------------------------------------------------------------
 

@@ -87,7 +87,7 @@ public class ObsConstraint {
 
     public static final String DEFAULT_BUCKET_LOCATION_VALUE = "region";
 
-    public static final int DEFAULT_BUFFER_STREAM = 512 * 1024;// 512KB
+//    public static final int DEFAULT_BUFFER_STREAM = 512 * 1024;// 512KB
 
     public static final int DEFAULT_READ_BUFFER_STREAM = 8192;// 8KB
 
@@ -120,7 +120,7 @@ public class ObsConstraint {
 
     public static final String PROXY_WORKSTATION = "httpclient.proxy-workstation";
 
-    public static final String BUFFER_STREAM = "uploads.stream-retry-buffer-size";
+//    public static final String BUFFER_STREAM = "uploads.stream-retry-buffer-size";
 
     public static final String VALIDATE_CERTIFICATE = "httpclient.validate-certificate";
 

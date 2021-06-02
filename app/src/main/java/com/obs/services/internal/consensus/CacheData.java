@@ -23,7 +23,7 @@ import java.util.Random;
  * 协议协商的缓存数据
  */
 public class CacheData {
-    private static final long VALID_PERIOD = (15 + new Random(System.currentTimeMillis()).nextInt(5)) * 60 * 1000L;
+    private static final long VALID_PERIOD = 1000L * (15 + new Random(System.currentTimeMillis()).nextInt(5)) * 60;
 
     private AuthTypeEnum apiVersion;
     private long expirationTime;

@@ -14,7 +14,7 @@
 
 package com.obs.services.internal.task;
 
-import com.obs.services.ObsClient;
+import com.obs.services.AbstractClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.ProgressStatus;
 import com.obs.services.model.PutObjectBasicRequest;
@@ -23,65 +23,16 @@ import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.TaskCallback;
 import com.obs.services.model.UploadObjectsProgressListener;
 
-public class PutObjectTask implements Runnable {
-
-    protected ObsClient obsClient;
-
-    protected String bucketName;
-
-    private UploadObjectsProgressListener progressListener;
-
-    private int taskProgressInterval;
+public class PutObjectTask extends AbstractPutTask {
 
     private PutObjectRequest taskRequest;
 
-    private TaskCallback<PutObjectResult, PutObjectBasicRequest> callback;
-
-    private UploadTaskProgressStatus taskStatus;
-
-    public PutObjectTask(ObsClient obsClient, String bucketName, PutObjectRequest taskRequest,
+    public PutObjectTask(AbstractClient obsClient, String bucketName, PutObjectRequest taskRequest,
             TaskCallback<PutObjectResult, PutObjectBasicRequest> callback,
             UploadObjectsProgressListener progressListener, UploadTaskProgressStatus progressStatus,
             int taskProgressInterval) {
-        this.obsClient = obsClient;
-        this.bucketName = bucketName;
+        super(obsClient, bucketName, callback, progressListener, progressStatus, taskProgressInterval);
         this.taskRequest = taskRequest;
-        this.callback = callback;
-        this.progressListener = progressListener;
-        this.taskStatus = progressStatus;
-        this.taskProgressInterval = taskProgressInterval;
-    }
-
-    public ObsClient getObsClient() {
-        return obsClient;
-    }
-
-    public void setObsClient(ObsClient obsClient) {
-        this.obsClient = obsClient;
-    }
-
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    public UploadObjectsProgressListener getUploadObjectsProgressListener() {
-        return progressListener;
-    }
-
-    public void setUploadObjectsProgressListener(UploadObjectsProgressListener progressListener) {
-        this.progressListener = progressListener;
-    }
-
-    public int getTaskProgressInterval() {
-        return taskProgressInterval;
-    }
-
-    public void setTaskProgressInterval(int taskProgressInterval) {
-        this.taskProgressInterval = taskProgressInterval;
     }
 
     public PutObjectRequest getTaskRequest() {
@@ -92,49 +43,33 @@ public class PutObjectTask implements Runnable {
         this.taskRequest = taskRequest;
     }
 
-    public TaskCallback<PutObjectResult, PutObjectBasicRequest> getCallback() {
-        return callback;
-    }
-
-    public void setCallback(TaskCallback<PutObjectResult, PutObjectBasicRequest> callback) {
-        this.callback = callback;
-    }
-
-    public UploadTaskProgressStatus getTaskStatus() {
-        return taskStatus;
-    }
-
-    public void setTaskStatus(UploadTaskProgressStatus taskStatus) {
-        this.taskStatus = taskStatus;
-    }
-
     private void putObjects() {
         try {
-            PutObjectResult result = obsClient.putObject(taskRequest);
-            taskStatus.succeedTaskIncrement();
+            PutObjectResult result = this.getObsClient().putObject(taskRequest);
+            this.getTaskStatus().succeedTaskIncrement();
             PutObjectResult ret = new PutObjectResult(result.getBucketName(), result.getObjectKey(), result.getEtag(),
                     result.getVersionId(), result.getObjectUrl(), result.getResponseHeaders(), result.getStatusCode());
-            callback.onSuccess(ret);
+            this.getCallback().onSuccess(ret);
         } catch (ObsException e) {
-            taskStatus.failTaskIncrement();
-            callback.onException(e, taskRequest);
+            this.getTaskStatus().failTaskIncrement();
+            this.getCallback().onException(e, taskRequest);
         } finally {
-            taskStatus.execTaskIncrement();
-            if (progressListener != null) {
-                if (taskStatus.getExecTaskNum() % this.taskProgressInterval == 0) {
-                    progressListener.progressChanged(taskStatus);
+            this.getTaskStatus().execTaskIncrement();
+            if (this.getProgressListener() != null) {
+                if (this.getTaskStatus().getExecTaskNum() % this.getTaskProgressInterval() == 0) {
+                    this.getProgressListener().progressChanged(this.getTaskStatus());
                 }
-                if (taskStatus.getExecTaskNum() == taskStatus.getTotalTaskNum()) {
-                    progressListener.progressChanged(taskStatus);
+                if (this.getTaskStatus().getExecTaskNum() == this.getTaskStatus().getTotalTaskNum()) {
+                    this.getProgressListener().progressChanged(this.getTaskStatus());
                 }
             }
             // 更新已完成任务的大小信息，移除不在线程中的任务进度信息
             final String key = taskRequest.getObjectKey();
-            ProgressStatus status = taskStatus.getTaskStatus(key);
+            ProgressStatus status = this.getTaskStatus().getTaskStatus(key);
             if (status != null) {
-                taskStatus.addEndingTaskSize(status.getTransferredBytes());
+                this.getTaskStatus().addEndingTaskSize(status.getTransferredBytes());
             }
-            taskStatus.removeTaskTable(key);
+            this.getTaskStatus().removeTaskTable(key);
         }
     }
 

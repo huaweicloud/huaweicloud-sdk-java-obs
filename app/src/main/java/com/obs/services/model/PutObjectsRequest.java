@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.obs.services.internal.Constants;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.utils.ServiceUtils;
 
@@ -161,12 +162,10 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            启用分段上传的文件临界大小
      */
     public void setBigfileThreshold(long bigfileThreshold) {
-        if (bigfileThreshold < 100 * 1024L) {
-            this.bigfileThreshold = 100 * 1024L;
-        } else if (bigfileThreshold > 5 * 1024 * 1024 * 1024L) {
-            this.bigfileThreshold = 5 * 1024 * 1024 * 1024L;
+        if (bigfileThreshold < Constants.MIN_PART_SIZE) {
+            this.bigfileThreshold = Constants.MIN_PART_SIZE;
         } else {
-            this.bigfileThreshold = bigfileThreshold;
+            this.bigfileThreshold = Math.min(bigfileThreshold, Constants.MAX_PART_SIZE);
         }
     }
 
@@ -392,7 +391,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
         }
         domainId = domainId.trim();
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (domainIds != null && domainIds.contains(domainId)) {
+        if (domainIds != null) {
             domainIds.remove(domainId);
         }
     }

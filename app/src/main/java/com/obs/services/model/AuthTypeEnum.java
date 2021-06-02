@@ -31,6 +31,5 @@ public enum AuthTypeEnum {
     /**
      * V4协议
      */
-    @Deprecated 
     V4
 }

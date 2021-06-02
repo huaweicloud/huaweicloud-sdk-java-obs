@@ -106,7 +106,7 @@ public class CreateBucketRequest {
         }
         domainId = domainId.trim();
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (domainIds != null && domainIds.contains(domainId)) {
+        if (domainIds != null) {
             domainIds.remove(domainId);
         }
     }
@@ -122,9 +122,7 @@ public class CreateBucketRequest {
             domainId = domainId.trim();
             for (Map.Entry<ExtensionBucketPermissionEnum, Set<String>> entry : this.getExtensionPermissionMap()
                     .entrySet()) {
-                if (entry.getValue().contains(domainId)) {
-                    entry.getValue().remove(domainId);
-                }
+                entry.getValue().remove(domainId);
             }
         }
     }

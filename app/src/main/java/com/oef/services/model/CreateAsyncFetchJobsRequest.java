@@ -14,10 +14,9 @@
 
 package com.oef.services.model;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.obs.services.internal.Constants;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 
@@ -204,11 +203,7 @@ public class CreateAsyncFetchJobsRequest {
      * @throws ServiceException
      */
     public void setCallBackBody(String callBackBody) throws ServiceException {
-        try {
-            this.callBackBody = ServiceUtils.toBase64(callBackBody.getBytes(Constants.DEFAULT_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException("Unable to get bytes from canonical string", e);
-        }
+        this.callBackBody = ServiceUtils.toBase64(callBackBody.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

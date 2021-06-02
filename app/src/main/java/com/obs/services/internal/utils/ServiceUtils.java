@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -132,6 +133,7 @@ public class ServiceUtils {
         try {
             return iso8601DateParser.parse(dateString);
         } catch (Exception e) {
+            log.warn("date parser failed.", e);
         }
         throw exception;
     }
@@ -162,11 +164,7 @@ public class ServiceUtils {
 
     public static String signWithHmacSha1(String sk, String canonicalString) throws ServiceException {
         SecretKeySpec signingKey = null;
-        try {
-            signingKey = new SecretKeySpec(sk.getBytes(Constants.DEFAULT_ENCODING), Constants.HMAC_SHA1_ALGORITHM);
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException("Unable to get bytes from secret string", e);
-        }
+        signingKey = new SecretKeySpec(sk.getBytes(StandardCharsets.UTF_8), Constants.HMAC_SHA1_ALGORITHM);
 
         Mac mac = null;
         try {
@@ -177,14 +175,10 @@ public class ServiceUtils {
         try {
             mac.init(signingKey);
         } catch (InvalidKeyException e) {
-            throw new RuntimeException("Could not initialize the MAC algorithm", e);
+            throw new ObsException("Could not initialize the MAC algorithm", e);
         }
 
-        try {
-            return ServiceUtils.toBase64(mac.doFinal(canonicalString.getBytes(Constants.DEFAULT_ENCODING)));
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException("Unable to get bytes from canonical string", e);
-        }
+        return ServiceUtils.toBase64(mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static Map<String, Object> cleanRestMetadataMap(Map<String, List<String>> metadata, String headerPrefix,
@@ -195,101 +189,99 @@ public class ServiceUtils {
         Map<String, Object> cleanMap = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
         if (metadata != null) {
             for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
-                String key = entry.getKey();
-                List<String> values = entry.getValue();
-
-                if (key == null || values == null) {
-                    continue;
-                }
-
-                Object value = values.size() == 1 ? values.get(0) : values;
-                if ((Constants.CommonHeaders.DATE.equalsIgnoreCase(key)
-                        || Constants.CommonHeaders.LAST_MODIFIED.equalsIgnoreCase(key))) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Parsing date string '" + value + "' into Date object for key: " + key);
-                    }
-                    try {
-                        value = ServiceUtils.parseRfc822Date(value.toString());
-                    } catch (ParseException pe) {
-                        // Try ISO-8601
-                        try {
-                            value = ServiceUtils.parseIso8601Date(value.toString());
-                        } catch (ParseException pe2) {
-                            if (log.isWarnEnabled()) {
-                                log.warn("Date string is not RFC 822 or ISO-8601 compliant for metadata field " + key,
-                                        pe);
-                            }
-                        }
-                    }
-                } else if (key.toLowerCase().startsWith(headerPrefix)) {
-                    try {
-                        if (key.toLowerCase().startsWith(metadataPrefix)) {
-                            key = key.substring(metadataPrefix.length(), key.length());
-                            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed meatadata header prefix " + metadataPrefix + " from key: " + key
-                                        + "=>" + key);
-                            }
-                        } else {
-                            key = key.substring(headerPrefix.length(), key.length());
-                        }
-                        if (value instanceof List) {
-                            List<String> metadataValues = new ArrayList<String>(values.size());
-                            for (String metadataValue : values) {
-                                metadataValues.add(metadataValue != null
-                                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
-                            }
-                            value = metadataValues;
-                        } else {
-                            value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Error to decode value of key:" + key);
-                        }
-                    }
-                } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
-                    try {
-                        if (key.toLowerCase().startsWith(Constants.OBS_HEADER_META_PREFIX)) {
-                            key = key.substring(Constants.OBS_HEADER_META_PREFIX.length(), key.length());
-                            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed meatadata header prefix " + Constants.OBS_HEADER_META_PREFIX
-                                        + " from key: " + key + "=>" + key);
-                            }
-                        } else {
-                            key = key.substring(Constants.OBS_HEADER_PREFIX.length(), key.length());
-                        }
-                        if (value instanceof List) {
-                            List<String> metadataValues = new ArrayList<String>(values.size());
-                            for (String metadataValue : values) {
-                                metadataValues.add(metadataValue != null
-                                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
-                            }
-                            value = metadataValues;
-                        } else {
-                            value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Error to decode value of key:" + key);
-                        }
-                    }
-                } else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES
-                        .contains(key.toLowerCase(Locale.getDefault()))) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Leaving HTTP header item unchanged: " + key + "=" + values);
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Ignoring metadata item: " + key + "=" + values);
-                    }
-                    continue;
-                }
-                cleanMap.put(key, value);
+                formatKeyAndValue(headerPrefix, metadataPrefix, cleanMap, entry);
             }
         }
         return cleanMap;
+    }
+
+    private static void formatKeyAndValue(String headerPrefix, String metadataPrefix, Map<String, Object> cleanMap,
+            Map.Entry<String, List<String>> entry) {
+        String key = entry.getKey();
+        List<String> values = entry.getValue();
+
+        if (key == null || values == null) {
+            return;
+        }
+
+        Object value = values.size() == 1 ? values.get(0) : values;
+        if ((Constants.CommonHeaders.DATE.equalsIgnoreCase(key)
+                || Constants.CommonHeaders.LAST_MODIFIED.equalsIgnoreCase(key))) {
+            if (log.isDebugEnabled()) {
+                log.debug("Parsing date string '" + value + "' into Date object for key: " + key);
+            }
+            try {
+                value = ServiceUtils.parseRfc822Date(value.toString());
+            } catch (ParseException pe) {
+                // Try ISO-8601
+                try {
+                    value = ServiceUtils.parseIso8601Date(value.toString());
+                } catch (ParseException pe2) {
+                    if (log.isWarnEnabled()) {
+                        log.warn("Date string is not RFC 822 or ISO-8601 compliant for metadata field " + key,
+                                pe);
+                    }
+                }
+            }
+        } else if (key.toLowerCase().startsWith(headerPrefix)) {
+            try {
+                key = transRealKey(headerPrefix, metadataPrefix, key);
+                value = transRealValue(values, value);
+            } catch (UnsupportedEncodingException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Error to decode value of key:" + key);
+                }
+            }
+        } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
+            try {
+                key = transRealKey(Constants.OBS_HEADER_PREFIX, Constants.OBS_HEADER_META_PREFIX, key);
+                value = transRealValue(values, value);
+            } catch (UnsupportedEncodingException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Error to decode value of key:" + key);
+                }
+            }
+        } else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES
+                .contains(key.toLowerCase(Locale.getDefault()))) {
+            if (log.isDebugEnabled()) {
+                log.debug("Leaving HTTP header item unchanged: " + key + "=" + values);
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Ignoring metadata item: " + key + "=" + values);
+            }
+            return;
+        }
+        cleanMap.put(key, value);
+    }
+
+    private static Object transRealValue(List<String> values, Object value) throws UnsupportedEncodingException {
+        if (value instanceof List) {
+            List<String> metadataValues = new ArrayList<String>(values.size());
+            for (String metadataValue : values) {
+                metadataValues.add(metadataValue != null
+                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
+            }
+            value = metadataValues;
+        } else {
+            value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
+        }
+        return value;
+    }
+
+    private static String transRealKey(String headerPrefix, String metadataPrefix, String key)
+            throws UnsupportedEncodingException {
+        if (key.toLowerCase().startsWith(metadataPrefix)) {
+            key = key.substring(metadataPrefix.length(), key.length());
+            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
+            if (log.isDebugEnabled()) {
+                log.debug("Removed meatadata header prefix " + metadataPrefix + " from key: " + key
+                        + "=>" + key);
+            }
+        } else {
+            key = key.substring(headerPrefix.length(), key.length());
+        }
+        return key;
     }
 
     public static Map<String, String> cleanRestMetadataMapV2(Map<String, String> metadata, String headerPrefix,
@@ -308,16 +300,7 @@ public class ServiceUtils {
                 key = key != null ? key : "";
                 if (key.toLowerCase().startsWith(headerPrefix)) {
                     try {
-                        if (key.toLowerCase().startsWith(metadataPrefix)) {
-                            key = key.substring(metadataPrefix.length(), key.length());
-                            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed meatadata header prefix " + metadataPrefix + " from key: " + key
-                                        + "=>" + key);
-                            }
-                        } else {
-                            key = key.substring(headerPrefix.length(), key.length());
-                        }
+                        key = transRealKey(headerPrefix, metadataPrefix, key);
                         value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
                         if (log.isDebugEnabled()) {
@@ -327,16 +310,7 @@ public class ServiceUtils {
 
                 } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
                     try {
-                        if (key.toLowerCase().startsWith(Constants.OBS_HEADER_META_PREFIX)) {
-                            key = key.substring(Constants.OBS_HEADER_META_PREFIX.length(), key.length());
-                            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Removed meatadata header prefix " + Constants.OBS_HEADER_META_PREFIX
-                                        + " from key: " + key + "=>" + key);
-                            }
-                        } else {
-                            key = key.substring(Constants.OBS_HEADER_PREFIX.length(), key.length());
-                        }
+                        key = transRealKey(Constants.OBS_HEADER_PREFIX, Constants.OBS_HEADER_META_PREFIX, key);
                         value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
                     } catch (UnsupportedEncodingException e) {
                         if (log.isDebugEnabled()) {
@@ -369,7 +343,7 @@ public class ServiceUtils {
         if (data.length <= 0) {
             return "";
         }
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < data.length; i++) {
             String hv = Integer.toHexString(data[i]);
             if (hv.length() < 2) {
@@ -384,7 +358,7 @@ public class ServiceUtils {
 
     public static byte[] fromHex(String hexData) {
         if (null == hexData) {
-            return null;
+            return new byte[0];
         }
 
         if ((hexData.length() & 1) != 0 || hexData.replaceAll("[a-fA-F0-9]", "").length() > 0) {
@@ -484,7 +458,7 @@ public class ServiceUtils {
                     bis.close();
                 } catch (IOException e) {
                     if (log.isWarnEnabled()) {
-                        log.warn(e);
+                        log.warn("close failed.", e);
                     }
                 }
             }
@@ -519,7 +493,7 @@ public class ServiceUtils {
                     bis.close();
                 } catch (IOException e) {
                     if (log.isWarnEnabled()) {
-                        log.warn(e);
+                        log.warn("close failed.", e);
                     }
                 }
             }
@@ -528,7 +502,7 @@ public class ServiceUtils {
 
     public static String computeMD5(String data) throws ServiceException {
         try {
-            return ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(data.getBytes(Constants.DEFAULT_ENCODING)));
+            return ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(data.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             throw new ServiceException("Failed to get MD5 for requestXmlElement:" + data);
         } catch (UnsupportedEncodingException e) {
@@ -587,8 +561,6 @@ public class ServiceUtils {
             ex = e;
         }
 
-        // No dice using the standard approach, try loading alternatives...
-        // JDK 1.4 and Android
         String[] altXmlReaderClasspaths = new String[]{"org.apache.crimson.parser.XMLReaderImpl",
             "org.xmlpull.v1.sax2.Driver"
         };
@@ -654,7 +626,7 @@ public class ServiceUtils {
                 closeable.close();
             } catch (IOException e) {
                 if (log.isWarnEnabled()) {
-                    log.warn(e);
+                    log.warn("close failed.", e);
                 }
             }
         }
@@ -666,7 +638,7 @@ public class ServiceUtils {
             StringBuilder sb = new StringBuilder();
             BufferedReader br = null;
             try {
-                br = new BufferedReader(new InputStreamReader(in, Constants.DEFAULT_ENCODING));
+                br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                 String temp;
                 while ((temp = br.readLine()) != null) {
                     sb.append(temp);
@@ -678,7 +650,7 @@ public class ServiceUtils {
                         br.close();
                     } catch (IOException e) {
                         if (log.isWarnEnabled()) {
-                            log.warn(e);
+                            log.warn("close failed.", e);
                         }
                     }
                 }
@@ -729,6 +701,12 @@ public class ServiceUtils {
         }
 
         config.setEndPoint(endPoint);
+        setObsProperties(config, obsProperties);
+
+        return obsProperties;
+    }
+
+    private static void setObsProperties(ObsConfiguration config, ObsProperties obsProperties) {
         obsProperties.setProperty(ObsConstraint.END_POINT, config.getEndPoint());
         obsProperties.setProperty(ObsConstraint.HTTP_PORT, String.valueOf(config.getEndpointHttpPort()));
         obsProperties.setProperty(ObsConstraint.HTTPS_ONLY, String.valueOf(config.isHttpsOnly()));
@@ -739,9 +717,9 @@ public class ServiceUtils {
         obsProperties.setProperty(ObsConstraint.HTTP_RETRY_MAX, String.valueOf(config.getMaxErrorRetry()));
         obsProperties.setProperty(ObsConstraint.HTTP_CONNECT_TIMEOUT, String.valueOf(config.getConnectionTimeout()));
         obsProperties.setProperty(ObsConstraint.PROXY_ISABLE, String.valueOf(Boolean.FALSE));
-        obsProperties.setProperty(ObsConstraint.BUFFER_STREAM,
-                String.valueOf(config.getUploadStreamRetryBufferSize() > 0 ? config.getUploadStreamRetryBufferSize()
-                        : ObsConstraint.DEFAULT_BUFFER_STREAM));
+//        obsProperties.setProperty(ObsConstraint.BUFFER_STREAM,
+//                String.valueOf(config.getUploadStreamRetryBufferSize() > 0 ? config.getUploadStreamRetryBufferSize()
+//                        : ObsConstraint.DEFAULT_BUFFER_STREAM));
         obsProperties.setProperty(ObsConstraint.VALIDATE_CERTIFICATE, String.valueOf(config.isValidateCertificate()));
         obsProperties.setProperty(ObsConstraint.VERIFY_RESPONSE_CONTENT_TYPE,
                 String.valueOf(config.isVerifyResponseContentType()));
@@ -786,8 +764,6 @@ public class ServiceUtils {
             obsProperties.setProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
                     String.valueOf(((ExtObsConfiguration) config).getMaxRetryOnUnexpectedEndException()));
         }
-
-        return obsProperties;
     }
 
     public static Date cloneDateIgnoreNull(Date date) {

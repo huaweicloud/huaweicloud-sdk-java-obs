@@ -25,8 +25,12 @@ public class ProviderCredentials {
     protected static final ILogger log = LoggerBuilder.getLogger(ProviderCredentials.class);
 
     protected AuthTypeEnum authType;
+
     private static ThreadLocal<AuthTypeEnum> threadLocalAuthType;
+
     private IObsCredentialsProvider obsCredentialsProvider;
+
+    private boolean isAuthTypeNegotiation;
 
     public String getRegion() {
         return ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE;
@@ -41,11 +45,22 @@ public class ProviderCredentials {
     }
 
     public AuthTypeEnum getAuthType() {
+        if (!isAuthTypeNegotiation) {
+            return authType;
+        }
         return (threadLocalAuthType == null) ? authType : threadLocalAuthType.get();
     }
 
     public void setAuthType(AuthTypeEnum authType) {
         this.authType = authType;
+    }
+
+    public void setIsAuthTypeNegotiation(boolean isAuthTypeNegotiation) {
+        this.isAuthTypeNegotiation = isAuthTypeNegotiation;
+    }
+
+    public boolean getIsAuthTypeNegotiation() {
+        return isAuthTypeNegotiation;
     }
 
     public void setObsCredentialsProvider(IObsCredentialsProvider obsCredentialsProvider) {
