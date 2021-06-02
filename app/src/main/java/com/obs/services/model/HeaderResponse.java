@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.obs.services.internal.Constants;
-import com.obs.services.internal.InternalHeaderResponse;
+import com.obs.services.internal.service.InternalHeaderResponse;
 
 /**
  * Public response result, including the request ID and response headers

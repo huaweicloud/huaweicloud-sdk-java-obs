@@ -14,6 +14,7 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.Constants;
 import com.obs.services.internal.ObsConstraint;
 
 /**
@@ -201,12 +202,10 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      *            Part size
      */
     public void setPartSize(long partSize) {
-        if (partSize < 100 * 1024L) {
-            this.partSize = 100 * 1024L;
-        } else if (partSize > 5 * 1024 * 1024 * 1024L) {
-            this.partSize = 5 * 1024 * 1024 * 1024L;
+        if (partSize < Constants.MIN_PART_SIZE) {
+            this.partSize = Constants.MIN_PART_SIZE;
         } else {
-            this.partSize = partSize;
+            this.partSize = Math.min(partSize, Constants.MAX_PART_SIZE);
         }
     }
 

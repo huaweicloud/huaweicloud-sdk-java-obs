@@ -44,6 +44,8 @@ public class MultipartUploadListing extends HeaderResponse {
 
     private String[] commonPrefixes;
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public MultipartUploadListing(String bucketName, String keyMarker, String uploadIdMarker, String nextKeyMarker,
             String nextUploadIdMarker, String prefix, int maxUploads, boolean truncated,
             List<MultipartUpload> multipartTaskList, String delimiter, String[] commonPrefixes) {
@@ -65,6 +67,102 @@ public class MultipartUploadListing extends HeaderResponse {
         }
     }
 
+    private MultipartUploadListing(Builder builder) {
+        super();
+        this.bucketName = builder.bucketName;
+        this.keyMarker = builder.keyMarker;
+        this.uploadIdMarker = builder.uploadIdMarker;
+        this.nextKeyMarker = builder.nextKeyMarker;
+        this.nextUploadIdMarker = builder.nextUploadIdMarker;
+        this.prefix = builder.prefix;
+        this.maxUploads = builder.maxUploads;
+        this.truncated = builder.truncated;
+        this.multipartTaskList = builder.multipartTaskList;
+        this.delimiter = builder.delimiter;
+        if (null != builder.commonPrefixes) {
+            this.commonPrefixes = builder.commonPrefixes.clone();
+        } else {
+            this.commonPrefixes = null;
+        }
+    }
+    
+    public static final class Builder {
+        private String bucketName;
+        private String keyMarker;
+        private String uploadIdMarker;
+        private String nextKeyMarker;
+        private String nextUploadIdMarker;
+        private String prefix;
+        private int maxUploads;
+        private boolean truncated;
+        private List<MultipartUpload> multipartTaskList;
+        private String delimiter;
+        private String[] commonPrefixes;
+        
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+        
+        public Builder keyMarker(String keyMarker) {
+            this.keyMarker = keyMarker;
+            return this;
+        }
+        
+        public Builder uploadIdMarker(String uploadIdMarker) {
+            this.uploadIdMarker = uploadIdMarker;
+            return this;
+        }
+        
+        public Builder nextKeyMarker(String nextKeyMarker) {
+            this.nextKeyMarker = nextKeyMarker;
+            return this;
+        }
+        
+        public Builder nextUploadIdMarker(String nextUploadIdMarker) {
+            this.nextUploadIdMarker = nextUploadIdMarker;
+            return this;
+        }
+        
+        public Builder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+        
+        public Builder maxUploads(int maxUploads) {
+            this.maxUploads = maxUploads;
+            return this;
+        }
+        
+        public Builder truncated(boolean truncated) {
+            this.truncated = truncated;
+            return this;
+        }
+        
+        public Builder multipartTaskList(List<MultipartUpload> multipartTaskList) {
+            this.multipartTaskList = multipartTaskList;
+            return this;
+        }
+        
+        public Builder delimiter(String delimiter) {
+            this.delimiter = delimiter;
+            return this;
+        }
+        
+        public Builder commonPrefixes(String[] commonPrefixes) {
+            if (null != commonPrefixes) {
+                this.commonPrefixes = commonPrefixes.clone();
+            } else {
+                this.commonPrefixes = null;
+            }
+            return this;
+        }
+        
+        public MultipartUploadListing builder() {
+            return new MultipartUploadListing(this);
+        }
+    }
+    
     /**
      * Check whether the query result list is truncated. Value "true" indicates
      * that the results are incomplete while value "false" indicates that the
@@ -85,7 +183,7 @@ public class MultipartUploadListing extends HeaderResponse {
         if (null != commonPrefixes) {
             return commonPrefixes.clone();
         }
-        return null;
+        return new String[0];
     }
 
     /**

@@ -24,7 +24,8 @@ import java.util.Date;
 public class AccessLoggerUtils {
     private static final ILogger ACCESS_LOG = LoggerBuilder.getLogger("com.obs.log.AccessLogger");
     private static final ThreadLocal<StringBuilder> THREADLOCAL_LOG = new ThreadLocal<StringBuilder>();
-    private static final ThreadLocal<SoftReference<SimpleDateFormat>> DATE_FORMAT_HOLDER = new ThreadLocal<SoftReference<SimpleDateFormat>>();
+    private static final ThreadLocal<SoftReference<SimpleDateFormat>> DATE_FORMAT_HOLDER = 
+            new ThreadLocal<SoftReference<SimpleDateFormat>>();
     private static final int INDEX = 5;
     public static volatile boolean accesslogEnabled = true;
 

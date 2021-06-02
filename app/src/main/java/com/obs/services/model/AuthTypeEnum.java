@@ -31,6 +31,5 @@ public enum AuthTypeEnum {
     /**
      * V4 protocol
      */
-    @Deprecated 
     V4
 }

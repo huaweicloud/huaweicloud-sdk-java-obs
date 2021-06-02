@@ -16,7 +16,8 @@ package com.obs.services.model;
 
 /**
 *
-* Keyword for replicating historical objects. If the value is Enabled, historical objects that meet the rule are replicated.
+* Keyword for replicating historical objects. If the value is Enabled, 
+* historical objects that meet the rule are replicated.
 *
 */
 public enum HistoricalObjectReplicationEnum {

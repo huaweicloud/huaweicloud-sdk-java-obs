@@ -4,7 +4,7 @@
 
 	<groupId>com.huawei.storage</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.20.6.2</version>
+	<version>3.21.4</version>
 	<packaging>jar</packaging>
 
 	<name>OBS SDK for Android</name>
@@ -58,7 +58,7 @@
 
 	<build>
 		<sourceDirectory>app/src/main/java</sourceDirectory>
-		<testSourceDirectory>app/src/test/java/samples_java</testSourceDirectory>
+		<testSourceDirectory>app/src/test/java</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

@@ -14,16 +14,14 @@
 
 package com.obs.services.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Bucket CORS rules
  */
 public class BucketCors extends S3BucketCors {
-    private List<BucketCorsRule> rules;
-
     public BucketCors() {
+        super();
     }
 
     /**
@@ -33,33 +31,11 @@ public class BucketCors extends S3BucketCors {
      *            Bucket CORS rule list
      */
     public BucketCors(List<BucketCorsRule> rules) {
-        this.rules = rules;
-    }
-
-    /**
-     * Obtain the bucket CORS rule list.
-     * 
-     * @return Bucket CORS rule list
-     */
-    public List<BucketCorsRule> getRules() {
-        if (null == rules) {
-            rules = new ArrayList<BucketCorsRule>();
-        }
-        return rules;
-    }
-
-    /**
-     * Configure the bucket CORS rule list.
-     * 
-     * @param rules
-     *            Bucket CORS rule list
-     */
-    public void setRules(List<BucketCorsRule> rules) {
-        this.rules = rules;
+        super(rules);
     }
 
     @Override
     public String toString() {
-        return "ObsBucketCors [rules=" + rules + "]";
+        return "ObsBucketCors [rules=" + this.getRules() + "]";
     }
 }

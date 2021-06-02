@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 /**
  * Log configuration class integrated with Log4j2
@@ -32,6 +33,8 @@ public class Log4j2Configurator {
 
     private static volatile boolean log4j2Enabled = false;
 
+    private static final Logger logger = Logger.getLogger(Log4j2Configurator.class.getName());
+    
     /**
      * Configure logs.
      * 
@@ -67,11 +70,13 @@ public class Log4j2Configurator {
             ctx = m.invoke(null, null, con.newInstance(configInputStream));
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InvocationTargetException
                 | IllegalAccessException | InstantiationException | FileNotFoundException e) {
+            logger.warning(e.getMessage());
         } finally {
             if (null != configInputStream) {
                 try {
                     configInputStream.close();
                 } catch (IOException e) {
+                    logger.warning(e.getMessage());
                 }
             }
         }
@@ -110,6 +115,7 @@ public class Log4j2Configurator {
             } catch (ClassNotFoundException | FileNotFoundException | NoSuchMethodException | SecurityException
                     | InterruptedException | InvocationTargetException | IllegalAccessException
                     | InstantiationException e) {
+                logger.warning(e.getMessage());
             }
         }
     }
@@ -138,6 +144,7 @@ public class Log4j2Configurator {
                 wather.setDaemon(true);
                 wather.start();
             } catch (Exception e) {
+                logger.warning(e.getMessage());
             }
         }
         log4j2Enabled = true;

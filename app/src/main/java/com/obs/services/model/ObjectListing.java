@@ -25,7 +25,7 @@ public class ObjectListing extends HeaderResponse {
 
     private List<String> commonPrefixes;
 
-    private List<ObsObject> extenedCommonPrefixes;
+    private List<ObsObject> extendCommonPrefixes;
 
     private String bucketName;
 
@@ -43,6 +43,8 @@ public class ObjectListing extends HeaderResponse {
 
     private String location;
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public ObjectListing(List<ObsObject> objectSummaries, List<String> commonPrefixes, String bucketName,
             boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
             String location) {
@@ -59,14 +61,111 @@ public class ObjectListing extends HeaderResponse {
         this.location = location;
     }
 
+    @Deprecated
+    //CHECKSTYLE:OFF
     public ObjectListing(List<ObsObject> objectSummaries, List<String> commonPrefixes, String bucketName,
             boolean truncated, String prefix, String marker, int maxKeys, String delimiter, String nextMarker,
-            String location, List<ObsObject> extenedCommonPrefixes) {
+            String location, List<ObsObject> extendCommonPrefixes) {
         this(objectSummaries, commonPrefixes, bucketName, truncated, prefix, marker, maxKeys, delimiter, nextMarker,
                 location);
-        this.extenedCommonPrefixes = extenedCommonPrefixes;
+        this.extendCommonPrefixes = extendCommonPrefixes;
     }
 
+    private ObjectListing(Builder builder) {
+        super();
+        this.objectSummaries = builder.objectSummaries;
+        this.commonPrefixes = builder.commonPrefixes;
+        this.bucketName = builder.bucketName;
+        this.truncated = builder.truncated;
+        this.prefix = builder.prefix;
+        this.marker = builder.marker;
+        this.maxKeys = builder.maxKeys;
+        this.delimiter = builder.delimiter;
+        this.nextMarker = builder.nextMarker;
+        this.location = builder.location;
+        this.extendCommonPrefixes = builder.extendCommonPrefixes;
+    }
+    
+    public static final class Builder {
+        private List<ObsObject> objectSummaries;
+        private List<String> commonPrefixes;
+        private List<ObsObject> extendCommonPrefixes;
+        private String bucketName;
+        private boolean truncated;
+        private String prefix;
+        private String marker;
+        private int maxKeys;
+        private String delimiter;
+        private String nextMarker;
+        private String location;
+        
+        public Builder objectSummaries(List<ObsObject> objectSummaries) {
+            this.objectSummaries = objectSummaries;
+            return this;
+        }
+        
+        public Builder commonPrefixes(List<String> commonPrefixes) {
+            this.commonPrefixes = commonPrefixes;
+            return this;
+        }
+
+        @Deprecated
+        public Builder extenedCommonPrefixes(List<ObsObject> extendCommonPrefixes) {
+            this.extendCommonPrefixes = extendCommonPrefixes;
+            return this;
+        }
+
+        public Builder extendCommonPrefixes(List<ObsObject> extendCommonPrefixes) {
+            this.extendCommonPrefixes = extendCommonPrefixes;
+            return this;
+        }
+        
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+        
+        public Builder truncated(boolean truncated) {
+            this.truncated = truncated;
+            return this;
+        }
+        
+        public Builder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+        
+        public Builder marker(String marker) {
+            this.marker = marker;
+            return this;
+        }
+        
+        public Builder maxKeys(int maxKeys) {
+            this.maxKeys = maxKeys;
+            return this;
+        }
+        
+        public Builder delimiter(String delimiter) {
+            this.delimiter = delimiter;
+            return this;
+        }
+        
+        public Builder nextMarker(String nextMarker) {
+            this.nextMarker = nextMarker;
+            return this;
+        }
+        
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+        
+        public ObjectListing builder() {
+            return new ObjectListing(this);
+        }
+    }
+    
+    
     /**
      * Obtain the start position for next listing.
      * 
@@ -112,12 +211,20 @@ public class ObjectListing extends HeaderResponse {
      *
      * @return List of prefixes to the names of grouped objects
      */
-    public List<ObsObject> getExtenedCommonPrefixes() {
-        if (this.extenedCommonPrefixes == null) {
-            this.extenedCommonPrefixes = new ArrayList<ObsObject>();
+
+    public List<ObsObject> getExtendCommonPrefixes() {
+        if (this.extendCommonPrefixes == null) {
+            this.extendCommonPrefixes = new ArrayList<ObsObject>();
         }
-        return extenedCommonPrefixes;
+        return extendCommonPrefixes;
     }
+
+    @Deprecated
+    public List<ObsObject> getExtenedCommonPrefixes() {
+        return getExtendCommonPrefixes();
+    }
+
+
 
     /**
      * Obtain the bucket name.

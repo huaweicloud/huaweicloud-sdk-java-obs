@@ -20,7 +20,7 @@ import java.util.Map;
 
 import com.obs.services.internal.utils.ServiceUtils;
 
-@Deprecated
+
 public class S3Bucket extends HeaderResponse {
 
     @Deprecated

@@ -46,8 +46,8 @@ public class ListVersionsResult extends HeaderResponse {
 
     private String delimiter;
 
-    private boolean isAppendable;
-
+    @Deprecated
+    //CHECKSTYLE:OFF
     public ListVersionsResult(String bucketName, String prefix, String keyMarker, String nextKeyMarker,
             String versionIdMarker, String nextVersionIdMarker, String maxKeys, boolean isTruncated,
             VersionOrDeleteMarker[] versions, List<String> commonPrefixes, String location, String delimiter) {
@@ -70,6 +70,109 @@ public class ListVersionsResult extends HeaderResponse {
         this.delimiter = delimiter;
     }
 
+    private ListVersionsResult(Builder builder) {
+        super();
+        this.bucketName = builder.bucketName;
+        this.prefix = builder.prefix;
+        this.keyMarker = builder.keyMarker;
+        this.nextKeyMarker = builder.nextKeyMarker;
+        this.versionIdMarker = builder.versionIdMarker;
+        this.nextVersionIdMarker = builder.nextVersionIdMarker;
+        this.maxKeys = builder.maxKeys;
+        this.isTruncated = builder.isTruncated;
+        if (null != builder.versions) {
+            this.versions = builder.versions.clone();
+        } else {
+            this.versions = null;
+        }
+        this.commonPrefixes = builder.commonPrefixes;
+        this.location = builder.location;
+        this.delimiter = builder.delimiter;
+    }
+    
+    public static final class Builder {
+        private String bucketName;
+        private String prefix;
+        private String keyMarker;
+        private String nextKeyMarker;
+        private String versionIdMarker;
+        private String nextVersionIdMarker;
+        private String maxKeys;
+        private boolean isTruncated;
+        private VersionOrDeleteMarker[] versions;
+        private List<String> commonPrefixes;
+        private String location;
+        private String delimiter;
+        
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+        
+        public Builder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+        
+        public Builder keyMarker(String keyMarker) {
+            this.keyMarker = keyMarker;
+            return this;
+        }
+        
+        public Builder nextKeyMarker(String nextKeyMarker) {
+            this.nextKeyMarker = nextKeyMarker;
+            return this;
+        }
+        
+        public Builder versionIdMarker(String versionIdMarker) {
+            this.versionIdMarker = versionIdMarker;
+            return this;
+        }
+        
+        public Builder nextVersionIdMarker(String nextVersionIdMarker) {
+            this.nextVersionIdMarker = nextVersionIdMarker;
+            return this;
+        }
+        
+        public Builder maxKeys(String maxKeys) {
+            this.maxKeys = maxKeys;
+            return this;
+        }
+        
+        public Builder isTruncated(boolean isTruncated) {
+            this.isTruncated = isTruncated;
+            return this;
+        }
+        
+        public Builder versions(VersionOrDeleteMarker[] versions) {
+            if (null != versions) {
+                this.versions = versions.clone();
+            } else {
+                this.versions = null;
+            }
+            return this;
+        }
+        
+        public Builder commonPrefixes(List<String> commonPrefixes) {
+            this.commonPrefixes = commonPrefixes;
+            return this;
+        }
+        
+        public Builder location(String location) {
+            this.location = location;
+            return this;
+        }
+        
+        public Builder delimiter(String delimiter) {
+            this.delimiter = delimiter;
+            return this;
+        }
+        
+        public ListVersionsResult builder() {
+            return new ListVersionsResult(this);
+        }
+    }
+    
     /**
      * Obtain the bucket name.
      * 
@@ -138,7 +241,7 @@ public class ListVersionsResult extends HeaderResponse {
         if (null != versions) {
             return versions.clone(); 
         }
-        return null;
+        return new VersionOrDeleteMarker[0];
     }
 
     /**
@@ -187,10 +290,6 @@ public class ListVersionsResult extends HeaderResponse {
      */
     public String getDelimiter() {
         return delimiter;
-    }
-
-    public boolean isAppendable() {
-        return isAppendable;
     }
 
     @Override

@@ -62,7 +62,6 @@ public enum SpecialParamEnum {
     /**
      * Obtain or set bucket storage policies.
      */
-    @Deprecated
     STORAGEPOLICY("storagePolicy"),
     /**
      * Obtain or set the bucket storage class. 
@@ -99,6 +98,7 @@ public enum SpecialParamEnum {
      * Configure bucket notification or obtain bucket notification configuration.
      */
     NOTIFICATION("notification"),
+
     /**
      * Set, obtain, or delete the cross-region replication configuration of a bucket.
      */

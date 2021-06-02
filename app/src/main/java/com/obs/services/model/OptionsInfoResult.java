@@ -22,15 +22,15 @@ import java.util.List;
  *
  */
 public class OptionsInfoResult extends HeaderResponse {
-    private String allowOrigin;
+    protected String allowOrigin;
 
-    private List<String> allowHeaders;
+    protected List<String> allowHeaders;
 
-    private int maxAge;
+    protected int maxAge;
 
-    private List<String> allowMethods;
+    protected List<String> allowMethods;
 
-    private List<String> exposeHeaders;
+    protected List<String> exposeHeaders;
 
     public OptionsInfoResult(String allowOrigin, List<String> allowHeaders, int maxAge, List<String> allowMethods,
             List<String> exposeHeaders) {
@@ -42,6 +42,9 @@ public class OptionsInfoResult extends HeaderResponse {
         this.exposeHeaders = exposeHeaders;
     }
 
+    protected OptionsInfoResult() {
+    }
+    
     /**
      * Obtain the origin of the allowed cross-origin request.
      * 

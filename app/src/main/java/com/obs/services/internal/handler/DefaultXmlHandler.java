@@ -32,7 +32,7 @@ public abstract class DefaultXmlHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String name, String qName, Attributes attrs) {
+    public void startElement(String uri, String name, String qualifiedName, Attributes attrs) {
         this.currText = new StringBuilder();
         this.startElement(name, attrs);
     }
@@ -46,7 +46,7 @@ public abstract class DefaultXmlHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri, String name, String qName) {
+    public void endElement(String uri, String name, String qualifiedName) {
         String elementText = this.currText.toString();
         this.endElement(name, elementText);
     }

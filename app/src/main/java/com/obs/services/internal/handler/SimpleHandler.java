@@ -70,13 +70,13 @@ public abstract class SimpleHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String name, String qName, Attributes attrs) {
+    public void startElement(String uri, String name, String qualifiedName, Attributes attrs) {
         invokeMethodWithoutException("start" + name, null);
     }
 
     @Override
-    public void endElement(String uri, String name, String qName) {
-        String elementContent = this.textBuffer.toString().trim();
+    public void endElement(String uri, String name, String qualifiedName) {
+        String elementContent = this.textBuffer.toString();
 
         invokeMethodWithoutException("end" + name, elementContent);
 
@@ -103,8 +103,8 @@ public abstract class SimpleHandler extends DefaultHandler {
         Object[] parameters = new Object[] {};
 
         if (null != parameter) {
-            clazz = new Class[] { String.class };
-            parameters = new Object[] { parameter };
+            clazz = new Class[] {String.class};
+            parameters = new Object[] {parameter};
         }
 
         try {

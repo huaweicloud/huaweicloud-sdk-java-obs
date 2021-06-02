@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.obs.services.internal.utils.ObjectUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 
 /**
@@ -833,63 +834,40 @@ public class LifecycleConfiguration extends HeaderResponse {
             if (this == obj) {
                 return true;
             }
-            if (obj == null) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
+            
             Rule other = (Rule) obj;
             if (!getOuterType().equals(other.getOuterType())) {
                 return false;
             }
-            if (enabled == null) {
-                if (other.enabled != null) {
-                    return false;
-                }
-            } else if (!enabled.equals(other.enabled)) {
+            
+            if (!ObjectUtils.isEquals(enabled, other.enabled)) {
                 return false;
             }
-            if (expiration == null) {
-                if (other.expiration != null) {
-                    return false;
-                }
-            } else if (!expiration.equals(other.expiration)) {
+            
+            if (!ObjectUtils.isEquals(expiration, other.expiration)) {
                 return false;
             }
-            if (id == null) {
-                if (other.id != null) {
-                    return false;
-                }
-            } else if (!id.equals(other.id)) {
+            
+            if (!ObjectUtils.isEquals(id, other.id)) {
                 return false;
             }
-            if (noncurrentVersionExpiration == null) {
-                if (other.noncurrentVersionExpiration != null) {
-                    return false;
-                }
-            } else if (!noncurrentVersionExpiration.equals(other.noncurrentVersionExpiration)) {
+            
+            if (!ObjectUtils.isEquals(noncurrentVersionExpiration, other.noncurrentVersionExpiration)) {
                 return false;
             }
-            if (noncurrentVersionTransitions == null) {
-                if (other.noncurrentVersionTransitions != null) {
-                    return false;
-                }
-            } else if (!noncurrentVersionTransitions.equals(other.noncurrentVersionTransitions)) {
+            
+            if (!ObjectUtils.isEquals(noncurrentVersionTransitions, other.noncurrentVersionTransitions)) {
                 return false;
             }
-            if (prefix == null) {
-                if (other.prefix != null) {
-                    return false;
-                }
-            } else if (!prefix.equals(other.prefix)) {
+            
+            if (!ObjectUtils.isEquals(prefix, other.prefix)) {
                 return false;
             }
-            if (transitions == null) {
-                if (other.transitions != null) {
-                    return false;
-                }
-            } else if (!transitions.equals(other.transitions)) {
+            
+            if (!ObjectUtils.isEquals(transitions, other.transitions)) {
                 return false;
             }
             return true;

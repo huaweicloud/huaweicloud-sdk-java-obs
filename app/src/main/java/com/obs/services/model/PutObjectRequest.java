@@ -127,7 +127,6 @@ public class PutObjectRequest extends PutObjectBasicRequest {
     /**
      * Obtain the data stream to be uploaded, which cannot be used with the file
      * to be uploaded.
-     * 
      * @return Data stream to be uploaded
      */
     public InputStream getInput() {

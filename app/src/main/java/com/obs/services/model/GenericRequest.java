@@ -29,7 +29,8 @@ public class GenericRequest {
      * If the requester is allowed to pay, true is returned. Otherwise, false is returned.
      *
      * <p>
-     * If the requester-pays function is enabled for a bucket, this attribute must be set to true when the bucket is requested by a requester other than the bucket owner. Otherwise, status code 403 is returned.
+     * If the requester-pays function is enabled for a bucket, this attribute must be set to true when the bucket is
+     *  requested by a requester other than the bucket owner. Otherwise, status code 403 is returned.
      *
      * <p>
      * After the requester-pays function is enabled, anonymous access to the bucket is not allowed.
@@ -44,12 +45,14 @@ public class GenericRequest {
      * Used to configure whether to enable the requester-pays function.
      *
      * <p>
-     * If the requester-pays function is enabled for a bucket, this attribute must be set to true when the bucket is requested by a requester other than the bucket owner. Otherwise, status code 403 is returned.
+     * If the requester-pays function is enabled for a bucket, this attribute must be set to true when the bucket is
+     *  requested by a requester other than the bucket owner. Otherwise, status code 403 is returned.
      *
      * <p>
      * After the requester-pays function is enabled, anonymous access to the bucket is not allowed.
      *
-     * @param isRequesterPays True indicates to enable the requester-pays function. False indicates to disable the requester-pays function.
+     * @param isRequesterPays True indicates to enable the requester-pays function. 
+     * False indicates to disable the requester-pays function.
      */
     public void setRequesterPays(boolean isRequesterPays) {
         this.isRequesterPays = isRequesterPays;

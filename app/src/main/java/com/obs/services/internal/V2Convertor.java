@@ -23,20 +23,10 @@ import javax.xml.transform.TransformerException;
 
 import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
-import com.obs.services.model.BucketCors;
-import com.obs.services.model.BucketCorsRule;
-import com.obs.services.model.BucketDirectColdAccess;
-import com.obs.services.model.BucketEncryption;
-import com.obs.services.model.BucketLoggingConfiguration;
-import com.obs.services.model.BucketNotificationConfiguration;
-import com.obs.services.model.BucketQuota;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
-import com.obs.services.model.BucketTagInfo;
 import com.obs.services.model.CanonicalGrantee;
 import com.obs.services.model.EventTypeEnum;
-import com.obs.services.model.FunctionGraphConfiguration;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
@@ -54,13 +44,10 @@ import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RouteRule;
 import com.obs.services.model.RouteRuleCondition;
-import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.StorageClassEnum;
-import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.WebsiteConfiguration;
-import com.obs.services.model.fs.FSStatusEnum;
 
-public class V2Convertor implements IConvertor {
+public class V2Convertor extends V2BucketConvertor {
 
     private static IConvertor instance = new V2Convertor();
 
@@ -94,19 +81,8 @@ public class V2Convertor implements IConvertor {
             });
             for (PartEtag part : parts) {
                 builder.e("Part").e("PartNumber").t(part.getPartNumber() == null ? "" : part.getPartNumber().toString())
-                        .up().e("ETag").t(ServiceUtils.toValid(part.geteTag()));
+                        .up().e("ETag").t(ServiceUtils.toValid(part.getEtag()));
             }
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public String transBucketLoction(String location) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("CreateBucketConfiguration").elem("LocationConstraint")
-                    .text(ServiceUtils.toValid(location));
             return builder.asString();
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -150,45 +126,22 @@ public class V2Convertor implements IConvertor {
                 b.elem("Status").t(rule.getEnabled() ? "Enabled" : "Disabled");
 
                 if (rule.getTransitions() != null) {
-                    for (Transition transition : rule.getTransitions()) {
-                        if (transition.getObjectStorageClass() != null) {
-                            XMLBuilder tBuilder = b.elem("Transition");
-                            if (transition.getDate() != null) {
-                                tBuilder.elem("Date").t(ServiceUtils.formatIso8601MidnightDate(transition.getDate()));
-                            } else if (transition.getDays() != null) {
-                                tBuilder.elem("Days").t(transition.getDays().toString());
-                            }
-                            tBuilder.elem("StorageClass").t(this.transStorageClass(transition.getObjectStorageClass()));
-                        }
-                    }
+                    transTransitions(rule, b);
                 }
 
                 if (rule.getExpiration() != null) {
-                    XMLBuilder eBuilder = b.elem("Expiration");
-                    if (rule.getExpiration().getDate() != null) {
-                        eBuilder.elem("Date").t(ServiceUtils.formatIso8601MidnightDate(rule.getExpiration().getDate()));
-                    } else if (rule.getExpiration().getDays() != null) {
-                        eBuilder.elem("Days").t(rule.getExpiration().getDays().toString());
-                    }
+                    transExpiration(rule, b);
                 }
 
                 if (rule.getNoncurrentVersionTransitions() != null) {
-                    for (NoncurrentVersionTransition noncurrentVersionTransition : rule
-                            .getNoncurrentVersionTransitions()) {
-                        if (noncurrentVersionTransition.getObjectStorageClass() != null
-                                && noncurrentVersionTransition.getDays() != null) {
-                            XMLBuilder eBuilder = b.elem("NoncurrentVersionTransition");
-                            eBuilder.elem("NoncurrentDays").t(noncurrentVersionTransition.getDays().toString());
-                            eBuilder.elem("StorageClass")
-                                    .t(this.transStorageClass(noncurrentVersionTransition.getObjectStorageClass()));
-                        }
-                    }
+                    transNoncurrentVersionTransition(rule, b);
                 }
 
                 if (rule.getNoncurrentVersionExpiration() != null
                         && rule.getNoncurrentVersionExpiration().getDays() != null) {
-                    XMLBuilder eBuilder = b.elem("NoncurrentVersionExpiration");
-                    eBuilder.elem("NoncurrentDays").t(rule.getNoncurrentVersionExpiration().getDays().toString());
+                    XMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionExpiration");
+                    noncurrentVersionBuilder.elem("NoncurrentDays").t(
+                            rule.getNoncurrentVersionExpiration().getDays().toString());
                 }
             }
             return builder.asString();
@@ -198,6 +151,46 @@ public class V2Convertor implements IConvertor {
             throw new ServiceException("Failed to build XML document for lifecycle", e);
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for lifecycle", e);
+        }
+    }
+
+    private void transNoncurrentVersionTransition(Rule rule, XMLBuilder b) {
+        for (NoncurrentVersionTransition noncurrentVersionTransition : rule
+                .getNoncurrentVersionTransitions()) {
+            if (noncurrentVersionTransition.getObjectStorageClass() != null
+                    && noncurrentVersionTransition.getDays() != null) {
+                XMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionTransition");
+                noncurrentVersionBuilder.elem("NoncurrentDays").t(
+                        noncurrentVersionTransition.getDays().toString());
+                noncurrentVersionBuilder.elem("StorageClass")
+                        .t(this.transStorageClass(noncurrentVersionTransition.getObjectStorageClass()));
+            }
+        }
+    }
+
+    private void transExpiration(Rule rule, XMLBuilder b) {
+        XMLBuilder expirationBuilder = b.elem("Expiration");
+        if (rule.getExpiration().getDate() != null) {
+            expirationBuilder.elem("Date").t(
+                    ServiceUtils.formatIso8601MidnightDate(rule.getExpiration().getDate()));
+        } else if (rule.getExpiration().getDays() != null) {
+            expirationBuilder.elem("Days").t(rule.getExpiration().getDays().toString());
+        }
+    }
+
+    private void transTransitions(Rule rule, XMLBuilder b) {
+        for (Transition transition : rule.getTransitions()) {
+            if (transition.getObjectStorageClass() != null) {
+                XMLBuilder transitionBuilder = b.elem("Transition");
+                if (transition.getDate() != null) {
+                    transitionBuilder.elem("Date").t(
+                            ServiceUtils.formatIso8601MidnightDate(transition.getDate()));
+                } else if (transition.getDays() != null) {
+                    transitionBuilder.elem("Days").t(transition.getDays().toString());
+                }
+                transitionBuilder.elem("StorageClass").t(
+                        this.transStorageClass(transition.getObjectStorageClass()));
+            }
         }
     }
 
@@ -225,52 +218,7 @@ public class V2Convertor implements IConvertor {
             if (null != config.getRouteRules() && config.getRouteRules().size() > 0) {
                 builder = builder.elem("RoutingRules");
                 for (RouteRule routingRule : config.getRouteRules()) {
-                    builder = builder.elem("RoutingRule");
-                    RouteRuleCondition condition = routingRule.getCondition();
-                    Redirect redirect = routingRule.getRedirect();
-                    if (null != condition) {
-                        builder = builder.elem("Condition");
-                        String keyPrefixEquals = condition.getKeyPrefixEquals();
-                        String hecre = condition.getHttpErrorCodeReturnedEquals();
-                        if (ServiceUtils.isValid2(keyPrefixEquals)) {
-                            builder = builder.elem("KeyPrefixEquals").text(keyPrefixEquals);
-                            builder = builder.up();
-                        }
-                        if (ServiceUtils.isValid2(hecre)) {
-                            builder = builder.elem("HttpErrorCodeReturnedEquals").text(hecre);
-                            builder = builder.up();
-                        }
-                        builder = builder.up();
-                    }
-                    if (null != redirect) {
-                        builder = builder.elem("Redirect");
-                        String hostName = redirect.getHostName();
-                        String repalceKeyWith = redirect.getReplaceKeyWith();
-                        String replaceKeyPrefixWith = redirect.getReplaceKeyPrefixWith();
-                        String redirectCode = redirect.getHttpRedirectCode();
-                        if (ServiceUtils.isValid2(hostName)) {
-                            builder = builder.elem("HostName").text(hostName);
-                            builder = builder.up();
-                        }
-                        if (ServiceUtils.isValid2(redirectCode)) {
-                            builder = builder.elem("HttpRedirectCode").text(redirectCode);
-                            builder = builder.up();
-                        }
-                        if (ServiceUtils.isValid2(repalceKeyWith)) {
-                            builder = builder.elem("ReplaceKeyWith").text(repalceKeyWith);
-                            builder = builder.up();
-                        }
-                        if (ServiceUtils.isValid2(replaceKeyPrefixWith)) {
-                            builder = builder.elem("ReplaceKeyPrefixWith").text(replaceKeyPrefixWith);
-                            builder = builder.up();
-                        }
-                        if (redirect.getRedirectProtocol() != null) {
-                            builder = builder.elem("Protocol").text(redirect.getRedirectProtocol().getCode());
-                            builder = builder.up();
-                        }
-                        builder = builder.up();
-                    }
-                    builder = builder.up();
+                    builder = transWebsiteRoutingRule(builder, routingRule);
                 }
                 builder = builder.up();
             }
@@ -278,6 +226,57 @@ public class V2Convertor implements IConvertor {
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for website", e);
         }
+    }
+
+    private XMLBuilder transWebsiteRoutingRule(XMLBuilder builder, RouteRule routingRule) {
+        builder = builder.elem("RoutingRule");
+        RouteRuleCondition condition = routingRule.getCondition();
+        if (null != condition) {
+            builder = builder.elem("Condition");
+            String keyPrefixEquals = condition.getKeyPrefixEquals();
+            String hecre = condition.getHttpErrorCodeReturnedEquals();
+            if (ServiceUtils.isValid2(keyPrefixEquals)) {
+                builder = builder.elem("KeyPrefixEquals").text(keyPrefixEquals);
+                builder = builder.up();
+            }
+            if (ServiceUtils.isValid2(hecre)) {
+                builder = builder.elem("HttpErrorCodeReturnedEquals").text(hecre);
+                builder = builder.up();
+            }
+            builder = builder.up();
+        }
+        
+        Redirect redirect = routingRule.getRedirect();
+        if (null != redirect) {
+            builder = builder.elem("Redirect");
+            String hostName = redirect.getHostName();
+            String repalceKeyWith = redirect.getReplaceKeyWith();
+            String replaceKeyPrefixWith = redirect.getReplaceKeyPrefixWith();
+            String redirectCode = redirect.getHttpRedirectCode();
+            if (ServiceUtils.isValid2(hostName)) {
+                builder = builder.elem("HostName").text(hostName);
+                builder = builder.up();
+            }
+            if (ServiceUtils.isValid2(redirectCode)) {
+                builder = builder.elem("HttpRedirectCode").text(redirectCode);
+                builder = builder.up();
+            }
+            if (ServiceUtils.isValid2(repalceKeyWith)) {
+                builder = builder.elem("ReplaceKeyWith").text(repalceKeyWith);
+                builder = builder.up();
+            }
+            if (ServiceUtils.isValid2(replaceKeyPrefixWith)) {
+                builder = builder.elem("ReplaceKeyPrefixWith").text(replaceKeyPrefixWith);
+                builder = builder.up();
+            }
+            if (redirect.getRedirectProtocol() != null) {
+                builder = builder.elem("Protocol").text(redirect.getRedirectProtocol().getCode());
+                builder = builder.up();
+            }
+            builder = builder.up();
+        }
+        builder = builder.up();
+        return builder;
     }
 
     @Override
@@ -294,39 +293,6 @@ public class V2Convertor implements IConvertor {
     }
 
     @Override
-    public String transBucketQuota(BucketQuota quota) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("Quota").elem("StorageQuota")
-                    .text(String.valueOf(quota.getBucketQuota())).up();
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for storageQuota", e);
-        }
-    }
-
-    @Override
-    public String transBucketEcryption(BucketEncryption encryption) throws ServiceException {
-        String algorithm = encryption.getSseAlgorithm().getCode();
-        String kmsKeyId = "";
-        if (algorithm.equals(SSEAlgorithmEnum.KMS.getCode())) {
-            algorithm = "aws:" + algorithm;
-            kmsKeyId = encryption.getKmsKeyId();
-        }
-        try {
-            XMLBuilder builder = XMLBuilder.create("ServerSideEncryptionConfiguration").e("Rule")
-                    .e("ApplyServerSideEncryptionByDefault");
-            builder.e("SSEAlgorithm").t(algorithm);
-            if (ServiceUtils.isValid(kmsKeyId)) {
-                builder.e("KMSMasterKeyID").t(kmsKeyId);
-            }
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for bucketEncryption", e);
-        }
-
-    }
-
-    @Override
     public String transStoragePolicy(BucketStoragePolicyConfiguration status) throws ServiceException {
         try {
             XMLBuilder builder = XMLBuilder.create("StoragePolicy").elem("DefaultStorageClass")
@@ -334,105 +300,6 @@ public class V2Convertor implements IConvertor {
             return builder.asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for StoragePolicy", e);
-        }
-    }
-
-    @Override
-    public String transBucketLoggingConfiguration(BucketLoggingConfiguration c) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("BucketLoggingStatus");
-            if (c.isLoggingEnabled()) {
-                XMLBuilder enabledBuilder = builder.elem("LoggingEnabled");
-                if (c.getTargetBucketName() != null) {
-                    enabledBuilder.elem("TargetBucket").text(ServiceUtils.toValid(c.getTargetBucketName()));
-                }
-
-                if (c.getLogfilePrefix() != null) {
-                    enabledBuilder.elem("TargetPrefix").text(ServiceUtils.toValid(c.getLogfilePrefix()));
-                }
-                GrantAndPermission[] grants = c.getTargetGrants();
-                if (grants.length > 0) {
-                    XMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
-                    for (GrantAndPermission gap : grants) {
-                        GranteeInterface grantee = gap.getGrantee();
-                        Permission permission = gap.getPermission();
-                        if (permission != null) {
-                            XMLBuilder subBuilder = null;
-                            if (grantee instanceof CanonicalGrantee) {
-                                subBuilder = XMLBuilder.create("Grantee")
-                                        .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-                                        .attr("xsi:type", "CanonicalUser").element("ID")
-                                        .text(ServiceUtils.toValid(grantee.getIdentifier()));
-                                String displayName = ((CanonicalGrantee) grantee).getDisplayName();
-                                if (ServiceUtils.isValid2(displayName)) {
-                                    subBuilder.up().element("DisplayName").text(displayName);
-                                }
-                            } else if (grantee instanceof GroupGrantee) {
-                                subBuilder = XMLBuilder.create("Grantee")
-                                        .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-                                        .attr("xsi:type", "Group").element("URI")
-                                        .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
-                            }
-
-                            if (subBuilder != null) {
-                                grantsBuilder.elem("Grant").importXMLBuilder(subBuilder).elem("Permission")
-                                        .text(ServiceUtils.toValid(permission.getPermissionString()));
-                            }
-                        }
-                    }
-                }
-            }
-            return builder.asString();
-        } catch (ParserConfigurationException e) {
-            throw new ServiceException("Failed to build XML document for BucketLoggingConfiguration", e);
-        } catch (TransformerException e) {
-            throw new ServiceException("Failed to build XML document for BucketLoggingConfiguration", e);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for BucketLoggingConfiguration", e);
-        }
-    }
-
-    @Override
-    public String transBucketCors(BucketCors cors) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("CORSConfiguration");
-            for (BucketCorsRule rule : cors.getRules()) {
-                builder = builder.e("CORSRule");
-                if (rule.getId() != null) {
-                    builder.e("ID").t(rule.getId());
-                }
-                if (rule.getAllowedMethod() != null) {
-                    for (String method : rule.getAllowedMethod()) {
-                        builder.e("AllowedMethod").t(ServiceUtils.toValid(method));
-                    }
-                }
-
-                if (rule.getAllowedOrigin() != null) {
-                    for (String origin : rule.getAllowedOrigin()) {
-                        builder.e("AllowedOrigin").t(ServiceUtils.toValid(origin));
-                    }
-                }
-
-                if (rule.getAllowedHeader() != null) {
-                    for (String header : rule.getAllowedHeader()) {
-                        builder.e("AllowedHeader").t(ServiceUtils.toValid(header));
-                    }
-                }
-                builder.e("MaxAgeSeconds").t(String.valueOf(rule.getMaxAgeSecond()));
-                if (rule.getExposeHeader() != null) {
-                    for (String exposeHeader : rule.getExposeHeader()) {
-                        builder.e("ExposeHeader").t(ServiceUtils.toValid(exposeHeader));
-                    }
-                }
-                builder = builder.up();
-            }
-            return builder.asString();
-        } catch (ParserConfigurationException e) {
-            throw new ServiceException("Failed to build XML document for cors", e);
-        } catch (TransformerException e) {
-            throw new ServiceException("Failed to build XML document for cors", e);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for cors", e);
         }
     }
 
@@ -457,19 +324,9 @@ public class V2Convertor implements IConvertor {
                     Permission permission = gap.getPermission();
                     XMLBuilder subBuilder = null;
                     if (grantee instanceof CanonicalGrantee) {
-                        subBuilder = XMLBuilder.create("Grantee")
-                                .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-                                .attr("xsi:type", "CanonicalUser").element("ID")
-                                .text(ServiceUtils.toValid(grantee.getIdentifier()));
-                        String displayName = ((CanonicalGrantee) grantee).getDisplayName();
-                        if (ServiceUtils.isValid2(displayName)) {
-                            subBuilder.up().element("DisplayName").text(displayName);
-                        }
+                        subBuilder = buildCanonicalGrantee(grantee);
                     } else if (grantee instanceof GroupGrantee) {
-                        subBuilder = XMLBuilder.create("Grantee")
-                                .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-                                .attr("xsi:type", "Group").element("URI")
-                                .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
+                        subBuilder = buildGroupGrantee(grantee);
                     } else if (grantee != null) {
                         subBuilder = XMLBuilder.create("Grantee")
                                 .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
@@ -513,81 +370,6 @@ public class V2Convertor implements IConvertor {
     }
 
     @Override
-    public String transBucketTagInfo(BucketTagInfo bucketTagInfo) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("Tagging").e("TagSet");
-            for (BucketTagInfo.TagSet.Tag tag : bucketTagInfo.getTagSet().getTags()) {
-                if (tag != null) {
-                    builder.e("Tag").e("Key").t(ServiceUtils.toValid(tag.getKey())).up().e("Value")
-                            .t(ServiceUtils.toValid(tag.getValue()));
-                }
-            }
-            return builder.up().asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for Tagging", e);
-        }
-    }
-
-    @Override
-    public String transBucketNotificationConfiguration(BucketNotificationConfiguration bucketNotificationConfiguration)
-            throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("NotificationConfiguration");
-            if (bucketNotificationConfiguration == null) {
-                return builder.asString();
-            }
-
-            for (TopicConfiguration config : bucketNotificationConfiguration.getTopicConfigurations()) {
-                packNotificationConfig(builder, config, "TopicConfiguration", "Topic", "S3Key");
-            }
-
-            for (FunctionGraphConfiguration config : bucketNotificationConfiguration.getFunctionGraphConfigurations()) {
-                packNotificationConfig(builder, config, "FunctionGraphConfiguration", "FunctionGraph", "S3Key");
-            }
-
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for Notification", e);
-        }
-    }
-
-    protected void packNotificationConfig(XMLBuilder builder, AbstractNotification config, String configType,
-            String urnType, String adapter) {
-        builder = builder.e(configType);
-        if (config.getId() != null) {
-            builder.e("Id").t(config.getId());
-        }
-        if (config.getFilter() != null && !config.getFilter().getFilterRules().isEmpty()) {
-            builder = builder.e("Filter").e(adapter);
-            for (AbstractNotification.Filter.FilterRule rule : config.getFilter().getFilterRules()) {
-                if (rule != null) {
-                    builder.e("FilterRule").e("Name").t(ServiceUtils.toValid(rule.getName())).up().e("Value")
-                            .t(ServiceUtils.toValid(rule.getValue()));
-                }
-            }
-            builder = builder.up().up();
-        }
-        String urn = null;
-        if (config instanceof TopicConfiguration) {
-            urn = ((TopicConfiguration) config).getTopic();
-        }
-        if (config instanceof FunctionGraphConfiguration) {
-            urn = ((FunctionGraphConfiguration) config).getFunctionGraph();
-        }
-        if (urn != null) {
-            builder.e(urnType).t(urn);
-        }
-
-        if (config.getEventTypes() != null) {
-            for (EventTypeEnum event : config.getEventTypes()) {
-                if (event != null) {
-                    builder.e("Event").t(this.transEventType(event));
-                }
-            }
-        }
-    }
-
-    @Override
     public String transReplicationConfiguration(ReplicationConfiguration replicationConfiguration)
             throws ServiceException {
         try {
@@ -620,15 +402,6 @@ public class V2Convertor implements IConvertor {
             return builder.asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for Replication", e);
-        }
-    }
-
-    @Override
-    public String transBucketFileInterface(FSStatusEnum status) throws ServiceException {
-        try {
-            return XMLBuilder.create("FileInterfaceConfiguration").e("Status").t(status.getCode()).up().asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for FileInterface", e);
         }
     }
 
@@ -687,20 +460,6 @@ public class V2Convertor implements IConvertor {
             }
         }
         return storageClassStr;
-    }
-
-    @Override
-    public String transBucketDirectColdAccess(BucketDirectColdAccess access) throws ServiceException {
-        try {
-            XMLBuilder builder = XMLBuilder.create("DirectColdAccessConfiguration");
-
-            builder = builder.e("Status").t(access.getStatus().getCode());
-            builder = builder.up();
-
-            return builder.up().asString();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to build XML document for Tagging", e);
-        }
     }
 
     @Override

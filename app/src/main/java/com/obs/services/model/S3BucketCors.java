@@ -17,7 +17,7 @@ package com.obs.services.model;
 import java.util.ArrayList;
 import java.util.List;
 
-@Deprecated
+
 public class S3BucketCors extends HeaderResponse {
 
     private List<BucketCorsRule> rules;
@@ -29,6 +29,11 @@ public class S3BucketCors extends HeaderResponse {
         this.rules = rules;
     }
 
+    /**
+     * Obtain the bucket CORS rule list.
+     * 
+     * @return Bucket CORS rule list
+     */
     public List<BucketCorsRule> getRules() {
         if (null == rules) {
             rules = new ArrayList<BucketCorsRule>();
@@ -36,6 +41,12 @@ public class S3BucketCors extends HeaderResponse {
         return rules;
     }
 
+    /**
+     * Configure the bucket CORS rule list.
+     * 
+     * @param rules
+     *            Bucket CORS rule list
+     */
     public void setRules(List<BucketCorsRule> rules) {
         this.rules = rules;
     }

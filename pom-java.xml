@@ -4,7 +4,7 @@
 
     <groupId>com.huawei.storage</groupId>
     <artifactId>esdk-obs-java</artifactId>
-    <version>3.20.6.2</version>
+    <version>3.21.4</version>
     <packaging>jar</packaging>
 
     <name>OBS SDK for Java</name>
@@ -96,7 +96,7 @@
             </resource>
         </resources>
          -->
-        <testSourceDirectory>app/src/test/java/samples_java</testSourceDirectory>
+        <testSourceDirectory>app/src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -119,6 +119,10 @@
                     <encoding>UTF-8</encoding>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
                 </configuration>
                 <executions>
                     <execution>

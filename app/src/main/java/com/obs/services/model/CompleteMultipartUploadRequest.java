@@ -20,17 +20,11 @@ import java.util.List;
 /**
  * Parameters in a request for combining parts
  */
-public class CompleteMultipartUploadRequest extends GenericRequest {
-    private String uploadId;
-
-    private String bucketName;
-
-    private String objectKey;
-
+public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
     private List<PartEtag> partEtag;
 
     public CompleteMultipartUploadRequest() {
-
+        super();
     }
 
     /**
@@ -47,67 +41,11 @@ public class CompleteMultipartUploadRequest extends GenericRequest {
      */
     public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId,
             List<PartEtag> partEtag) {
-        this.uploadId = uploadId;
-        this.bucketName = bucketName;
-        this.objectKey = objectKey;
+        super();
+        this.setUploadId(uploadId);
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
         this.partEtag = partEtag;
-    }
-
-    /**
-     * Obtain the multipart upload ID.
-     * 
-     * @return Multipart upload ID
-     */
-    public String getUploadId() {
-        return uploadId;
-    }
-
-    /**
-     * Set the multipart upload ID.
-     * 
-     * @param uploadId
-     *            Multipart upload ID
-     */
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     * 
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     * 
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the name of the object involved in the multipart upload.
-     * 
-     * @return Name of the object involved in the multipart upload
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the name for the object involved in the multipart upload.
-     * 
-     * @param objectKey
-     *            Name of the object involved in the multipart upload
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**
@@ -134,8 +72,9 @@ public class CompleteMultipartUploadRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "CompleteMultipartUploadRequest [uploadId=" + uploadId + ", bucketName=" + bucketName + ", objectKey="
-                + objectKey + ", partEtag=" + partEtag + "]";
+        return "CompleteMultipartUploadRequest [uploadId=" + this.getUploadId() 
+                + ", bucketName=" + this.getBucketName() + ", objectKey="
+                + this.getObjectKey() + ", partEtag=" + partEtag + "]";
     }
 
 }

@@ -17,7 +17,12 @@ package com.obs.services.internal.io;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+
 public class InterruptableInputStream extends InputStream implements InputStreamWrapper {
+    private static final ILogger log = LoggerBuilder.getLogger(InterruptableInputStream.class);
+    
     private InputStream inputStream = null;
 
     private boolean interrupted = false;
@@ -31,6 +36,7 @@ public class InterruptableInputStream extends InputStream implements InputStream
             try {
                 close();
             } catch (IOException ioe) {
+                log.warn("io close failed.", ioe);
             }
             throw new UnrecoverableIOException("Reading from input stream deliberately interrupted");
         }

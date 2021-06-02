@@ -15,7 +15,10 @@
 package com.obs.services.internal.utils;
 
 import java.io.IOException;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -102,13 +105,13 @@ public class JSONChange {
 
             // 序列化
             // 禁止序列化空值
-            this.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+            this.setDefaultPropertyInclusion(JsonInclude.Value.construct(Include.ALWAYS, Include.NON_NULL));
             this.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             this.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-            this.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true);
+            this.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             // 按时间戳格式生成日期
             this.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, true);
-            this.configure(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN, true);
+            this.enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
             // 不包含空值属性
             this.setSerializationInclusion(Include.NON_EMPTY);
             this.setSerializationInclusion(Include.NON_NULL);

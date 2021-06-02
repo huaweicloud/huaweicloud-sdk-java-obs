@@ -14,6 +14,7 @@
 
 package com.obs.services.internal.task;
 
+import com.obs.services.AbstractClient;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.RestoreObjectRequest;
@@ -31,14 +32,14 @@ public class RestoreObjectTask extends AbstractObsTask {
         super(obsClient, bucketName);
     }
 
-    public RestoreObjectTask(ObsClient obsClient, String bucketName, RestoreObjectRequest taskRequest,
+    public RestoreObjectTask(AbstractClient obsClient, String bucketName, RestoreObjectRequest taskRequest,
             TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback) {
         super(obsClient, bucketName);
         this.taskRequest = taskRequest;
         this.callback = callback;
     }
 
-    public RestoreObjectTask(ObsClient obsClient, String bucketName, RestoreObjectRequest taskRequest,
+    public RestoreObjectTask(AbstractClient obsClient, String bucketName, RestoreObjectRequest taskRequest,
             TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback, TaskProgressListener listener,
             DefaultTaskProgressStatus progressStatus, int taskProgressInterval) {
         super(obsClient, bucketName, progressStatus, listener, taskProgressInterval);
@@ -64,20 +65,20 @@ public class RestoreObjectTask extends AbstractObsTask {
 
     private void restoreObjects() {
         try {
-            RestoreObjectResult result = obsClient.restoreObjectV2(taskRequest);
-            progressStatus.succeedTaskIncrement();
+            RestoreObjectResult result = this.getObsClient().restoreObjectV2(taskRequest);
+            this.getProgressStatus().succeedTaskIncrement();
             callback.onSuccess(result);
         } catch (ObsException e) {
-            progressStatus.failTaskIncrement();
+            this.getProgressStatus().failTaskIncrement();
             callback.onException(e, taskRequest);
         }
-        progressStatus.execTaskIncrement();
-        if (progressListener != null) {
-            if (progressStatus.getExecTaskNum() % this.taskProgressInterval == 0) {
-                progressListener.progressChanged(progressStatus);
+        this.getProgressStatus().execTaskIncrement();
+        if (this.getProgressListener() != null) {
+            if (this.getProgressStatus().getExecTaskNum() % this.getTaskProgressInterval() == 0) {
+                this.getProgressListener().progressChanged(this.getProgressStatus());
             }
-            if (progressStatus.getExecTaskNum() == progressStatus.getTotalTaskNum()) {
-                progressListener.progressChanged(progressStatus);
+            if (this.getProgressStatus().getExecTaskNum() == this.getProgressStatus().getTotalTaskNum()) {
+                this.getProgressListener().progressChanged(this.getProgressStatus());
             }
         }
     }
