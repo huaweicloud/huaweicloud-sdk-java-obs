@@ -4,7 +4,7 @@
 
 	<groupId>com.huaweicloud</groupId>
 	<artifactId>esdk-obs-java</artifactId>
-	<version>3.20.6.2</version>
+	<version>3.21.4</version>
 	<packaging>jar</packaging>
 
 	<name>OBS SDK for Java</name>
@@ -64,16 +64,16 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>com.squareup.okhttp3</groupId>
-		    <artifactId>okhttp</artifactId>
-		    <version>3.14.9</version>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>3.14.9</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okio</groupId>
 			<artifactId>okio</artifactId>
 			<version>1.17.5</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -89,7 +89,7 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.11.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
@@ -100,7 +100,7 @@
 			<artifactId>log4j-api</artifactId>
 			<version>2.13.2</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
