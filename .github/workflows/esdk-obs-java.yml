@@ -20,7 +20,7 @@ jobs:
     - name: 拷贝Java SDK的编译结果到目录(esdk-obs-java-en-on-github)
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-* ./esdk-obs-java-en-on-github
     - name: 编译性能优化后的 Java SDK
-      run: mvn clean install -f -Dmaven.test.skip=true pom-java-optimization.xml
+      run: mvn clean install -Dmaven.test.skip=true -f pom-java-optimization.xml
     - name: 拷贝性能优化后的Java SDK的编译结果到目录(esdk-obs-java-cn-on-github)
       run: cp /home/runner/work/huaweicloud-sdk-java-obs/huaweicloud-sdk-java-obs/target/esdk-obs-java-optimization-*.jar ./esdk-obs-java-en-on-github
       
