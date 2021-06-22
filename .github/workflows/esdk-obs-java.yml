@@ -34,7 +34,7 @@ jobs:
         path: ./esdk-obs-java-en-on-github/
       
     - name: 编译常规的 Android SDK
-      run: mvn clean install -f -Dmaven.test.skip=true pom-android.xml
+      run: mvn clean install -Dmaven.test.skip=true -f pom-android.xml
     - name: 创建存放Android SDK的目录(esdk-obs-android-en-on-github)
       run: mkdir esdk-obs-android-en-on-github
     - name: 拷贝Java SDK的编译结果到目录(esdk-obs-android-en-on-github)
