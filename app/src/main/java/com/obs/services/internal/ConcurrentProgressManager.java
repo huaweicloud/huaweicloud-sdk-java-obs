@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -14,25 +14,29 @@
 
 package com.obs.services.internal;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.obs.services.model.ProgressListener;
 import com.obs.services.model.ProgressStatus;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ConcurrentProgressManager extends ProgressManager {
 
     private AtomicBoolean startFlag = new AtomicBoolean(false);
     protected AtomicLong transferredBytes;
     protected AtomicLong newlyTransferredBytes;
+    protected AtomicLong lastSecondBytes;
+    protected AtomicLong currentSecondBytes;
+    protected AtomicLong lastSwapTimeStamp;
 
     public ConcurrentProgressManager(long totalBytes, long transferredBytes, ProgressListener progressListener,
-            long intervalBytes) {
+                                     long intervalBytes) {
         super(totalBytes, progressListener, intervalBytes);
         this.transferredBytes = transferredBytes < 0 ? new AtomicLong(0) : new AtomicLong(transferredBytes);
         this.newlyTransferredBytes = new AtomicLong(0);
+        this.lastSecondBytes = new AtomicLong(-1);
+        this.currentSecondBytes = new AtomicLong(0);
+        this.lastSwapTimeStamp = new AtomicLong(System.currentTimeMillis());
     }
 
     public void progressStart() {
@@ -46,10 +50,10 @@ public class ConcurrentProgressManager extends ProgressManager {
             return;
         }
         synchronized (this) {
-            Date now = new Date();
+            long now = System.currentTimeMillis();
             ProgressStatus status = new DefaultProgressStatus(this.newlyTransferredBytes.get(),
-                    this.transferredBytes.get(), this.totalBytes, now.getTime() - this.lastCheckpoint.getTime(),
-                    now.getTime() - this.startCheckpoint.getTime());
+                    this.transferredBytes.get(), this.totalBytes, now - this.lastCheckpoint,
+                    now - this.startCheckpoint);
             this.progressListener.progressChanged(status);
         }
     }
@@ -58,16 +62,20 @@ public class ConcurrentProgressManager extends ProgressManager {
     protected void doProgressChanged(int bytes) {
         long transferred = this.transferredBytes.addAndGet(bytes);
         long newlyTransferred = this.newlyTransferredBytes.addAndGet(bytes);
-        Date now = new Date();
-        List<BytesUnit> currentInstantaneousBytes = this.createCurrentInstantaneousBytes(bytes, now);
-        this.lastInstantaneousBytes = currentInstantaneousBytes;
+        long now = System.currentTimeMillis();
+        long swapIntervalTime = now - lastSwapTimeStamp.get();
+        currentSecondBytes.addAndGet(bytes);
+        if (swapIntervalTime > 1000) {
+            lastSecondBytes.set((long) (currentSecondBytes.get() / (swapIntervalTime / 1000.0)));
+            currentSecondBytes.set(0);
+            lastSwapTimeStamp.set(now);
+        }
         if (newlyTransferred >= this.intervalBytes
                 && (transferred < this.totalBytes || this.totalBytes == -1)) {
             if (this.newlyTransferredBytes.compareAndSet(newlyTransferred, -newlyTransferred)) {
                 DefaultProgressStatus status = new DefaultProgressStatus(newlyTransferred, transferred,
-                        this.totalBytes, now.getTime() - this.lastCheckpoint.getTime(),
-                        now.getTime() - this.startCheckpoint.getTime());
-                status.setInstantaneousBytes(currentInstantaneousBytes);
+                        this.totalBytes, now - this.lastCheckpoint, now - this.startCheckpoint);
+                status.setInstantaneousSpeed(lastSecondBytes.get());
                 this.progressListener.progressChanged(status);
                 this.lastCheckpoint = now;
             }

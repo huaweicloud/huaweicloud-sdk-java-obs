@@ -19,6 +19,7 @@ import java.io.InputStream;
 /**
  * Objects in OBS
  */
+@SuppressWarnings("deprecation")
 public class ObsObject extends S3Object {
 
     /**

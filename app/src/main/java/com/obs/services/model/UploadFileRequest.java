@@ -39,6 +39,8 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 
     private ProgressListener progressListener;
 
+    private String encodingType;
+
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     /**
@@ -67,6 +69,23 @@ public class UploadFileRequest extends PutObjectBasicRequest {
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile) {
         this(bucketName, objectKey);
         this.uploadFile = uploadFile;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param uploadFile
+     *            To-be-uploaded local file
+     * @param encodingType
+     *            Encoding type used for encoding objectKey
+     */
+    public UploadFileRequest(String bucketName, String objectKey, String uploadFile, String encodingType) {
+        this(bucketName, objectKey, uploadFile);
+        this.encodingType = encodingType;
     }
 
     /**
@@ -375,12 +394,30 @@ public class UploadFileRequest extends PutObjectBasicRequest {
         this.progressInterval = progressInterval;
     }
 
+    /**
+     * Set encoding type for encoding objectKey, could choose "url"
+     * @param encodingType
+     *            encoding type for encoding objectKey
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Get encoding type for encoding objectKey
+     * @return encodingType
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
         return "UploadFileRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", partSize=" + partSize
                 + ", taskNum=" + taskNum + ", uploadFile=" + uploadFile + ", enableCheckpoint=" + enableCheckpoint
-                + ", checkpointFile=" + checkpointFile + ", objectMetadata=" + objectMetadata + ", enableCheckSum="
-                + enableCheckSum + "]";
+                + ", checkpointFile=" + checkpointFile + ", objectMetadata=" + objectMetadata
+                + ", isEncodeHeaders=" + encodeHeaders + ", enableCheckSum=" + enableCheckSum
+                + ", encodingType=" + encodingType + "]";
     }
 
 }

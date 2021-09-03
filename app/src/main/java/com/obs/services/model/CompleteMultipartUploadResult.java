@@ -30,6 +30,8 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
 
     private String objectUrl;
 
+    private String encodingType;
+
     public CompleteMultipartUploadResult(String bucketName, String objectKey, String etag, String location,
             String versionId, String objectUrl) {
         this.bucketName = bucketName;
@@ -92,6 +94,26 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
      */
     public String getObjectUrl() {
         return objectUrl;
+    }
+
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
+    }
+
+    /**
+     *  Set encoding type for objectKey in xml
+     * @param encodingType encoding type for objectKey
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     *  Get encoding type for objectKey in xml
+     * @return encodingType
+     */
+    public String getEncodingType() {
+        return encodingType;
     }
 
     @Override

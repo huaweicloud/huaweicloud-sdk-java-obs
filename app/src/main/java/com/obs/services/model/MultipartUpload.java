@@ -138,4 +138,8 @@ public class MultipartUpload {
         return ServiceUtils.cloneDateIgnoreNull(this.initiatedDate);
     }
 
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
+    }
+
 }

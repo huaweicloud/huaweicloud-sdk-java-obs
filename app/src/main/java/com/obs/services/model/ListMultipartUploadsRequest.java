@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ **/
 
 package com.obs.services.model;
 
@@ -30,13 +30,15 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     private String uploadIdMarker;
 
+    private String encodingType;
+
     public ListMultipartUploadsRequest() {
 
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      */
@@ -46,20 +48,20 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param maxUploads
      *            Maximum number of listed multipart uploads
      */
     public ListMultipartUploadsRequest(String bucketName, Integer maxUploads) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.maxUploads = maxUploads;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param prefix
@@ -79,19 +81,48 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      *            will be returned.
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
-            String keyMarker, String uploadIdMarker) {
-        this.bucketName = bucketName;
+                                       String keyMarker, String uploadIdMarker) {
+        this(bucketName, maxUploads);
         this.prefix = prefix;
         this.delimiter = delimiter;
-        this.maxUploads = maxUploads;
         this.keyMarker = keyMarker;
         this.uploadIdMarker = uploadIdMarker;
     }
 
     /**
+     **
+     * Constructor
+     *
+     * @param bucketName
+     *            Bucket name
+     * @param prefix
+     *            Prefix of names of the returned objects involved in the
+     *            multipart uploads
+     * @param delimiter
+     *            Character used for sorting objects involved in the multipart
+     *            uploads into different groups
+     * @param maxUploads
+     *            Maximum number of listed multipart uploads
+     * @param keyMarker
+     *            Start position for the query
+     * @param uploadIdMarker
+     *            Start position of the return result. This parameter is valid
+     *            only when used together with "keyMarker". Only multipart
+     *            uploads after "uploadIdMarker" of the specified "keyMarker"
+     *            will be returned.
+     * @param encodingType
+     *            Use this encoding type to encode keys that contains invalid characters, the value could be "url"
+     */
+    public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
+                                       String keyMarker, String uploadIdMarker, String encodingType) {
+        this(bucketName, prefix, delimiter, maxUploads, keyMarker, uploadIdMarker);
+        this.encodingType = encodingType;
+    }
+
+    /**
      * Obtain the prefix of names of the returned objects involved in the
      * multipart uploads.
-     * 
+     *
      * @return Object name prefix
      */
     public String getPrefix() {
@@ -101,7 +132,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
     /**
      * Set the prefix of names of the returned objects involved in the multipart
      * uploads.
-     * 
+     *
      * @param prefix
      *            Object name prefix
      */
@@ -112,7 +143,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
     /**
      * Obtain the character used for sorting objects involved in the multipart
      * uploads into different groups.
-     * 
+     *
      * @return Character for grouping object names
      */
     public String getDelimiter() {
@@ -122,7 +153,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
     /**
      * Set the character used for sorting objects involved in the multipart
      * uploads into different groups
-     * 
+     *
      * @param delimiter
      *            Character for grouping object names
      */
@@ -132,7 +163,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Obtain the start position for query (sorted by object name).
-     * 
+     *
      * @return Start position for query
      */
     public String getKeyMarker() {
@@ -141,7 +172,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Set the start position for query (sorted by object name).
-     * 
+     *
      * @param keyMarker
      *            Start position for query
      */
@@ -153,7 +184,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      * Obtain the start position for query (sorted by multipart upload ID). This
      * parameter is valid when used together with "keyMarker" and it specifies
      * the start position of the returned result.
-     * 
+     *
      * @return Start position for query
      */
     public String getUploadIdMarker() {
@@ -164,7 +195,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      * Set the start position for query (sorted by multipart upload ID). This
      * parameter is valid when used together with "keyMarker" and it specifies
      * the start position of the returned result.
-     * 
+     *
      * @param uploadIdMarker
      *            Start position for query
      */
@@ -174,7 +205,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Obtain the name of the bucket to which the multipart upload belongs.
-     * 
+     *
      * @return Name of the bucket to which the multipart upload belongs
      */
     public String getBucketName() {
@@ -183,7 +214,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Set the name for the bucket to which the multipart upload belongs.
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      */
@@ -193,7 +224,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Obtain the maximum number of listed multipart uploads.
-     * 
+     *
      * @return Maximum number of listed multipart uploads
      */
     public Integer getMaxUploads() {
@@ -202,7 +233,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
 
     /**
      * Set the maximum number of listed multipart uploads.
-     * 
+     *
      * @param maxUploads
      *            Maximum number of listed multipart uploads
      */
@@ -210,11 +241,30 @@ public class ListMultipartUploadsRequest extends GenericRequest {
         this.maxUploads = maxUploads;
     }
 
+    /**
+     * Set encoding type to encode objectkeys, the value could be url
+     *
+     * @param encodingType
+     *             encoding type for encoding 
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Get encoding type to encode objectkeys
+     *
+     * @return encoding type for encoding
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
         return "ListMultipartUploadsRequest [bucketName=" + bucketName + ", prefix=" + prefix + ", delimiter="
                 + delimiter + ", maxUploads=" + maxUploads + ", keyMarker=" + keyMarker + ", uploadIdMarker="
-                + uploadIdMarker + "]";
+                + uploadIdMarker + ", encodingType=" + encodingType + "]";
     }
 
 }

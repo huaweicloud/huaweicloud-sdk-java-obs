@@ -123,8 +123,8 @@ import com.obs.services.model.WebsiteConfiguration;
  * Basic OBS interface
  */
 //CHECKSTYLE:OFF
-public interface IObsClient {
-
+public interface IObsClient extends IObsBucketExtendClient {
+ 
     /**
      *
      * Refresh the temporary access key.
@@ -1303,7 +1303,8 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketTagging(BaseBucketRequest request) throws ObsException;
-
+  
+    
     /**
      * Obtain bucket encryption configuration.
      * 

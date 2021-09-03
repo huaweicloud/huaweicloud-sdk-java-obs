@@ -64,7 +64,8 @@ public interface IConvertor {
 
     String transAccessControlList(AccessControlList acl, boolean isBucket) throws ServiceException;
 
-    String transKeyAndVersion(KeyAndVersion[] objectNameAndVersions, boolean isQuiet) throws ServiceException;
+    String transKeyAndVersion(KeyAndVersion[] objectNameAndVersions, boolean isQuiet, String encodingType)
+            throws ServiceException;
 
     String transBucketTagInfo(BucketTagInfo bucketTagInfo) throws ServiceException;
 

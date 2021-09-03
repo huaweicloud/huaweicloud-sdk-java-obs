@@ -28,6 +28,8 @@ public class DeleteObjectsRequest extends GenericRequest {
 
     private List<KeyAndVersion> keyAndVersions;
 
+    private String encodingType;
+
     public DeleteObjectsRequest() {
 
     }
@@ -55,12 +57,31 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            To-be-deleted object array
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
     }
 
     /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param quiet
+     *            Deletion response mode. "false" indicates that the "verbose"
+     *            mode is used and "true" indicates that the "quiet" mode is
+     *            used.
+     * @param keyAndVersions
+     *            To-be-deleted object array
+     * @param encodingType
+     *            The encoding type use for encode objectKey.
+     */
+    public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions, String encodingType) {
+        this(bucketName, quiet, keyAndVersions);
+        this.setEncodingType(encodingType);
+    }
+
+   /**
      * Obtain the bucket name.
      * 
      * @return Bucket name
@@ -100,6 +121,24 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public void setQuiet(boolean quiet) {
         this.quiet = quiet;
+    }
+
+    /**
+     * Set the encoding type that used for encode objectkey
+     *
+     * @param encodingType
+     *            could chose url.
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Get the encoding type that used for encode objectkey
+     * @return encodingType
+     */
+    public String getEncodingType() {
+        return encodingType;
     }
 
     /**
@@ -163,8 +202,8 @@ public class DeleteObjectsRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", keyAndVersions="
-                + this.keyAndVersions + "]";
+        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", encodingType=" + encodingType
+                + ", keyAndVersions=" + this.keyAndVersions + "]";
     }
 
 }

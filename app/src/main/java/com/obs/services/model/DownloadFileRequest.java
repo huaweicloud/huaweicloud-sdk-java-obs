@@ -48,6 +48,8 @@ public class DownloadFileRequest extends GenericRequest {
 
     private String versionId;
 
+    protected boolean encodeHeaders = true;
+
     private ProgressListener progressListener;
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
@@ -560,12 +562,32 @@ public class DownloadFileRequest extends GenericRequest {
         this.ttl = ttl;
     }
 
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @param encodeHeaders
+     *        Specifies whether to encode and decode header fields.
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @return Specifies whether to encode and decode header fields.
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
+
     @Override
     public String toString() {
         return "DownloadFileRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", downloadFile="
                 + downloadFile + ", partSize=" + partSize + ", taskNum=" + taskNum + ", checkpointFile="
                 + checkpointFile + ", enableCheckpoint=" + enableCheckpoint + ", ifModifiedSince=" + ifModifiedSince
                 + ", ifUnmodifiedSince=" + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag="
-                + ifNoneMatchTag + ", versionId=" + versionId + "]";
+                + ifNoneMatchTag + ", versionId=" + versionId + ", isEncodeHeaders=" + encodeHeaders + "]";
     }
 }

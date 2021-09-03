@@ -147,7 +147,12 @@ public enum SpecialParamEnum {
     /**
      * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
      */
-    DIRECTCOLDACCESS("directcoldaccess"); 
+    DIRECTCOLDACCESS("directcoldaccess"),
+
+    /**
+     * Set, obtain, or delete the Custom Domain Name of a Bucket
+     */
+    CUSTOMDOMAIN("customdomain");
     
     /**
      * Specify the corresponding code in the database and the external code.

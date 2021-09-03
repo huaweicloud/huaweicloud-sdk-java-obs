@@ -14,6 +14,8 @@
 
 package com.obs.services.internal;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,8 +23,8 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.CanonicalGrantee;
@@ -59,10 +61,21 @@ public class V2Convertor extends V2BucketConvertor {
         return instance;
     }
 
+    public static String getEncodedString(String value, String encodingType) {
+        if (encodingType != null && encodingType.toLowerCase().equals("url")) {
+            try {
+                return URLEncoder.encode(value, "UTF-8");
+            } catch (UnsupportedEncodingException exception) {
+                throw new ServiceException(exception);
+            }
+        }
+        return value;
+    }
+
     @Override
     public String transCompleteMultipartUpload(List<PartEtag> parts) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("CompleteMultipartUpload");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("CompleteMultipartUpload");
             Collections.sort(parts, new Comparator<PartEtag>() {
                 @Override
                 public int compare(PartEtag o1, PartEtag o2) {
@@ -92,7 +105,7 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transVersioningConfiguration(String bucketName, String status) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("VersioningConfiguration").elem("Status")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("VersioningConfiguration").elem("Status")
                     .text(ServiceUtils.toValid(status));
             return builder.asString();
         } catch (Exception e) {
@@ -103,7 +116,7 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transRequestPaymentConfiguration(String bucketName, String payer) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("RequestPaymentConfiguration").elem("Payer")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("RequestPaymentConfiguration").elem("Payer")
                     .text(ServiceUtils.toValid(payer));
             return builder.asString();
         } catch (Exception e) {
@@ -114,9 +127,9 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transLifecycleConfiguration(LifecycleConfiguration config) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("LifecycleConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("LifecycleConfiguration");
             for (Rule rule : config.getRules()) {
-                XMLBuilder b = builder.elem("Rule");
+                OBSXMLBuilder b = builder.elem("Rule");
                 if (ServiceUtils.isValid2(rule.getId())) {
                     b.elem("ID").t(rule.getId());
                 }
@@ -139,7 +152,7 @@ public class V2Convertor extends V2BucketConvertor {
 
                 if (rule.getNoncurrentVersionExpiration() != null
                         && rule.getNoncurrentVersionExpiration().getDays() != null) {
-                    XMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionExpiration");
+                    OBSXMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionExpiration");
                     noncurrentVersionBuilder.elem("NoncurrentDays").t(
                             rule.getNoncurrentVersionExpiration().getDays().toString());
                 }
@@ -154,12 +167,12 @@ public class V2Convertor extends V2BucketConvertor {
         }
     }
 
-    private void transNoncurrentVersionTransition(Rule rule, XMLBuilder b) {
+    private void transNoncurrentVersionTransition(Rule rule, OBSXMLBuilder b) {
         for (NoncurrentVersionTransition noncurrentVersionTransition : rule
                 .getNoncurrentVersionTransitions()) {
             if (noncurrentVersionTransition.getObjectStorageClass() != null
                     && noncurrentVersionTransition.getDays() != null) {
-                XMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionTransition");
+                OBSXMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionTransition");
                 noncurrentVersionBuilder.elem("NoncurrentDays").t(
                         noncurrentVersionTransition.getDays().toString());
                 noncurrentVersionBuilder.elem("StorageClass")
@@ -168,8 +181,8 @@ public class V2Convertor extends V2BucketConvertor {
         }
     }
 
-    private void transExpiration(Rule rule, XMLBuilder b) {
-        XMLBuilder expirationBuilder = b.elem("Expiration");
+    private void transExpiration(Rule rule, OBSXMLBuilder b) {
+        OBSXMLBuilder expirationBuilder = b.elem("Expiration");
         if (rule.getExpiration().getDate() != null) {
             expirationBuilder.elem("Date").t(
                     ServiceUtils.formatIso8601MidnightDate(rule.getExpiration().getDate()));
@@ -178,10 +191,10 @@ public class V2Convertor extends V2BucketConvertor {
         }
     }
 
-    private void transTransitions(Rule rule, XMLBuilder b) {
+    private void transTransitions(Rule rule, OBSXMLBuilder b) {
         for (Transition transition : rule.getTransitions()) {
             if (transition.getObjectStorageClass() != null) {
-                XMLBuilder transitionBuilder = b.elem("Transition");
+                OBSXMLBuilder transitionBuilder = b.elem("Transition");
                 if (transition.getDate() != null) {
                     transitionBuilder.elem("Date").t(
                             ServiceUtils.formatIso8601MidnightDate(transition.getDate()));
@@ -197,7 +210,7 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transWebsiteConfiguration(WebsiteConfiguration config) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("WebsiteConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("WebsiteConfiguration");
             if (config.getRedirectAllRequestsTo() != null) {
                 if (null != config.getRedirectAllRequestsTo().getHostName()) {
                     builder = builder.elem("RedirectAllRequestsTo").elem("HostName")
@@ -228,7 +241,7 @@ public class V2Convertor extends V2BucketConvertor {
         }
     }
 
-    private XMLBuilder transWebsiteRoutingRule(XMLBuilder builder, RouteRule routingRule) {
+    private OBSXMLBuilder transWebsiteRoutingRule(OBSXMLBuilder builder, RouteRule routingRule) {
         builder = builder.elem("RoutingRule");
         RouteRuleCondition condition = routingRule.getCondition();
         if (null != condition) {
@@ -282,7 +295,8 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transRestoreObjectRequest(RestoreObjectRequest req) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("RestoreRequest").elem("Days").t(String.valueOf(req.getDays())).up();
+            OBSXMLBuilder builder = OBSXMLBuilder.create("RestoreRequest")
+                    .elem("Days").t(String.valueOf(req.getDays())).up();
             if (req.getRestoreTier() != null) {
                 builder.e("GlacierJobParameters").e("Tier").t(req.getRestoreTier().getCode());
             }
@@ -295,7 +309,7 @@ public class V2Convertor extends V2BucketConvertor {
     @Override
     public String transStoragePolicy(BucketStoragePolicyConfiguration status) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("StoragePolicy").elem("DefaultStorageClass")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("StoragePolicy").elem("DefaultStorageClass")
                     .text(this.transStorageClass(status.getBucketStorageClass()));
             return builder.asString();
         } catch (Exception e) {
@@ -309,7 +323,7 @@ public class V2Convertor extends V2BucketConvertor {
         GrantAndPermission[] grants = acl.getGrantAndPermissions();
 
         try {
-            XMLBuilder builder = XMLBuilder.create("AccessControlPolicy");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("AccessControlPolicy");
             if (owner != null) {
                 builder = builder.elem("Owner").elem("ID").text(ServiceUtils.toValid(owner.getId()));
                 if (null != owner.getDisplayName()) {
@@ -318,24 +332,24 @@ public class V2Convertor extends V2BucketConvertor {
                 builder = builder.up().up();
             }
             if (grants.length > 0) {
-                XMLBuilder accessControlList = builder.elem("AccessControlList");
+                OBSXMLBuilder accessControlList = builder.elem("AccessControlList");
                 for (GrantAndPermission gap : grants) {
                     GranteeInterface grantee = gap.getGrantee();
                     Permission permission = gap.getPermission();
-                    XMLBuilder subBuilder = null;
+                    OBSXMLBuilder subBuilder = null;
                     if (grantee instanceof CanonicalGrantee) {
                         subBuilder = buildCanonicalGrantee(grantee);
                     } else if (grantee instanceof GroupGrantee) {
                         subBuilder = buildGroupGrantee(grantee);
                     } else if (grantee != null) {
-                        subBuilder = XMLBuilder.create("Grantee")
+                        subBuilder = OBSXMLBuilder.create("Grantee")
                                 .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
                                 .attr("xsi:type", "CanonicalUser").element("ID")
                                 .text(ServiceUtils.toValid(grantee.getIdentifier()));
                     }
 
                     if (subBuilder != null) {
-                        XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
+                        OBSXMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
                         if (permission != null) {
                             grantBuilder.elem("Permission")
                                     .text(ServiceUtils.toValid(permission.getPermissionString()));
@@ -353,12 +367,16 @@ public class V2Convertor extends V2BucketConvertor {
         }
     }
 
-    public String transKeyAndVersion(KeyAndVersion[] objectNameAndVersions, boolean isQuiet) throws ServiceException {
+    public String transKeyAndVersion(KeyAndVersion[] objectNameAndVersions, boolean isQuiet, String encodingType)
+            throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("Delete").elem("Quiet").text(String.valueOf(isQuiet)).up();
+            OBSXMLBuilder builder = OBSXMLBuilder.create("Delete").elem("Quiet").text(String.valueOf(isQuiet)).up();
+            if (encodingType != null) {
+                builder.elem("EncodingType").text(encodingType);
+            }
             for (KeyAndVersion nav : objectNameAndVersions) {
-                XMLBuilder objectBuilder = builder.elem("Object").elem("Key").text(ServiceUtils.toValid(nav.getKey()))
-                        .up();
+                String encodedString = getEncodedString(ServiceUtils.toValid(nav.getKey()), encodingType);
+                OBSXMLBuilder objectBuilder = builder.elem("Object").elem("Key").text(encodedString).up();
                 if (ServiceUtils.isValid(nav.getVersion())) {
                     objectBuilder.elem("VersionId").text(nav.getVersion());
                 }
@@ -373,7 +391,7 @@ public class V2Convertor extends V2BucketConvertor {
     public String transReplicationConfiguration(ReplicationConfiguration replicationConfiguration)
             throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("ReplicationConfiguration").e("Agency")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("ReplicationConfiguration").e("Agency")
                     .t(ServiceUtils.toValid(replicationConfiguration.getAgency())).up();
             for (ReplicationConfiguration.Rule rule : replicationConfiguration.getRules()) {
                 builder = builder.e("Rule");

@@ -35,6 +35,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     protected SseKmsHeader sseKmsHeader;
 
+    protected boolean encodeHeaders = true;
+
     protected SseCHeader sseCHeader;
 
     /**
@@ -247,4 +249,24 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
         }
         this.extensionPermissionMap = extensionPermissionMap;
     }
+
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @param encodeHeaders
+     *        Specifies whether to encode and decode header fields.
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @return Specifies whether to encode and decode header fields.
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
 }

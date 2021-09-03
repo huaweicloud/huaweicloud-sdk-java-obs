@@ -181,6 +181,7 @@ public class DownloadResumableClient {
             GetObjectMetadataRequest request = new GetObjectMetadataRequest(downloadFileRequest.getBucketName(),
                     downloadFileRequest.getObjectKey(), downloadFileRequest.getVersionId());
             request.setRequesterPays(downloadFileRequest.isRequesterPays());
+            request.setIsEncodeHeaders(downloadFileRequest.isEncodeHeaders());
             objectMetadata = this.obsClient.getObjectMetadata(request);
         } catch (ObsException e) {
             if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
@@ -368,6 +369,7 @@ public class DownloadResumableClient {
                 output.seek(downloadPart.offset);
 
                 GetObjectRequest getObjectRequest = createNewGetObjectRequest(downloadFileRequest, downloadPart);
+                getObjectRequest.setIsEncodeHeaders(downloadFileRequest.isEncodeHeaders());
 
                 ObsObject object = obsClient.getObject(getObjectRequest);
                 content = object.getObjectContent();
@@ -636,7 +638,7 @@ public class DownloadResumableClient {
          * 判断序列化文件、临时文件和实际信息是否一致
          * 
          * @param tmpFilePath
-         * @param obsClient
+         * @param objectMetadata
          * @return
          */
         public boolean isValid(String tmpFilePath, ObjectMetadata objectMetadata) {
@@ -650,10 +652,7 @@ public class DownloadResumableClient {
             }
 
             File tmpfile = new File(tmpFilePath);
-            if (this.tmpFileStatus.size != tmpfile.length()) {
-                return false;
-            }
-            return true;
+            return this.tmpFileStatus.size == tmpfile.length();
         }
 
         /**
@@ -738,9 +737,7 @@ public class DownloadResumableClient {
             } else {
                 if (obj instanceof ObjectStatus) {
                     ObjectStatus objectStatus = (ObjectStatus) obj;
-                    if (objectStatus.hashCode() == this.hashCode()) {
-                        return true;
-                    }
+                    return objectStatus.hashCode() == this.hashCode();
                 }
             }
             return false;
@@ -777,9 +774,7 @@ public class DownloadResumableClient {
             } else {
                 if (obj instanceof TmpFileStatus) {
                     TmpFileStatus tmpFileStatus = (TmpFileStatus) obj;
-                    if (tmpFileStatus.hashCode() == this.hashCode()) {
-                        return true;
-                    }
+                    return tmpFileStatus.hashCode() == this.hashCode();
                 }
             }
             return false;
@@ -813,9 +808,7 @@ public class DownloadResumableClient {
             } else {
                 if (obj instanceof DownloadPart) {
                     DownloadPart downloadPart = (DownloadPart) obj;
-                    if (downloadPart.hashCode() == this.hashCode()) {
-                        return true;
-                    }
+                    return downloadPart.hashCode() == this.hashCode();
                 }
             }
             return false;

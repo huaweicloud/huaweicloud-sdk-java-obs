@@ -58,8 +58,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         QueryExtensionPolicyResult ret = (QueryExtensionPolicyResult) JSONChange
                 .jsonToObj(new QueryExtensionPolicyResult(), body);
-        ret.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 
@@ -115,8 +115,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         CreateAsynchFetchJobsResult ret = (CreateAsynchFetchJobsResult) JSONChange
                 .jsonToObj(new CreateAsynchFetchJobsResult(), body);
-        ret.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 
@@ -132,8 +132,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         QueryAsynchFetchJobsResult ret = (QueryAsynchFetchJobsResult) JSONChange
                 .jsonToObj(new QueryAsynchFetchJobsResult(), body);
-        ret.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
 
         return ret;
     }
@@ -154,9 +154,7 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         Response response = performRestPut(bucketName, null, metadata, requestParameters,
                 this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument), false, true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected GetDisPolicyResult getDisPolicyImpl(String bucketName) throws ServiceException {
@@ -170,8 +168,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         DisPolicy policy = (DisPolicy) JSONChange.jsonToObj(new DisPolicy(), body);
         GetDisPolicyResult ret = new GetDisPolicyResult(policy);
-        ret.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 
@@ -203,8 +201,8 @@ public abstract class ObsExtensionService extends ObsFileService {
         String body = readBodyFromResponse(response);
 
         ReadAheadResult result = (ReadAheadResult) JSONChange.jsonToObj(new ReadAheadResult(), body);
-        result.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+
+        setHeadersAndStatus(result, response);
 
         return result;
     }
@@ -221,8 +219,8 @@ public abstract class ObsExtensionService extends ObsFileService {
         String body = readBodyFromResponse(response);
 
         ReadAheadResult result = (ReadAheadResult) JSONChange.jsonToObj(new ReadAheadResult(), body);
-        result.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+
+        setHeadersAndStatus(result, response);
 
         return result;
     }
@@ -240,8 +238,8 @@ public abstract class ObsExtensionService extends ObsFileService {
         String body = readBodyFromResponse(response);
 
         ReadAheadQueryResult result = (ReadAheadQueryResult) JSONChange.jsonToObj(new ReadAheadQueryResult(), body);
-        result.setResponseHeaders(this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+
+        setHeadersAndStatus(result, response);
 
         return result;
     }

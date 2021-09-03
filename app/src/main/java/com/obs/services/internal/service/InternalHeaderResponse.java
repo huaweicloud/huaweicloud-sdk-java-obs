@@ -20,10 +20,16 @@ public class InternalHeaderResponse {
 
     protected Map<String, Object> responseHeaders;
 
+    protected Map<String, Object> originalHeaders;
+
     protected int statusCode;
 
     public void setResponseHeaders(Map<String, Object> responseHeaders) {
         this.responseHeaders = responseHeaders;
+    }
+
+    public void setOriginalHeaders(Map<String, Object> originalHeaders) {
+        this.originalHeaders = originalHeaders;
     }
 
     protected void setStatusCode(int statusCode) {

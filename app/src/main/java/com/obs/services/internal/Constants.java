@@ -108,6 +108,7 @@ public class Constants {
         public static final String RESPONSE_CONTENT_ENCODING = "response-content-encoding";
         public static final String X_IMAGE_PROCESS = "x-image-process";
         public static final String POSITION = "position";
+        public static final String ENCODING_TYPE = "encoding-type";
 
         public static final String MAX_PARTS = "max-parts";
         public static final String PART_NUMBER_MARKER = "part-number-marker";
@@ -198,7 +199,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.21.4";
+    public static final String OBS_SDK_VERSION = "3.21.8";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -219,6 +220,9 @@ public class Constants {
     public static final String V2_HEADER_META_PREFIX = "x-amz-meta-";
 
     public static final String V2_HEADER_PREFIX_CAMEL = "X-Amz-";
+
+    public static final List<String> NOT_NEED_HEADER_PREFIXES = Arrays.asList(OBS_HEADER_META_PREFIX,
+            OBS_HEADER_PREFIX, V2_HEADER_META_PREFIX, V2_HEADER_PREFIX_CAMEL, V2_HEADER_PREFIX);
 
     public static final String REQUEST_ID_HEADER = "request-id";
 

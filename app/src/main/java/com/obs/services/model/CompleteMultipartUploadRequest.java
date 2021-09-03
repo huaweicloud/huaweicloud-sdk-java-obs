@@ -23,6 +23,8 @@ import java.util.List;
 public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
     private List<PartEtag> partEtag;
 
+    private String encodingType;
+
     public CompleteMultipartUploadRequest() {
         super();
     }
@@ -48,6 +50,30 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
         this.partEtag = partEtag;
     }
 
+   /**
+     * Constructor
+     * 
+     * @param bucketName
+     *            Bucket name
+     * @param objectKey
+     *            Object name
+     * @param uploadId
+     *            Multipart upload ID
+     * @param partEtag
+     *            List of parts to be combined
+     * @param encodingType
+     *            Use this encoding type to encode keys that contains invalid characters, the value could be "url"
+     */
+    public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId,
+                                          List<PartEtag> partEtag, String encodingType) {
+        super();
+        this.setUploadId(uploadId);
+        this.setBucketName(bucketName);
+        this.setObjectKey(objectKey);
+        this.partEtag = partEtag;
+        this.encodingType = encodingType;
+    }
+
     /**
      * Obtain the to-be-combined part list.
      * 
@@ -70,11 +96,29 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
         this.partEtag = partEtags;
     }
 
+    /**
+     * Set encoding type to encode objectkeys, the value could be url
+     *
+     * @param encodingType
+     *            encoding type for encoding
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Get encoding type to encode objectkeys
+     * @return encoding type for encoding
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
-        return "CompleteMultipartUploadRequest [uploadId=" + this.getUploadId() 
+        return "CompleteMultipartUploadRequest [uploadId=" + this.getUploadId()
                 + ", bucketName=" + this.getBucketName() + ", objectKey="
-                + this.getObjectKey() + ", partEtag=" + partEtag + "]";
+                + this.getObjectKey() + ", partEtag=" + partEtag + ", encodingType=" + encodingType + "]";
     }
 
 }
