@@ -251,7 +251,6 @@ public class VersionOrDeleteMarker {
      * 
      * @return Storage class of the object
      */
-    @Deprecated
     public String getStorageClass() {
         return this.storageClass != null ? this.storageClass.getCode() : null;
     }
@@ -309,6 +308,10 @@ public class VersionOrDeleteMarker {
      */
     public String getBucketName() {
         return bucketName;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     @Override

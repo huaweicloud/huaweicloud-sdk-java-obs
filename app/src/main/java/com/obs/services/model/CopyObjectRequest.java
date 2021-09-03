@@ -357,8 +357,9 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
         return "CopyObjectRequest [sourceBucketName=" + sourceBucketName + ", sourceObjectKey=" + sourceObjectKey
                 + ", destinationBucketName=" + bucketName + ", destinationObjectKey=" + objectKey
                 + ", newObjectMetadata=" + newObjectMetadata + ", replaceMetadata=" + replaceMetadata
-                + ", ifModifiedSince=" + ifModifiedSince + ", ifUnmodifiedSince=" + ifUnmodifiedSince + ", ifMatchTag="
-                + ifMatchTag + ", ifNoneMatchTag=" + ifNoneMatchTag + ", versionId=" + versionId + ", sseKmsHeader="
+                + ", isEncodeHeaders=" + encodeHeaders + ", ifModifiedSince=" + ifModifiedSince
+                + ", ifUnmodifiedSince=" + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag
+                + ", ifNoneMatchTag=" + ifNoneMatchTag + ", versionId=" + versionId + ", sseKmsHeader="
                 + sseKmsHeader + ", sseCHeaderSource=" + sseCHeaderSource + ", sseCHeaderDestination=" + sseCHeader
                 + ", acl=" + acl + ", successRedirectLocation=" + successRedirectLocation + "]";
     }

@@ -25,7 +25,7 @@ public class HttpProxyConfiguration {
 
     private String proxyUname;
 
-    private String userPaaswd;
+    private String userPasswd;
 
     private String domain;
 
@@ -42,17 +42,17 @@ public class HttpProxyConfiguration {
      *            Proxy port
      * @param proxyUname
      *            Proxy username
-     * @param userPaaswd
+     * @param userPasswd
      *            Proxy password
      * @param domain
      *            Proxy domain
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd,
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPasswd,
             String domain) {
         this.proxyAddr = proxyAddr;
         this.proxyPort = proxyPort;
         this.proxyUname = proxyUname;
-        this.userPaaswd = userPaaswd;
+        this.userPasswd = userPasswd;
         this.domain = domain;
         this.workstation = this.proxyAddr;
     }
@@ -66,16 +66,16 @@ public class HttpProxyConfiguration {
      *            Proxy port
      * @param proxyUname
      *            Proxy username
-     * @param userPaaswd
+     * @param userPasswd
      *            Proxy password
      * @param domain
      *            Proxy domain
      * @param workstation
      *            Workstation where the proxy is resides
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain,
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPasswd, String domain,
             String workstation) {
-        this(proxyAddr, proxyPort, proxyUname, userPaaswd, domain);
+        this(proxyAddr, proxyPort, proxyUname, userPasswd, domain);
         this.workstation = this.proxyAddr;
     }
 
@@ -141,18 +141,28 @@ public class HttpProxyConfiguration {
      * 
      * @return Proxy password
      */
+    public String getUserPasswd() {
+        return userPasswd;
+    }
+
+    @Deprecated
     public String getUserPaaswd() {
-        return userPaaswd;
+        return getUserPasswd();
     }
 
     /**
      * Set the proxy password.
      * 
-     * @param userPaaswd
+     * @param userPasswd
      *            Proxy password
      */
-    public void setUserPaaswd(String userPaaswd) {
-        this.userPaaswd = userPaaswd;
+    public void setUserPasswd(String userPasswd) {
+        this.userPasswd = userPasswd;
+    }
+
+    @Deprecated
+    public void setUserPaaswd(String userPasswd) {
+        setUserPasswd(userPasswd);
     }
 
     /**

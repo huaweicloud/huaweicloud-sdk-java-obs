@@ -31,6 +31,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
 
     private boolean versionRestored;
 
+    private String encodingType;
+
     private List<KeyAndVersion> keyAndVersions;
 
     private TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback;
@@ -63,6 +65,25 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
         super(bucketName);
         this.days = days;
         this.tier = tier;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param bucketName
+     *            Bucket name
+     * @param days
+     *            Retention period of the restored objects
+     * @param tier
+     *            Restore option
+     * @param encodingType
+     *            The encoding type use for encode objectKey.
+     */
+    public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier, String encodingType) {
+        super(bucketName);
+        this.days = days;
+        this.tier = tier;
+        this.encodingType = encodingType;
     }
 
     /**
@@ -209,9 +230,29 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
         this.callback = callback;
     }
 
+    /**
+     * Set the encoding type that used for encode objectkey
+     *
+     * @param encodingType
+     *            could chose url.
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Obtain the list of to-be-deleted objects.
+     *
+     * @return List of to-be-deleted objects
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
-        return "RestoreObjectsRequest [bucketName=" + bucketName + ", days=" + days + ", tier=" + tier + "]";
+        return "RestoreObjectsRequest [bucketName=" + bucketName + ", days=" + days + ", tier=" + tier
+                + ", encodingType=" + encodingType + "]";
     }
 
 }

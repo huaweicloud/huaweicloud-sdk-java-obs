@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ **/
 
 package com.obs.services.model;
 
@@ -30,12 +30,14 @@ public class ListObjectsRequest extends GenericRequest {
 
     private int listTimeout;
 
+    private String encodingType;
+
     public ListObjectsRequest() {
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      */
@@ -45,20 +47,20 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param maxKeys
      *            Maximum number of objects to be listed
      */
     public ListObjectsRequest(String bucketName, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.maxKeys = maxKeys;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param prefix
@@ -71,16 +73,38 @@ public class ListObjectsRequest extends GenericRequest {
      *            Maximum number of objects to be listed
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName, maxKeys);
         this.prefix = prefix;
         this.marker = marker;
         this.delimiter = delimiter;
-        this.maxKeys = maxKeys;
+
+    }
+
+    /**
+     Constructor
+     *
+     * @param bucketName
+     *            Bucket name
+     * @param prefix
+     *            Object name prefix, used for filtering objects to be listed
+     * @param marker
+     *            Start position for listing objects
+     * @param delimiter
+     *            Character used for grouping object names
+     * @param maxKeys
+     *            Maximum number of objects to be listed
+     * @param encodingType
+     *            Use this encoding type to encode keys that contains invalid characters, the value could be "url"
+     */
+    public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys,
+                              String encodingType) {
+        this(bucketName, prefix, marker, delimiter, maxKeys);
+        this.encodingType = encodingType;
     }
 
     /**
      * Obtain the bucket name.
-     * 
+     *
      * @return Bucket name
      */
     public String getBucketName() {
@@ -89,7 +113,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Set the bucket name.
-     * 
+     *
      * @param bucketName
      *            Bucket name
      */
@@ -99,7 +123,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Obtain the object name prefix used for filtering objects to be listed.
-     * 
+     *
      * @return Object name prefix
      */
     public String getPrefix() {
@@ -108,7 +132,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Set the object name prefix used for filtering objects to be listed.
-     * 
+     *
      * @param prefix
      *            Object name prefix
      */
@@ -118,7 +142,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Obtain the start position for listing objects.
-     * 
+     *
      * @return Start position marker
      */
     public String getMarker() {
@@ -127,7 +151,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Set the start position for listing objects.
-     * 
+     *
      * @param marker
      *            Start position marker
      */
@@ -137,7 +161,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Obtain the maximum number of objects to be listed.
-     * 
+     *
      * @return Maximum number of objects to be listed
      */
     public int getMaxKeys() {
@@ -146,7 +170,7 @@ public class ListObjectsRequest extends GenericRequest {
 
     /**
      * Set the maximum number of objects to be listed.
-     * 
+     *
      * @param maxKeys
      *            Maximum number of objects to be listed
      */
@@ -155,8 +179,17 @@ public class ListObjectsRequest extends GenericRequest {
     }
 
     /**
+     * Set encoding type to encode objectkeys, the value could be url
+     * @param encodingType
+     *             encoding type for encoding 
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
      * Obtain the character used for grouping object names.
-     * 
+     *
      * @return Character for grouping object names
      */
     public String getDelimiter() {
@@ -164,8 +197,18 @@ public class ListObjectsRequest extends GenericRequest {
     }
 
     /**
+     * Get encoding type to encode objectkeys
+     *
+     * @return encoding type for encoding
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
+
+    /**
      * Set the character used for grouping object names.
-     * 
+     *
      * @param delimiter
      *            Character for grouping object names
      */
@@ -184,7 +227,8 @@ public class ListObjectsRequest extends GenericRequest {
     @Override
     public String toString() {
         return "ListObjectsRequest [bucketName=" + bucketName + ", prefix=" + prefix + ", marker=" + marker
-                + ", maxKeys=" + maxKeys + ", delimiter=" + delimiter + ", listTimeout=" + listTimeout + "]";
+                + ", maxKeys=" + maxKeys + ", delimiter=" + delimiter + ", listTimeout=" + listTimeout
+                + ", encodingType=" + encodingType + "]";
     }
 
 }

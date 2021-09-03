@@ -56,8 +56,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         Response response = performRestPut(request.getBucketName(), request.getObjectKey(),
                 transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
         TruncateObjectResult result = new TruncateObjectResult();
-        setResponseHeaders(result, this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+        setHeadersAndStatus(result, response);
         return result;
     }
     
@@ -69,8 +68,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         Response response = performRestPost(request.getBucketName(), request.getObjectKey(),
                 transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
         RenameObjectResult result = new RenameObjectResult();
-        setResponseHeaders(result, this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+        setHeadersAndStatus(result, response);
         return result;
     }
 
@@ -97,8 +95,8 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 createRequestBody(Mimetypes.MIMETYPE_XML, requestXmlElement), true);
         RestoreObjectResult ret = new RestoreObjectResult(restoreObjectRequest.getBucketName(),
                 restoreObjectRequest.getObjectKey(), restoreObjectRequest.getVersionId());
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
     
@@ -113,7 +111,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPost(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true);
+                    result.getParams(), result.getBody(), true, false, request.isEncodeHeaders());
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 RepeatableRequestEntity entity = (RepeatableRequestEntity) result.getBody();
@@ -126,9 +124,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())),
                 this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
 
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(ret, map);
-        setStatusCode(ret, response.code());
+        setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
             try {
                 putAclImpl(request.getBucketName(), request.getObjectKey(), acl, null, request.isRequesterPays());
@@ -153,7 +149,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true);
+                    result.getParams(), result.getBody(), true, false, request.isEncodeHeaders());
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 if (result.getBody() instanceof Closeable) {
@@ -162,9 +158,8 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
             }
         }
         ModifyObjectResult ret = new ModifyObjectResult();
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(ret, map);
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response, request.isEncodeHeaders());
         if (isExtraAclPutRequired && acl != null) {
             try {
                 putAclImpl(request.getBucketName(), request.getObjectKey(), acl, null, request.isRequesterPays());

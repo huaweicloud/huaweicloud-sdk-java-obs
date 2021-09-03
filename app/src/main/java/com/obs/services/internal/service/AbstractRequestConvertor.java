@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -15,11 +15,16 @@
 
 package com.obs.services.internal.service;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -47,7 +52,7 @@ import okhttp3.Response;
 
 public abstract class AbstractRequestConvertor extends RestStorageService {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
-    
+
     protected static class TransResult {
         private Map<String, String> headers;
 
@@ -95,17 +100,17 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
             return body;
         }
     }
-    
+
     /**
      * set requestHeader for requestPayment
-     * 
+     *
      * @param isRequesterPays
      * @param headers
      * @param iheaders
      * @throws ServiceException
      */
     protected Map<String, String> transRequestPaymentHeaders(boolean isRequesterPays, Map<String, String> headers,
-            IHeaders iheaders) throws ServiceException {
+                                                             IHeaders iheaders) throws ServiceException {
         if (isRequesterPays) {
             if (null == headers) {
                 headers = new HashMap<String, String>();
@@ -118,21 +123,21 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
 
     /**
      * set requestHeader for requestPayment
-     * 
+     *
      * @param request
      * @param headers
      * @param iheaders
      * @throws ServiceException
      */
     protected Map<String, String> transRequestPaymentHeaders(GenericRequest request, Map<String, String> headers,
-            IHeaders iheaders) throws ServiceException {
+                                                             IHeaders iheaders) throws ServiceException {
         if (null != request) {
             return transRequestPaymentHeaders(request.isRequesterPays(), headers, iheaders);
         }
 
         return null;
     }
-    
+
     protected String getHeaderByMethodName(String code) {
         try {
             IHeaders iheaders = this.getIHeaders();
@@ -146,50 +151,109 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         }
         return null;
     }
-    
+
     protected void putHeader(Map<String, String> headers, String key, String value) {
         if (ServiceUtils.isValid(key)) {
             headers.put(key, value);
         }
     }
-    
+
     protected HeaderResponse build(Response res) {
         HeaderResponse response = new HeaderResponse();
-        setResponseHeaders(response, this.cleanResponseHeaders(res));
-        setStatusCode(response, res.code());
+        setHeadersAndStatus(response, res);
         return response;
     }
-    
-    protected static void setStatusCode(HeaderResponse response, int statusCode) {
-        response.setStatusCode(statusCode);
+
+    protected void setHeadersAndStatus(HeaderResponse response, Response res) {
+        setHeadersAndStatus(response, res, true);
     }
-    
-    protected Map<String, Object> cleanResponseHeaders(Response response) {
-        Map<String, List<String>> map = response.headers().toMultimap();
-        return ServiceUtils.cleanRestMetadataMap(map, this.getIHeaders().headerPrefix(),
-                this.getIHeaders().headerMetaPrefix());
-    }
-    
-    protected void setResponseHeaders(HeaderResponse response, Map<String, Object> responseHeaders) {
+
+    protected void setHeadersAndStatus(HeaderResponse response, Response res, boolean needDecode) {
+        response.setStatusCode(res.code());
+        Map<String, List<String>> headerMap = res.headers().toMultimap();
+        Map<String, Object> originalHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Object> responseHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Map.Entry<String, List<String>> entry : headerMap.entrySet()) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            if (!(key == null || values == null)) {
+                Object originalValue = values.size() == 1 ? values.get(0) : values;
+                originalHeaders.put(key, originalValue);
+                putCleanedKeyAndValues(responseHeaders, key, values, needDecode);
+            }
+        }
+
+        response.setOriginalHeaders(originalHeaders);
         response.setResponseHeaders(responseHeaders);
     }
-    
+
+    protected void putCleanedKeyAndValues(Map<String, Object> responseHeaders,
+                                          String key, List<String> values, boolean needDecode) {
+        String cleanedKey = key.toLowerCase();
+        List<String> cleanedValues = new ArrayList<>(values.size());
+        Object finalValues;
+        if ((Constants.CommonHeaders.DATE.equalsIgnoreCase(key)
+                || Constants.CommonHeaders.LAST_MODIFIED.equalsIgnoreCase(key))) {
+            finalValues = values.get(0);
+            if (log.isDebugEnabled()) {
+                log.debug("Parsing date string '" + finalValues + "' into Date object for key: " + key);
+            }
+            try {
+                finalValues = ServiceUtils.parseRfc822Date(finalValues.toString());
+            } catch (ParseException pe) {
+                // Try ISO-8601
+                try {
+                    finalValues = ServiceUtils.parseIso8601Date(finalValues.toString());
+                } catch (ParseException pe2) {
+                    if (log.isWarnEnabled()) {
+                        log.warn("Date string is not RFC 822 or ISO-8601 compliant for metadata field " + key, pe);
+                    }
+                }
+            }
+        } else {
+            for (String prefix : Constants.NOT_NEED_HEADER_PREFIXES) {
+                if (key.toLowerCase().startsWith(prefix)) {
+                    cleanedKey = cleanedKey.replace(prefix, "");
+                    break;
+                }
+            }
+            for (String value : values) {
+                if (needDecode) {
+                    try {
+                        cleanedValues.add(URLDecoder.decode(value, Constants.DEFAULT_ENCODING));
+                    } catch (UnsupportedEncodingException e) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Error to decode value of key:" + key);
+                        }
+                    }
+                } else {
+                    cleanedValues.add(value);
+                }
+            }
+            if (needDecode) {
+                try {
+                    cleanedKey = URLDecoder.decode(cleanedKey, Constants.DEFAULT_ENCODING);
+                } catch (UnsupportedEncodingException e) {
+                    if (log.isWarnEnabled()) {
+                        log.debug("Error to decode key:" + key);
+                    }
+                }
+            }
+            finalValues = cleanedValues.size() == 1 ? cleanedValues.get(0) : cleanedValues;
+        }
+        responseHeaders.put(cleanedKey, finalValues);
+    }
+
     protected SpecialParamEnum getSpecialParamForStorageClass() {
         return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? SpecialParamEnum.STORAGECLASS
                 : SpecialParamEnum.STORAGEPOLICY;
     }
-    
-    protected HeaderResponse build(Map<String, Object> responseHeaders) {
-        HeaderResponse response = new HeaderResponse();
-        setResponseHeaders(response, responseHeaders);
-        return response;
-    }
-    
+
     protected RequestBody createRequestBody(String mimeType, String content) throws ServiceException {
         if (log.isTraceEnabled()) {
             log.trace("Entity Content:" + content);
         }
-        return RequestBody.create(MediaType.parse(mimeType), content.getBytes(StandardCharsets.UTF_8));
+        return RequestBody.create(content.getBytes(StandardCharsets.UTF_8), MediaType.parse(mimeType));
     }
 
     protected GetBucketFSStatusResult getOptionInfoResult(Response response) {
@@ -220,12 +284,11 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
                 .availableZone(AvailableZoneEnum.getValueFromCode(headers.get(iheaders.azRedundancyHeader())))
                 .epid(headers.get(iheaders.epidHeader()))
                 .bucketType(bucketType).build();
-        
-        setResponseHeaders(output, this.cleanResponseHeaders(response));
-        setStatusCode(output, response.code());
+
+        setHeadersAndStatus(output, response);
         return output;
     }
-    
+
     protected AuthTypeEnum getApiVersion(String bucketName) throws ServiceException {
         if (!ServiceUtils.isValid(bucketName)) {
             return parseAuthTypeInResponse("");
@@ -245,7 +308,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         }
         return apiVersion;
     }
-    
+
     protected void verifyResponseContentType(Response response) throws ServiceException {
         if (this.obsProperties.getBoolProperty(ObsConstraint.VERIFY_RESPONSE_CONTENT_TYPE, true)) {
             String contentType = response.header(Constants.CommonHeaders.CONTENT_TYPE);
@@ -256,19 +319,19 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
             }
         }
     }
-    
+
     protected void verifyResponseContentTypeForJson(Response response) throws ServiceException {
         if (this.obsProperties.getBoolProperty(ObsConstraint.VERIFY_RESPONSE_CONTENT_TYPE, true)) {
             String contentType = response.header(Constants.CommonHeaders.CONTENT_TYPE);
             if (null == contentType) {
                 throw new ServiceException("Expected JSON document response  but received content type is null");
-            } else if (-1 == contentType.indexOf(Mimetypes.MIMETYPE_JSON)) {
+            } else if (!contentType.contains(Mimetypes.MIMETYPE_JSON)) {
                 throw new ServiceException(
                         "Expected JSON document response  but received content type is " + contentType);
             }
         }
     }
-    
+
     private AuthTypeEnum parseAuthTypeInResponse(String bucketName) throws ServiceException {
         Response response;
         try {
@@ -285,7 +348,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         return (response.code() == 200 && (apiVersion = response.headers().get("x-obs-api")) != null
                 && apiVersion.compareTo("3.0") >= 0) ? AuthTypeEnum.OBS : AuthTypeEnum.V2;
     }
-    
+
     private Response getAuthTypeNegotiationResponseImpl(String bucketName) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put("apiversion", "");

@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -40,25 +40,25 @@ import okhttp3.RequestBody;
 
 public class RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestConnectionService.class);
-    
+
     protected OkHttpClient httpClient;
-    
+
     protected ObsProperties obsProperties;
-    
+
     protected KeyManagerFactory keyManagerFactory;
 
     protected TrustManagerFactory trustManagerFactory;
-    
+
     protected Semaphore semaphore;
-    
+
     protected AtomicBoolean shuttingDown = new AtomicBoolean(false);
-    
+
     protected volatile ProviderCredentials credentials;
-    
+
     protected CacheManager apiVersionCache;
-    
+
     protected SegmentLock segmentLock;
-    
+
     protected void initHttpClient(Dispatcher httpDispatcher) {
 
         OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(obsProperties, keyManagerFactory,
@@ -78,11 +78,11 @@ public class RestConnectionService {
                 ObsConstraint.HTTP_MAX_CONNECT_VALUE);
         this.semaphore = new Semaphore(maxConnections);
     }
-    
+
     protected void shutdown() {
         this.shutdownImpl();
     }
-    
+
     protected void shutdownImpl() {
         if (shuttingDown.compareAndSet(false, true)) {
             this.credentials = null;
@@ -125,20 +125,23 @@ public class RestConnectionService {
             }
         }
     }
-    
+
     protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body) throws ServiceException {
+                                              Map<String, String> requestParameters, RequestBody body)
+            throws ServiceException {
         return this.setupConnection(method, bucketName, objectKey, requestParameters, body, false);
     }
 
     protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body, boolean isOEF) throws ServiceException {
+                                              Map<String, String> requestParameters, RequestBody body, boolean isOEF)
+            throws ServiceException {
         return this.setupConnection(method, bucketName, objectKey, requestParameters, body, isOEF, false);
     }
 
     protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-            Map<String, String> requestParameters, RequestBody body, boolean isOEF, boolean isListBuckets)
-                    throws ServiceException {
+                                              Map<String, String> requestParameters, RequestBody body, boolean isOEF,
+                                              boolean isListBuckets)
+            throws ServiceException {
 
         boolean pathStyle = this.isPathStyle();
         String endPoint = this.getEndpoint();
@@ -165,7 +168,7 @@ public class RestConnectionService {
         Request.Builder builder = new Request.Builder();
         builder.url(url);
         if (body == null) {
-            body = RequestBody.create(null, "");
+            body = RequestBody.create("", null);
         }
         switch (method) {
             case PUT:
@@ -212,10 +215,6 @@ public class RestConnectionService {
         }
         return url;
     }
-    
-    protected String addRequestParametersToUrlPath(String urlPath, Map<String, String> requestParameters) {
-        return this.addRequestParametersToUrlPath(urlPath, requestParameters, false);
-    }
 
     protected String addRequestParametersToUrlPath(String urlPath, Map<String, String> requestParameters, boolean isOEF)
             throws ServiceException {
@@ -248,11 +247,11 @@ public class RestConnectionService {
         }
         return urlPathBuilder.toString();
     }
-    
+
     protected String getEndpoint() {
         return this.obsProperties.getStringProperty(ObsConstraint.END_POINT, "");
     }
-    
+
     protected int getHttpPort() {
         return this.obsProperties.getIntProperty(ObsConstraint.HTTP_PORT, ObsConstraint.HTTP_PORT_VALUE);
     }
@@ -260,19 +259,19 @@ public class RestConnectionService {
     protected int getHttpsPort() {
         return this.obsProperties.getIntProperty(ObsConstraint.HTTPS_PORT, ObsConstraint.HTTPS_PORT_VALUE);
     }
-    
+
     protected boolean isKeepAlive() {
         return this.obsProperties.getBoolProperty(ObsConstraint.KEEP_ALIVE, true);
     }
-    
+
     protected boolean isPathStyle() {
         return this.obsProperties.getBoolProperty(ObsConstraint.DISABLE_DNS_BUCKET, false);
     }
-    
+
     protected boolean isCname() {
         return this.obsProperties.getBoolProperty(ObsConstraint.IS_CNAME, false);
     }
-    
+
     protected boolean getHttpsOnly() {
         return this.obsProperties.getBoolProperty(ObsConstraint.HTTPS_ONLY, true);
     }

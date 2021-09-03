@@ -130,6 +130,7 @@ public class UploadResumableClient {
                 uploadFileRequest.getBucketName(), uploadFileRequest.getObjectKey(), uploadCheckPoint.uploadID,
                 uploadCheckPoint.partEtags);
         completeMultipartUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
+        completeMultipartUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
 
         try {
             CompleteMultipartUploadResult result = this.obsClient
@@ -364,6 +365,8 @@ public class UploadResumableClient {
         initiateUploadRequest.setSseKmsHeader(uploadFileRequest.getSseKmsHeader());
         initiateUploadRequest.setMetadata(uploadFileRequest.getObjectMetadata());
         initiateUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
+        initiateUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
+        initiateUploadRequest.setIsEncodeHeaders(uploadFileRequest.isEncodeHeaders());
 
         InitiateMultipartUploadResult initiateUploadResult = this.obsClient
                 .initiateMultipartUpload(initiateUploadRequest);
@@ -558,9 +561,7 @@ public class UploadResumableClient {
             } else {
                 if (obj instanceof UploadCheckPoint) {
                     UploadCheckPoint uploadCheckPoint = (UploadCheckPoint) obj;
-                    if (uploadCheckPoint.hashCode() == obj.hashCode()) {
-                        return true;
-                    }
+                    return uploadCheckPoint.hashCode() == obj.hashCode();
                 }
             }
             return false;
@@ -609,9 +610,7 @@ public class UploadResumableClient {
             } else {
                 if (obj instanceof FileStatus) {
                     FileStatus fileStatus = (FileStatus) obj;
-                    if (fileStatus.hashCode() == obj.hashCode()) {
-                        return true;
-                    }
+                    return fileStatus.hashCode() == obj.hashCode();
                 }
             }
             return false;
@@ -659,9 +658,7 @@ public class UploadResumableClient {
             } else {
                 if (obj instanceof UploadPart) {
                     UploadPart uploadPart = (UploadPart) obj;
-                    if (uploadPart.hashCode() == obj.hashCode()) {
-                        return true;
-                    }
+                    return uploadPart.hashCode() == obj.hashCode();
                 }
             }
             return false;
@@ -706,11 +703,11 @@ public class UploadResumableClient {
         }
 
         public boolean isFailed() {
-            return isfailed;
+            return isFailed;
         }
 
-        public void setFailed(boolean isfailed) {
-            this.isfailed = isfailed;
+        public void setFailed(boolean isFailed) {
+            this.isFailed = isFailed;
         }
 
         public Exception getException() {
@@ -724,7 +721,7 @@ public class UploadResumableClient {
         private int partNumber; // 分片序号
         private long offset; // 分片在文件中的偏移
         private long length; // 分片长度
-        private boolean isfailed; // 分片上传是否失败
+        private boolean isFailed; // 分片上传是否失败
         private Exception exception; // 分片上传异常
     }
 }

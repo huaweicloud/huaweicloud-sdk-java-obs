@@ -124,6 +124,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest(request.getBucketName());
         listObjectsRequest.setRequesterPays(request.isRequesterPays());
         listObjectsRequest.setPrefix(request.getPrefix());
+        listObjectsRequest.setEncodingType(request.getEncodingType());
         do {
             objectsResult = this.listObjects(listObjectsRequest);
             for (ObsObject o : objectsResult.getObjects()) {
@@ -163,6 +164,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
         ListVersionsResult versionResult;
         ListVersionsRequest listRequest = new ListVersionsRequest(request.getBucketName());
         listRequest.setRequesterPays(request.isRequesterPays());
+        listRequest.setEncodingType(request.getEncodingType());
 
         listRequest.setPrefix(request.getPrefix());
         do {

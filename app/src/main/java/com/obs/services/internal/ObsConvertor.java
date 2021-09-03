@@ -18,8 +18,8 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
@@ -56,7 +56,7 @@ public class ObsConvertor extends V2Convertor {
     @Override
     public String transBucketLoction(String location) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("CreateBucketConfiguration").elem("Location")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("CreateBucketConfiguration").elem("Location")
                     .text(ServiceUtils.toValid(location));
             return builder.asString();
         } catch (Exception e) {
@@ -68,7 +68,8 @@ public class ObsConvertor extends V2Convertor {
     public String transRestoreObjectRequest(RestoreObjectRequest req) throws ServiceException {
 
         try {
-            XMLBuilder builder = XMLBuilder.create("RestoreRequest").elem("Days").t(String.valueOf(req.getDays())).up();
+            OBSXMLBuilder builder = OBSXMLBuilder.create("RestoreRequest")
+                    .elem("Days").t(String.valueOf(req.getDays())).up();
             if (req.getRestoreTier() != null && req.getRestoreTier() != RestoreTierEnum.BULK) {
                 builder.e("RestoreJob").e("Tier").t(req.getRestoreTier().getCode());
             }
@@ -92,7 +93,7 @@ public class ObsConvertor extends V2Convertor {
     @Override
     public String transStoragePolicy(BucketStoragePolicyConfiguration status) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("StorageClass")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("StorageClass")
                     .text(this.transStorageClass(status.getBucketStorageClass()));
             return builder.asString();
         } catch (Exception e) {
@@ -103,12 +104,12 @@ public class ObsConvertor extends V2Convertor {
     @Override
     public String transBucketLoggingConfiguration(BucketLoggingConfiguration c) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("BucketLoggingStatus");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("BucketLoggingStatus");
             if (c.getAgency() != null) {
                 builder.e("Agency").t(ServiceUtils.toValid(c.getAgency()));
             }
             if (c.isLoggingEnabled()) {
-                XMLBuilder enabledBuilder = builder.elem("LoggingEnabled");
+                OBSXMLBuilder enabledBuilder = builder.elem("LoggingEnabled");
                 if (c.getTargetBucketName() != null) {
                     enabledBuilder.elem("TargetBucket").text(ServiceUtils.toValid(c.getTargetBucketName()));
                 }
@@ -117,7 +118,7 @@ public class ObsConvertor extends V2Convertor {
                 }
                 GrantAndPermission[] grants = c.getTargetGrants();
                 if (grants.length > 0) {
-                    XMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
+                    OBSXMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
                     transGrantsBuilder(grants, grantsBuilder);
                 }
             }
@@ -127,18 +128,18 @@ public class ObsConvertor extends V2Convertor {
         }
     }
 
-    private void transGrantsBuilder(GrantAndPermission[] grants, XMLBuilder grantsBuilder)
+    private void transGrantsBuilder(GrantAndPermission[] grants, OBSXMLBuilder grantsBuilder)
             throws ParserConfigurationException, FactoryConfigurationError {
         for (GrantAndPermission gap : grants) {
             GranteeInterface grantee = gap.getGrantee();
             Permission permission = gap.getPermission();
             if (permission != null) {
-                XMLBuilder subBuilder = null;
+                OBSXMLBuilder subBuilder = null;
                 if (grantee instanceof CanonicalGrantee) {
-                    subBuilder = XMLBuilder.create("Grantee").element("ID")
+                    subBuilder = OBSXMLBuilder.create("Grantee").element("ID")
                             .text(ServiceUtils.toValid(grantee.getIdentifier()));
                 } else if (grantee instanceof GroupGrantee) {
-                    subBuilder = XMLBuilder.create("Grantee").element("Canned")
+                    subBuilder = OBSXMLBuilder.create("Grantee").element("Canned")
                             .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
                 }
 
@@ -155,7 +156,7 @@ public class ObsConvertor extends V2Convertor {
         Owner owner = acl.getOwner();
         GrantAndPermission[] grants = acl.getGrantAndPermissions();
         try {
-            XMLBuilder builder = XMLBuilder.create("AccessControlPolicy");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("AccessControlPolicy");
             if (owner != null) {
                 builder.elem("Owner").elem("ID").text(ServiceUtils.toValid(owner.getId()));
             }
@@ -164,27 +165,27 @@ public class ObsConvertor extends V2Convertor {
             }
 
             if (grants.length > 0) {
-                XMLBuilder accessControlList = builder.elem("AccessControlList");
+                OBSXMLBuilder accessControlList = builder.elem("AccessControlList");
                 for (GrantAndPermission gap : grants) {
                     GranteeInterface grantee = gap.getGrantee();
                     Permission permission = gap.getPermission();
 
-                    XMLBuilder subBuilder = null;
+                    OBSXMLBuilder subBuilder = null;
                     if (grantee instanceof CanonicalGrantee) {
-                        subBuilder = XMLBuilder.create("Grantee").element("ID")
+                        subBuilder = OBSXMLBuilder.create("Grantee").element("ID")
                                 .text(ServiceUtils.toValid(grantee.getIdentifier()));
                     } else if (grantee instanceof GroupGrantee) {
                         if (((GroupGrantee) grantee).getGroupGranteeType() != GroupGranteeEnum.ALL_USERS) {
                             continue;
                         }
-                        subBuilder = XMLBuilder.create("Grantee").element("Canned")
+                        subBuilder = OBSXMLBuilder.create("Grantee").element("Canned")
                                 .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
                     } else if (grantee != null) {
-                        subBuilder = XMLBuilder.create("Grantee").element("ID")
+                        subBuilder = OBSXMLBuilder.create("Grantee").element("ID")
                                 .text(ServiceUtils.toValid(grantee.getIdentifier()));
                     }
                     if (subBuilder != null) {
-                        XMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
+                        OBSXMLBuilder grantBuilder = accessControlList.elem("Grant").importXMLBuilder(subBuilder);
                         if (permission != null) {
                             grantBuilder.elem("Permission")
                                     .text(ServiceUtils.toValid(permission.getPermissionString()));
@@ -207,7 +208,7 @@ public class ObsConvertor extends V2Convertor {
             throws ServiceException {
 
         try {
-            XMLBuilder builder = XMLBuilder.create("NotificationConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("NotificationConfiguration");
             if (bucketNotificationConfiguration == null) {
                 return builder.asString();
             }
@@ -230,7 +231,7 @@ public class ObsConvertor extends V2Convertor {
     public String transReplicationConfiguration(ReplicationConfiguration replicationConfiguration)
             throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("ReplicationConfiguration").e("Agency")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("ReplicationConfiguration").e("Agency")
                     .t(ServiceUtils.toValid(replicationConfiguration.getAgency())).up();
             for (ReplicationConfiguration.Rule rule : replicationConfiguration.getRules()) {
                 builder = builder.e("Rule");

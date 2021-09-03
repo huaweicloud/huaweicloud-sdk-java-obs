@@ -28,10 +28,10 @@ import com.obs.log.LoggerBuilder;
 public abstract class SimpleHandler extends DefaultHandler {
     private static final ILogger LOG = LoggerBuilder.getLogger(SimpleHandler.class);
 
-    protected XMLReader xr = null;
-    private StringBuilder textBuffer = null;
+    protected XMLReader xr;
+    private StringBuilder textBuffer;
 
-    private Deque<SimpleHandler> handlerStack = new LinkedBlockingDeque<SimpleHandler>();
+    private Deque<SimpleHandler> handlerStack = new LinkedBlockingDeque<>();
 
     public SimpleHandler(XMLReader xr) {
         this.xr = xr;

@@ -26,7 +26,7 @@ public final class SecureObjectInputStream extends ObjectInputStream {
 
     public static final List<String> ALLOWED_CLASS_NAMES = Collections.unmodifiableList(
             Arrays.asList("java.util.ArrayList", "com.obs.services.model.PartEtag", "java.lang.Integer",
-                    "java.lang.Number", "java.util.Date", 
+                    "java.lang.Number", "java.util.Date",
                     "com.obs.services.internal.DownloadResumableClient$TmpFileStatus",
                     "com.obs.services.internal.UploadResumableClient$UploadCheckPoint",
                     "com.obs.services.internal.UploadResumableClient$FileStatus",

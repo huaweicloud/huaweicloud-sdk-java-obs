@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -26,10 +26,11 @@ public class DefaultProgressStatus implements ProgressStatus {
     private final long totalBytes;
     private final long intervalMilliseconds;
     private final long totalMilliseconds;
+    private long instantaneousSpeed;
     private List<BytesUnit> instantaneousBytes;
 
     public DefaultProgressStatus(long newlyTransferredBytes, long transferredBytes, long totalBytes,
-            long intervalMilliseconds, long totalMilliseconds) {
+                                 long intervalMilliseconds, long totalMilliseconds) {
         this.newlyTransferredBytes = newlyTransferredBytes;
         this.transferredBytes = transferredBytes;
         this.totalBytes = totalBytes;
@@ -39,12 +40,20 @@ public class DefaultProgressStatus implements ProgressStatus {
 
     @Override
     public double getInstantaneousSpeed() {
+        if (this.intervalMilliseconds <= 0) {
+            return -1d;
+        }
+        return this.instantaneousSpeed;
+    }
+
+    @Deprecated
+    public double getOldInstantaneousSpeed() {
         if (this.instantaneousBytes != null) {
-            long instantaneousSpeed = 0;
+            long oldInstantaneousSpeed = 0;
             for (BytesUnit item : this.instantaneousBytes) {
-                instantaneousSpeed += item.bytes;
+                oldInstantaneousSpeed += item.bytes;
             }
-            return instantaneousSpeed;
+            return oldInstantaneousSpeed;
         }
 
         if (this.intervalMilliseconds <= 0) {
@@ -86,8 +95,13 @@ public class DefaultProgressStatus implements ProgressStatus {
         return this.totalBytes;
     }
 
+    @Deprecated
     public void setInstantaneousBytes(List<BytesUnit> instantaneousBytes) {
         this.instantaneousBytes = instantaneousBytes;
+    }
+
+    public void setInstantaneousSpeed(long instantaneousSpeed) {
+        this.instantaneousSpeed = instantaneousSpeed;
     }
 
 }

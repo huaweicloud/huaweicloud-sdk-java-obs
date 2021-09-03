@@ -159,4 +159,8 @@ public class ObsConstraint {
      */
     public static final String SECURITY_TOKEN_ENV_VAR = "OBS_SECURITY_TOKEN";
 
+    public static final String OBS_XML_DOC_BUILDER_FACTORY = "obs.xml.document.builder.factory";
+    
+    public static final String OBS_XML_DOC_BUILDER_FACTORY_CLASS = 
+            "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
 }

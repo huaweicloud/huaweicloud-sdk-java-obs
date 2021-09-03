@@ -114,6 +114,10 @@ public class DeleteObjectsResult extends HeaderResponse {
             return deleteMarkerVersion;
         }
 
+        public void setObjectKey(String objectKey) {
+            this.objectKey = objectKey;
+        }
+
         @Override
         public String toString() {
             return "DeleteObjectResult [objectKey=" + objectKey + ", version=" + version + ", deleteMarker="
@@ -187,6 +191,10 @@ public class DeleteObjectsResult extends HeaderResponse {
          */
         public String getMessage() {
             return message;
+        }
+
+        public void setObjectKey(String objectKey) {
+            this.objectKey = objectKey;
         }
 
         @Override

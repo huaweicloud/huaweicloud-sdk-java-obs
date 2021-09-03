@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -74,7 +74,7 @@ public abstract class RestStorageService extends RestConnectionService {
         NON_RETRIABLE_CLASSES.add(SSLException.class);
         NON_RETRIABLE_CLASSES.add(ConnectException.class);
     }
-    
+
     private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<HashMap<String, String>>();
 
     // switch of using standard http headers
@@ -111,8 +111,8 @@ public abstract class RestStorageService extends RestConnectionService {
      * @param builder
      *            Request in OKHttp3.0
      */
-    private void addUserHeaderToRequest(Request.Builder builder) {
-        Map<String, String> userHeaderMap = formatMetadataAndHeader(userHeaders.get());
+    private void addUserHeaderToRequest(Request.Builder builder, boolean needEncode) {
+        Map<String, String> userHeaderMap = formatMetadataAndHeader(userHeaders.get(), needEncode);
         for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
@@ -121,7 +121,8 @@ public abstract class RestStorageService extends RestConnectionService {
         }
     }
 
-    private Map<String, String> formatMetadataAndHeader(Map<String, String> metadataAndHeader) {
+    private Map<String, String> formatMetadataAndHeader(Map<String, String> metadataAndHeader,
+                                                        boolean needEncode) {
         Map<String, String> format = new HashMap<String, String>();
         if (metadataAndHeader != null) {
             for (Map.Entry<String, String> entry : metadataAndHeader.entrySet()) {
@@ -133,14 +134,20 @@ public abstract class RestStorageService extends RestConnectionService {
                 key = key.trim();
                 if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
                         && !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
-                                .contains(key.toLowerCase(Locale.getDefault()))) {
+                        .contains(key.toLowerCase(Locale.getDefault()))) {
                     key = this.getRestMetadataPrefix() + key;
                 }
                 try {
                     if (key.startsWith(this.getRestMetadataPrefix())) {
-                        key = RestUtils.uriEncode(key, true);
+                        if (needEncode) {
+                            key = RestUtils.uriEncode(key, true);
+                        }
                     }
-                    format.put(key, RestUtils.uriEncode(value == null ? "" : value, true));
+                    if (needEncode) {
+                        format.put(key, RestUtils.uriEncode(value == null ? "" : value, true));
+                    } else {
+                        format.put(key, value);
+                    }
                 } catch (ServiceException e) {
                     if (log.isDebugEnabled()) {
                         log.debug("Ignore key:" + key);
@@ -148,15 +155,15 @@ public abstract class RestStorageService extends RestConnectionService {
                 }
             }
         }
-        
+
         return format;
     }
-    
-    
+
+
     protected boolean retryRequest(IOException exception, RetryCounter retryCounter, Request request,
-            Call call) {
+                                   Call call) {
         retryCounter.addErrorCount();
-        
+
         if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
             return false;
         }
@@ -170,17 +177,13 @@ public abstract class RestStorageService extends RestConnectionService {
             }
         }
 
-        if (call.isCanceled()) {
-            return false;
-        }
-
-        return true;
+        return !call.isCanceled();
     }
 
     private boolean retryRequestForUnexpectedException(IOException exception, RetryCounter retryCounter,
-            Call call) {
+                                                       Call call) {
         retryCounter.addErrorCount();
-        
+
         if (null == exception || retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
             return false;
         }
@@ -189,21 +192,17 @@ public abstract class RestStorageService extends RestConnectionService {
             return false;
         }
 
-        if (call.isCanceled()) {
-            return false;
-        }
-
-        return true;
+        return !call.isCanceled();
     }
 
     private ServiceException handleThrowable(Request request, Response response, Call call,
-            Throwable t) {
+                                             Throwable t) {
         ServiceException serviceException = (t instanceof ServiceException) ? (ServiceException) t
                 : new ServiceException("Request Error: " + t, t);
         serviceException.setRequestHost(request.header(CommonHeaders.HOST));
         serviceException.setRequestVerb(request.method());
         serviceException.setRequestPath(request.url().toString());
-        
+
         if (response != null) {
             ServiceUtils.closeStream(response);
             serviceException.setResponseCode(response.code());
@@ -219,7 +218,12 @@ public abstract class RestStorageService extends RestConnectionService {
         }
 
         if (log.isWarnEnabled()) {
-            log.warn("exception message.", serviceException);
+            log.warn("Request failed, Response code: " + serviceException.getResponseCode()
+                    + "; Request ID: " + serviceException.getErrorRequestId()
+                    + "; Request path: " + serviceException.getRequestPath());
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Exception detail.", serviceException);
         }
 
         if (call != null) {
@@ -235,7 +239,7 @@ public abstract class RestStorageService extends RestConnectionService {
         uri = URI.create(location);
         String path = uri.getPath();
 
-        if (location.indexOf("?") < 0) {
+        if (!location.contains("?")) {
             if (path == null || path.isEmpty() || path.equals("/")) {
                 isOnlyHost = true;
             }
@@ -250,63 +254,63 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRequestWithoutSignature(Request request, Map<String, String> requestParameters,
-            String bucketName) throws ServiceException {
+                                                      String bucketName) throws ServiceException {
         return performRequest(request, requestParameters, bucketName, false);
     }
 
     protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature) throws ServiceException {
+                                      boolean doSignature) throws ServiceException {
         return this.performRequest(request, requestParameters, bucketName, doSignature, false);
     }
 
     private static final class RetryCounter {
         private int errorCount = 0;
         private int retryMaxCount = 0;
-        
+
         public RetryCounter(int retryMaxCount) {
             super();
             this.retryMaxCount = retryMaxCount;
         }
-        
+
         public int getErrorCount() {
             return errorCount;
         }
-        
+
         public void addErrorCount() {
             this.errorCount++;
         }
-        
+
         public int getRetryMaxCount() {
             return retryMaxCount;
         }
     }
-    
+
     private static final class RetryController {
         private RetryCounter errorRetryCounter = null;
         private RetryCounter unexpectedErrorRetryCounter = null;
         private Exception lastException = null;
         private boolean wasRecentlyRedirected = false;
-        
+
         public RetryController(RetryCounter errorRetryCounter, RetryCounter unexpectedErrorRetryCounter,
-                boolean wasRecentlyRedirected) {
+                               boolean wasRecentlyRedirected) {
             super();
             this.errorRetryCounter = errorRetryCounter;
             this.unexpectedErrorRetryCounter = unexpectedErrorRetryCounter;
             this.wasRecentlyRedirected = wasRecentlyRedirected;
         }
-        
+
         public Exception getLastException() {
             return lastException;
         }
-        
+
         public void setLastException(Exception lastException) {
             this.lastException = lastException;
         }
-        
+
         public RetryCounter getErrorRetryCounter() {
             return errorRetryCounter;
         }
-        
+
         public RetryCounter getUnexpectedErrorRetryCounter() {
             return unexpectedErrorRetryCounter;
         }
@@ -319,13 +323,13 @@ public abstract class RestStorageService extends RestConnectionService {
             this.wasRecentlyRedirected = wasRecentlyRedirected;
         }
     }
-    
+
     private static final class RequestInfo {
         private Request request = null;
         private Response response = null;
         private Call call = null;
         private InterfaceLogBean reqBean;
-        
+
         public RequestInfo(Request request, InterfaceLogBean reqBean) {
             super();
             this.request = request;
@@ -360,12 +364,17 @@ public abstract class RestStorageService extends RestConnectionService {
             return reqBean;
         }
     }
-    
+
     protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature, boolean isOEF) throws ServiceException {
+                                      boolean doSignature, boolean isOEF) throws ServiceException {
+        return performRequest(request, requestParameters, bucketName, doSignature, isOEF, true);
+    }
+
+    protected Response performRequest(Request request, Map<String, String> requestParameters, String bucketName,
+                                      boolean doSignature, boolean isOEF, boolean needEncode) throws ServiceException {
         RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
         try {
-            tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo);
+            tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo, needEncode);
         } catch (Throwable t) {
             ServiceException serviceException = this.handleThrowable(requestInfo.getRequest(),
                     requestInfo.getResponse(), requestInfo.getCall(), t);
@@ -381,23 +390,23 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private void tryRequest(Map<String, String> requestParameters, String bucketName, boolean doSignature,
-            boolean isOEF, RequestInfo requestInfo) throws Exception {
-        requestInfo.setRequest(initRequest(requestInfo.getRequest()));
-        
+                            boolean isOEF, RequestInfo requestInfo, boolean needEncode) throws Exception {
+        requestInfo.setRequest(initRequest(requestInfo.getRequest(), needEncode));
+
         if (log.isDebugEnabled()) {
-            log.debug("Performing " + requestInfo.getRequest().method() 
+            log.debug("Performing " + requestInfo.getRequest().method()
                     + " request for '" + requestInfo.getRequest().url());
             log.debug("Headers: " + requestInfo.getRequest().headers());
         }
 
         RetryController retryController = new RetryController(new RetryCounter(
                 obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
-                ObsConstraint.HTTP_RETRY_MAX_VALUE)), 
+                        ObsConstraint.HTTP_RETRY_MAX_VALUE)),
                 new RetryCounter(obsProperties.getIntProperty(
                         ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
                         ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION)),
                 false);
-        
+
         do {
             if (!retryController.isWasRecentlyRedirected()) {
                 requestInfo.setRequest(addBaseHeaders(requestInfo.getRequest(), bucketName, doSignature));
@@ -406,7 +415,7 @@ public abstract class RestStorageService extends RestConnectionService {
             }
 
             requestInfo.setCall(httpClient.newCall(requestInfo.getRequest()));
-            requestInfo.setResponse(executeRequest(requestInfo.getCall(), 
+            requestInfo.setResponse(executeRequest(requestInfo.getCall(),
                     requestInfo.getRequest(), retryController));
             if (null == requestInfo.getResponse()) {
                 continue;
@@ -419,7 +428,7 @@ public abstract class RestStorageService extends RestConnectionService {
             String contentType = requestInfo.getResponse().header(CommonHeaders.CONTENT_TYPE);
             if (log.isDebugEnabled()) {
                 log.debug("Response for '" + requestInfo.getRequest().method() + "'. Content-Type: " + contentType
-                        + ", ResponseCode:" + responseCode 
+                        + ", ResponseCode:" + responseCode
                         + ", Headers: " + requestInfo.getResponse().headers());
             }
             if (log.isTraceEnabled()) {
@@ -434,14 +443,13 @@ public abstract class RestStorageService extends RestConnectionService {
                 break;
             } else {
                 if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
-                    requestInfo.setRequest(handleRedirectResponse(requestInfo.getRequest(), 
+                    requestInfo.setRequest(handleRedirectResponse(requestInfo.getRequest(),
                             requestParameters, bucketName, doSignature, isOEF,
                             requestInfo.getReqBean(), requestInfo.getResponse(), retryController));
                 } else if ((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
                     handleRequestErrorResponse(requestInfo.getResponse(), retryController);
-                    continue;
                 } else if (responseCode >= 500) {
-                    handleServerErrorResponse(requestInfo.getReqBean(), 
+                    handleServerErrorResponse(requestInfo.getReqBean(),
                             requestInfo.getResponse(), retryController, responseCode);
                 } else {
                     break;
@@ -453,49 +461,48 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private void handleRequestErrorResponse(Response response, RetryController retryController) {
         ServiceException exception = createServiceException("Request Error.", response);
-        
+
         if (!REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
             throw exception;
         }
-        
+
         retryController.getErrorRetryCounter().addErrorCount();
-        if (retryController.getErrorRetryCounter().getErrorCount() 
+        if (retryController.getErrorRetryCounter().getErrorCount()
                 < retryController.getErrorRetryCounter().getRetryMaxCount()) {
             if (log.isWarnEnabled()) {
                 log.warn("Retrying connection that failed with RequestTimeout error"
-                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount() 
+                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount()
                         + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
-            return;
         } else {
             if (log.isErrorEnabled()) {
                 log.error("Exceeded maximum number of retries for RequestTimeout errors: "
                         + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
-            
+
             throw exception;
         }
     }
-    
+
     private void handleServerErrorResponse(InterfaceLogBean reqBean, Response response, RetryController retryController,
-            int responseCode) {
+                                           int responseCode) {
         reqBean.setResponseInfo("Internal Server error(s).", String.valueOf(responseCode));
         if (log.isErrorEnabled()) {
             log.error(reqBean);
         }
-        
-        doRetry(response, 
-                "Encountered too many 5xx errors (" 
-                + retryController.getErrorRetryCounter().getErrorCount() 
-                + "), aborting request.", 
+
+        doRetry(response,
+                "Encountered too many 5xx errors ("
+                        + retryController.getErrorRetryCounter().getErrorCount()
+                        + "), aborting request.",
                 retryController.getErrorRetryCounter());
-        
+
         sleepBeforeRetry(retryController.getErrorRetryCounter().getErrorCount());
     }
 
     private Request handleRedirectResponse(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature, boolean isOEF, InterfaceLogBean reqBean, Response response,
-            RetryController retryController) {
+                                           boolean doSignature, boolean isOEF, InterfaceLogBean reqBean,
+                                           Response response, RetryController retryController) {
         int responseCode = response.code();
         String location = response.header(CommonHeaders.LOCATION);
         if (!ServiceUtils.isValid(location)) {
@@ -509,20 +516,20 @@ public abstract class RestStorageService extends RestConnectionService {
                 responseCode, location);
 
         retryController.setWasRecentlyRedirected(true);
-        
-        doRetry(response, 
-                "Exceeded 3xx redirect limit (" 
-                + retryController.getErrorRetryCounter().getRetryMaxCount() 
-                + ").", 
+
+        doRetry(response,
+                "Exceeded 3xx redirect limit ("
+                        + retryController.getErrorRetryCounter().getRetryMaxCount()
+                        + ").",
                 retryController.getErrorRetryCounter());
         return request;
     }
 
-    private Response executeRequest(Call call, 
-            Request request,
-            RetryController retryController) throws Exception {
+    private Response executeRequest(Call call,
+                                    Request request,
+                                    RetryController retryController) throws Exception {
         long start = System.currentTimeMillis();
-        
+
         try {
             semaphore.acquire();
             return call.execute();
@@ -536,14 +543,14 @@ public abstract class RestStorageService extends RestConnectionService {
             }
             retryController.setLastException(e);
 
-            retryOnIOException(e, 
-                    request, 
-                    retryController, 
+            retryOnIOException(e,
+                    request,
+                    retryController,
                     call);
-            
+
             if (log.isWarnEnabled()) {
                 log.warn("Retrying connection that failed with error"
-                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount() 
+                        + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount()
                         + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
             return null;
@@ -554,11 +561,11 @@ public abstract class RestStorageService extends RestConnectionService {
             }
         }
     }
-    
+
     private void retryOnIOException(IOException e,
-            Request request,
-            RetryController retryController, 
-            Call call) throws Exception {
+                                    Request request,
+                                    RetryController retryController,
+                                    Call call) throws Exception {
 
         // for example:Caused by: java.io.IOException: unexpected
         // end of stream on Connection{...}
@@ -584,7 +591,7 @@ public abstract class RestStorageService extends RestConnectionService {
         }
         throw e;
     }
-    
+
     private void doRetry(Response response, String message, RetryCounter retryCounter) {
         retryCounter.addErrorCount();
         if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
@@ -612,7 +619,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private Request createRedirectRequest(Request request, Map<String, String> requestParameters, String bucketName,
-            boolean doSignature, boolean isOEF, int responseCode, String location) {
+                                          boolean doSignature, boolean isOEF, int responseCode, String location) {
         if (location.indexOf("?") < 0) {
             location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
         }
@@ -637,7 +644,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private void transOEFResponse(Response response, InterfaceLogBean reqBean,
-            int internalErrorCount, int responseCode) {
+                                  int internalErrorCount, int responseCode) {
         if ((responseCode >= 400 && responseCode < 500)) {
             String xmlMessage = readResponseMessage(response);
 
@@ -655,10 +662,10 @@ public abstract class RestStorageService extends RestConnectionService {
             if (log.isErrorEnabled()) {
                 log.error(reqBean);
             }
-            throw createServiceException("Encountered too many 5xx errors (" + internalErrorCount 
-                    + "), aborting request.", 
+            throw createServiceException("Encountered too many 5xx errors (" + internalErrorCount
+                            + "), aborting request.",
                     response);
-        } 
+        }
     }
 
     private Request addBaseHeaders(Request request, String bucketName, boolean doSignature) {
@@ -674,12 +681,12 @@ public abstract class RestStorageService extends RestConnectionService {
         return request;
     }
 
-    private Request initRequest(Request request) {
+    private Request initRequest(Request request, boolean needEncode) {
         if (userHeaders.get() != null && userHeaders.get().size() > 0) {
             // create a new Builder from current Request
             Request.Builder builderTmp = request.newBuilder();
             // add user header
-            addUserHeaderToRequest(builderTmp);
+            addUserHeaderToRequest(builderTmp, needEncode);
             // build new request
             request = builderTmp.build();
         }
@@ -725,7 +732,7 @@ public abstract class RestStorageService extends RestConnectionService {
     private Date parseDate(Request request, boolean isV4) {
         String dateHeader = this.getIHeaders().dateHeader();
         String date = request.header(dateHeader);
-        
+
         if (date != null) {
             try {
                 return isV4 ? ServiceUtils.getLongDateFormat().parse(date) : ServiceUtils.parseRfc822Date(date);
@@ -736,7 +743,7 @@ public abstract class RestStorageService extends RestConnectionService {
             return new Date();
         }
     }
-    
+
     protected Request authorizeHttpRequest(Request request, String bucketName, String url) throws ServiceException {
 
         Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build();
@@ -761,9 +768,9 @@ public abstract class RestStorageService extends RestConnectionService {
         }
 
         boolean isV4 = providerCredentials.getAuthType() == AuthTypeEnum.V4;
-        
+
         Date now = parseDate(request, isV4);
-        
+
         builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
 
         BasicSecurityKey securityKey = providerCredentials.getSecurityKey();
@@ -818,8 +825,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestHead(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> requestHeaders) throws ServiceException {
-
+                                       Map<String, String> requestHeaders) throws ServiceException {
         Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null);
 
         addRequestHeadersToConnection(builder, requestHeaders);
@@ -828,12 +834,13 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> requestHeaders) throws ServiceException {
+                                      Map<String, String> requestHeaders) throws ServiceException {
         return this.performRestGet(bucketName, objectKey, requestParameters, requestHeaders, false);
     }
 
     protected Response performRestGetForListBuckets(String bucketName, String objectKey,
-            Map<String, String> requestParameters, Map<String, String> requestHeaders) throws ServiceException {
+                                                    Map<String, String> requestParameters,
+                                                    Map<String, String> requestHeaders) throws ServiceException {
 
         // no bucket name required for listBuckets
         Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
@@ -844,29 +851,46 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> requestHeaders, boolean isOEF) throws ServiceException {
+                                      Map<String, String> requestHeaders, boolean isOEF) throws ServiceException {
+
+        return performRestGet(bucketName, objectKey, requestParameters, requestHeaders, isOEF, true);
+    }
+
+    protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
+                                      Map<String, String> requestHeaders, boolean isOEF, boolean needEncode)
+            throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
                 isOEF);
 
         addRequestHeadersToConnection(builder, requestHeaders);
-        return performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
+        return performRequest(builder.build(), requestParameters, bucketName, true, isOEF, needEncode);
     }
 
     protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
-            Map<String, String> requestParameters, RequestBody body, boolean autoRelease) throws ServiceException {
+                                      Map<String, String> requestParameters, RequestBody body, boolean autoRelease)
+            throws ServiceException {
         return this.performRestPut(bucketName, objectKey, metadata, requestParameters, body, autoRelease, false);
     }
 
     protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
-            Map<String, String> requestParameters, RequestBody body, boolean autoRelease, boolean isOEF)
-                    throws ServiceException {
+                                      Map<String, String> requestParameters, RequestBody body,
+                                      boolean autoRelease, boolean isOEF) throws ServiceException {
+        return this.performRestPut(bucketName, objectKey, metadata, requestParameters,
+                body, autoRelease, isOEF, true);
+    }
+
+    protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
+                                      Map<String, String> requestParameters, RequestBody body,
+                                      boolean autoRelease, boolean isOEF,
+                                      boolean needEncode)
+            throws ServiceException {
         Request.Builder builder = setupConnection(HttpMethodEnum.PUT, bucketName, objectKey, requestParameters, body,
                 isOEF);
 
-        renameMetadataKeys(builder, metadata);
+        renameMetadataKeys(builder, metadata, needEncode);
 
-        Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
+        Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF, needEncode);
 
         if (autoRelease) {
             result.close();
@@ -876,17 +900,26 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
-            Map<String, String> requestParameters, RequestBody body, boolean autoRelease) throws ServiceException {
+                                       Map<String, String> requestParameters, RequestBody body, boolean autoRelease)
+            throws ServiceException {
         return this.performRestPost(bucketName, objectKey, metadata, requestParameters, body, autoRelease, false);
     }
 
     protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
-            Map<String, String> requestParameters, RequestBody body, boolean autoRelease, boolean isOEF)
-                    throws ServiceException {
+                                       Map<String, String> requestParameters, RequestBody body, boolean autoRelease,
+                                       boolean isOEF) throws ServiceException {
+        return this.performRestPost(bucketName, objectKey, metadata, requestParameters,
+                body, autoRelease, isOEF, true);
+    }
+
+    protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
+                                       Map<String, String> requestParameters, RequestBody body,
+                                       boolean autoRelease, boolean isOEF, boolean needEncode)
+            throws ServiceException {
         Request.Builder builder = setupConnection(HttpMethodEnum.POST, bucketName, objectKey, requestParameters, body,
                 isOEF);
 
-        renameMetadataKeys(builder, metadata);
+        renameMetadataKeys(builder, metadata, needEncode);
 
         Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
 
@@ -898,12 +931,13 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> metadata) throws ServiceException {
+                                         Map<String, String> metadata) throws ServiceException {
         return this.performRestDelete(bucketName, objectKey, requestParameters, metadata, true, false);
     }
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-            Map<String, String> metadata, boolean autoRelease, boolean isOEF) throws ServiceException {
+                                         Map<String, String> metadata, boolean autoRelease, boolean isOEF)
+            throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters, null,
                 isOEF);
@@ -925,7 +959,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-            boolean autoRelease) throws ServiceException {
+                                         boolean autoRelease) throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters,
                 null);
@@ -940,7 +974,8 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestOptions(String bucketName, String objectKey, Map<String, String> metadata,
-            Map<String, String> requestParameters, boolean autoRelease) throws ServiceException {
+                                          Map<String, String> requestParameters, boolean autoRelease)
+            throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.OPTIONS, bucketName, objectKey, requestParameters,
                 null);
@@ -956,7 +991,8 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestForApiVersion(String bucketName, String objectKey,
-            Map<String, String> requestParameters, Map<String, String> requestHeaders) throws ServiceException {
+                                                Map<String, String> requestParameters,
+                                                Map<String, String> requestHeaders) throws ServiceException {
 
         Request.Builder builder = null;
 
@@ -1006,14 +1042,18 @@ public abstract class RestStorageService extends RestConnectionService {
         this.credentials = credentials;
     }
 
-    protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata) {
-        Map<String, String> convertedMetadata = formatMetadataAndHeader(metadata);
+    protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata, boolean needEncode) {
+        Map<String, String> convertedMetadata = formatMetadataAndHeader(metadata, needEncode);
         for (Map.Entry<String, String> entry : convertedMetadata.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
                 log.debug("Added metadata to connection: " + entry.getKey() + "=" + entry.getValue());
             }
         }
+    }
+
+    protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata) {
+        renameMetadataKeys(builder, metadata, true);
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {

@@ -43,6 +43,18 @@ public class HeaderResponse extends InternalHeaderResponse {
     }
 
     /**
+     * Obtain original response headers.
+     *
+     * @return original response headers
+     */
+    public Map<String, Object> getOriginalHeaders() {
+        if (originalHeaders == null) {
+            originalHeaders = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        }
+        return originalHeaders;
+    }
+
+    /**
      * Obtain the request ID returned by the server.
      * 
      * @return Request ID returned by the server

@@ -34,9 +34,11 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     private boolean removeUnset;
 
-    private Map<String, String> metadata;
+    private Map<String, String> userMetadata;
 
-    private ObjectRepleaceMetadata replaceMetadata = new ObjectRepleaceMetadata();
+    private boolean encodeHeaders = true;
+
+    private final ObjectRepleaceMetadata replaceMetadata = new ObjectRepleaceMetadata();
 
     public SetObjectMetadataRequest() {
     }
@@ -168,10 +170,11 @@ public class SetObjectMetadataRequest extends GenericRequest {
     }
 
     /**
-     * Specify whether to delete not specified properties. The default value is
-     * "false." true: Use properties set in the request parameters to overwrite
+     * Specify whether to delete not specified properties. The default value is "false." 
+     * true: Use properties set in the request parameters to overwrite
      * the existing property values. Properties not specified in the request
-     * will be deleted. false: Use properties set in the request parameters to
+     * will be deleted. 
+     * false: Use properties set in the request parameters to
      * overwrite the existing property values. For properties not specified in
      * the request, their existing values are retained.
      * 
@@ -201,7 +204,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
      *            Value of the customized metadata
      */
     public void addUserMetadata(String key, String value) {
-        getMetadata().put(key, value);
+        getAllUserMetadata().put(key, value);
     }
 
     /**
@@ -212,7 +215,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
      */
     public void addAllUserMetadata(Map<String, String> userMetadata) {
         if (userMetadata != null) {
-            getMetadata().putAll(userMetadata);
+            getAllUserMetadata().putAll(userMetadata);
         }
     }
 
@@ -224,7 +227,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
      * @return Value of the customized metadata
      */
     public Object getUserMetadata(String key) {
-        return getMetadata().get(key);
+        return getAllUserMetadata().get(key);
     }
 
     /**
@@ -341,19 +344,44 @@ public class SetObjectMetadataRequest extends GenericRequest {
         replaceMetadata.setContentEncoding(contentEncoding);
     }
 
-    public Map<String, String> getMetadata() {
-        if (metadata == null) {
-            metadata = new HashMap<String, String>();
+    public Map<String, String> getAllUserMetadata() {
+        if (userMetadata == null) {
+            userMetadata = new HashMap<String, String>();
         }
-        return this.metadata;
+        return this.userMetadata;
+    }
+
+    @Deprecated
+    public Map<String, String> getMetadata() {
+        return getAllUserMetadata();
+    }
+
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @param encodeHeaders
+     *        Specifies whether to encode and decode header fields.
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @return Specifies whether to encode and decode header fields.
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
     }
 
     @Override
     public String toString() {
         return "SetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
                 + versionId + ", storageClass=" + storageClass + ", webSiteRedirectLocation=" + webSiteRedirectLocation
-                + ", removeUnset=" + removeUnset + ", metadata=" + metadata + ", replaceMetadata=" + replaceMetadata
-                + "]";
+                + ", removeUnset=" + removeUnset + ", userMetadata=" + userMetadata
+                + ", replaceMetadata=" + replaceMetadata
+                + ", isEncodeHeaders=" + encodeHeaders + "]";
     }
 
 }

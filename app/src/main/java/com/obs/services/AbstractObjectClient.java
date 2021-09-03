@@ -52,14 +52,14 @@ import com.obs.services.model.SetObjectMetadataRequest;
 
 public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
-    public boolean doesObjectExist(final String buckeName, final String objectKey) throws ObsException {
-        GetObjectMetadataRequest request = new GetObjectMetadataRequest(buckeName, objectKey);
+    public boolean doesObjectExist(final String bucketName, final String objectKey) throws ObsException {
+        GetObjectMetadataRequest request = new GetObjectMetadataRequest(bucketName, objectKey);
         return this.doesObjectExist(request);
     }
 
     @Override
     public boolean doesObjectExist(final GetObjectMetadataRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucke is null");
+        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucket is null");
         ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return doActionWithResult("doesObjectExist", request.getBucketName(), new ActionCallbackWithResult<Boolean>() {
             @Override
@@ -94,7 +94,6 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      *             OBS SDK self-defined exception, thrown when the interface
      *             fails to be called or access to OBS fails
      */
-    @Deprecated
     public OptionsInfoResult optionsObject(final String bucketName, final String objectKey,
             final OptionsInfoRequest optionInfo) throws ObsException {
         return this.doActionWithResult("optionsObject", bucketName, new ActionCallbackWithResult<OptionsInfoResult>() {

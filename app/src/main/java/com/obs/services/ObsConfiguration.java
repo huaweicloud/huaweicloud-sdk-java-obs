@@ -90,6 +90,8 @@ public class ObsConfiguration implements Cloneable {
     private HttpProtocolTypeEnum httpProtocolType;
 
     private Dispatcher httpDispatcher;
+    
+    private String xmlDocumentBuilderFactoryClass;
 
     /**
      * Constructor
@@ -122,6 +124,7 @@ public class ObsConfiguration implements Cloneable {
         this.cname = false;
         this.delimiter = "/";
         this.httpProtocolType = HttpProtocolTypeEnum.HTTP1_1;
+        this.xmlDocumentBuilderFactoryClass = ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY_CLASS;
     }
 
     public String getDelimiter() {
@@ -867,4 +870,11 @@ public class ObsConfiguration implements Cloneable {
         this.httpDispatcher = httpDispatcher;
     }
 
+    public String getXmlDocumentBuilderFactoryClass() {
+        return xmlDocumentBuilderFactoryClass;
+    }
+
+    public void setXmlDocumentBuilderFactoryClass(String xmlDocumentBuilderFactoryClass) {
+        this.xmlDocumentBuilderFactoryClass = xmlDocumentBuilderFactoryClass;
+    }
 }

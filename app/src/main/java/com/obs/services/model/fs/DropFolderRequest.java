@@ -27,6 +27,8 @@ public class DropFolderRequest extends AbstractBulkRequest {
 
     private String folderName;
 
+    private String encodingType;
+
     private TaskCallback<DeleteObjectResult, String> callback;
 
     public DropFolderRequest() {
@@ -45,6 +47,19 @@ public class DropFolderRequest extends AbstractBulkRequest {
     public DropFolderRequest(String bucketName, String folderName) {
         super(bucketName);
         this.folderName = folderName;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param bucketName
+     *            Bucket name
+     * @param encodingType
+     *            The encoding type use for encode objectKey.
+     */
+    public DropFolderRequest(String bucketName, String folderName, String encodingType) {
+        this(bucketName, folderName);
+        this.encodingType = encodingType;
     }
 
     /**
@@ -85,8 +100,28 @@ public class DropFolderRequest extends AbstractBulkRequest {
         this.callback = callback;
     }
 
+    /**
+     * Set the encoding type that used for encode objectkey
+     *
+     * @param encodingType
+     *            could chose url.
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * Obtain the list of to-be-deleted objects.
+     *
+     * @return List of to-be-deleted objects
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
-        return "DropFolderRequest [bucketName=" + bucketName + ", folderName=" + folderName + "]";
+        return "DropFolderRequest [bucketName=" + bucketName + ", folderName=" + folderName
+                + ", encodingType=" + encodingType + "]";
     }
 }
