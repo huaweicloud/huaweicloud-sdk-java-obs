@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -22,6 +22,8 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
 
     private int expires;
 
+    private String encodingType;
+
     public InitiateMultipartUploadRequest() {
 
     }
@@ -37,6 +39,22 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
     public InitiateMultipartUploadRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param bucketName
+     *            分段上传任务所属的桶名
+     * @param objectKey
+     *            分段上传任务所属的对象名
+     * @param encodingType
+     *            对响应中的 Key 进行指定类型的编码。如果 Key 包含 xml 1.0标准不支持的控制字符，
+     *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
+     */
+    public InitiateMultipartUploadRequest(String bucketName, String objectKey, String encodingType) {
+        this(bucketName, objectKey);
+        this.encodingType = encodingType;
     }
 
     /**
@@ -97,6 +115,24 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
     }
 
     /**
+     * 设置编码方式
+     *
+     * @param encodingType 编码方式，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 获取编码方式
+     *
+     * @return 编码方式
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
+    /**
      * 设置重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
      * 
      * @return 重定向链接
@@ -142,7 +178,7 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
     public String toString() {
         return "InitiateMultipartUploadRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", acl=" + acl
                 + ", sseKmsHeader=" + sseKmsHeader + ", sseCHeader=" + sseCHeader + ", metadata=" + metadata
-                + ", expires=" + expires + "]";
+                + ", expires=" + expires + ", encodingType=" + encodingType + "]";
     }
 
 }

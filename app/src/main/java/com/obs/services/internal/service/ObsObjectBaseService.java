@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -18,10 +18,15 @@ package com.obs.services.internal.service;
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -67,7 +72,7 @@ import okhttp3.Response;
 
 public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectBaseService.class);
-    
+
     protected boolean doesObjectExistImpl(GetObjectMetadataRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders());
@@ -84,15 +89,13 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 doesObjectExist = true;
             }
         } catch (ServiceException ex) {
-            if (404 == ex.getResponseCode()) {
-                doesObjectExist = false;
-            } else {
+            if (!(404 == ex.getResponseCode())) {
                 throw ex;
             }
         }
         return doesObjectExist;
     }
-    
+
     protected ObsFSFile putObjectImpl(PutObjectRequest request) throws ServiceException {
 
         TransResult result = null;
@@ -105,7 +108,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
             response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(), null,
-                    result.getBody(), true);
+                    result.getBody(), true, false, request.isEncodeHeaders());
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 if (result.getBody() instanceof Closeable) {
@@ -118,9 +121,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 response.header(CommonHeaders.ETAG), response.header(this.getIHeaders().versionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())),
                 this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(ret, map);
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
             try {
                 putAclImpl(request.getBucketName(), request.getObjectKey(), acl, null, request.isRequesterPays());
@@ -132,27 +134,29 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         }
         return ret;
     }
-    
+
     protected ObsObject getObjectImpl(GetObjectRequest request) throws ServiceException {
         TransResult result = this.transGetObjectRequest(request);
         if (request.getRequestParameters() != null) {
             result.getParams().putAll(request.getRequestParameters());
         }
         return (ObsObject) this.getObjectImpl(false, request.getBucketName(), request.getObjectKey(),
-                result.getHeaders(), result.getParams(), request.getProgressListener(), request.getProgressInterval());
+                result.getHeaders(), result.getParams(), request.getProgressListener(),
+                request.getProgressInterval(), request.isEncodeHeaders());
     }
-    
+
     protected Object getObjectImpl(boolean headOnly, String bucketName, String objectKey, Map<String, String> headers,
-            Map<String, String> params, ProgressListener progressListener, long progressInterval)
-                    throws ServiceException {
+                                   Map<String, String> params, ProgressListener progressListener,
+                                   long progressInterval, boolean needEncode)
+            throws ServiceException {
         Response response;
         if (headOnly) {
             response = performRestHead(bucketName, objectKey, params, headers);
         } else {
-            response = performRestGet(bucketName, objectKey, params, headers);
+            response = performRestGet(bucketName, objectKey, params, headers, false, needEncode);
         }
 
-        ObsFSAttribute objMetadata = this.getObsFSAttributeFromResponse(response);
+        ObsFSAttribute objMetadata = this.getObsFSAttributeFromResponse(response, needEncode);
 
         if (headOnly) {
             response.close();
@@ -182,10 +186,10 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         obsObject.setObjectContent(input);
         return obsObject;
     }
-    
+
     protected DeleteObjectsResult deleteObjectsImpl(DeleteObjectsRequest deleteObjectsRequest) throws ServiceException {
         String xml = this.getIConvertor().transKeyAndVersion(deleteObjectsRequest.getKeyAndVersions(),
-                deleteObjectsRequest.isQuiet());
+                deleteObjectsRequest.isQuiet(), deleteObjectsRequest.getEncodingType());
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
         metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
@@ -199,11 +203,11 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
 
         DeleteObjectsResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.DeleteObjectsHandler.class, true).getMultipleDeleteResult();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
-    
+
     protected DeleteObjectResult deleteObjectImpl(DeleteObjectRequest request) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         if (request.getVersionId() != null) {
@@ -216,12 +220,10 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         DropFileResult result = new DropFileResult(
                 Boolean.valueOf(response.header(this.getIHeaders().deleteMarkerHeader())), request.getObjectKey(),
                 response.header(this.getIHeaders().versionIdHeader()));
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(result, map);
-        setStatusCode(result, response.code());
+        setHeadersAndStatus(result, response);
         return result;
     }
-    
+
     protected CopyObjectResult copyObjectImpl(CopyObjectRequest request) throws ServiceException {
 
         TransResult result = this.transCopyObjectRequest(request);
@@ -230,7 +232,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         boolean isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
         Response response = performRestPut(request.getDestinationBucketName(), request.getDestinationObjectKey(),
-                result.getHeaders(), null, null, false);
+                result.getHeaders(), null, null, false, false, request.isEncodeHeaders());
 
         this.verifyResponseContentType(response);
 
@@ -240,9 +242,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 response.header(this.getIHeaders().versionIdHeader()),
                 response.header(this.getIHeaders().copySourceVersionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())));
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(copyRet, map);
-        setStatusCode(copyRet, response.code());
+
+        setHeadersAndStatus(copyRet, response);
         if (isExtraAclPutRequired && acl != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Creating object with a non-canned ACL using REST, so an extra ACL Put is required");
@@ -259,14 +260,14 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
 
         return copyRet;
     }
-    
+
     protected ObjectMetadata setObjectMetadataImpl(SetObjectMetadataRequest request) {
         TransResult result = this.transSetObjectMetadataRequest(request);
         Response response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                result.getParams(), result.getBody(), true);
-        return this.getObsFSAttributeFromResponse(response);
+                result.getParams(), result.getBody(), true, false, request.isEncodeHeaders());
+        return this.getObsFSAttributeFromResponse(response, request.isEncodeHeaders());
     }
-    
+
     protected ObsFSAttribute getObjectMetadataImpl(GetObjectMetadataRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders());
@@ -277,9 +278,9 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
             params.put(ObsRequestParams.VERSION_ID, request.getVersionId());
         }
         return (ObsFSAttribute) this.getObjectImpl(true, request.getBucketName(), request.getObjectKey(), headers,
-                params, null, -1);
+                params, null, -1, request.isEncodeHeaders());
     }
-    
+
     protected HeaderResponse setObjectAclImpl(SetObjectAclRequest request) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put(SpecialParamEnum.ACL.getOriginalStringCode(), "");
@@ -304,11 +305,9 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
 
         Response response = performRestPut(request.getBucketName(), request.getObjectKey(), metadata, requestParameters,
                 entity, true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
-    
+
     protected AccessControlList getObjectAclImpl(GetObjectAclRequest getObjectAclRequest) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put(SpecialParamEnum.ACL.getOriginalStringCode(), "");
@@ -323,22 +322,61 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
 
         AccessControlList ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.AccessControlListHandler.class, false).getAccessControlList();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
-    
+
     protected String getObjectUrl(String bucketName, String objectKey) {
         boolean pathStyle = this.isPathStyle();
         boolean https = this.getHttpsOnly();
         boolean isCname = this.isCname();
-        return new StringBuilder().append(https ? "https://" : "http://")
-                .append(pathStyle || isCname ? "" : bucketName + ".").append(this.getEndpoint()).append(":")
-                .append(https ? this.getHttpsPort() : this.getHttpPort()).append("/")
-                .append(pathStyle ? bucketName + "/" : "").append(RestUtils.uriEncode(objectKey, false)).toString();
+        return (https ? "https://" : "http://") + (pathStyle || isCname ? "" : bucketName + ".")
+                + this.getEndpoint() + ":" + (https ? this.getHttpsPort() : this.getHttpPort()) + "/"
+                + (pathStyle ? bucketName + "/" : "") + RestUtils.uriEncode(objectKey, false);
     }
-    
-    private ObsFSAttribute getObsFSAttributeFromResponse(Response response) {
+
+    private Map<String, Object> cleanUserMetadata(Map<String, Object> originalHeaders, boolean decodeHeaders) {
+        Map<String, Object> userMetadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Map.Entry<String, Object> entry : originalHeaders.entrySet()) {
+            String key = entry.getKey();
+            if (key.toLowerCase().startsWith("x-obs-meta-") || key.toLowerCase().startsWith("x-amz-meta-")) {
+                Object originalValue = originalHeaders.get(key);
+                try {
+                    if (originalValue instanceof ArrayList) {
+                        cleanListMetadata(originalHeaders, decodeHeaders, userMetadata, key);
+                    } else {
+                        if (decodeHeaders) {
+                            userMetadata.put(key.substring(11), URLDecoder.decode((String) originalValue,
+                                    Constants.DEFAULT_ENCODING));
+                        } else {
+                            userMetadata.put(key.substring(11), originalHeaders.get(key));
+                        }
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Error to decode value of key:" + key);
+                    }
+                }
+            }
+        }
+        return userMetadata;
+    }
+
+    private void cleanListMetadata(Map<String, Object> originalHeaders, boolean decodeHeaders,
+                                   Map<String, Object> userMetadata, String key)
+            throws UnsupportedEncodingException {
+        List<String> cleanedValue = new ArrayList<>();
+        for (Object v: (List<?>) originalHeaders.get(key)) {
+            if (decodeHeaders) {
+                cleanedValue.add(URLDecoder.decode((String) v, Constants.DEFAULT_ENCODING));
+            } else {
+                cleanedValue.add((String) v);
+            }
+        }
+        userMetadata.put(key.substring(11), cleanedValue);
+    }
+
+    private ObsFSAttribute getObsFSAttributeFromResponse(Response response, boolean needDecode) {
         Date lastModifiedDate = null;
         String lastModified = response.header(CommonHeaders.LAST_MODIFIED);
         if (lastModified != null) {
@@ -354,12 +392,12 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         objMetadata.setLastModified(lastModifiedDate);
         objMetadata.setContentEncoding(response.header(CommonHeaders.CONTENT_ENCODING));
         objMetadata.setContentType(response.header(CommonHeaders.CONTENT_TYPE));
-        
+
         objMetadata.setContentDisposition(response.header(CommonHeaders.CONTENT_DISPOSITION));
         objMetadata.setContentLanguage(response.header(CommonHeaders.CONTENT_LANGUAGE));
         objMetadata.setCacheControl(response.header(CommonHeaders.CACHE_CONTROL));
         objMetadata.setExpires(response.header(CommonHeaders.EXPIRES));
-        
+
         String contentLength = response.header(CommonHeaders.CONTENT_LENGTH);
         if (contentLength != null) {
             try {
@@ -403,9 +441,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         if (objMetadata.getNextPosition() == -1L) {
             objMetadata.setNextPosition(Long.parseLong(response.header(Constants.CommonHeaders.CONTENT_LENGTH, "-1")));
         }
-
-        objMetadata.getMetadata().putAll(this.cleanResponseHeaders(response));
-        setStatusCode(objMetadata, response.code());
+        setHeadersAndStatus(objMetadata, response, needDecode);
+        objMetadata.setUserMetadata(cleanUserMetadata(objMetadata.getOriginalHeaders(), needDecode));
         return objMetadata;
     }
 }

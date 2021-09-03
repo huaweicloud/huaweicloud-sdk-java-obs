@@ -258,7 +258,8 @@ public class PutObjectRequest extends PutObjectBasicRequest {
 
     @Override
     public String toString() {
-        return "PutObjectRequest [file=" + file + ", input=" + input + ", metadata=" + metadata + ", expires=" + expires
+        return "PutObjectRequest [file=" + file + ", input=" + input + ", metadata=" + metadata
+                + ", isEncodeHeaders=" + encodeHeaders + ", expires=" + expires
                 + ", offset=" + offset + ", autoClose=" + autoClose + ", progressListener=" + progressListener
                 + ", progressInterval=" + progressInterval + ", getBucketName()=" + getBucketName()
                 + ", getObjectKey()=" + getObjectKey() + ", getSseKmsHeader()=" + getSseKmsHeader()

@@ -48,6 +48,8 @@ public class DownloadFileRequest extends GenericRequest {
     // 开启多版本，指定版本号下载
     private String versionId;
 
+    protected boolean encodeHeaders = true;
+
     private ProgressListener progressListener;
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
@@ -528,12 +530,32 @@ public class DownloadFileRequest extends GenericRequest {
         this.ttl = ttl;
     }
 
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
+
     @Override
     public String toString() {
         return "DownloadFileRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", downloadFile="
                 + downloadFile + ", partSize=" + partSize + ", taskNum=" + taskNum + ", checkpointFile="
                 + checkpointFile + ", enableCheckpoint=" + enableCheckpoint + ", ifModifiedSince=" + ifModifiedSince
                 + ", ifUnmodifiedSince=" + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag="
-                + ifNoneMatchTag + ", versionId=" + versionId + "]";
+                + ifNoneMatchTag + ", versionId=" + versionId + ", isEncodeHeaders=" + encodeHeaders + "]";
     }
 }

@@ -28,6 +28,8 @@ public class DeleteObjectsRequest extends GenericRequest {
 
     private List<KeyAndVersion> keyAndVersions;
 
+    private String encodingType;
+
     public DeleteObjectsRequest() {
 
     }
@@ -53,9 +55,26 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            待删除对象数组
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
+    }
+
+    /**
+     * 构造函数
+     * @param bucketName
+     *            桶名
+     * @param quiet
+     *            用于指定使用quiet模式，只返回删除失败的对象结果
+     * @param keyAndVersions
+     *            待删除的对象 key 与版本号
+     * @param encodingType
+     *            对响应中的 Key 进行指定类型的编码。如果 Key 包含 xml 1.0标准不支持的控制字符，
+     *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
+     */
+    public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions, String encodingType) {
+        this(bucketName, quiet, keyAndVersions);
+        this.setEncodingType(encodingType);
     }
 
     /**
@@ -94,6 +113,24 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public void setQuiet(boolean quiet) {
         this.quiet = quiet;
+    }
+
+    /**
+     * 对 key 进行 url 编码，处理 xml 1.0 不支持的字符
+     *
+     * @param encodingType
+     *            元素指定 key 的编码类型，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 获取 key 编码类型
+     * @return key 编码类型
+     */
+    public String getEncodingType() {
+        return encodingType;
     }
 
     /**
@@ -157,8 +194,8 @@ public class DeleteObjectsRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", keyAndVersions="
-                + this.keyAndVersions + "]";
+        return "DeleteObjectsRequest [bucketName=" + bucketName + ", quiet=" + quiet + ", encodingType=" + encodingType
+                + ", keyAndVersions=" + this.keyAndVersions + "]";
     }
 
 }

@@ -43,6 +43,18 @@ public class HeaderResponse extends InternalHeaderResponse {
     }
 
     /**
+     * 获取原始响应头信息
+     *
+     * @return 原始响应头信息
+     */
+    public Map<String, Object> getOriginalHeaders() {
+        if (originalHeaders == null) {
+            originalHeaders = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        }
+        return originalHeaders;
+    }
+
+    /**
      * 获取服务端返回的RequestId
      * 
      * @return 服务端返回的RequestId

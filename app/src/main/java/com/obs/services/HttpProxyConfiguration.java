@@ -25,7 +25,7 @@ public class HttpProxyConfiguration {
 
     private String proxyUname;
 
-    private String userPaaswd;
+    private String userPasswd;
 
     private String domain;
 
@@ -42,17 +42,17 @@ public class HttpProxyConfiguration {
      *            代理端口
      * @param proxyUname
      *            代理用户名
-     * @param userPaaswd
+     * @param userPasswd
      *            代理密码
      * @param domain
      *            代理域
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd,
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPasswd,
             String domain) {
         this.proxyAddr = proxyAddr;
         this.proxyPort = proxyPort;
         this.proxyUname = proxyUname;
-        this.userPaaswd = userPaaswd;
+        this.userPasswd = userPasswd;
         this.domain = domain;
         this.workstation = this.proxyAddr;
     }
@@ -66,16 +66,16 @@ public class HttpProxyConfiguration {
      *            代理端口
      * @param proxyUname
      *            代理用户名
-     * @param userPaaswd
+     * @param userPasswd
      *            代理密码
      * @param domain
      *            代理域
      * @param workstation
      *            代理所在工作区
      */
-    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPaaswd, String domain,
+    public HttpProxyConfiguration(String proxyAddr, int proxyPort, String proxyUname, String userPasswd, String domain,
             String workstation) {
-        this(proxyAddr, proxyPort, proxyUname, userPaaswd, domain);
+        this(proxyAddr, proxyPort, proxyUname, userPasswd, domain);
         this.workstation = this.proxyAddr;
     }
 
@@ -141,18 +141,28 @@ public class HttpProxyConfiguration {
      * 
      * @return 代理用户密码
      */
+    public String getUserPasswd() {
+        return userPasswd;
+    }
+
+    @Deprecated
     public String getUserPaaswd() {
-        return userPaaswd;
+        return getUserPasswd();
     }
 
     /**
      * 设置代理用户密码
      * 
-     * @param userPaaswd
+     * @param userPasswd
      *            代理用户密码
      */
-    public void setUserPaaswd(String userPaaswd) {
-        this.userPaaswd = userPaaswd;
+    public void setUserPasswd(String userPasswd) {
+        this.userPasswd = userPasswd;
+    }
+
+    @Deprecated
+    public void setUserPaaswd(String userPasswd) {
+        setUserPasswd(userPasswd);
     }
 
     /**

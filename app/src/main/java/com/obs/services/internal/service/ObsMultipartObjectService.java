@@ -54,7 +54,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         this.prepareRESTHeaderAcl(result.getHeaders(), request.getAcl());
 
         Response httpResponse = performRestPost(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                result.getParams(), null, false);
+                result.getParams(), null, false, false, request.isEncodeHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -62,8 +62,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
                 .parse(new HttpMethodReleaseInputStream(httpResponse),
                         XmlResponsesSaxParser.InitiateMultipartUploadHandler.class, true)
                 .getInitiateMultipartUploadResult();
-        setResponseHeaders(multipartUpload, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(multipartUpload, httpResponse.code());
+        setHeadersAndStatus(multipartUpload, httpResponse);
         return multipartUpload;
     }
     
@@ -73,15 +72,16 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         Response response = performRestDelete(request.getBucketName(), request.getObjectKey(), requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected CompleteMultipartUploadResult completeMultipartUploadImpl(CompleteMultipartUploadRequest request)
             throws ServiceException {
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
+        if (request.getEncodingType() != null) {
+            requestParameters.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
+        }
 
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
@@ -104,8 +104,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         CompleteMultipartUploadResult ret = new CompleteMultipartUploadResult(handler.getBucketName(),
                 handler.getObjectKey(), handler.getEtag(), handler.getLocation(), versionId,
                 this.getObjectUrl(handler.getBucketName(), handler.getObjectKey()));
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 
@@ -127,6 +127,9 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         }
         if (request.getUploadIdMarker() != null) {
             requestParameters.put(ObsRequestParams.UPLOAD_ID_MARKER, request.getUploadIdMarker());
+        }
+        if (request.getEncodingType() != null) {
+            requestParameters.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
         }
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
@@ -157,8 +160,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
                 .commonPrefixes(handler.getCommonPrefixes().toArray(
                         new String[handler.getCommonPrefixes().size()]))
                 .builder();
-        setResponseHeaders(listResult, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(listResult, httpResponse.code());
+        setHeadersAndStatus(listResult, httpResponse);
         return listResult;
     }
     
@@ -170,6 +172,9 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         }
         if (null != request.getPartNumberMarker()) {
             requestParameters.put(ObsRequestParams.PART_NUMBER_MARKER, request.getPartNumberMarker().toString());
+        }
+        if (null != request.getEncodingType()) {
+            requestParameters.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
         }
 
         Response httpResponse = performRestGet(request.getBucketName(), request.getKey(), requestParameters,
@@ -194,9 +199,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
                         ? (request.getPartNumberMarker() == null ? null : request.getPartNumberMarker().toString())
                         : handler.getPartNumberMarker())
                 .nextPartNumberMarker(handler.getNextPartNumberMarker()).builder();
-        
-        setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(result, httpResponse.code());
+
+        setHeadersAndStatus(result, httpResponse);
         return result;
     }
     
@@ -216,8 +220,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         UploadPartResult ret = new UploadPartResult();
         ret.setEtag(response.header(CommonHeaders.ETAG));
         ret.setPartNumber(request.getPartNumber());
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+        setHeadersAndStatus(ret, response);
         return ret;
     }
     
@@ -230,8 +233,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         CopyPartResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
                 XmlResponsesSaxParser.CopyPartResultHandler.class, true).getCopyPartResult(request.getPartNumber());
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 }

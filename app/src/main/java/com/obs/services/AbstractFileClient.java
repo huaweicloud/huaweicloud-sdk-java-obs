@@ -139,6 +139,7 @@ public abstract class AbstractFileClient extends AbstractPFSClient {
         request.setDelimiter("/");
         request.setPrefix(folders);
         request.setRequesterPays(dropRequest.isRequesterPays());
+        request.setEncodingType(dropRequest.getEncodingType());
         ObjectListing result;
         boolean isDeleted = true;
         do {

@@ -30,6 +30,8 @@ public class ListObjectsRequest extends GenericRequest {
 
     private int listTimeout;
 
+    private String encodingType;
+
     public ListObjectsRequest() {
     }
 
@@ -52,7 +54,7 @@ public class ListObjectsRequest extends GenericRequest {
      *            列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.maxKeys = maxKeys;
     }
 
@@ -71,11 +73,34 @@ public class ListObjectsRequest extends GenericRequest {
      *            列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName, maxKeys);
         this.prefix = prefix;
         this.marker = marker;
         this.delimiter = delimiter;
-        this.maxKeys = maxKeys;
+
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param bucketName
+     *            桶名
+     * @param prefix
+     *            列举对象时的对象名前缀
+     * @param marker
+     *            列举对象时的起始位置
+     * @param delimiter
+     *            用于对对象名进行分组的字符
+     * @param maxKeys
+     *            列举对象的最大条目数
+     * @param encodingType
+     *            对响应中的 Key 进行指定类型的编码。如果 Key 包含 xml 1.0标准不支持的控制字符，
+     *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
+     */
+    public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys,
+                              String encodingType) {
+        this(bucketName, prefix, marker, delimiter, maxKeys);
+        this.encodingType = encodingType;
     }
 
     /**
@@ -155,6 +180,15 @@ public class ListObjectsRequest extends GenericRequest {
     }
 
     /**
+     * 设置编码类型
+     *
+     * @param encodingType 元素指定编码类型，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
      * 获取用于对对象名进行分组的字符
      * 
      * @return 分组字符
@@ -162,6 +196,16 @@ public class ListObjectsRequest extends GenericRequest {
     public String getDelimiter() {
         return delimiter;
     }
+
+    /**
+     * 获取字符所使用的编码方式
+     *
+     * @return 编码方式
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
 
     /**
      * 设置用于对对象名进行分组的字符
@@ -184,7 +228,8 @@ public class ListObjectsRequest extends GenericRequest {
     @Override
     public String toString() {
         return "ListObjectsRequest [bucketName=" + bucketName + ", prefix=" + prefix + ", marker=" + marker
-                + ", maxKeys=" + maxKeys + ", delimiter=" + delimiter + ", listTimeout=" + listTimeout + "]";
+                + ", maxKeys=" + maxKeys + ", delimiter=" + delimiter + ", listTimeout=" + listTimeout
+                + ", encodingType=" + encodingType + "]";
     }
 
 }

@@ -147,8 +147,13 @@ public enum SpecialParamEnum {
     /**
      * 设置/获取/删除桶归档对象直读策略
      */
-    DIRECTCOLDACCESS("directcoldaccess");
+    DIRECTCOLDACCESS("directcoldaccess"),
 
+    /**
+     * 设置/获取/删除桶自定义域名
+     */
+    CUSTOMDOMAIN("customdomain");
+    
     /**
      * stringCode对应数据库中和外部的Code
      */

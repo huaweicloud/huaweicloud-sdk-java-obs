@@ -32,6 +32,8 @@ public class ListVersionsRequest extends GenericRequest {
 
     private int listTimeout;
 
+    private String encodingType;
+
     public ListVersionsRequest() {
     }
 
@@ -54,7 +56,7 @@ public class ListVersionsRequest extends GenericRequest {
      *            列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName);
         this.maxKeys = maxKeys;
     }
 
@@ -73,11 +75,51 @@ public class ListVersionsRequest extends GenericRequest {
      *            列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter, int maxKeys) {
-        this.bucketName = bucketName;
+        this(bucketName, maxKeys);
         this.prefix = prefix;
         this.keyMarker = keyMarker;
         this.delimiter = delimiter;
-        this.maxKeys = maxKeys;
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param bucketName
+     *            桶名
+     * @param prefix
+     *            列举多版本对象对象时的对象名前缀
+     * @param keyMarker
+     *            列举多版本对象时的起始位置
+     * @param delimiter
+     *            用于对多版本对象名进行分组的字符
+     * @param maxKeys
+     *            列举多版本对象的最大条目数
+     * @param encodingType
+     *            对响应中的 Key 进行指定类型的编码。如果 Key 包含 xml 1.0标准不支持的控制字符，
+     *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
+     */
+    public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter,
+                               int maxKeys, String encodingType) {
+        this(bucketName, prefix, keyMarker, delimiter, maxKeys);
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 设置 encodingType
+     *
+     * @param encodingType 编码方法，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 获取encodingType
+     *
+     * @return encodingType
+     */
+    public String getEncodingType() {
+        return encodingType;
     }
 
     /**
@@ -206,7 +248,7 @@ public class ListVersionsRequest extends GenericRequest {
     public String toString() {
         return "ListVersionsRequest [bucketName=" + bucketName + ", prefix=" + prefix + ", keyMarker=" + keyMarker
                 + ", versionIdMarker=" + versionIdMarker + ", maxKeys=" + maxKeys + ", delimiter=" + delimiter
-                + ", listTimeout=" + listTimeout + "]";
+                + ", listTimeout=" + listTimeout + ", encodingType=" + encodingType + "]";
     }
 
 }

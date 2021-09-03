@@ -30,6 +30,8 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
 
     private String objectUrl;
 
+    private String encodingType;
+
     public CompleteMultipartUploadResult(String bucketName, String objectKey, String etag, String location,
             String versionId, String objectUrl) {
         this.bucketName = bucketName;
@@ -92,6 +94,26 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
      */
     public String getObjectUrl() {
         return objectUrl;
+    }
+
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
+    }
+
+    /**
+     *  设置 xml 中 objectKey 字段编码格式
+     * @param encodingType objectKey 字段编码格式
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     *  获取 xml 中 objectKey 字段编码格式
+     * @return encodingType
+     */
+    public String getEncodingType() {
+        return encodingType;
     }
 
     @Override

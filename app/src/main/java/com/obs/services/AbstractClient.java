@@ -38,6 +38,7 @@ import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.PolicyConditionItem;
@@ -62,7 +63,6 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         credentials.setAuthType(config.getAuthType());
         this.obsProperties = obsProperties;
         this.credentials = credentials;
-        this.obsProperties = obsProperties;
         this.keyManagerFactory = config.getKeyManagerFactory();
         this.trustManagerFactory = config.getTrustManagerFactory();
         if (this.isAuthTypeNegotiation()) {
@@ -72,6 +72,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             this.segmentLock = new SegmentLock();
         }
         this.initHttpClient(config.getHttpDispatcher());
+        OBSXMLBuilder.setXmlDocumentBuilderFactoryClass(config.getXmlDocumentBuilderFactoryClass());
         reqBean.setRespTime(new Date());
         reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);
         if (ILOG.isInfoEnabled()) {
@@ -83,7 +84,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             sb.append(Constants.OBS_SDK_VERSION);
             sb.append("];");
             sb.append("[Endpoint=");
-            String ep = "";
+            String ep;
             if (this.getHttpsOnly()) {
                 ep = "https://" + this.getEndpoint() + ":" + this.getHttpsPort() + "/";
             } else {
@@ -219,9 +220,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         ServiceUtils.asserParameterNotNull(request, "TemporarySignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createTemporarySignature", this.getEndpoint(), "");
         try {
-            TemporarySignatureResponse response = this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4
+            return this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4
                     ? this.createV4TemporarySignature(request) : this.createTemporarySignatureResponse(request);
-            return response;
         } catch (Exception e) {
             reqBean.setRespTime(new Date());
             if (ILOG.isErrorEnabled()) {
@@ -256,8 +256,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             PolicyTempSignatureRequest request = createPolicyGetRequest(bucketName, objectKey, prefix, headers,
                     queryParams);
             request.setExpiryDate(expiryDate);
-            TemporarySignatureResponse response = this.createTemporarySignatureResponse(request);
-            return response;
+            return this.createTemporarySignatureResponse(request);
         } catch (Exception e) {
             throw new ObsException(e.getMessage(), e);
         }
@@ -288,8 +287,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             PolicyTempSignatureRequest request = createPolicyGetRequest(bucketName, objectKey, prefix, headers,
                     queryParams);
             request.setExpires(expires);
-            TemporarySignatureResponse response = this.createTemporarySignatureResponse(request);
-            return response;
+            return this.createTemporarySignatureResponse(request);
         } catch (Exception e) {
             throw new ObsException(e.getMessage(), e);
         }

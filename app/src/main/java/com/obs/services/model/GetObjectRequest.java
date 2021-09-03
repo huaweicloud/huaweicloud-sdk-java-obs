@@ -59,7 +59,9 @@ public class GetObjectRequest extends GenericRequest {
     private Map<String, String> requestParameters;
 
     private boolean autoUnzipResponse = false;
-    
+
+    private boolean encodeHeaders = true;
+
     public GetObjectRequest() {
 
     }
@@ -437,12 +439,32 @@ public class GetObjectRequest extends GenericRequest {
         this.autoUnzipResponse = autoUnzipResponse;
     }
 
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
     @Override
     public String toString() {
         return "GetObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", rangeStart=" + rangeStart
                 + ", rangeEnd=" + rangeEnd + ", versionId=" + versionId + ", replaceMetadata=" + replaceMetadata
-                + ", sseCHeader=" + sseCHeader + ", ifModifiedSince=" + ifModifiedSince + ", ifUnmodifiedSince="
-                + ifUnmodifiedSince + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag=" + ifNoneMatchTag
+                + ", isEncodeHeaders=" + encodeHeaders + ", sseCHeader=" + sseCHeader
+                + ", ifModifiedSince=" + ifModifiedSince + ", ifUnmodifiedSince=" + ifUnmodifiedSince
+                + ", ifMatchTag=" + ifMatchTag + ", ifNoneMatchTag=" + ifNoneMatchTag
                 + ", imageProcess=" + imageProcess + ", autoUnzipResponse=" + autoUnzipResponse + "]";
     }
 

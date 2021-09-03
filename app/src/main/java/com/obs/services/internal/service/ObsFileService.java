@@ -52,8 +52,7 @@ public abstract class ObsFileService extends ObsObjectService {
         Response response = performRestPut(request.getBucketName(), request.getObjectKey(),
                 transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
         TruncateFileResult result = new TruncateFileResult();
-        setResponseHeaders(result, this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+        setHeadersAndStatus(result, response);
         return result;
     }
 
@@ -65,8 +64,7 @@ public abstract class ObsFileService extends ObsObjectService {
         Response response = performRestPost(request.getBucketName(), request.getObjectKey(),
                 transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
         RenameResult result = new RenameResult();
-        setResponseHeaders(result, this.cleanResponseHeaders(response));
-        setStatusCode(result, response.code());
+        setHeadersAndStatus(result, response);
         return result;
     }
     
@@ -94,9 +92,8 @@ public abstract class ObsFileService extends ObsObjectService {
                 response.header(CommonHeaders.ETAG), response.header(this.getIHeaders().versionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())),
                 this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
-        Map<String, Object> map = this.cleanResponseHeaders(response);
-        setResponseHeaders(ret, map);
-        setStatusCode(ret, response.code());
+
+        setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
             try {
                 putAclImpl(request.getBucketName(), request.getObjectKey(), acl, null, request.isRequesterPays());
@@ -139,8 +136,7 @@ public abstract class ObsFileService extends ObsObjectService {
                 .location(httpResponse.header(this.getIHeaders().bucketRegionHeader()))
                 .builder();
 
-        setResponseHeaders(contentSummaryResult, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(contentSummaryResult, httpResponse.code());
+        setHeadersAndStatus(contentSummaryResult, httpResponse);
         return contentSummaryResult;
     }
 }

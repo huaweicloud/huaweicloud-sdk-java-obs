@@ -91,6 +91,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (request.getVersionIdMarker() != null) {
             params.put(ObsRequestParams.VERSION_ID_MARKER, request.getVersionIdMarker());
         }
+        if (request.getEncodingType() != null) {
+            params.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
+        }
         Map<String, String> headers = new HashMap<String, String>();
         if (request.getListTimeout() > 0) {
             putHeader(headers, this.getIHeaders().listTimeoutHeader(), String.valueOf(request.getListTimeout()));
@@ -100,7 +103,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
         return new TransResult(headers, params, null);
     }
-    
+
     protected TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request) 
             throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
@@ -116,10 +119,6 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                     iconvertor.transStorageClass(objectMetadata.getObjectStorageClass()));
         }
 
-        if (request.getExpires() > 0) {
-            putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
-        }
-
         if (ServiceUtils.isValid(objectMetadata.getWebSiteRedirectLocation())) {
             putHeader(headers, iheaders.websiteRedirectLocationHeader(), objectMetadata.getWebSiteRedirectLocation());
         }
@@ -128,9 +127,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
         }
 
-        if (ServiceUtils.isValid(objectMetadata.getContentEncoding())) {
-            headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
-        }
+        setBaseHeaderFromMetadata(headers, objectMetadata);
 
         transRequestPaymentHeaders(request, headers, iheaders);
 
@@ -150,18 +147,22 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         Map<String, String> params = new HashMap<String, String>();
         params.put(SpecialParamEnum.UPLOADS.getOriginalStringCode(), "");
 
+        if (request.getEncodingType() != null) {
+            params.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
+        }
+
         return new TransResult(headers, params, null);
     }
 
     private void selectAllowedHeader(Map<String, String> headers, ObjectMetadata objectMetadata) {
-        for (Map.Entry<String, Object> entry : objectMetadata.getMetadata().entrySet()) {
+        for (Map.Entry<String, Object> entry : objectMetadata.getAllMetadata().entrySet()) {
             String key = entry.getKey();
             if (!ServiceUtils.isValid(key)) {
                 continue;
             }
             key = key.trim();
             if ((CAN_USE_STANDARD_HTTP_HEADERS.get() == null || (CAN_USE_STANDARD_HTTP_HEADERS.get() != null
-                    && !CAN_USE_STANDARD_HTTP_HEADERS.get().booleanValue()))
+                    && !CAN_USE_STANDARD_HTTP_HEADERS.get()))
                     && Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
                 continue;
             }
@@ -464,9 +465,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         putHeader(headers, iheaders.metadataDirectiveHeader(),
                 request.isReplaceMetadata() ? Constants.DERECTIVE_REPLACE : Constants.DERECTIVE_COPY);
         if (request.isReplaceMetadata()) {
-            objectMetadata.getMetadata().remove(iheaders.requestIdHeader());
-            objectMetadata.getMetadata().remove(iheaders.requestId2Header());
-            for (Map.Entry<String, Object> entry : objectMetadata.getMetadata().entrySet()) {
+            objectMetadata.getAllMetadata().remove(iheaders.requestIdHeader());
+            objectMetadata.getAllMetadata().remove(iheaders.requestId2Header());
+            for (Map.Entry<String, Object> entry : objectMetadata.getAllMetadata().entrySet()) {
                 String key = entry.getKey();
                 if (!ServiceUtils.isValid(key)) {
                     continue;
@@ -479,13 +480,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             }
         }
 
-        if (objectMetadata.getContentType() != null) {
-            headers.put(CommonHeaders.CONTENT_TYPE, objectMetadata.getContentType().trim());
-        }
-
-        if (objectMetadata.getContentEncoding() != null) {
-            headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
-        }
+        setBaseHeaderFromMetadata(headers, objectMetadata);
 
         if (objectMetadata.getObjectStorageClass() != null) {
             putHeader(headers, iheaders.storageClassHeader(),
@@ -549,7 +544,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
     }
 
-    protected void transConditionCopyHeaders(CopyObjectRequest request, Map<String, String> headers, 
+    protected void transConditionCopyHeaders(CopyObjectRequest request, Map<String, String> headers,
             IHeaders iheaders) {
         if (request.getIfModifiedSince() != null) {
             putHeader(headers, iheaders.copySourceIfModifiedSinceHeader(),
@@ -674,7 +669,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         IHeaders iheaders = this.getIHeaders();
         IConvertor iconvertor = this.getIConvertor();
 
-        for (Map.Entry<String, String> entry : request.getMetadata().entrySet()) {
+        for (Map.Entry<String, String> entry : request.getAllUserMetadata().entrySet()) {
             String key = entry.getKey();
             if (!ServiceUtils.isValid(key)) {
                 continue;
@@ -768,9 +763,11 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (listObjectsRequest.getMaxKeys() > 0) {
             params.put(ObsRequestParams.MAX_KEYS, String.valueOf(listObjectsRequest.getMaxKeys()));
         }
-
         if (listObjectsRequest.getMarker() != null) {
             params.put(ObsRequestParams.MARKER, listObjectsRequest.getMarker());
+        }
+        if (listObjectsRequest.getEncodingType() != null) {
+            params.put(ObsRequestParams.ENCODING_TYPE, listObjectsRequest.getEncodingType());
         }
 
         Map<String, String> headers = new HashMap<String, String>();

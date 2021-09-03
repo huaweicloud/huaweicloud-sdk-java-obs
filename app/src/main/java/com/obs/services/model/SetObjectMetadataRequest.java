@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -34,16 +34,18 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     private boolean removeUnset;
 
-    private Map<String, String> metadata;
+    private Map<String, String> userMetadata;
 
-    private ObjectRepleaceMetadata replaceMetadata = new ObjectRepleaceMetadata();
+    private boolean encodeHeaders = true;
+
+    private final ObjectRepleaceMetadata replaceMetadata = new ObjectRepleaceMetadata();
 
     public SetObjectMetadataRequest() {
     }
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -56,7 +58,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -72,7 +74,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取桶名
-     * 
+     *
      * @return 桶名
      */
     public String getBucketName() {
@@ -81,7 +83,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置桶名
-     * 
+     *
      * @param bucketName
      *            桶名
      */
@@ -91,7 +93,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取对象名
-     * 
+     *
      * @return 对象名
      */
     public String getObjectKey() {
@@ -100,7 +102,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置对象名
-     * 
+     *
      * @param objectKey
      *            对象名
      */
@@ -110,7 +112,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取对象版本号
-     * 
+     *
      * @return 对象版本号
      */
     public String getVersionId() {
@@ -119,7 +121,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置对象版本号
-     * 
+     *
      * @param versionId
      *            对象版本号
      */
@@ -129,7 +131,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
-     * 
+     *
      * @return 重定向链接
      */
     public String getWebSiteRedirectLocation() {
@@ -138,7 +140,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取对象的重定向链接，可以将获取这个对象的请求重定向到桶内另一个对象或一个外部的URL
-     * 
+     *
      * @param webSiteRedirectLocation
      *            重定向链接
      */
@@ -148,7 +150,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取对象的存储类型
-     * 
+     *
      * @return 对象的存储类型
      */
     public StorageClassEnum getObjectStorageClass() {
@@ -157,7 +159,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置对象的存储类型
-     * 
+     *
      * @param storageClass
      *            对象的存储类型
      */
@@ -166,10 +168,10 @@ public class SetObjectMetadataRequest extends GenericRequest {
     }
 
     /**
-     * 判断是否删除未指定属性， 默认为false true：
-     * 使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性删除 false：
-     * 使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性保持不变
-     * 
+     * 判断是否删除未指定属性， 默认为false
+     * true：使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性删除
+     * false：使用当前请求中的各项参数设置对象属性，对于已经存在值的属性进行替换，不存在值的属性进行赋值，未指定的属性保持不变
+     *
      * @return 是否删除未指定属性标识
      */
     public boolean isRemoveUnset() {
@@ -178,7 +180,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置是否删除未指定属性
-     * 
+     *
      * @param removeUnset
      *            是否删除未指定属性标识
      */
@@ -188,42 +190,42 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 新增对象的自定义元数据
-     * 
+     *
      * @param key
      *            自定义元数据的关键字
      * @param value
      *            自定义元数据的值
      */
     public void addUserMetadata(String key, String value) {
-        getMetadata().put(key, value);
+        getAllUserMetadata().put(key, value);
     }
 
     /**
      * 新增一组对象的自定义元数据
-     * 
+     *
      * @param userMetadata
      *            一组对象的自定义元数据
      */
     public void addAllUserMetadata(Map<String, String> userMetadata) {
         if (userMetadata != null) {
-            getMetadata().putAll(userMetadata);
+            getAllUserMetadata().putAll(userMetadata);
         }
     }
 
     /**
      * 获取对象的自定义元数据
-     * 
+     *
      * @param key
      *            自定义元数据的关键字
      * @return 自定义元数据的值
      */
     public Object getUserMetadata(String key) {
-        return getMetadata().get(key);
+        return getAllUserMetadata().get(key);
     }
 
     /**
      * 获取重写响应中的Content-Type头
-     * 
+     *
      * @return 响应中的Content-Type头
      */
     public String getContentType() {
@@ -232,7 +234,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Content-Type头
-     * 
+     *
      * @param contentType
      *            响应中的Content-Type头
      */
@@ -242,7 +244,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取重写响应中的Content-Language头
-     * 
+     *
      * @return 响应中的Content-Language头
      */
     public String getContentLanguage() {
@@ -251,7 +253,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Content-Language头
-     * 
+     *
      * @param contentLanguage
      *            响应中的Content-Language头
      */
@@ -261,7 +263,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取重写响应中的Expires头
-     * 
+     *
      * @return 响应中的Expires头
      */
     public String getExpires() {
@@ -270,7 +272,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Expires头
-     * 
+     *
      * @param expires
      *            响应中的Expires头
      */
@@ -280,7 +282,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取重写响应中的Cache-Control头
-     * 
+     *
      * @return 响应中的Cache-Control头
      */
     public String getCacheControl() {
@@ -289,7 +291,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Cache-Control头
-     * 
+     *
      * @param cacheControl
      *            响应中的Cache-Control头
      */
@@ -299,7 +301,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取重写响应中的Content-Disposition头
-     * 
+     *
      * @return 响应中的Content-Disposition头
      */
     public String getContentDisposition() {
@@ -308,7 +310,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Content-Disposition头
-     * 
+     *
      * @param contentDisposition
      *            响应中的Content-Disposition头
      */
@@ -318,7 +320,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 获取重写响应中的Content-Encoding头
-     * 
+     *
      * @return 响应中的Content-Encoding头
      */
     public String getContentEncoding() {
@@ -327,7 +329,7 @@ public class SetObjectMetadataRequest extends GenericRequest {
 
     /**
      * 设置重写响应中的Content-Encoding头
-     * 
+     *
      * @param contentEncoding
      *            响应中的Content-Encoding头
      */
@@ -335,19 +337,44 @@ public class SetObjectMetadataRequest extends GenericRequest {
         replaceMetadata.setContentEncoding(contentEncoding);
     }
 
-    public Map<String, String> getMetadata() {
-        if (metadata == null) {
-            metadata = new HashMap<String, String>();
+    public Map<String, String> getAllUserMetadata() {
+        if (userMetadata == null) {
+            userMetadata = new HashMap<String, String>();
         }
-        return this.metadata;
+        return this.userMetadata;
+    }
+
+    @Deprecated
+    public Map<String, String> getMetadata() {
+        return getAllUserMetadata();
+    }
+
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
     }
 
     @Override
     public String toString() {
         return "SetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
                 + versionId + ", storageClass=" + storageClass + ", webSiteRedirectLocation=" + webSiteRedirectLocation
-                + ", removeUnset=" + removeUnset + ", metadata=" + metadata + ", replaceMetadata=" + replaceMetadata
-                + "]";
+                + ", removeUnset=" + removeUnset + ", userMetadata=" + userMetadata
+                + ", replaceMetadata=" + replaceMetadata
+                + ", isEncodeHeaders=" + encodeHeaders + "]";
     }
 
 }

@@ -25,6 +25,8 @@ public class DropFolderRequest extends AbstractBulkRequest {
 
     private String folderName;
 
+    private String encodingType;
+
     private TaskCallback<DeleteObjectResult, String> callback;
 
     public DropFolderRequest() {
@@ -43,6 +45,11 @@ public class DropFolderRequest extends AbstractBulkRequest {
     public DropFolderRequest(String bucketName, String folderName) {
         super(bucketName);
         this.folderName = folderName;
+    }
+
+    public DropFolderRequest(String bucketName, String folderName, String encodingType) {
+        this(bucketName, folderName);
+        this.encodingType = encodingType;
     }
 
     /**
@@ -83,8 +90,27 @@ public class DropFolderRequest extends AbstractBulkRequest {
         this.callback = callback;
     }
 
+    /**
+     * 对 key 进行 url 编码，处理 xml 1.0 不支持的字符
+     *
+     * @param encodingType
+     *            元素指定 key 的编码类型，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 获取 key 编码类型
+     * @return key 编码类型
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
-        return "DropFolderRequest [bucketName=" + bucketName + ", folderName=" + folderName + "]";
+        return "DropFolderRequest [bucketName=" + bucketName + ", folderName=" + folderName
+                + ", encodingType=" + encodingType + "]";
     }
 }

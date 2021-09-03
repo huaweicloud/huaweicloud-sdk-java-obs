@@ -25,8 +25,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 
 public class ServiceException extends RuntimeException {
 
@@ -164,12 +164,12 @@ public class ServiceException extends RuntimeException {
         return xmlMessage;
     }
 
-    public XMLBuilder getXmlMessageAsBuilder()
+    public OBSXMLBuilder getXmlMessageAsBuilder()
         throws IOException, ParserConfigurationException, SAXException {
         if (this.xmlMessage == null) {
             return null;
         }
-        XMLBuilder builder = XMLBuilder.parse(
+        OBSXMLBuilder builder = OBSXMLBuilder.parse(
             new InputSource(new StringReader(this.xmlMessage)));
         return builder;
     }

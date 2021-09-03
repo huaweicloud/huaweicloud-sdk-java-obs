@@ -1,8 +1,9 @@
-Version 3.21.4.1
+Version 3.21.8
 
-1. Disabled the log printing in the intrusive modification of okhttp
-
+1. Replace okhttp 3.14.9 with okhttp 4.8.0.
+2. Adding original headers to Response object
 -----------------------------------------------------------------------------------
+
 Version 3.21.4
 
 1. Fixed a known issue

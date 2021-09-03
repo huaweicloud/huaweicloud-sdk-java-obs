@@ -118,12 +118,12 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
 import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
- 
+
 /**
  * OBS基础接口
  */
 //CHECKSTYLE:OFF
-public interface IObsClient {
+public interface IObsClient extends IObsBucketExtendClient {
  
     /**
      * 
@@ -1212,6 +1212,7 @@ public interface IObsClient {
      */
     HeaderResponse setBucketTagging(String bucketName, BucketTagInfo bucketTagInfo) throws ObsException;
  
+    
     /**
      * 设置桶标签
      * 
@@ -1246,7 +1247,7 @@ public interface IObsClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketTagging(BaseBucketRequest request) throws ObsException;
- 
+           
     /**
      * 获取桶加密配置
      * 

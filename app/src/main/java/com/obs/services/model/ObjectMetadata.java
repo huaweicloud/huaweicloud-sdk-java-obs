@@ -17,6 +17,7 @@ package com.obs.services.model;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.obs.services.internal.utils.ServiceUtils;
 
@@ -51,6 +52,8 @@ public class ObjectMetadata extends HeaderResponse {
     private long nextPosition = -1;
 
     private boolean appendable;
+
+    private Map<String, Object> userMetadata;
 
     public ObjectMetadata() {
 
@@ -87,6 +90,14 @@ public class ObjectMetadata extends HeaderResponse {
      * 
      * @return 对象属性集合
      */
+    public Map<String, Object> getAllMetadata() {
+        if (userMetadata == null) {
+            userMetadata = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        }
+        return this.userMetadata;
+    }
+
+    @Deprecated
     public Map<String, Object> getMetadata() {
         return this.getResponseHeaders();
     }
@@ -100,7 +111,7 @@ public class ObjectMetadata extends HeaderResponse {
      *            自定义元数据的值
      */
     public void addUserMetadata(String key, String value) {
-        getMetadata().put(key, value);
+        getAllMetadata().put(key, value);
     }
 
     /**
@@ -111,7 +122,7 @@ public class ObjectMetadata extends HeaderResponse {
      * @return 自定义元数据的值
      */
     public Object getUserMetadata(String key) {
-        return getMetadata().get(key);
+        return getAllMetadata().get(key);
     }
 
     /**
@@ -329,7 +340,7 @@ public class ObjectMetadata extends HeaderResponse {
     }
 
     public Object getValue(String name) {
-        for (Entry<String, Object> entry : this.getMetadata().entrySet()) {
+        for (Entry<String, Object> entry : this.getAllMetadata().entrySet()) {
             if (isEqualsIgnoreCase(entry.getKey(), name)) {
                 return entry.getValue();
             }
@@ -386,9 +397,19 @@ public class ObjectMetadata extends HeaderResponse {
         this.webSiteRedirectLocation = webSiteRedirectLocation;
     }
 
+    /**
+     * 设置对象的用户自定义元数据
+     *
+     * @param userMetadata
+     *        用户自定义元数据
+     */
+    public void setUserMetadata(Map<String, Object> userMetadata) {
+        this.userMetadata = userMetadata;
+    }
+
     @Override
     public String toString() {
-        return "ObjectMetadata [metadata=" + this.getMetadata() + ", lastModified=" + lastModified 
+        return "ObjectMetadata [metadata=" + this.getAllMetadata() + ", lastModified=" + lastModified
                 + ", contentDisposition=" + contentDisposition + ", cacheControl=" + cacheControl 
                 + ", expires=" + expires + ", contentLength=" + contentLength + ", contentType=" 
                 + contentType + ", contentEncoding=" + contentEncoding + ", etag=" + etag 

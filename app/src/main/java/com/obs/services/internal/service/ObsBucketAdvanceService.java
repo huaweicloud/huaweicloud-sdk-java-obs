@@ -31,6 +31,7 @@ import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketCustomDomainInfo;
 import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
@@ -38,6 +39,7 @@ import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketQuota;
 import com.obs.services.model.BucketTagInfo;
 import com.obs.services.model.BucketVersioningConfiguration;
+import com.obs.services.model.DeleteBucketCustomDomainRequest;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GroupGrantee;
 import com.obs.services.model.HeaderResponse;
@@ -47,6 +49,8 @@ import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RequestPaymentConfiguration;
 import com.obs.services.model.SetBucketAclRequest;
 import com.obs.services.model.SetBucketCorsRequest;
+import com.obs.services.model.SetBucketCustomDomainRequest;
+import com.obs.services.model.GetBucketCustomDomainRequest;
 import com.obs.services.model.SetBucketDirectColdAccessRequest;
 import com.obs.services.model.SetBucketEncryptionRequest;
 import com.obs.services.model.SetBucketLifecycleRequest;
@@ -93,8 +97,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         BucketVersioningConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
                 XmlResponsesSaxParser.BucketVersioningHandler.class, false).getVersioningStatus();
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+        setHeadersAndStatus(ret, response);
         return ret;
     }
     
@@ -126,8 +129,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         RequestPaymentConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
                 XmlResponsesSaxParser.RequestPaymentHandler.class, false).getRequestPaymentConfiguration();
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+        setHeadersAndStatus(ret, response);
         return ret;
     }
     
@@ -144,9 +146,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
 
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketNotificationConfiguration getBucketNotificationConfigurationImpl(BaseBucketRequest request)
@@ -162,8 +162,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
                 .parse(new HttpMethodReleaseInputStream(httpResponse),
                         XmlResponsesSaxParser.BucketNotificationConfigurationHandler.class, false)
                 .getBucketNotificationConfiguration();
-        setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(result, httpResponse.code());
+        setHeadersAndStatus(result, httpResponse);
         return result;
     }
 
@@ -180,9 +179,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected WebsiteConfiguration getBucketWebsiteConfigurationImpl(BaseBucketRequest request)
@@ -197,8 +194,8 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         WebsiteConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketWebsiteConfigurationHandler.class, false).getWebsiteConfig();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
 
@@ -207,9 +204,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         requestParameters.put(SpecialParamEnum.WEBSITE.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected HeaderResponse setBucketLifecycleConfigurationImpl(SetBucketLifecycleRequest request)
@@ -226,9 +221,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
 
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected LifecycleConfiguration getBucketLifecycleConfigurationImpl(BaseBucketRequest request)
@@ -243,8 +236,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         LifecycleConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
                 XmlResponsesSaxParser.BucketLifecycleConfigurationHandler.class, false).getLifecycleConfig();
-        setResponseHeaders(ret, this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+        setHeadersAndStatus(ret, response);
         return ret;
     }
 
@@ -253,9 +245,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         requestParameters.put(SpecialParamEnum.LIFECYCLE.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected HeaderResponse setBucketTaggingImpl(SetBucketTaggingRequest request) throws ServiceException {
@@ -272,9 +262,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = this.performRestPut(request.getBucketName(), null, headers, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, requestXmlElement), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected BucketTagInfo getBucketTaggingImpl(BaseBucketRequest request) throws ServiceException {
@@ -287,8 +275,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         BucketTagInfo result = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketTagInfoHandler.class, false).getBucketTagInfo();
-        setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(result, httpResponse.code());
+        setHeadersAndStatus(result, httpResponse);
         return result;
     }
     
@@ -297,9 +284,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         requestParameters.put(SpecialParamEnum.TAGGING.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected HeaderResponse setBucketEncryptionImpl(SetBucketEncryptionRequest request) throws ServiceException {
@@ -315,9 +300,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, encryptAsXml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected BucketEncryption getBucketEncryptionImpl(BaseBucketRequest request) throws ServiceException {
@@ -332,8 +315,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         BucketEncryption ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketEncryptionHandler.class, false).getEncryption();
 
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -342,9 +324,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         requestParameters.put(SpecialParamEnum.ENCRYPTION.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected HeaderResponse setBucketReplicationConfigurationImpl(SetBucketReplicationRequest request)
@@ -362,9 +342,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = this.performRestPut(request.getBucketName(), null, headers, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, requestXmlElement), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected ReplicationConfiguration getBucketReplicationConfigurationImpl(BaseBucketRequest request)
@@ -380,8 +358,8 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
                 .parse(new HttpMethodReleaseInputStream(httpResponse),
                         XmlResponsesSaxParser.BucketReplicationConfigurationHandler.class, false)
                 .getReplicationConfiguration();
-        setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(result, httpResponse.code());
+
+        setHeadersAndStatus(result, httpResponse);
         return result;
     }
 
@@ -391,9 +369,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         requestParameters.put(SpecialParamEnum.REPLICATION.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected HeaderResponse setBucketCorsImpl(SetBucketCorsRequest request) throws ServiceException {
@@ -412,9 +388,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, corsXML), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketCors getBucketCorsImpl(BaseBucketRequest request) throws ServiceException {
@@ -426,8 +400,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         this.verifyResponseContentType(httpResponse);
         BucketCors ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketCorsHandler.class, false).getConfiguration();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
 
     }
@@ -438,9 +411,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
 
     protected HeaderResponse setBucketQuotaImpl(SetBucketQuotaRequest request) throws ServiceException {
@@ -456,9 +427,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, quotaAsXml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketQuota getBucketQuotaImpl(BaseBucketRequest request) throws ServiceException {
@@ -472,8 +441,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         BucketQuota ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketQuotaHandler.class, false).getQuota();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -497,9 +465,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         transRequestPaymentHeaders(request, metadata, this.getIHeaders());
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters, entity, true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected AccessControlList getBucketAclImpl(BaseBucketRequest request) throws ServiceException {
@@ -513,8 +479,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         AccessControlList ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.AccessControlListHandler.class, false).getAccessControlList();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -578,9 +543,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, statusAsXml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketLoggingConfiguration getBucketLoggingConfigurationImpl(BaseBucketRequest request)
@@ -597,8 +560,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         BucketLoggingConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketLoggingHandler.class, false).getBucketLoggingStatus();
 
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
 
@@ -616,9 +578,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         Response response = this.performRestPut(request.getBucketName(), null, headers, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, requestXmlElement), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketDirectColdAccess getBucketDirectColdAccessImpl(BaseBucketRequest request) throws ServiceException {
@@ -631,8 +591,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
 
         BucketDirectColdAccess result = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketDirectColdAccessHandler.class, false).getBucketDirectColdAccess();
-        setResponseHeaders(result, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(result, httpResponse.code());
+        setHeadersAndStatus(result, httpResponse);
         return result;
     }
     
@@ -642,8 +601,42 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
 
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
+        return build(response);
+    }
+    
+    protected BucketCustomDomainInfo getBucketCustomDomainImpl(GetBucketCustomDomainRequest request) 
+            throws ServiceException {
+        Map<String, String> requestParams = new HashMap<String, String>();
+        requestParams.put(SpecialParamEnum.CUSTOMDOMAIN.getOriginalStringCode(), "");
+
+        Response response = performRestGet(request.getBucketName(), null, requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+
+        this.verifyResponseContentType(response);
+
+        BucketCustomDomainInfo ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.BucketCustomDomainHandler.class, true).getBucketTagInfo();
+        setHeadersAndStatus(ret, response);
         return ret;
+    }
+    
+    protected HeaderResponse setBucketCustomDomainImpl(SetBucketCustomDomainRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<String, String>();
+        requestParams.put(SpecialParamEnum.CUSTOMDOMAIN.getOriginalStringCode(), request.getDomainName());
+        Map<String, String> metadata = transRequestPaymentHeaders(request, null, this.getIHeaders());
+
+        Response response = performRestPut(request.getBucketName(), null, metadata, requestParams,
+                null, true);
+        return this.build(response);
+    }
+    
+    protected HeaderResponse deleteBucketCustomDomainImpl(DeleteBucketCustomDomainRequest request) 
+            throws ServiceException {
+        Map<String, String> requestParams = new HashMap<String, String>();
+        requestParams.put(SpecialParamEnum.CUSTOMDOMAIN.getOriginalStringCode(), request.getDomainName());
+
+        Response response = performRestDelete(request.getBucketName(), null, requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+        return this.build(response);
     }
 }

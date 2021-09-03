@@ -19,8 +19,8 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import com.jamesmurty.utils.XMLBuilder;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
@@ -46,7 +46,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketQuota(BucketQuota quota) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("Quota").elem("StorageQuota")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("Quota").elem("StorageQuota")
                     .text(String.valueOf(quota.getBucketQuota())).up();
             return builder.asString();
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketLoction(String location) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("CreateBucketConfiguration").elem("LocationConstraint")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("CreateBucketConfiguration").elem("LocationConstraint")
                     .text(ServiceUtils.toValid(location));
             return builder.asString();
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public abstract class V2BucketConvertor implements IConvertor {
 
     protected String transBucketEcryptionXML(String algorithm, String kmsKeyId) throws FactoryConfigurationError {
         try {
-            XMLBuilder builder = XMLBuilder.create("ServerSideEncryptionConfiguration").e("Rule")
+            OBSXMLBuilder builder = OBSXMLBuilder.create("ServerSideEncryptionConfiguration").e("Rule")
                     .e("ApplyServerSideEncryptionByDefault");
             builder.e("SSEAlgorithm").t(algorithm);
             if (ServiceUtils.isValid(kmsKeyId)) {
@@ -93,9 +93,9 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketLoggingConfiguration(BucketLoggingConfiguration c) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("BucketLoggingStatus");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("BucketLoggingStatus");
             if (c.isLoggingEnabled()) {
-                XMLBuilder enabledBuilder = builder.elem("LoggingEnabled");
+                OBSXMLBuilder enabledBuilder = builder.elem("LoggingEnabled");
                 if (c.getTargetBucketName() != null) {
                     enabledBuilder.elem("TargetBucket").text(ServiceUtils.toValid(c.getTargetBucketName()));
                 }
@@ -105,7 +105,7 @@ public abstract class V2BucketConvertor implements IConvertor {
                 }
                 GrantAndPermission[] grants = c.getTargetGrants();
                 if (grants.length > 0) {
-                    XMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
+                    OBSXMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");
                     transGrantsBuilder(grants, grantsBuilder);
                 }
             }
@@ -119,13 +119,13 @@ public abstract class V2BucketConvertor implements IConvertor {
         }
     }
 
-    private void transGrantsBuilder(GrantAndPermission[] grants, XMLBuilder grantsBuilder)
+    private void transGrantsBuilder(GrantAndPermission[] grants, OBSXMLBuilder grantsBuilder)
             throws ParserConfigurationException, FactoryConfigurationError {
         for (GrantAndPermission gap : grants) {
             GranteeInterface grantee = gap.getGrantee();
             Permission permission = gap.getPermission();
             if (permission != null) {
-                XMLBuilder subBuilder = null;
+                OBSXMLBuilder subBuilder = null;
                 if (grantee instanceof CanonicalGrantee) {
                     subBuilder = buildCanonicalGrantee(grantee);
                 } else if (grantee instanceof GroupGrantee) {
@@ -140,20 +140,20 @@ public abstract class V2BucketConvertor implements IConvertor {
         }
     }
 
-    protected XMLBuilder buildGroupGrantee(GranteeInterface grantee)
+    protected OBSXMLBuilder buildGroupGrantee(GranteeInterface grantee)
             throws ParserConfigurationException, FactoryConfigurationError {
-        XMLBuilder subBuilder;
-        subBuilder = XMLBuilder.create("Grantee")
+        OBSXMLBuilder subBuilder;
+        subBuilder = OBSXMLBuilder.create("Grantee")
                 .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
                 .attr("xsi:type", "Group").element("URI")
                 .text(this.transGroupGrantee(((GroupGrantee) grantee).getGroupGranteeType()));
         return subBuilder;
     }
 
-    protected XMLBuilder buildCanonicalGrantee(GranteeInterface grantee)
+    protected OBSXMLBuilder buildCanonicalGrantee(GranteeInterface grantee)
             throws ParserConfigurationException, FactoryConfigurationError {
-        XMLBuilder subBuilder = null;
-        subBuilder = XMLBuilder.create("Grantee")
+        OBSXMLBuilder subBuilder = null;
+        subBuilder = OBSXMLBuilder.create("Grantee")
                 .attr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
                 .attr("xsi:type", "CanonicalUser").element("ID")
                 .text(ServiceUtils.toValid(grantee.getIdentifier()));
@@ -167,7 +167,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketCors(BucketCors cors) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("CORSConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("CORSConfiguration");
             for (BucketCorsRule rule : cors.getRules()) {
                 builder = builder.e("CORSRule");
                 if (rule.getId() != null) {
@@ -211,7 +211,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketTagInfo(BucketTagInfo bucketTagInfo) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("Tagging").e("TagSet");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("Tagging").e("TagSet");
             for (BucketTagInfo.TagSet.Tag tag : bucketTagInfo.getTagSet().getTags()) {
                 if (tag != null) {
                     builder.e("Tag").e("Key").t(ServiceUtils.toValid(tag.getKey())).up().e("Value")
@@ -228,7 +228,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     public String transBucketNotificationConfiguration(BucketNotificationConfiguration bucketNotificationConfiguration)
             throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("NotificationConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("NotificationConfiguration");
             if (bucketNotificationConfiguration == null) {
                 return builder.asString();
             }
@@ -247,7 +247,7 @@ public abstract class V2BucketConvertor implements IConvertor {
         }
     }
     
-    protected void packNotificationConfig(XMLBuilder builder, AbstractNotification config, String configType,
+    protected void packNotificationConfig(OBSXMLBuilder builder, AbstractNotification config, String configType,
             String urnType, String adapter) {
         builder = builder.e(configType);
         if (config.getId() != null) {
@@ -286,7 +286,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketFileInterface(FSStatusEnum status) throws ServiceException {
         try {
-            return XMLBuilder.create("FileInterfaceConfiguration").e("Status").t(status.getCode()).up().asString();
+            return OBSXMLBuilder.create("FileInterfaceConfiguration").e("Status").t(status.getCode()).up().asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for FileInterface", e);
         }
@@ -295,7 +295,7 @@ public abstract class V2BucketConvertor implements IConvertor {
     @Override
     public String transBucketDirectColdAccess(BucketDirectColdAccess access) throws ServiceException {
         try {
-            XMLBuilder builder = XMLBuilder.create("DirectColdAccessConfiguration");
+            OBSXMLBuilder builder = OBSXMLBuilder.create("DirectColdAccessConfiguration");
 
             builder = builder.e("Status").t(access.getStatus().getCode());
             builder = builder.up();

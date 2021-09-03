@@ -249,7 +249,6 @@ public class VersionOrDeleteMarker {
      * 
      * @return 对象存储类型
      */
-    @Deprecated
     public String getStorageClass() {
         return this.storageClass != null ? this.storageClass.getCode() : null;
     }
@@ -306,6 +305,10 @@ public class VersionOrDeleteMarker {
      */
     public String getBucketName() {
         return bucketName;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     @Override

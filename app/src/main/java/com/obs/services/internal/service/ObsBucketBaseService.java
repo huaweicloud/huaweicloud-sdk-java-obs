@@ -83,14 +83,12 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
             }
         }
 
-        Map<String, Object> map = this.cleanResponseHeaders(response);
         ObsBucket bucket = new ObsBucket();
         bucket.setBucketName(bucketName);
         bucket.setLocation(request.getLocation());
         bucket.setAcl(acl);
         bucket.setBucketStorageClass(request.getBucketStorageClass());
-        setResponseHeaders(bucket, map);
-        setStatusCode(bucket, response.code());
+        setHeadersAndStatus(bucket, response);
         return bucket;
     }
     
@@ -115,11 +113,8 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         XmlResponsesSaxParser.ListBucketsHandler handler = getXmlResponseSaxParser().parse(
                 new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListBucketsHandler.class, true);
 
-        Map<String, Object> responseHeaders = this.cleanResponseHeaders(httpResponse);
-
         ListBucketsResult result = new ListBucketsResult(handler.getBuckets(), handler.getOwner());
-        setResponseHeaders(result, responseHeaders);
-        setStatusCode(result, httpResponse.code());
+        setHeadersAndStatus(result, httpResponse);
 
         return result;
     }
@@ -186,9 +181,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         Response response = performRestPut(request.getBucketName(), null,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketStoragePolicyConfiguration getBucketStoragePolicyImpl(BaseBucketRequest request)
@@ -205,8 +198,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 .parse(new HttpMethodReleaseInputStream(httpResponse),
                         XmlResponsesSaxParser.BucketStoragePolicyHandler.class, false)
                 .getStoragePolicy();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -222,9 +214,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketStorageInfo getBucketStorageInfoImpl(BaseBucketRequest request) throws ServiceException {
@@ -238,8 +228,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         BucketStorageInfo ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.BucketStorageInfoHandler.class, false).getStorageInfo();
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -255,8 +244,8 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         BucketLocationResponse ret = new BucketLocationResponse(
                 getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                         XmlResponsesSaxParser.BucketLocationHandler.class, false).getLocation());
-        setResponseHeaders(ret, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(ret, httpResponse.code());
+
+        setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
     
@@ -270,9 +259,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
                 createRequestBody(Mimetypes.MIMETYPE_TEXT_PLAIN, request.getPolicy()), true);
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected BucketPolicyResponse getBucketPolicyImpl(BaseBucketRequest request) throws ServiceException {
@@ -283,8 +270,8 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
             Response response = performRestGet(request.getBucketName(), null, requestParameters,
                     transRequestPaymentHeaders(request, null, this.getIHeaders()));
             BucketPolicyResponse ret = new BucketPolicyResponse(response.body().string());
-            setResponseHeaders(ret, this.cleanResponseHeaders(response));
-            setStatusCode(ret, response.code());
+
+            setHeadersAndStatus(ret, response);
             return ret;
         } catch (IOException e) {
             throw new ServiceException(e);
@@ -296,9 +283,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         requestParameters.put(SpecialParamEnum.POLICY.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders()));
-        HeaderResponse ret = build(this.cleanResponseHeaders(response));
-        setStatusCode(ret, response.code());
-        return ret;
+        return build(response);
     }
     
     protected ListVersionsResult listVersionsImpl(ListVersionsRequest request) throws ServiceException {
@@ -328,9 +313,8 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 .location(response.header(this.getIHeaders().bucketRegionHeader()))
                 .delimiter(handler.getDelimiter() == null ? request.getDelimiter() : handler.getDelimiter())
                 .builder();
-        
-        setResponseHeaders(listVersionsResult, this.cleanResponseHeaders(response));
-        setStatusCode(listVersionsResult, response.code());
+
+        setHeadersAndStatus(listVersionsResult, response);
         return listVersionsResult;
     }
     
@@ -364,8 +348,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 .extendCommonPrefixes(listObjectsHandler.getExtendCommonPrefixes())
                 .builder();
         
-        setResponseHeaders(objList, this.cleanResponseHeaders(httpResponse));
-        setStatusCode(objList, httpResponse.code());
+        setHeadersAndStatus(objList, httpResponse);
         return objList;
     }
     

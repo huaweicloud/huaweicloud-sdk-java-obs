@@ -24,6 +24,7 @@ import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
+import com.obs.services.model.BucketCustomDomainInfo;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketLoggingConfiguration;
 import com.obs.services.model.BucketMetadataInfoRequest;
@@ -33,6 +34,8 @@ import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.DeleteBucketCustomDomainRequest;
+import com.obs.services.model.GetBucketCustomDomainRequest;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ListBucketsRequest;
 import com.obs.services.model.ListBucketsResult;
@@ -41,6 +44,7 @@ import com.obs.services.model.RequestPaymentConfiguration;
 import com.obs.services.model.RequestPaymentEnum;
 import com.obs.services.model.SetBucketAclRequest;
 import com.obs.services.model.SetBucketCorsRequest;
+import com.obs.services.model.SetBucketCustomDomainRequest;
 import com.obs.services.model.SetBucketLoggingRequest;
 import com.obs.services.model.SetBucketQuotaRequest;
 import com.obs.services.model.SetBucketRequestPaymentRequest;
@@ -788,6 +792,67 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                     @Override
                     public RequestPaymentConfiguration action() throws ServiceException {
                         return AbstractBucketClient.this.getBucketRequestPaymentImpl(request);
+                    }
+                });
+    }
+    
+    @Override
+    public HeaderResponse deleteBucketCustomDomain(String bucketName, String domainName) throws ObsException {
+        return deleteBucketCustomDomain(new DeleteBucketCustomDomainRequest(bucketName, domainName));
+    }
+    
+    @Override
+    public HeaderResponse deleteBucketCustomDomain(DeleteBucketCustomDomainRequest request) throws ObsException {
+        ServiceUtils.asserParameterNotNull(request, "request is null");
+        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.asserParameterNotNull2(request.getDomainName(), "domainName is null");
+        
+        
+        return this.doActionWithResult("setBucketCustomDomain", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractBucketClient.this.deleteBucketCustomDomainImpl(request);
+                    }
+                });
+    }
+    
+    @Override
+    public BucketCustomDomainInfo getBucketCustomDomain(String bucketName) throws ObsException {
+        return getBucketCustomDomain(new GetBucketCustomDomainRequest(bucketName));
+    }
+    
+    @Override
+    public BucketCustomDomainInfo getBucketCustomDomain(final GetBucketCustomDomainRequest request) 
+            throws ObsException {
+        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketCustomDomain", request.getBucketName(),
+                new ActionCallbackWithResult<BucketCustomDomainInfo>() {
+
+                    @Override
+                    public BucketCustomDomainInfo action() throws ServiceException {
+                        return AbstractBucketClient.this.getBucketCustomDomainImpl(request);
+                    }
+                });
+    }
+    
+    @Override
+    public HeaderResponse setBucketCustomDomain(String bucketName, String domainName) throws ObsException {
+        return setBucketCustomDomain(new SetBucketCustomDomainRequest(bucketName, domainName));
+    }
+    
+    @Override
+    public HeaderResponse setBucketCustomDomain(SetBucketCustomDomainRequest request) throws ObsException {
+        ServiceUtils.asserParameterNotNull(request, "request is null");
+        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.asserParameterNotNull2(request.getDomainName(), "domainName is null");
+
+        return this.doActionWithResult("setBucketCustomDomain", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractBucketClient.this.setBucketCustomDomainImpl(request);
                     }
                 });
     }

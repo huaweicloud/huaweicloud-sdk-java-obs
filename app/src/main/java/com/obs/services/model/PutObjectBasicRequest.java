@@ -35,6 +35,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     protected SseKmsHeader sseKmsHeader;
 
+    protected boolean encodeHeaders = true;
+
     protected SseCHeader sseCHeader;
 
     /**
@@ -247,4 +249,24 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
         }
         this.extensionPermissionMap = extensionPermissionMap;
     }
+
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
 }

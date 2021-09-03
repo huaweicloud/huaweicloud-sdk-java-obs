@@ -14,42 +14,41 @@
 
 package com.obs.services.internal;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.obs.services.model.ProgressListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ProgressManager {
 
     static class BytesUnit {
-        Date dateTime;
+        long dateTime;
         long bytes;
 
-        BytesUnit(Date dateTime, long bytes) {
+        BytesUnit(long dateTime, long bytes) {
             this.dateTime = dateTime;
             this.bytes = bytes;
         }
     }
 
     protected final long totalBytes;
-    protected Date startCheckpoint;
-    protected Date lastCheckpoint;
+    protected long  startCheckpoint;
+    protected long  lastCheckpoint;
     protected final long intervalBytes;
     protected final ProgressListener progressListener;
-    protected volatile List<BytesUnit> lastInstantaneousBytes;
+    protected volatile List<BytesUnit> lastInstantaneousBytes = new ArrayList<>();
 
     public ProgressManager(long totalBytes, ProgressListener progressListener, long intervalBytes) {
         this.totalBytes = totalBytes;
         this.progressListener = progressListener;
-        Date now = new Date();
+        long now = System.currentTimeMillis();
         this.startCheckpoint = now;
         this.lastCheckpoint = now;
         this.intervalBytes = intervalBytes;
     }
 
     public void progressStart() {
-        Date now = new Date();
+        long now = System.currentTimeMillis();
         this.startCheckpoint = now;
         this.lastCheckpoint = now;
     }
@@ -61,12 +60,13 @@ public abstract class ProgressManager {
         this.doProgressChanged(bytes);
     }
 
-    protected List<BytesUnit> createCurrentInstantaneousBytes(long bytes, Date now) {
+    @Deprecated
+    protected List<BytesUnit> createCurrentInstantaneousBytes(long bytes, long now) {
         List<BytesUnit> currentInstantaneousBytes = new ArrayList<BytesUnit>();
         List<BytesUnit> temp = this.lastInstantaneousBytes;
         if (temp != null) {
             for (BytesUnit item : temp) {
-                if ((now.getTime() - item.dateTime.getTime()) < 1000) {
+                if ((now - item.dateTime) < 1000) {
                     currentInstantaneousBytes.add(item);
                 }
             }

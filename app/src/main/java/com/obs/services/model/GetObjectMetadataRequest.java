@@ -26,6 +26,8 @@ public class GetObjectMetadataRequest extends GenericRequest {
 
     private SseCHeader sseCHeader;
 
+    private boolean encodeHeaders = true;
+
     public GetObjectMetadataRequest() {
 
     }
@@ -135,10 +137,29 @@ public class GetObjectMetadataRequest extends GenericRequest {
         this.versionId = versionId;
     }
 
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
+    }
+
+    /**
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
+     */
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
+    }
+
     @Override
     public String toString() {
         return "GetObjectMetadataRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId="
-                + versionId + ", sseCHeader=" + sseCHeader + "]";
+                + ", isEncodeHeaders=" + encodeHeaders + versionId + ", sseCHeader=" + sseCHeader + "]";
     }
 
 }

@@ -75,7 +75,7 @@ public class ServiceUtils {
             .compile("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
 
     public static boolean isValid(String s) {
-        return s != null && !s.trim().equals("");
+        return s != null && !s.equals("");
     }
 
     public static boolean isValid2(String s) {
@@ -181,6 +181,7 @@ public class ServiceUtils {
         return ServiceUtils.toBase64(mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8)));
     }
 
+    @Deprecated
     public static Map<String, Object> cleanRestMetadataMap(Map<String, List<String>> metadata, String headerPrefix,
             String metadataPrefix) {
         if (log.isDebugEnabled()) {
@@ -750,7 +751,7 @@ public class ServiceUtils {
             obsProperties.setProperty(ObsConstraint.PROXY_HOST, config.getHttpProxy().getProxyAddr());
             obsProperties.setProperty(ObsConstraint.PROXY_PORT, String.valueOf(config.getHttpProxy().getProxyPort()));
             obsProperties.setProperty(ObsConstraint.PROXY_UNAME, config.getHttpProxy().getProxyUName());
-            obsProperties.setProperty(ObsConstraint.PROXY_PAWD, config.getHttpProxy().getUserPaaswd());
+            obsProperties.setProperty(ObsConstraint.PROXY_PAWD, config.getHttpProxy().getUserPasswd());
             obsProperties.setProperty(ObsConstraint.PROXY_DOMAIN, config.getHttpProxy().getDomain());
             obsProperties.setProperty(ObsConstraint.PROXY_WORKSTATION, config.getHttpProxy().getWorkstation());
         }
@@ -763,6 +764,11 @@ public class ServiceUtils {
             // retry on unexpected end exception
             obsProperties.setProperty(ExtObsConstraint.HTTP_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION,
                     String.valueOf(((ExtObsConfiguration) config).getMaxRetryOnUnexpectedEndException()));
+        }
+        if (null != config.getXmlDocumentBuilderFactoryClass()
+                && !config.getXmlDocumentBuilderFactoryClass().trim().equals("")) {
+            obsProperties.setProperty(ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY, 
+                    config.getXmlDocumentBuilderFactoryClass());
         }
     }
 

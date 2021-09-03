@@ -29,6 +29,8 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
 
     private boolean versionRestored;
 
+    private String encodingType;
+
     private List<KeyAndVersion> keyAndVersions;
 
     private TaskCallback<RestoreObjectResult, RestoreObjectRequest> callback;
@@ -61,6 +63,13 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
         super(bucketName);
         this.days = days;
         this.tier = tier;
+    }
+
+    public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier, String encodingType) {
+        super(bucketName);
+        this.days = days;
+        this.tier = tier;
+        this.encodingType = encodingType;
     }
 
     /**
@@ -203,9 +212,28 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
         this.callback = callback;
     }
 
+    /**
+     * 对 key 进行 url 编码，处理 xml 1.0 不支持的字符
+     *
+     * @param encodingType
+     *            元素指定 key 的编码类型，可选 url
+     */
+    public void setEncodingType(String encodingType) {
+        this.encodingType = encodingType;
+    }
+
+    /**
+     * 获取 key 编码类型
+     * @return key 编码类型
+     */
+    public String getEncodingType() {
+        return encodingType;
+    }
+
     @Override
     public String toString() {
-        return "RestoreObjectsRequest [bucketName=" + bucketName + ", days=" + days + ", tier=" + tier + "]";
+        return "RestoreObjectsRequest [bucketName=" + bucketName + ", days=" + days + ", tier=" + tier
+                + ", encodingType=" + encodingType + "]";
     }
 
 }
