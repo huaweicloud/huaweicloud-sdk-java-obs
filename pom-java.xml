@@ -88,7 +88,7 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>app/src/main/java/com</sourceDirectory>
+        <sourceDirectory>app/src/main/java</sourceDirectory>
         <testSourceDirectory>app/src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
