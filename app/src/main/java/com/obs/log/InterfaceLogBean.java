@@ -113,7 +113,7 @@ public class InterfaceLogBean {
      *            Interface name
      * @param targetAddr
      *            IP address of the target host
-     * @param requestParams
+     * @param reqParams
      *            Request parameters
      */
     public InterfaceLogBean(String name, String targetAddr, String reqParams) {
