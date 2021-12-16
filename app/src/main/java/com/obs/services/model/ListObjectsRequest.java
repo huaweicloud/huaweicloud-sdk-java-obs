@@ -18,7 +18,10 @@ package com.obs.services.model;
  * 列举桶内对象的请求参数
  */
 public class ListObjectsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -54,7 +57,7 @@ public class ListObjectsRequest extends GenericRequest {
      *            列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, int maxKeys) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxKeys = maxKeys;
     }
 
@@ -73,9 +76,10 @@ public class ListObjectsRequest extends GenericRequest {
      *            列举对象的最大条目数
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys) {
-        this(bucketName, maxKeys);
-        this.prefix = prefix;
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
         this.marker = marker;
+        this.prefix = prefix;
         this.delimiter = delimiter;
 
     }
@@ -99,27 +103,12 @@ public class ListObjectsRequest extends GenericRequest {
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys,
                               String encodingType) {
-        this(bucketName, prefix, marker, delimiter, maxKeys);
-        this.encodingType = encodingType;
-    }
-
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
+        this.marker = marker;
+        this.delimiter = delimiter;
+        this.prefix = prefix;
+        this.encodingType = encodingType;
     }
 
     /**

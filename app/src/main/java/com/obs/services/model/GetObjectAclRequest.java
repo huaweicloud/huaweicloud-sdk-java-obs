@@ -19,11 +19,12 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class GetObjectAclRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectAclRequest extends BaseObjectRequest {
 
-    private String objectKey;
-    
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
+
     private String versionId;
 
     public GetObjectAclRequest() {
@@ -63,25 +64,6 @@ public class GetObjectAclRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * 获取对象所属的桶名
-     * 
-     * @return 对象所属的桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置对象所属的桶名
-     * 
-     * @param bucketName
-     *            对象所属的桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

@@ -21,12 +21,20 @@ import java.util.List;
  * 合并段的请求参数
  */
 public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
+
     private List<PartEtag> partEtag;
 
     private String encodingType;
 
     public CompleteMultipartUploadRequest() {
-        super();
+    }
+
+    public CompleteMultipartUploadRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     /**

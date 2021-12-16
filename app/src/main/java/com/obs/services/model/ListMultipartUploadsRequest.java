@@ -18,7 +18,10 @@ package com.obs.services.model;
  * 列举分段上传任务的请求参数
  */
 public class ListMultipartUploadsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -55,7 +58,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      *            列举分段上传任务的最大数目
      */
     public ListMultipartUploadsRequest(String bucketName, Integer maxUploads) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxUploads = maxUploads;
     }
 
@@ -78,7 +81,8 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
                                        String keyMarker, String uploadIdMarker) {
-        this(bucketName, maxUploads);
+        this.bucketName = bucketName;
+        this.maxUploads = maxUploads;
         this.prefix = prefix;
         this.delimiter = delimiter;
         this.keyMarker = keyMarker;
@@ -107,7 +111,12 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
                                        String keyMarker, String uploadIdMarker, String encodingType) {
-        this(bucketName, prefix, delimiter, maxUploads, keyMarker, uploadIdMarker);
+        this.bucketName = bucketName;
+        this.maxUploads = maxUploads;
+        this.prefix = prefix;
+        this.delimiter = delimiter;
+        this.keyMarker = keyMarker;
+        this.uploadIdMarker = uploadIdMarker;
         this.encodingType = encodingType;
     }
 
@@ -187,24 +196,6 @@ public class ListMultipartUploadsRequest extends GenericRequest {
         this.uploadIdMarker = uploadIdMarker;
     }
 
-    /**
-     * 获取分段上传任务所属的桶
-     *
-     * @return 分段上传任务所属的桶
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置分段上传任务所属的桶
-     *
-     * @param bucketName
-     *            分段上传任务所属的桶
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
 
     /**
      * 获取列举分段上传任务的最大数目

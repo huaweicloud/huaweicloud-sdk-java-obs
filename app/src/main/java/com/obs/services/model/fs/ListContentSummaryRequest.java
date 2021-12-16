@@ -20,8 +20,6 @@ import com.obs.services.model.GenericRequest;
  * 列举目录汇总信息的请求参数
  */
 public class ListContentSummaryRequest extends GenericRequest {
-    private String bucketName;
-
     private String prefix;
 
     private String marker;
@@ -43,24 +41,6 @@ public class ListContentSummaryRequest extends GenericRequest {
     public ListContentSummaryRequest(String bucketName) {
         this.bucketName = bucketName;
         this.delimiter = "/";
-    }
-
-    /**
-     * 获取桶名
-     *
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     *
-     * @param bucketName 桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

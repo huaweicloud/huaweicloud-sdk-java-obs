@@ -23,7 +23,6 @@ import com.obs.services.model.GetObjectMetadataRequest;
 public class GetAttributeRequest extends GetObjectMetadataRequest {
 
     public GetAttributeRequest() {
-        super();
     }
 
     /**

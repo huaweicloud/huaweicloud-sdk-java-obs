@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -25,9 +25,11 @@ import com.obs.services.internal.utils.ServiceUtils;
  * 创建桶的请求参数
  *
  */
-public class CreateBucketRequest {
+public class CreateBucketRequest extends GenericRequest {
 
-    private String bucketName;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String location;
 
@@ -51,7 +53,7 @@ public class CreateBucketRequest {
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      */
@@ -61,7 +63,7 @@ public class CreateBucketRequest {
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param location
@@ -74,7 +76,7 @@ public class CreateBucketRequest {
 
     /**
      * 为用户授予OBS扩展权限
-     * 
+     *
      * @param domainId
      *            用户的domainId
      * @param extensionPermissionEnum
@@ -84,17 +86,13 @@ public class CreateBucketRequest {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
             return;
         }
-        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (users == null) {
-            users = new HashSet<String>();
-            getExtensionPermissionMap().put(extensionPermissionEnum, users);
-        }
+        Set<String> users = getExtensionPermissionMap().computeIfAbsent(extensionPermissionEnum, k -> new HashSet<>());
         users.add(domainId.trim());
     }
 
     /**
      * 撤回用户的OBS扩展权限
-     * 
+     *
      * @param domainId
      *            用户的domainId
      * @param extensionPermissionEnum
@@ -113,7 +111,7 @@ public class CreateBucketRequest {
 
     /**
      * 撤回用户的所有OBS扩展权限
-     * 
+     *
      * @param domainId
      *            用户的domainId
      */
@@ -134,7 +132,7 @@ public class CreateBucketRequest {
     public Set<String> getDomainIdsByGrantPermission(ExtensionBucketPermissionEnum extensionPermissionEnum) {
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
         if (domainIds == null) {
-            domainIds = new HashSet<String>();
+            domainIds = new HashSet<>();
         }
         return domainIds;
     }
@@ -153,27 +151,8 @@ public class CreateBucketRequest {
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名 只能包含小写字母、数字、 "-"、 "."
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
      * 获取桶的区域位置
-     * 
+     *
      * @return 桶的区域位置
      */
     public String getLocation() {
@@ -182,7 +161,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的区域位置
-     * 
+     *
      * @param location
      *            桶的区域位置，如果使用的终端节点归属于默认区域，可以不携带此参数；如果使用的终端节点归属于其他区域，则必须携带此参数
      */
@@ -192,7 +171,7 @@ public class CreateBucketRequest {
 
     /**
      * 获取桶的企业ID
-     * 
+     *
      * @return 桶的企业ID
      */
     public String getEpid() {
@@ -201,7 +180,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的企业ID
-     * 
+     *
      * @param epid
      *            企业ID
      */
@@ -215,7 +194,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的访问权限
-     * 
+     *
      * @param acl
      *            桶的访问权限
      */
@@ -225,7 +204,7 @@ public class CreateBucketRequest {
 
     /**
      * 获取桶的存储类型
-     * 
+     *
      * @return 桶存储类型
      */
     public StorageClassEnum getBucketStorageClass() {
@@ -234,7 +213,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的存储类型
-     * 
+     *
      * @param storageClass
      *            桶存储类型
      */
@@ -244,7 +223,7 @@ public class CreateBucketRequest {
 
     /**
      * 获取桶的集群类型
-     * 
+     *
      * @return 桶的集群类型
      */
     public AvailableZoneEnum getAvailableZone() {
@@ -253,7 +232,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的集群类型
-     * 
+     *
      * @param availableZone
      *            桶的集群类型
      */
@@ -263,14 +242,14 @@ public class CreateBucketRequest {
 
     Map<ExtensionBucketPermissionEnum, Set<String>> getExtensionPermissionMap() {
         if (extensionPermissionMap == null) {
-            extensionPermissionMap = new HashMap<ExtensionBucketPermissionEnum, Set<String>>();
+            extensionPermissionMap = new HashMap<>();
         }
         return extensionPermissionMap;
     }
 
     public Map<String, String> getExtensionHeaderMap() {
         if (extensionHeaderMap == null) {
-            extensionHeaderMap = new HashMap<String, String>();
+            extensionHeaderMap = new HashMap<>();
         }
         return extensionHeaderMap;
     }
@@ -288,7 +267,7 @@ public class CreateBucketRequest {
 
     /**
      * 设置桶的类型
-     * 
+     *
      * @param bucketType
      *            桶类型
      */

@@ -20,17 +20,22 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketLoggingRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketLoggingConfiguration loggingConfiguration;
     private boolean updateTargetACLifRequired = false;
     
     public SetBucketLoggingRequest(String bucketName, BucketLoggingConfiguration loggingConfiguration) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.loggingConfiguration = loggingConfiguration;
     }
     
     public SetBucketLoggingRequest(String bucketName, 
             BucketLoggingConfiguration loggingConfiguration, boolean updateTargetACLifRequired) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.loggingConfiguration = loggingConfiguration;
         this.updateTargetACLifRequired = updateTargetACLifRequired;
     }

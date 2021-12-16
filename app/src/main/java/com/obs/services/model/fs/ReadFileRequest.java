@@ -23,7 +23,6 @@ import com.obs.services.model.GetObjectRequest;
 public class ReadFileRequest extends GetObjectRequest {
 
     public ReadFileRequest() {
-        super();
     }
 
     /**

@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -22,11 +22,7 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * 下载文件的请求参数
  */
-public class DownloadFileRequest extends GenericRequest {
-    // 桶名
-    private String bucketName;
-    // 对象名
-    private String objectKey;
+public class DownloadFileRequest extends BaseObjectRequest {
     // 本地文件
     private String downloadFile;
     // 分片大小，单位字节，默认9MB
@@ -48,8 +44,6 @@ public class DownloadFileRequest extends GenericRequest {
     // 开启多版本，指定版本号下载
     private String versionId;
 
-    protected boolean encodeHeaders = true;
-
     private ProgressListener progressListener;
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
@@ -60,7 +54,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -74,7 +68,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -83,13 +77,14 @@ public class DownloadFileRequest extends GenericRequest {
      *            下载文件的目标路径
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.downloadFile = downloadFile;
     }
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -100,14 +95,15 @@ public class DownloadFileRequest extends GenericRequest {
      *            下载时的分段大小
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.downloadFile = downloadFile;
         this.partSize = partSize;
     }
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -125,7 +121,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -138,16 +134,16 @@ public class DownloadFileRequest extends GenericRequest {
      *            用于并发执行下载任务的最大线程数
      * @param enableCheckpoint
      *            是否开启断点续传模式
-     * 
+     *
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
-            boolean enableCheckpoint) {
+                               boolean enableCheckpoint) {
         this(bucketName, objectKey, downloadFile, partSize, taskNum, enableCheckpoint, null);
     }
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -162,11 +158,12 @@ public class DownloadFileRequest extends GenericRequest {
      *            是否开启断点续传模式
      * @param checkpointFile
      *            断点续传模式下，记录下载进度的文件
-     * 
+     *
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
-            boolean enableCheckpoint, String checkpointFile) {
-        this(bucketName, objectKey);
+                               boolean enableCheckpoint, String checkpointFile) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.taskNum = taskNum;
         this.downloadFile = downloadFile;
@@ -176,7 +173,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 构造参数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -193,11 +190,12 @@ public class DownloadFileRequest extends GenericRequest {
      *            断点续传模式下，记录下载进度的文件
      * @param versionId
      *            对象的版本号
-     * 
+     *
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
-            boolean enableCheckpoint, String checkpointFile, String versionId) {
-        this(bucketName, objectKey);
+                               boolean enableCheckpoint, String checkpointFile, String versionId) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.taskNum = taskNum;
         this.downloadFile = downloadFile;
@@ -207,46 +205,8 @@ public class DownloadFileRequest extends GenericRequest {
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取对象名
-     * 
-     * @return 对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置对象名
-     * 
-     * @param objectKey
-     *            对象名
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
-
-    /**
      * 获取下载文件的目标路径
-     * 
+     *
      * @return 下载文件的目标路径
      */
     public String getDownloadFile() {
@@ -255,7 +215,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载文件的目标路径
-     * 
+     *
      * @param downloadFile
      *            下载文件的目标路径
      */
@@ -265,7 +225,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载时的分段大小
-     * 
+     *
      * @return 下载时的分段大小
      */
     public long getPartSize() {
@@ -274,7 +234,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载时的分段大小
-     * 
+     *
      * @param partSize
      *            下载时的分段大小
      */
@@ -284,7 +244,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取用于并发执行下载任务的最大线程数
-     * 
+     *
      * @return 用于并发执行下载任务的最大线程数
      */
     public int getTaskNum() {
@@ -293,23 +253,21 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置用于并发执行下载任务的最大线程数
-     * 
+     *
      * @param taskNum
      *            用于并发执行下载任务的最大线程数
      */
     public void setTaskNum(int taskNum) {
         if (taskNum < 1) {
             this.taskNum = 1;
-        } else if (taskNum > 1000) {
-            this.taskNum = 1000;
         } else {
-            this.taskNum = taskNum;
+            this.taskNum = Math.min(taskNum, 1000);
         }
     }
 
     /**
      * 判断是否开启断点续传模式
-     * 
+     *
      * @return 是否开启断点续传模式标识
      */
     public boolean isEnableCheckpoint() {
@@ -318,7 +276,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置是否开启断点续传模式
-     * 
+     *
      * @param enableCheckpoint
      *            是否开启断点续传模式标识
      */
@@ -328,7 +286,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取断点续传模式下，记录下载进度的文件
-     * 
+     *
      * @return 记录下载进度的文件
      */
     public String getCheckpointFile() {
@@ -337,7 +295,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置断点续传模式下，记录下载进度的文件
-     * 
+     *
      * @param checkpointFile
      *            记录下载进度的文件
      */
@@ -347,7 +305,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载时的临时文件
-     * 
+     *
      * @return 下载时的临时文件
      */
     public String getTempDownloadFile() {
@@ -356,7 +314,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
-     * 
+     *
      * @return 下载对象的时间条件
      */
     public Date getIfModifiedSince() {
@@ -365,7 +323,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载对象的时间条件（修改则下载），如果对象在此参数指定的时间之后有修改则进行下载，否则返回304（Not Modified）
-     * 
+     *
      * @param ifModifiedSince
      *            下载对象的时间条件
      */
@@ -375,7 +333,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
-     * 
+     *
      * @return 下载对象的时间条件
      */
     public Date getIfUnmodifiedSince() {
@@ -384,7 +342,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载对象的时间条件（未修改则下载），如果对象在此参数指定的时间之后没有修改则进行下载，否则返回412（ 前置条件不满足）
-     * 
+     *
      * @param ifUnmodifiedSince
      *            下载对象的时间条件
      */
@@ -394,7 +352,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
-     * 
+     *
      * @return 下载对象的校验值条件
      */
     public String getIfMatchTag() {
@@ -403,7 +361,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载对象的校验值条件（相等则下载），如果对象的etag校验值与此参数指定的值相等则进行下载。否则返回412（前置条件不满足）
-     * 
+     *
      * @param ifMatchTag
      *            下载对象的校验值条件
      */
@@ -413,7 +371,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
-     * 
+     *
      * @return 下载对象的校验值条件
      */
     public String getIfNoneMatchTag() {
@@ -422,10 +380,10 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置下载对象的校验值条件（不相等则下载），如果对象的etag校验值与此参数指定的值不相等则进行下载。否则返回304（Not Modified）
-     * 
+     *
      * @param ifNoneMatchTag
      *            下载对象的校验值条件
-     * 
+     *
      */
     public void setIfNoneMatchTag(String ifNoneMatchTag) {
         this.ifNoneMatchTag = ifNoneMatchTag;
@@ -433,7 +391,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取对象的版本号
-     * 
+     *
      * @return 对象的版本号
      */
     public String getVersionId() {
@@ -442,10 +400,10 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置对象的版本号
-     * 
+     *
      * @param versionId
      *            对象的版本号
-     * 
+     *
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
@@ -453,7 +411,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取数据传输监听器
-     * 
+     *
      * @return 数据传输监听器
      */
     public ProgressListener getProgressListener() {
@@ -462,7 +420,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置数据传输监听器
-     * 
+     *
      * @param progressListener
      *            数据传输监听器
      */
@@ -472,7 +430,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取数据传输监听器回调的阈值，默认为100KB
-     * 
+     *
      * @return 数据传输监听器回调的阈值
      */
     public long getProgressInterval() {
@@ -481,7 +439,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置数据传输监听器回调的阈值，默认为100KB
-     * 
+     *
      * @param progressInterval
      *            数据传输监听器回调的阈值
      */
@@ -491,7 +449,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取预读缓存的控制选项
-     * 
+     *
      * @return 预读缓存的控制选项
      */
     public CacheOptionEnum getCacheOption() {
@@ -500,7 +458,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置预读缓存的控制选项
-     * 
+     *
      * @param cacheOption
      *            预读缓存的控制选项
      */
@@ -510,7 +468,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 获取缓存数据过期时间
-     * 
+     *
      * @return 缓存数据过期时间
      */
     public long getTtl() {
@@ -519,7 +477,7 @@ public class DownloadFileRequest extends GenericRequest {
 
     /**
      * 设置缓存数据过期时间
-     * 
+     *
      * @param ttl
      *            缓存数据过期时间
      */
@@ -528,25 +486,6 @@ public class DownloadFileRequest extends GenericRequest {
             ttl = 60 * 60 * 24L;
         }
         this.ttl = ttl;
-    }
-
-    /**
-     * 设置是否对返回的头域的字段进行编解码
-     *
-     * @param encodeHeaders
-     *        是否对头域字段进行编解码
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * 获取是否对返回的头域的字段进行编解码
-     *
-     * @return 是否对头域字段进行编解码
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
 

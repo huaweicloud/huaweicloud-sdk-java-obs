@@ -105,8 +105,10 @@ public abstract class BaseBucketTest {
 
     /**
      * 设置桶的ACL
-     *
+     * 
+     * @param obsClient
      * @param bucketName
+     * @param objectKey
      */
     protected void setBucketAcl(UserInfo srcUser, UserInfo destUser, String bucketName) {
         BucketTools.setBucketAcl(srcUser.getObsClient(), srcUser.getDomainId(), destUser.getDomainId(), bucketName,

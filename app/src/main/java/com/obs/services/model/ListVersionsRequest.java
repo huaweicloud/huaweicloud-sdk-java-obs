@@ -18,7 +18,10 @@ package com.obs.services.model;
  * 列举桶内多版本对象的请求参数
  */
 public class ListVersionsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -56,7 +59,7 @@ public class ListVersionsRequest extends GenericRequest {
      *            列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, int maxKeys) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxKeys = maxKeys;
     }
 
@@ -75,8 +78,8 @@ public class ListVersionsRequest extends GenericRequest {
      *            列举多版本对象的最大条目数
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter, int maxKeys) {
-        this(bucketName, maxKeys);
-        this.prefix = prefix;
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
         this.keyMarker = keyMarker;
         this.delimiter = delimiter;
     }
@@ -100,7 +103,11 @@ public class ListVersionsRequest extends GenericRequest {
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter,
                                int maxKeys, String encodingType) {
-        this(bucketName, prefix, keyMarker, delimiter, maxKeys);
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
+        this.prefix = prefix;
+        this.keyMarker = keyMarker;
+        this.delimiter = delimiter;
         this.encodingType = encodingType;
     }
 
@@ -120,25 +127,6 @@ public class ListVersionsRequest extends GenericRequest {
      */
     public String getEncodingType() {
         return encodingType;
-    }
-
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

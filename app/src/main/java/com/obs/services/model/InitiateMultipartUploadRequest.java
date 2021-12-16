@@ -18,6 +18,11 @@ package com.obs.services.model;
  * 初始化分段上传任务的请求参数
  */
 public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
+
     private ObjectMetadata metadata;
 
     private int expires;
@@ -53,7 +58,8 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
      *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
      */
     public InitiateMultipartUploadRequest(String bucketName, String objectKey, String encodingType) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.encodingType = encodingType;
     }
 
@@ -74,44 +80,6 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
      */
     public void setExpires(int expires) {
         this.expires = expires;
-    }
-
-    /**
-     * 获取分段上传任务所属的桶名
-     * 
-     * @return 分段上传任务所属的桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置分段上传任务所属的桶名
-     * 
-     * @param bucketName
-     *            分段上传任务所属的桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取分段上传任务所属的对象名
-     * 
-     * @return 分段上传任务所属的对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置分段上传任务所属的对象名
-     * 
-     * @param objectKey
-     *            分段上传任务所属的对象名
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

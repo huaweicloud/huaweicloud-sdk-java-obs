@@ -20,11 +20,11 @@ import java.util.Map;
 /**
  * 设置对象属性的请求参数
  */
-public class SetObjectMetadataRequest extends GenericRequest {
+public class SetObjectMetadataRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String versionId;
 
@@ -70,44 +70,6 @@ public class SetObjectMetadataRequest extends GenericRequest {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.versionId = versionId;
-    }
-
-    /**
-     * 获取桶名
-     *
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     *
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取对象名
-     *
-     * @return 对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置对象名
-     *
-     * @param objectKey
-     *            对象名
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

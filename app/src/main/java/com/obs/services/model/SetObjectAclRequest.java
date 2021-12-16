@@ -20,16 +20,27 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetObjectAclRequest extends BaseObjectRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private AccessControlList acl;
+
     private String cannedACL;
+
+    private String versionId;
     
     public SetObjectAclRequest(String bucketName, String objectKey, AccessControlList acl) {
-        super(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.acl = acl;
     }
     
     public SetObjectAclRequest(String bucketName, String objectKey, AccessControlList acl, String versionId) {
-        super(bucketName, objectKey, versionId);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.versionId = versionId;
         this.acl = acl;
     }
 
@@ -47,6 +58,25 @@ public class SetObjectAclRequest extends BaseObjectRequest {
 
     public void setCannedACL(String cannedACL) {
         this.cannedACL = cannedACL;
+    }
+
+    /**
+     * 获取对象版本号
+     *
+     * @return 对象版本号
+     */
+    public String getVersionId() {
+        return versionId;
+    }
+
+    /**
+     * 设置对象版本号
+     *
+     * @param versionId
+     *            对象版本号
+     */
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 
     @Override

@@ -19,15 +19,19 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class DeleteObjectRequest extends GenericRequest {
-    private String bucketName;
+public class DeleteObjectRequest extends BaseObjectRequest {
 
-    private String objectKey;
-    
+    {
+        httpMethod = HttpMethodEnum.DELETE;
+    }
+
     private String versionId;
 
     public DeleteObjectRequest() {
+    }
 
+    public DeleteObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     /**
@@ -54,7 +58,8 @@ public class DeleteObjectRequest extends GenericRequest {
      *            对象版本号
      */
     public DeleteObjectRequest(String bucketName, String objectKey, String versionId) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.versionId = versionId;
     }
 
@@ -75,44 +80,6 @@ public class DeleteObjectRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * 获取待删除对象所属的桶名
-     * 
-     * @return 待删除对象所属的桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置待删除对象所属的桶名
-     * 
-     * @param bucketName
-     *            待删除对象所属的桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取待删除对象的对象名
-     * 
-     * @return 待删除对象的对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置待删除对象的对象名
-     * 
-     * @param objectKey
-     *            待删除对象的对象名
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     @Override

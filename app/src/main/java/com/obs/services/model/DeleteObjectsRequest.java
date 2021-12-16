@@ -22,7 +22,10 @@ import java.util.List;
  * 批量删除对象请求参数
  */
 public class DeleteObjectsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private boolean quiet;
 
@@ -31,7 +34,6 @@ public class DeleteObjectsRequest extends GenericRequest {
     private String encodingType;
 
     public DeleteObjectsRequest() {
-
     }
 
     /**
@@ -55,7 +57,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            待删除对象数组
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
     }
@@ -73,28 +75,12 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions, String encodingType) {
-        this(bucketName, quiet, keyAndVersions);
+        this.bucketName = bucketName;
+        this.quiet = quiet;
+        this.setKeyAndVersions(keyAndVersions);
         this.setEncodingType(encodingType);
     }
 
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
 
     /**
      * 获取批量删除对象的响应模式，false时使用verbose模式, true时使用quiet模式
@@ -140,7 +126,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public List<KeyAndVersion> getKeyAndVersionsList() {
         if (this.keyAndVersions == null) {
-            this.keyAndVersions = new ArrayList<KeyAndVersion>();
+            this.keyAndVersions = new ArrayList<>();
         }
         return this.keyAndVersions;
     }
@@ -188,7 +174,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public void setKeyAndVersions(KeyAndVersion[] keyAndVersions) {
         if (keyAndVersions != null && keyAndVersions.length > 0) {
-            this.keyAndVersions = new ArrayList<KeyAndVersion>(Arrays.asList(keyAndVersions));
+            this.keyAndVersions = new ArrayList<>(Arrays.asList(keyAndVersions));
         }
     }
 

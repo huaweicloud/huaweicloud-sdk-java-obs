@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -42,9 +42,12 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     private SseCHeader sseCHeaderSource;
 
+    public CopyObjectRequest() {
+    }
+
     /**
      * 构造参数
-     * 
+     *
      * @param sourceBucketName
      *            源桶名
      * @param sourceObjectKey
@@ -55,20 +58,16 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
      *            目标对象名
      */
     public CopyObjectRequest(String sourceBucketName, String sourceObjectKey, String destinationBucketName,
-            String destinationObjectKey) {
+                             String destinationObjectKey) {
         this.sourceBucketName = sourceBucketName;
         this.sourceObjectKey = sourceObjectKey;
         this.bucketName = destinationBucketName;
         this.objectKey = destinationObjectKey;
     }
 
-    public CopyObjectRequest() {
-
-    }
-
     /**
      * 获取源对象SSE-C解密头域信息
-     * 
+     *
      * @return 源对象SSE-C解密头域信息
      */
     public SseCHeader getSseCHeaderSource() {
@@ -77,7 +76,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置源对象SSE-C解密头域信息
-     * 
+     *
      * @param sseCHeaderSource
      *            源对象 SSE-C解密头域信息
      */
@@ -87,7 +86,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取目标对象SSE-C加密头域信息
-     * 
+     *
      * @return SSE-C加密头域信息
      */
     @Deprecated
@@ -97,7 +96,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置目标对象SSE-C加密头域信息
-     * 
+     *
      * @param sseCHeaderDestination
      *            SSE-C加密头域信息
      */
@@ -108,7 +107,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取复制对象的时间条件（修改则复制），只有当源对象在此参数指定的时间之后修改过才进行复制，否则返回412（前置条件不满足）
-     * 
+     *
      * @return 复制对象的时间条件
      */
     public Date getIfModifiedSince() {
@@ -117,10 +116,10 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置复复制对象的时间条件（修改则复制），只有当源对象在此参数指定的时间之后修改过才进行复制，否则返回412（前置条件不满足）
-     * 
+     *
      * @param ifModifiedSince
      *            复制对象的时间条件
-     * 
+     *
      */
     public void setIfModifiedSince(Date ifModifiedSince) {
         this.ifModifiedSince = ServiceUtils.cloneDateIgnoreNull(ifModifiedSince);
@@ -128,7 +127,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取复制对象的时间条件（未修改则复制），只有当源对象在此参数指定的时间之后没有修改过才进行复制，否则返回412（前置条件不满足）
-     * 
+     *
      * @return 复制对象的时间条件
      */
     public Date getIfUnmodifiedSince() {
@@ -137,7 +136,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置复制对象的时间条件（未修改则复制），只有当源对象在此参数指定的时间之后没有修改过才进行复制，否则返回412（前置条件不满足）
-     * 
+     *
      * @param ifUnmodifiedSince
      *            复制对象的时间条件
      */
@@ -147,7 +146,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取复制对象的校验值条件（相等则复制），只有当源对象的etag校验值与此参数指定的值相等时才进行复制。否则返回412（前置条件不满足）
-     * 
+     *
      * @return 复制对象的校验值条件
      */
     public String getIfMatchTag() {
@@ -156,7 +155,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置复制对象的校验值条件（相等则复制），只有当源对象的etag校验值与此参数指定的值相等时才进行复制。否则返回412（前置条件不满足）
-     * 
+     *
      * @param ifMatchTag
      *            复制对象的校验值条件
      */
@@ -166,7 +165,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取复制对象的校验值条件（不相等则复制），只有当源对象的etag校验值与此参数指定的值不相等时才进行复制。否则返回412（前置条件不满足）
-     * 
+     *
      * @return 复制对象的校验值条件
      */
     public String getIfNoneMatchTag() {
@@ -175,10 +174,10 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置复制对象的校验值条件（不相等则复制），只有当源对象的etag校验值与此参数指定的值不相等时才进行复制。否则返回412（前置条件不满足）
-     * 
+     *
      * @param ifNoneMatchTag
      *            复制对象的校验值条件
-     * 
+     *
      */
     public void setIfNoneMatchTag(String ifNoneMatchTag) {
         this.ifNoneMatchTag = ifNoneMatchTag;
@@ -186,9 +185,9 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取源对象的版本号
-     * 
+     *
      * @return 源对象版本号
-     * 
+     *
      */
     public String getVersionId() {
         return versionId;
@@ -196,10 +195,10 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置源对象的版本号
-     * 
+     *
      * @param versionId
      *            源对象版本号
-     * 
+     *
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
@@ -207,7 +206,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取源桶名
-     * 
+     *
      * @return 源桶名
      */
     public String getSourceBucketName() {
@@ -216,7 +215,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置源桶名
-     * 
+     *
      * @param sourceBucketName
      *            源桶名
      */
@@ -226,7 +225,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取源对象名
-     * 
+     *
      * @return 源对象名
      */
     public String getSourceObjectKey() {
@@ -235,7 +234,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置源对象名
-     * 
+     *
      * @param sourceObjectKey
      *            源对象名
      */
@@ -245,7 +244,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取目标桶名
-     * 
+     *
      * @return 目标桶名
      */
     public String getDestinationBucketName() {
@@ -254,7 +253,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置目标桶名
-     * 
+     *
      * @param destinationBucketName
      *            目标桶名
      */
@@ -264,7 +263,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取目标对象名
-     * 
+     *
      * @return 目标对象名
      */
     public String getDestinationObjectKey() {
@@ -273,7 +272,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置目标对象名
-     * 
+     *
      * @param destinationObjectKey
      *            目标对象名
      */
@@ -283,7 +282,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取目标对象的属性，支持自定义元数据
-     * 
+     *
      * @return ObjectMetadata 目标对象的属性
      */
     public ObjectMetadata getNewObjectMetadata() {
@@ -292,7 +291,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置目标对象的属性，支持自定义元数据
-     * 
+     *
      * @param newObjectMetadata
      *            目标对象的属性
      */
@@ -302,7 +301,7 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 获取是否替换目标对象的属性，true表示替换，与setNewObjectMetadata搭配使用，false表示继承源对象的属性
-     * 
+     *
      * @return 是否替换目标对象属性标识
      */
     public boolean isReplaceMetadata() {
@@ -311,10 +310,10 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     /**
      * 设置是否替换目标对象的属性，true表示替换，与setNewObjectMetadata搭配使用，false表示继承源对象的属性
-     * 
+     *
      * @param replaceMetadata
      *            是否替换目标对象属性标识
-     * 
+     *
      */
     public void setReplaceMetadata(boolean replaceMetadata) {
         this.replaceMetadata = replaceMetadata;

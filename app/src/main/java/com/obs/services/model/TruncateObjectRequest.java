@@ -19,16 +19,15 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class TruncateObjectRequest extends GenericRequest {
+public class TruncateObjectRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private long newLength;
 
     public TruncateObjectRequest() {
-
     }
 
     /**
@@ -42,49 +41,9 @@ public class TruncateObjectRequest extends GenericRequest {
      *            文件截断后的大小
      */
     public TruncateObjectRequest(String bucketName, String objectKey, long newLength) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newLength = newLength;
-    }
-
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取文件名
-     * 
-     * @return 文件名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置文件名
-     * 
-     * @param objectKey
-     *            文件名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

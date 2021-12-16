@@ -39,16 +39,17 @@ public class DropFolderRequest extends AbstractBulkRequest {
      *            桶名
      */
     public DropFolderRequest(String bucketName) {
-        super(bucketName);
+        this.bucketName = bucketName;
     }
 
     public DropFolderRequest(String bucketName, String folderName) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.folderName = folderName;
     }
 
     public DropFolderRequest(String bucketName, String folderName, String encodingType) {
-        this(bucketName, folderName);
+        this.bucketName = bucketName;
+        this.folderName = folderName;
         this.encodingType = encodingType;
     }
 

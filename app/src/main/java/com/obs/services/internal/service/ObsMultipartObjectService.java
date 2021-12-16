@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -24,6 +24,7 @@ import com.obs.services.internal.RepeatableRequestEntity;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbortMultipartUploadRequest;
@@ -53,45 +54,51 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         this.prepareRESTHeaderAcl(result.getHeaders(), request.getAcl());
 
-        Response httpResponse = performRestPost(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                result.getParams(), null, false, false, request.isEncodeHeaders());
+        NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+        Response response = performRequest(newTransResult, true, false, false);
 
-        this.verifyResponseContentType(httpResponse);
+        this.verifyResponseContentType(response);
 
         InitiateMultipartUploadResult multipartUpload = getXmlResponseSaxParser()
-                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                .parse(new HttpMethodReleaseInputStream(response),
                         XmlResponsesSaxParser.InitiateMultipartUploadHandler.class, true)
                 .getInitiateMultipartUploadResult();
-        setHeadersAndStatus(multipartUpload, httpResponse);
+        setHeadersAndStatus(multipartUpload, response);
         return multipartUpload;
     }
-    
+
     protected HeaderResponse abortMultipartUploadImpl(AbortMultipartUploadRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
 
         Response response = performRestDelete(request.getBucketName(), request.getObjectKey(), requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
         return build(response);
     }
 
     protected CompleteMultipartUploadResult completeMultipartUploadImpl(CompleteMultipartUploadRequest request)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
         if (request.getEncodingType() != null) {
-            requestParameters.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
+            requestParams.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
         }
 
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        Map<String, String> headers = new HashMap<>();
 
-        transRequestPaymentHeaders(request, metadata, this.getIHeaders());
 
-        Response response = performRestPost(request.getBucketName(), request.getObjectKey(), metadata,
-                requestParameters, createRequestBody(Mimetypes.MIMETYPE_XML,
-                        this.getIConvertor().transCompleteMultipartUpload(request.getPartEtag())),
-                false);
+        transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        String xml = this.getIConvertor().transCompleteMultipartUpload(request.getPartEtag());
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setParams(requestParams);
+        transResult.setHeaders(headers);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+
+        Response response = performRequest(transResult, true, false, false);
 
         this.verifyResponseContentType(response);
 
@@ -111,7 +118,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
     protected MultipartUploadListing listMultipartUploadsImpl(ListMultipartUploadsRequest request)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.UPLOADS.getOriginalStringCode(), "");
         if (request.getPrefix() != null) {
             requestParameters.put(ObsRequestParams.PREFIX, request.getPrefix());
@@ -133,7 +140,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         }
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -142,20 +149,20 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
                 true);
 
         MultipartUploadListing listResult = new MultipartUploadListing.Builder()
-                .bucketName(handler.getBucketName() == null 
+                .bucketName(handler.getBucketName() == null
                         ? request.getBucketName() : handler.getBucketName())
-                .keyMarker(handler.getKeyMarker() == null 
+                .keyMarker(handler.getKeyMarker() == null
                         ? request.getKeyMarker() : handler.getKeyMarker())
-                .uploadIdMarker(handler.getUploadIdMarker() == null 
+                .uploadIdMarker(handler.getUploadIdMarker() == null
                         ? request.getUploadIdMarker() : handler.getUploadIdMarker())
                 .nextKeyMarker(handler.getNextKeyMarker())
                 .nextUploadIdMarker(handler.getNextUploadIdMarker())
-                .prefix(handler.getPrefix() == null 
+                .prefix(handler.getPrefix() == null
                         ? request.getPrefix() : handler.getPrefix())
                 .maxUploads(handler.getMaxUploads())
                 .truncated(handler.isTruncated())
                 .multipartTaskList(handler.getMultipartUploadList())
-                .delimiter(handler.getDelimiter() == null 
+                .delimiter(handler.getDelimiter() == null
                         ? request.getDelimiter() : handler.getDelimiter())
                 .commonPrefixes(handler.getCommonPrefixes().toArray(
                         new String[handler.getCommonPrefixes().size()]))
@@ -163,9 +170,9 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         setHeadersAndStatus(listResult, httpResponse);
         return listResult;
     }
-    
+
     protected ListPartsResult listPartsImpl(ListPartsRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
         if (null != request.getMaxParts()) {
             requestParameters.put(ObsRequestParams.MAX_PARTS, request.getMaxParts().toString());
@@ -177,8 +184,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
             requestParameters.put(ObsRequestParams.ENCODING_TYPE, request.getEncodingType());
         }
 
-        Response httpResponse = performRestGet(request.getBucketName(), request.getKey(), requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+        Response httpResponse = performRestGet(request.getBucketName(), request.getObjectKey(), requestParameters,
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -187,7 +194,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         ListPartsResult result = new ListPartsResult.Builder()
                 .bucket(handler.getBucketName() == null ? request.getBucketName() : handler.getBucketName())
-                .key(handler.getObjectKey() == null ? request.getKey() : handler.getObjectKey())
+                .key(handler.getObjectKey() == null ? request.getObjectKey() : handler.getObjectKey())
                 .uploadId(handler.getUploadId() == null ? request.getUploadId() : handler.getUploadId())
                 .initiator(handler.getInitiator())
                 .owner(handler.getOwner())
@@ -203,14 +210,14 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         setHeadersAndStatus(result, httpResponse);
         return result;
     }
-    
+
     protected UploadPartResult uploadPartImpl(UploadPartRequest request) throws ServiceException {
         TransResult result = null;
         Response response;
         try {
             result = this.transUploadPartRequest(request);
-            response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true);
+            NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+            response = performRequest(newTransResult);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 RepeatableRequestEntity entity = (RepeatableRequestEntity) result.getBody();
@@ -223,12 +230,12 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         setHeadersAndStatus(ret, response);
         return ret;
     }
-    
+
     protected CopyPartResult copyPartImpl(CopyPartRequest request) throws ServiceException {
 
         TransResult result = this.transCopyPartRequest(request);
-        Response response = this.performRestPut(request.getDestinationBucketName(), request.getDestinationObjectKey(),
-                result.getHeaders(), result.getParams(), null, false);
+        NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+        Response response = this.performRequest(newTransResult, true, false, false);
         this.verifyResponseContentType(response);
 
         CopyPartResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),

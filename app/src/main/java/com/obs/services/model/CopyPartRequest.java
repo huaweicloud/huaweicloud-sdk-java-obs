@@ -17,8 +17,11 @@ package com.obs.services.model;
 /**
  * 复制段的请求参数
  */
-public class CopyPartRequest extends GenericRequest {
-    private String uploadId;
+public class CopyPartRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String sourceBucketName;
 
@@ -41,7 +44,6 @@ public class CopyPartRequest extends GenericRequest {
     private int partNumber;
 
     public CopyPartRequest() {
-
     }
 
     /**
@@ -169,25 +171,6 @@ public class CopyPartRequest extends GenericRequest {
     }
 
     /**
-     * 获取分段上传任务的ID号
-     * 
-     * @return 分段上传任务的ID号
-     */
-    public String getUploadId() {
-        return uploadId;
-    }
-
-    /**
-     * 设置分段上传任务的ID号
-     * 
-     * @param uploadId
-     *            分段上传任务的ID号
-     */
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
-    }
-
-    /**
      * 获取源桶名
      * 
      * @return 源桶名
@@ -287,6 +270,51 @@ public class CopyPartRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
+    }
+
+    /**
+     * 获取分段上传任务所属的桶名（目标桶名）
+     *
+     * @return 分段上传任务所属的桶名
+     */
+    @Override
+    public String getBucketName() {
+        return this.destinationBucketName;
+    }
+
+    /**
+     * 设置分段上传任务所属的桶名（目标桶名）
+     *
+     * @param bucketName
+     *            分段上传任务所属的桶名
+     *
+     */
+    @Override
+    public void setBucketName(String bucketName) {
+        this.destinationBucketName = bucketName;
+    }
+
+    /**
+     * 设置分段上传任务所属的对象名（目标对象名）
+     *
+     * @param objectKey
+     *            分段上传任务所属的对象名
+     *
+     */
+    @Override
+    public void setObjectKey(String objectKey) {
+        this.destinationObjectKey = objectKey;
+    }
+
+    /**
+     * 获取分段上传任务所属的对象名（目标对象名）
+     *
+     * @return 分段上传任务所属的对象名
+     *
+     */
+    @Override
+    public String getObjectKey() {
+        return this.destinationObjectKey;
     }
 
     @Override

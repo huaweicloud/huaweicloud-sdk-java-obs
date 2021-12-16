@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -14,27 +14,27 @@
 
 package com.obs.services.model.fs;
 
-import com.obs.services.model.GenericRequest;
+import com.obs.services.model.BaseObjectRequest;
+import com.obs.services.model.HttpMethodEnum;
 
 /**
  * 截断文件的请求参数
  *
  */
-public class TruncateFileRequest extends GenericRequest {
+public class TruncateFileRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private long newLength;
 
     public TruncateFileRequest() {
-
     }
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -43,54 +43,14 @@ public class TruncateFileRequest extends GenericRequest {
      *            文件截断后的大小
      */
     public TruncateFileRequest(String bucketName, String objectKey, long newLength) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newLength = newLength;
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取文件名
-     * 
-     * @return 文件名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置文件名
-     * 
-     * @param objectKey
-     *            文件名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
-
-    /**
      * 获取文件截断后的大小
-     * 
+     *
      * @return 文件截断后的大小
      */
     public long getNewLength() {
@@ -99,7 +59,7 @@ public class TruncateFileRequest extends GenericRequest {
 
     /**
      * 设置文件截断后的大小
-     * 
+     *
      * @param newLength
      *            文件截断后的大小
      */

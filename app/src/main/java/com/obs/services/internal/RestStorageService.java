@@ -14,6 +14,32 @@
 
 package com.obs.services.internal;
 
+import com.obs.log.ILogger;
+import com.obs.log.InterfaceLogBean;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.internal.Constants.CommonHeaders;
+import com.obs.services.internal.consensus.CacheManager;
+import com.obs.services.internal.ext.ExtObsConstraint;
+import com.obs.services.internal.handler.XmlResponsesSaxParser;
+import com.obs.services.internal.io.UnrecoverableIOException;
+import com.obs.services.internal.security.BasicSecurityKey;
+import com.obs.services.internal.security.ProviderCredentialThreadContext;
+import com.obs.services.internal.security.ProviderCredentials;
+import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.IAuthentication;
+import com.obs.services.internal.utils.JSONChange;
+import com.obs.services.internal.utils.Mimetypes;
+import com.obs.services.internal.utils.RestUtils;
+import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.utils.V4Authentication;
+import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.HttpMethodEnum;
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -29,39 +55,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.net.ssl.SSLException;
-
-import com.obs.log.ILogger;
-import com.obs.log.InterfaceLogBean;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.internal.Constants.CommonHeaders;
-import com.obs.services.internal.consensus.CacheManager;
-import com.obs.services.internal.ext.ExtObsConstraint;
-import com.obs.services.internal.handler.XmlResponsesSaxParser;
-import com.obs.services.internal.io.UnrecoverableIOException;
-import com.obs.services.internal.security.BasicSecurityKey;
-import com.obs.services.internal.security.ProviderCredentialThreadContext;
-import com.obs.services.internal.security.ProviderCredentials;
-import com.obs.services.internal.utils.IAuthentication;
-import com.obs.services.internal.utils.JSONChange;
-import com.obs.services.internal.utils.Mimetypes;
-import com.obs.services.internal.utils.RestUtils;
-import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.internal.utils.V4Authentication;
-import com.obs.services.model.AuthTypeEnum;
-import com.obs.services.model.HttpMethodEnum;
-
-import okhttp3.Call;
-import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public abstract class RestStorageService extends RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
 
     private static final Set<Class<? extends IOException>> NON_RETRIABLE_CLASSES =
-            new HashSet<Class<? extends IOException>>();
+            new HashSet<>();
 
     private static final String REQUEST_TIMEOUT_CODE = "RequestTimeout";
 
@@ -75,10 +73,10 @@ public abstract class RestStorageService extends RestConnectionService {
         NON_RETRIABLE_CLASSES.add(ConnectException.class);
     }
 
-    private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<HashMap<String, String>>();
+    private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<>();
 
     // switch of using standard http headers
-    protected static final ThreadLocal<Boolean> CAN_USE_STANDARD_HTTP_HEADERS = new ThreadLocal<Boolean>();
+    protected static final ThreadLocal<Boolean> CAN_USE_STANDARD_HTTP_HEADERS = new ThreadLocal<>();
 
     protected RestStorageService() {
 
@@ -120,7 +118,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private Map<String, String> formatMetadataAndHeader(Map<String, String> metadataAndHeader,
                                                         boolean needEncode) {
-        Map<String, String> format = new HashMap<String, String>();
+        Map<String, String> format = new HashMap<>();
         if (metadataAndHeader != null) {
             for (Map.Entry<String, String> entry : metadataAndHeader.entrySet()) {
                 String key = entry.getKey();
@@ -193,7 +191,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private ServiceException handleThrowable(Request request, Response response, Call call,
-                                             Throwable t) {
+                                             Throwable t, boolean needEncode) {
         ServiceException serviceException = (t instanceof ServiceException) ? (ServiceException) t
                 : new ServiceException("Request Error: " + t, t);
         serviceException.setRequestHost(request.header(CommonHeaders.HOST));
@@ -207,7 +205,8 @@ public abstract class RestStorageService extends RestConnectionService {
             serviceException.setResponseDate(response.header(CommonHeaders.DATE));
             serviceException.setErrorIndicator(response.header(CommonHeaders.X_RESERVED_INDICATOR));
             serviceException.setResponseHeaders(ServiceUtils.cleanRestMetadataMapV2(
-                    convertHeadersToMap(response.headers()), getRestHeaderPrefix(), getRestMetadataPrefix()));
+                    convertHeadersToMap(response.headers()), getRestHeaderPrefix(),
+                    getRestMetadataPrefix(), needEncode));
             if (!ServiceUtils.isValid(serviceException.getErrorRequestId())) {
                 serviceException.setRequestAndHostIds(response.header(getIHeaders().requestIdHeader()),
                         response.header(getIHeaders().requestId2Header()));
@@ -262,7 +261,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private static final class RetryCounter {
         private int errorCount = 0;
-        private int retryMaxCount = 0;
+        private int retryMaxCount;
 
         public RetryCounter(int retryMaxCount) {
             super();
@@ -283,10 +282,10 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private static final class RetryController {
-        private RetryCounter errorRetryCounter = null;
-        private RetryCounter unexpectedErrorRetryCounter = null;
+        private RetryCounter errorRetryCounter;
+        private RetryCounter unexpectedErrorRetryCounter;
         private Exception lastException = null;
-        private boolean wasRecentlyRedirected = false;
+        private boolean wasRecentlyRedirected;
 
         public RetryController(RetryCounter errorRetryCounter, RetryCounter unexpectedErrorRetryCounter,
                                boolean wasRecentlyRedirected) {
@@ -322,7 +321,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private static final class RequestInfo {
-        private Request request = null;
+        private Request request;
         private Response response = null;
         private Call call = null;
         private InterfaceLogBean reqBean;
@@ -373,9 +372,8 @@ public abstract class RestStorageService extends RestConnectionService {
         try {
             tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo, needEncode);
         } catch (Throwable t) {
-            ServiceException serviceException = this.handleThrowable(requestInfo.getRequest(),
-                    requestInfo.getResponse(), requestInfo.getCall(), t);
-            throw serviceException;
+            throw this.handleThrowable(requestInfo.getRequest(),
+                    requestInfo.getResponse(), requestInfo.getCall(), t, needEncode);
         }
 
         if (log.isInfoEnabled()) {
@@ -384,6 +382,42 @@ public abstract class RestStorageService extends RestConnectionService {
             log.info(requestInfo.getReqBean());
         }
         return requestInfo.getResponse();
+    }
+
+    protected Response performRequest(NewTransResult result) {
+        return performRequest(result, true, true, false);
+    }
+
+    // todo 重构后仅保留这一个 performRequest，将其他的均合并至这里
+    // todo 重构时需要评估下 needSignature, autoRelease, isOEF 这三个参数是否要合入到 transResult 里
+    protected Response performRequest(NewTransResult result, boolean needSignature,
+                                      boolean autoRelease, boolean isOEF) {
+        Request.Builder builder = setupConnection(result.getHttpMethod(), result.getBucketName(),
+                result.getObjectKey(), result.getParams(), result.getBody(), isOEF);
+        renameMetadataKeys(builder, result.getHeaders(), result.isEncodeHeaders());
+        if (result.getUserHeaders() != null) {
+            result.getUserHeaders().forEach(builder::addHeader);
+        }
+        Request request = builder.build();
+        RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
+        try {
+            tryRequest(result.getParams(), result.getBucketName(), needSignature,
+                    isOEF, requestInfo, result.isEncodeHeaders());
+        } catch (Throwable t) {
+            throw this.handleThrowable(requestInfo.getRequest(),
+                    requestInfo.getResponse(), requestInfo.getCall(), t, result.isEncodeHeaders());
+        }
+
+        if (log.isInfoEnabled()) {
+            requestInfo.getReqBean().setRespTime(new Date());
+            requestInfo.getReqBean().setResultCode(Constants.RESULTCODE_SUCCESS);
+            log.info(requestInfo.getReqBean());
+        }
+        Response response = requestInfo.getResponse();
+        if (autoRelease) {
+            response.close();
+        }
+        return response;
     }
 
     private void tryRequest(Map<String, String> requestParameters, String bucketName, boolean doSignature,
@@ -599,8 +633,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private ServiceException createServiceException(String message, Response response) {
         String xmlMessage = readResponseMessage(response);
-        ServiceException exception = new ServiceException(message, xmlMessage);
-        return exception;
+        return new ServiceException(message, xmlMessage);
     }
 
     private String readResponseMessage(Response response) {
@@ -617,7 +650,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private Request createRedirectRequest(Request request, Map<String, String> requestParameters, String bucketName,
                                           boolean doSignature, boolean isOEF, int responseCode, String location) {
-        if (location.indexOf("?") < 0) {
+        if (!location.contains("?")) {
             location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
         }
 
@@ -675,6 +708,7 @@ public abstract class RestStorageService extends RestConnectionService {
             builder.header(CommonHeaders.USER_AGENT, Constants.USER_AGENT_VALUE);
             request = builder.build();
         }
+        log.debug("Request Headers: " + request.headers().toString().replace("\n", "|"));
         return request;
     }
 
@@ -783,7 +817,7 @@ public abstract class RestStorageService extends RestConnectionService {
             if (isCname()) {
                 fullUrl = "/" + hostname + fullUrl;
             } else if (ServiceUtils.isValid(bucketName) && !endpoint.equals(hostname)
-                    && hostname.indexOf(bucketName) >= 0) {
+                    && hostname.contains(bucketName)) {
                 fullUrl = "/" + bucketName + fullUrl;
             }
         }
@@ -810,10 +844,8 @@ public abstract class RestStorageService extends RestConnectionService {
                     request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
                     Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
         }
-        // if (log.isDebugEnabled()) {
-        // log.debug("StringToSign ('|' is a newline): " +
-        // iauthentication.getStringToSign().replace('\n', '|'));
-        // }
+        log.debug("StringToSign ('|' is a newline): "
+                + iauthentication.getStringToSign().replace('\n', '|'));
 
         String authorizationString = iauthentication.getAuthorization();
         builder.header(CommonHeaders.AUTHORIZATION, authorizationString);
@@ -822,17 +854,21 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestHead(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                       Map<String, String> requestHeaders) throws ServiceException {
+                                       Map<String, String> requestHeaders, Map<String, String> userHeaders,
+                                       boolean needEncode) throws ServiceException {
         Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null);
 
         addRequestHeadersToConnection(builder, requestHeaders);
-
-        return performRequest(builder.build(), requestParameters, bucketName);
+        if (userHeaders != null) {
+            userHeaders.forEach(builder::addHeader);
+        }
+        return performRequest(builder.build(), requestParameters, bucketName, true, false, needEncode);
     }
 
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                      Map<String, String> requestHeaders) throws ServiceException {
-        return this.performRestGet(bucketName, objectKey, requestParameters, requestHeaders, false);
+                                      Map<String, String> requestHeaders, Map<String, String> userHeaders)
+            throws ServiceException {
+        return this.performRestGet(bucketName, objectKey, requestParameters, requestHeaders, userHeaders, false);
     }
 
     protected Response performRestGetForListBuckets(String bucketName, String objectKey,
@@ -848,99 +884,44 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                      Map<String, String> requestHeaders, boolean isOEF) throws ServiceException {
+                                      Map<String, String> requestHeaders, Map<String, String> userHeaders,
+                                      boolean isOEF) throws ServiceException {
 
-        return performRestGet(bucketName, objectKey, requestParameters, requestHeaders, isOEF, true);
+        return performRestGet(bucketName, objectKey, requestParameters, requestHeaders, userHeaders, isOEF, true);
     }
 
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                      Map<String, String> requestHeaders, boolean isOEF, boolean needEncode)
-            throws ServiceException {
+                                      Map<String, String> requestHeaders, Map<String, String> userHeaders,
+                                      boolean isOEF, boolean needEncode) throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
                 isOEF);
 
         addRequestHeadersToConnection(builder, requestHeaders);
+        if (userHeaders != null) {
+            userHeaders.forEach(builder::addHeader);
+        }
         return performRequest(builder.build(), requestParameters, bucketName, true, isOEF, needEncode);
     }
 
-    protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
-                                      Map<String, String> requestParameters, RequestBody body, boolean autoRelease)
+    protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
+                                         Map<String, String> metadata, Map<String, String> userHeaders)
             throws ServiceException {
-        return this.performRestPut(bucketName, objectKey, metadata, requestParameters, body, autoRelease, false);
-    }
-
-    protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
-                                      Map<String, String> requestParameters, RequestBody body,
-                                      boolean autoRelease, boolean isOEF) throws ServiceException {
-        return this.performRestPut(bucketName, objectKey, metadata, requestParameters,
-                body, autoRelease, isOEF, true);
-    }
-
-    protected Response performRestPut(String bucketName, String objectKey, Map<String, String> metadata,
-                                      Map<String, String> requestParameters, RequestBody body,
-                                      boolean autoRelease, boolean isOEF,
-                                      boolean needEncode)
-            throws ServiceException {
-        Request.Builder builder = setupConnection(HttpMethodEnum.PUT, bucketName, objectKey, requestParameters, body,
-                isOEF);
-
-        renameMetadataKeys(builder, metadata, needEncode);
-
-        Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF, needEncode);
-
-        if (autoRelease) {
-            result.close();
-        }
-
-        return result;
-    }
-
-    protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
-                                       Map<String, String> requestParameters, RequestBody body, boolean autoRelease)
-            throws ServiceException {
-        return this.performRestPost(bucketName, objectKey, metadata, requestParameters, body, autoRelease, false);
-    }
-
-    protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
-                                       Map<String, String> requestParameters, RequestBody body, boolean autoRelease,
-                                       boolean isOEF) throws ServiceException {
-        return this.performRestPost(bucketName, objectKey, metadata, requestParameters,
-                body, autoRelease, isOEF, true);
-    }
-
-    protected Response performRestPost(String bucketName, String objectKey, Map<String, String> metadata,
-                                       Map<String, String> requestParameters, RequestBody body,
-                                       boolean autoRelease, boolean isOEF, boolean needEncode)
-            throws ServiceException {
-        Request.Builder builder = setupConnection(HttpMethodEnum.POST, bucketName, objectKey, requestParameters, body,
-                isOEF);
-
-        renameMetadataKeys(builder, metadata, needEncode);
-
-        Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
-
-        if (autoRelease) {
-            result.close();
-        }
-
-        return result;
+        return this.performRestDelete(bucketName, objectKey, requestParameters, metadata, userHeaders, true, false);
     }
 
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                         Map<String, String> metadata) throws ServiceException {
-        return this.performRestDelete(bucketName, objectKey, requestParameters, metadata, true, false);
-    }
-
-    protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                         Map<String, String> metadata, boolean autoRelease, boolean isOEF)
+                                         Map<String, String> metadata, Map<String, String> userHeaders,
+                                         boolean autoRelease, boolean isOEF)
             throws ServiceException {
 
         Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters, null,
                 isOEF);
 
         renameMetadataKeys(builder, metadata);
-
+        if (userHeaders != null) {
+            userHeaders.forEach(builder::addHeader);
+        }
         Response result = performRequest(builder.build(), requestParameters, bucketName, true, isOEF);
 
         if (autoRelease) {
@@ -950,24 +931,11 @@ public abstract class RestStorageService extends RestConnectionService {
         return result;
     }
 
-    protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters)
-            throws ServiceException {
-        return this.performRestDelete(bucketName, objectKey, requestParameters, true);
-    }
-
     protected Response performRestDelete(String bucketName, String objectKey, Map<String, String> requestParameters,
-                                         boolean autoRelease) throws ServiceException {
-
-        Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters,
-                null);
-
-        Response result = performRequest(builder.build(), requestParameters, bucketName);
-
-        if (autoRelease) {
-            result.close();
-        }
-
-        return result;
+                                         Map<String, String> userHeaders, boolean autoRelease)
+            throws ServiceException {
+        return performRestDelete(bucketName, objectKey, requestParameters, new HashMap<>(),
+                userHeaders, autoRelease, false);
     }
 
     protected Response performRestOptions(String bucketName, String objectKey, Map<String, String> metadata,
@@ -991,7 +959,7 @@ public abstract class RestStorageService extends RestConnectionService {
                                                 Map<String, String> requestParameters,
                                                 Map<String, String> requestHeaders) throws ServiceException {
 
-        Request.Builder builder = null;
+        Request.Builder builder;
 
         if (null != bucketName && !"".equals(bucketName.trim())) {
             builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null, false,
@@ -1019,7 +987,7 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Map<String, String> convertHeadersToMap(Headers headers) {
-        Map<String, String> map = new IdentityHashMap<String, String>();
+        Map<String, String> map = new IdentityHashMap<>();
         for (Map.Entry<String, List<String>> entry : headers.toMultimap().entrySet()) {
             List<String> values = entry.getValue();
             for (String value : values) {

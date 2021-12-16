@@ -22,14 +22,17 @@ package com.obs.services.model;
  */
 public class SetBucketVersioningRequest extends BaseBucketRequest {
 
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private VersioningStatusEnum status;
 
     public SetBucketVersioningRequest() {
-
     }
 
     public SetBucketVersioningRequest(String bucketName, VersioningStatusEnum status) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.status = status;
     }
 

@@ -16,6 +16,11 @@
 package com.obs.services.model;
 
 public class SetBucketCustomDomainRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private String domainName;
     
     public SetBucketCustomDomainRequest() {
@@ -23,7 +28,7 @@ public class SetBucketCustomDomainRequest extends BaseBucketRequest {
     }
 
     public SetBucketCustomDomainRequest(String bucketName, String domainName) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.domainName = domainName;
     }
 

@@ -24,6 +24,11 @@ import com.obs.services.internal.ObsConstraint;
  * 
  */
 public class UploadPartRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private int partNumber;
 
     private Long partSize;
@@ -47,7 +52,6 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     public UploadPartRequest() {
-        super();
     }
 
     /**
@@ -59,9 +63,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            分段上传任务所属的对象名
      */
     public UploadPartRequest(String bucketName, String objectKey) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
     }
 
     /**
@@ -75,9 +78,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            待上传的文件名
      */
     public UploadPartRequest(String bucketName, String objectKey, String fileName) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = new File(fileName);
     }
 
@@ -92,9 +94,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            待上传的文件
      */
     public UploadPartRequest(String bucketName, String objectKey, File file) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = file;
     }
 
@@ -111,9 +112,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            待上传的数据流
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, InputStream input) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.input = input;
     }
@@ -133,9 +133,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            待上传的文件
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, long offset, File file) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.offset = offset;
         this.file = file;

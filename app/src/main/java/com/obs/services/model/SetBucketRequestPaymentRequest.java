@@ -21,14 +21,21 @@ package com.obs.services.model;
  */
 public class SetBucketRequestPaymentRequest extends BaseBucketRequest {
 
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private RequestPaymentEnum payer;
 
     public SetBucketRequestPaymentRequest() {
+    }
 
+    public SetBucketRequestPaymentRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     public SetBucketRequestPaymentRequest(String bucketName, RequestPaymentEnum payer) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.payer = payer;
     }
 

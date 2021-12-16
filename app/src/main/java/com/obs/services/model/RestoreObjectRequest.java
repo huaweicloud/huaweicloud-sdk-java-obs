@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -20,6 +20,32 @@ package com.obs.services.model;
  *
  */
 public class RestoreObjectRequest extends BaseObjectRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
+
+    private String versionId;
+
+    /**
+     * 获取对象版本号
+     *
+     * @return 对象版本号
+     */
+    public String getVersionId() {
+        return versionId;
+    }
+
+    /**
+     * 设置对象版本号
+     *
+     * @param versionId
+     *            对象版本号
+     */
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
+    }
+
     /**
      * 快速取回，取回耗时1~5分钟
      */
@@ -39,7 +65,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
     public static final String BULK = "Bulk";
 
     /**
-     * 
+     *
      * 归档存储对象状态
      *
      */
@@ -61,7 +87,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
         /**
          * 获取对象状态码
-         * 
+         *
          * @return 对象状态码
          */
         public int getCode() {
@@ -83,7 +109,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -92,13 +118,14 @@ public class RestoreObjectRequest extends BaseObjectRequest {
      *            对象取回后保存时间
      */
     public RestoreObjectRequest(String bucketName, String objectKey, int days) {
-        super(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.days = days;
     }
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -109,13 +136,15 @@ public class RestoreObjectRequest extends BaseObjectRequest {
      *            对象取回后保存时间
      */
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days) {
-        super(bucketName, objectKey, versionId);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.versionId = versionId;
         this.days = days;
     }
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -129,13 +158,16 @@ public class RestoreObjectRequest extends BaseObjectRequest {
      */
     @Deprecated
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, String tier) {
-        this(bucketName, objectKey, versionId, days);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.versionId = versionId;
+        this.days = days;
         this.tier = RestoreTierEnum.getValueFromCode(tier);
     }
 
     /**
      * 构造函数
-     * 
+     *
      * @param bucketName
      *            桶名
      * @param objectKey
@@ -148,13 +180,16 @@ public class RestoreObjectRequest extends BaseObjectRequest {
      *            取回选项
      */
     public RestoreObjectRequest(String bucketName, String objectKey, String versionId, int days, RestoreTierEnum tier) {
-        this(bucketName, objectKey, versionId, days);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.versionId = versionId;
+        this.days = days;
         this.tier = tier;
     }
 
     /**
      * 获取对象取回后保存时间，单位：天，最小值为1，最大值为30
-     * 
+     *
      * @return 对象取回后保存时间
      */
     public int getDays() {
@@ -163,7 +198,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 设置对象取回后保存时间，单位：天，最小值为1，最大值为30
-     * 
+     *
      * @param days
      *            对象取回后保存时间
      */
@@ -173,7 +208,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 获取取回选项.
-     * 
+     *
      * @see #getRestoreTier()
      * @return 取回选项
      */
@@ -184,7 +219,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 设置取回选项.
-     * 
+     *
      * @see #setRestoreTier(RestoreTierEnum tier)
      * @param tier
      *            取回选项
@@ -196,7 +231,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 获取取回选项.
-     * 
+     *
      * @return 取回选项
      */
     public RestoreTierEnum getRestoreTier() {
@@ -205,7 +240,7 @@ public class RestoreObjectRequest extends BaseObjectRequest {
 
     /**
      * 设置取回选项.
-     * 
+     *
      * @param tier
      *            取回选项
      */

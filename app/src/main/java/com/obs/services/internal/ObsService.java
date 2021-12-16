@@ -253,7 +253,7 @@ public class ObsService extends ObsExtensionService {
             return new V4PostSignatureResponse(policy, originPolicy.toString(), Constants.V4_ALGORITHM, credential,
                     longDate, signature, expiration);
         } else {
-            String signature = AbstractAuthentication.caculateSignature(policy, securityKey.getSecretKey());
+            String signature = AbstractAuthentication.calculateSignature(policy, securityKey.getSecretKey());
             return new PostSignatureResponse(policy, originPolicy.toString(), 
                     signature, expiration, securityKey.getAccessKey());
         }

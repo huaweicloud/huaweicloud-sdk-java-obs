@@ -20,10 +20,15 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketEncryptionRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketEncryption bucketEncryption;
 
     public SetBucketEncryptionRequest(String bucketName, BucketEncryption bucketEncryption) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketEncryption = bucketEncryption;
     }
 

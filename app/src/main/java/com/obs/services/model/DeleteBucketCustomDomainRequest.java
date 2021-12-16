@@ -17,13 +17,16 @@ package com.obs.services.model;
 
 public class DeleteBucketCustomDomainRequest extends BaseBucketRequest {
     private String domainName;
-    
-    public DeleteBucketCustomDomainRequest() {
 
+    {
+        httpMethod = HttpMethodEnum.DELETE;
+    }
+
+    public DeleteBucketCustomDomainRequest() {
     }
 
     public DeleteBucketCustomDomainRequest(String bucketName, String domainName) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.domainName = domainName;
     }
 

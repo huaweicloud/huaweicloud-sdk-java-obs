@@ -46,7 +46,7 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
      *            桶名
      */
     public RestoreObjectsRequest(String bucketName) {
-        super(bucketName);
+        this.bucketName = bucketName;
     }
 
     /**
@@ -60,13 +60,13 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
      *            取回选项
      */
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.days = days;
         this.tier = tier;
     }
 
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier, String encodingType) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.days = days;
         this.tier = tier;
         this.encodingType = encodingType;

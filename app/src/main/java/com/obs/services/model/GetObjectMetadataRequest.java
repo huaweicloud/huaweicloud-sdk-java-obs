@@ -17,19 +17,17 @@ package com.obs.services.model;
 /**
  * 获取对象属性的请求参数
  */
-public class GetObjectMetadataRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectMetadataRequest extends BaseObjectRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.HEAD;
+    }
 
-    private String versionId;
+    protected String versionId;
 
-    private SseCHeader sseCHeader;
-
-    private boolean encodeHeaders = true;
+    protected SseCHeader sseCHeader;
 
     public GetObjectMetadataRequest() {
-
     }
 
     /**
@@ -81,25 +79,6 @@ public class GetObjectMetadataRequest extends GenericRequest {
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
      * 获取对象名
      * 
      * @return 对象名
@@ -135,25 +114,6 @@ public class GetObjectMetadataRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * 设置是否对返回的头域的字段进行编解码
-     *
-     * @param encodeHeaders
-     *        是否对头域字段进行编解码
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * 获取是否对返回的头域的字段进行编解码
-     *
-     * @return 是否对头域字段进行编解码
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
     @Override

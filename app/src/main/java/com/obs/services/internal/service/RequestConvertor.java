@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -13,17 +13,6 @@
  */
 
 package com.obs.services.internal.service;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -67,8 +56,18 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.fs.ListContentSummaryRequest;
 import com.obs.services.model.fs.NewBucketRequest;
 import com.obs.services.model.fs.WriteFileRequest;
-
 import okhttp3.RequestBody;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class RequestConvertor extends AclHeaderConvertor {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
@@ -104,7 +103,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         return new TransResult(headers, params, null);
     }
 
-    protected TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request) 
+    protected TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request)
             throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         IHeaders iheaders = this.getIHeaders();
@@ -194,7 +193,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
     }
 
-    protected void transSseCHeaders(SseCHeader ssecHeader, Map<String, String> headers, IHeaders iheaders) 
+    protected void transSseCHeaders(SseCHeader ssecHeader, Map<String, String> headers, IHeaders iheaders)
             throws ServiceException {
         if (ssecHeader == null) {
             return;
@@ -303,7 +302,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (request.getExpires() >= 0) {
             putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
         }
-        
+
         if (request.getSuccessRedirectLocation() != null) {
             putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
         }
@@ -338,7 +337,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             } catch (FileNotFoundException e) {
                 throw new IllegalArgumentException("File doesnot exist");
             }
-            
+
             contentLengthValue = getContentLengthFromFile(request, contentLengthValue, fileSize);
         }
 
@@ -352,13 +351,13 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (request.getInput() != null && request.getProgressListener() != null) {
             ProgressManager progressManager = new SimpleProgressManager(contentLengthValue, 0,
                     request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                            : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
+                    : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
             request.setInput(new ProgressInputStream(request.getInput(), progressManager));
         }
 
         RequestBody body = request.getInput() == null ? null
                 : new RepeatableRequestEntity(request.getInput(), contentTypeStr, contentLengthValue,
-                        this.obsProperties);
+                this.obsProperties);
 
         return new TransResult(headers, body);
     }
@@ -386,9 +385,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
     private void setBaseHeaderFromMetadata(Map<String, String> headers, ObjectMetadata objectMetadata) {
         IConvertor iconvertor = this.getIConvertor();
         IHeaders iheaders = this.getIHeaders();
-        
+
         selectAllowedHeader(headers, objectMetadata);
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentMd5())) {
             headers.put(CommonHeaders.CONTENT_MD5, objectMetadata.getContentMd5().trim());
         }
@@ -396,19 +395,19 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (ServiceUtils.isValid(objectMetadata.getContentEncoding())) {
             headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentDisposition())) {
             headers.put(CommonHeaders.CONTENT_DISPOSITION, objectMetadata.getContentDisposition().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getCacheControl())) {
             headers.put(CommonHeaders.CACHE_CONTROL, objectMetadata.getCacheControl().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentLanguage())) {
             headers.put(CommonHeaders.CONTENT_LANGUAGE, objectMetadata.getContentLanguage().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getExpires())) {
             headers.put(CommonHeaders.EXPIRES, objectMetadata.getExpires().trim());
         }
@@ -545,7 +544,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
     }
 
     protected void transConditionCopyHeaders(CopyObjectRequest request, Map<String, String> headers,
-            IHeaders iheaders) {
+                                             IHeaders iheaders) {
         if (request.getIfModifiedSince() != null) {
             putHeader(headers, iheaders.copySourceIfModifiedSinceHeader(),
                     ServiceUtils.formatRfc822Date(request.getIfModifiedSince()));

@@ -20,10 +20,22 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketQuotaRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketQuota bucketQuota;
 
+    public SetBucketQuotaRequest() {
+    }
+
+    public SetBucketQuotaRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
     public SetBucketQuotaRequest(String bucketName, BucketQuota bucketQuota) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketQuota = bucketQuota;
     }
 

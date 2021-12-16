@@ -19,11 +19,11 @@ package com.obs.services.model;
  * 只有并行文件系统支持该接口
  * @since 3.20.3
  */
-public class RenameObjectRequest extends GenericRequest {
+public class RenameObjectRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private String newObjectKey;
 
@@ -42,49 +42,9 @@ public class RenameObjectRequest extends GenericRequest {
      *            新的文件/文件夹名
      */
     public RenameObjectRequest(String bucketName, String objectKey, String newObjectKey) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newObjectKey = newObjectKey;
-    }
-
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取文件/文件夹名
-     * 
-     * @return 文件/文件夹名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置文件/文件夹名
-     * 
-     * @param objectKey
-     *            文件/文件夹名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

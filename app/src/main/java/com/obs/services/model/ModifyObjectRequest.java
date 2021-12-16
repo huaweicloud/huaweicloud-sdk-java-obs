@@ -23,8 +23,11 @@ import java.io.InputStream;
  */
 public class ModifyObjectRequest extends AppendObjectRequest {
 
+    {
+        this.httpMethod = HttpMethodEnum.PUT;
+    }
+
     public ModifyObjectRequest() {
-        super();
     }
 
     /**
@@ -51,7 +54,8 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            本地文件路径
      */
     public ModifyObjectRequest(String bucketName, String objectKey, File file) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = file;
     }
 
@@ -68,7 +72,9 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            写文件的起始位置
      */
     public ModifyObjectRequest(String bucketName, String objectKey, File file, long position) {
-        this(bucketName, objectKey, file);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.file = file;
         this.position = position;
     }
 
@@ -83,7 +89,8 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            待上传的数据流
      */
     public ModifyObjectRequest(String bucketName, String objectKey, InputStream input) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.input = input;
     }
 
@@ -100,7 +107,9 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            写文件的起始位置
      */
     public ModifyObjectRequest(String bucketName, String objectKey, InputStream input, long position) {
-        this(bucketName, objectKey, input);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.input = input;
         this.position = position;
     }
 }

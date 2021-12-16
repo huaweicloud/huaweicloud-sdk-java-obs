@@ -17,10 +17,11 @@ package com.obs.services.model;
 /**
  * 列举已上传的段的请求参数
  */
-public class ListPartsRequest extends GenericRequest {
-    private String bucketName;
+public class ListPartsRequest extends BaseObjectRequest {
 
-    private String key;
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String uploadId;
 
@@ -39,12 +40,12 @@ public class ListPartsRequest extends GenericRequest {
      *
      * @param bucketName
      *            分段上传任务所属的桶名
-     * @param key
+     * @param objectKey
      *            分段上传任务所属的对象名
      */
-    public ListPartsRequest(String bucketName, String key) {
+    public ListPartsRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
-        this.key = key;
+        this.objectKey = objectKey;
     }
 
     /**
@@ -52,13 +53,14 @@ public class ListPartsRequest extends GenericRequest {
      *
      * @param bucketName
      *            分段上传任务所属的桶名
-     * @param key
+     * @param objectKey
      *            分段上传任务所属的对象名
      * @param uploadId
      *            分段上传任务的ID号
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId) {
-        this(bucketName, key);
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.uploadId = uploadId;
     }
 
@@ -67,15 +69,17 @@ public class ListPartsRequest extends GenericRequest {
      *
      * @param bucketName
      *            分段上传任务所属的桶名
-     * @param key
+     * @param objectKey
      *            分段上传任务所属的对象名
      * @param uploadId
      *            分段上传任务的ID号
      * @param maxParts
      *            列举已上传的段返回结果最大段数目
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts) {
-        this(bucketName, key, uploadId);
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
         this.maxParts = maxParts;
     }
 
@@ -84,7 +88,7 @@ public class ListPartsRequest extends GenericRequest {
      *
      * @param bucketName
      *            分段上传任务所属的桶名
-     * @param key
+     * @param objectKey
      *            分段上传任务所属的对象名
      * @param uploadId
      *            分段上传任务的ID号
@@ -93,9 +97,12 @@ public class ListPartsRequest extends GenericRequest {
      * @param partNumberMarker
      *            待列出段的起始位置
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts,
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts,
                             Integer partNumberMarker) {
-        this(bucketName, key, uploadId, maxParts);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
+        this.maxParts = maxParts;
         this.partNumberMarker = partNumberMarker;
     }
 
@@ -104,7 +111,7 @@ public class ListPartsRequest extends GenericRequest {
      *
      * @param bucketName
      *            分段上传任务所属的桶名
-     * @param key
+     * @param objectKey
      *            分段上传任务所属的对象名
      * @param uploadId
      *            分段上传任务的ID号
@@ -116,49 +123,26 @@ public class ListPartsRequest extends GenericRequest {
      *            对响应中的 Key 进行指定类型的编码。如果 Key 包含xml 1.0标准不支持的控制字符，
      *            可通过设置 encoding-type 对响应中的Key进行编码，可选值 "url"
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts,
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts,
                             Integer partNumberMarker, String encodingType) {
-        this(bucketName, key, uploadId, maxParts, partNumberMarker);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
+        this.maxParts = maxParts;
+        this.partNumberMarker = partNumberMarker;
         this.encodingType = encodingType;
     }
 
 
-    /**
-     * 获取分段上传任务所属的桶名
-     *
-     * @return 分段上传任务所属的桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
 
-    /**
-     * 设置分段上传任务所属的桶名
-     *
-     * @param bucketName
-     *            分段上传任务所属的桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取分段上传任务所属的桶名
-     *
-     * @return 分段上传任务所属的桶名
-     */
+    @Deprecated
     public String getKey() {
-        return key;
+        return objectKey;
     }
 
-    /**
-     * 设置分段上传任务所属的桶名
-     *
-     * @param key
-     *            分段上传任务所属的桶名
-     */
-    public void setKey(String key) {
-        this.key = key;
+    @Deprecated
+    public void setKey(String objectKey) {
+        this.objectKey = objectKey;
     }
 
     /**
@@ -239,7 +223,8 @@ public class ListPartsRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "ListPartsRequest [bucketName=" + bucketName + ", key=" + key + ", uploadId=" + uploadId + ", maxParts="
-                + maxParts + ", partNumberMarker=" + partNumberMarker + ", encodingType=" + encodingType + "]";
+        return "ListPartsRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", uploadId="
+                + uploadId + ", maxParts=" + maxParts + ", partNumberMarker=" + partNumberMarker
+                + ", encodingType=" + encodingType + "]";
     }
 }

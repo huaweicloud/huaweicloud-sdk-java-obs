@@ -195,7 +195,9 @@ public abstract class BaseObjectTest extends BaseBucketTest {
 
     /**
      * 生成合并分段请求
-     *
+     * 
+     * @param bucketName
+     * @param objectKey
      * @return
      * @throws UnsupportedEncodingException
      */
@@ -217,6 +219,7 @@ public abstract class BaseObjectTest extends BaseBucketTest {
      * 生成列举分段任务请求
      * 
      * @param bucketName
+     * @param objectKey
      * @return
      * @throws UnsupportedEncodingException
      */

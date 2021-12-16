@@ -23,7 +23,6 @@ import com.obs.services.model.BucketMetadataInfoRequest;
 public class GetBucketFSStatusRequest extends BucketMetadataInfoRequest {
 
     public GetBucketFSStatusRequest() {
-
     }
 
     /**

@@ -23,20 +23,17 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * 下载对象的请求参数
  */
-public class GetObjectRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectRequest extends GetObjectMetadataRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private Long rangeStart;
 
     private Long rangeEnd;
 
-    private String versionId;
-
     private ObjectRepleaceMetadata replaceMetadata;
-
-    private SseCHeader sseCHeader;
 
     private Date ifModifiedSince;
 
@@ -59,8 +56,6 @@ public class GetObjectRequest extends GenericRequest {
     private Map<String, String> requestParameters;
 
     private boolean autoUnzipResponse = false;
-
-    private boolean encodeHeaders = true;
 
     public GetObjectRequest() {
 
@@ -170,46 +165,6 @@ public class GetObjectRequest extends GenericRequest {
      */
     public void setRangeEnd(Long rangeEnd) {
         this.rangeEnd = rangeEnd;
-    }
-
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     * 
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取对象名
-     * 
-     * @return 对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置对象名
-     * 
-     * @param objectKey
-     *            对象名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

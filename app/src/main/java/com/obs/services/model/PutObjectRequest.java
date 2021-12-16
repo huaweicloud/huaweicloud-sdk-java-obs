@@ -40,7 +40,10 @@ public class PutObjectRequest extends PutObjectBasicRequest {
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     public PutObjectRequest() {
+    }
 
+    public PutObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     public PutObjectRequest(PutObjectBasicRequest request) {

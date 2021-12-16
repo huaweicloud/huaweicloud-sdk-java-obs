@@ -37,7 +37,7 @@ public class SetBucketFSStatusRequest extends BaseBucketRequest {
      *            桶的文件网关特性状态
      */
     public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.setStatus(status);
     }
 

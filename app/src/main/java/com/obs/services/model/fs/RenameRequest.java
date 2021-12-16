@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -14,17 +14,17 @@
 
 package com.obs.services.model.fs;
 
-import com.obs.services.model.GenericRequest;
+import com.obs.services.model.BaseObjectRequest;
+import com.obs.services.model.HttpMethodEnum;
 
 /**
  * 重命名文件/文件夹请求参数
- *
  */
-public class RenameRequest extends GenericRequest {
+public class RenameRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private String newObjectKey;
 
@@ -34,63 +34,20 @@ public class RenameRequest extends GenericRequest {
 
     /**
      * 构造函数
-     * 
-     * @param bucketName
-     *            桶名
-     * @param objectKey
-     *            文件/文件夹名
-     * @param newObjectKey
-     *            新的文件/文件夹名
+     *
+     * @param bucketName   桶名
+     * @param objectKey    文件/文件夹名
+     * @param newObjectKey 新的文件/文件夹名
      */
     public RenameRequest(String bucketName, String objectKey, String newObjectKey) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newObjectKey = newObjectKey;
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取文件/文件夹名
-     * 
-     * @return 文件/文件夹名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置文件/文件夹名
-     * 
-     * @param objectKey
-     *            文件/文件夹名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
-
-    /**
      * 获取新的文件/文件夹名
-     * 
+     *
      * @return 新的文件/文件夹名
      */
     public String getNewObjectKey() {
@@ -99,9 +56,8 @@ public class RenameRequest extends GenericRequest {
 
     /**
      * 设置新的文件/文件夹名
-     * 
-     * @param newObjectKey
-     *            新的文件/文件夹名
+     *
+     * @param newObjectKey 新的文件/文件夹名
      */
     public void setNewObjectKey(String newObjectKey) {
         this.newObjectKey = newObjectKey;

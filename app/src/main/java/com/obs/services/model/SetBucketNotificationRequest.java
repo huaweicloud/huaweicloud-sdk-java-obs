@@ -20,11 +20,16 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketNotificationRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketNotificationConfiguration bucketNotificationConfiguration;
 
     public SetBucketNotificationRequest(String bucketName,
             BucketNotificationConfiguration bucketNotificationConfiguration) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketNotificationConfiguration = bucketNotificationConfiguration;
     }
 

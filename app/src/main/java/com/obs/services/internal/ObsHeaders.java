@@ -16,7 +16,7 @@ package com.obs.services.internal;
 
 public class ObsHeaders extends V2Headers {
 
-    private ObsHeaders() {
+    public ObsHeaders() {
         super();
     }
 

@@ -14,16 +14,65 @@
 
 package com.obs.services.model;
 
+import java.util.HashMap;
+
 /**
  * 所有请求的基础类，封装了所有请求都会用到的参数
  * 
  * @since 3.20.3
  */
 public class GenericRequest {
+    protected String bucketName;
     /**
      * 如果启用了请求者付费，则向请求者付费的桶执行操作的时候，由请求者支付费用。
      */
     private boolean isRequesterPays;
+
+    protected HashMap<String, String> userHeaders = new HashMap<>();
+
+    protected HttpMethodEnum httpMethod;
+
+    public GenericRequest() {
+    }
+
+    public GenericRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public HttpMethodEnum getHttpMethod() {
+        return httpMethod;
+    }
+
+    /**
+     * 设置桶名
+     *
+     * @param bucketName
+     *            桶名
+     */
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    /**
+     * 获取桶名
+     *
+     * @return 桶名
+     */
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void addUserHeaders(String key, String value) {
+        userHeaders.put(key, value);
+    }
+
+    public void setUserHeaders(HashMap<String, String> userHeaders) {
+        this.userHeaders = userHeaders;
+    }
+
+    public HashMap<String, String> getUserHeaders() {
+        return userHeaders;
+    }
     
     /**
      * 如果允许请求者支付费用，则返回true，否则返回false。

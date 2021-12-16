@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -21,11 +21,11 @@ import java.util.Set;
 
 import com.obs.services.internal.utils.ServiceUtils;
 
-public abstract class PutObjectBasicRequest extends GenericRequest {
+public abstract class PutObjectBasicRequest extends BaseObjectRequest {
 
-    protected String bucketName;
-
-    protected String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     protected Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap;
 
@@ -35,52 +35,19 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     protected SseKmsHeader sseKmsHeader;
 
-    protected boolean encodeHeaders = true;
-
     protected SseCHeader sseCHeader;
 
-    /**
-     * 获取桶名
-     * 
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
+    public PutObjectBasicRequest() {
     }
 
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
+    public PutObjectBasicRequest(String bucketName) {
         this.bucketName = bucketName;
     }
 
-    /**
-     * 获取对象名
-     * 
-     * @return 对象名
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * 设置对象名
-     * 
-     * @param objectKey
-     *            对象名
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
 
     /**
      * 获取对象SSE-KMS加密头域信息
-     * 
+     *
      * @return SSE-KMS加密头域信息
      */
     public SseKmsHeader getSseKmsHeader() {
@@ -89,9 +56,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 设置对象SSE-KMS加密头域信息
-     * 
-     * @param sseKmsHeader
-     *            SSE-KMS加密头域信息
+     *
+     * @param sseKmsHeader SSE-KMS加密头域信息
      */
     public void setSseKmsHeader(SseKmsHeader sseKmsHeader) {
         this.sseKmsHeader = sseKmsHeader;
@@ -99,7 +65,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 获取对象SSE-C加密头域信息
-     * 
+     *
      * @return SSE-C加密头域信息
      */
     public SseCHeader getSseCHeader() {
@@ -108,9 +74,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 设置对象SSE-C加密头域信息
-     * 
-     * @param sseCHeader
-     *            SSE-C加密头域信息
+     *
+     * @param sseCHeader SSE-C加密头域信息
      */
     public void setSseCHeader(SseCHeader sseCHeader) {
         this.sseCHeader = sseCHeader;
@@ -118,7 +83,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 获取对象的访问权限
-     * 
+     *
      * @return 对象的访问权限
      */
     public AccessControlList getAcl() {
@@ -127,9 +92,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 设置对象的访问权限
-     * 
-     * @param acl
-     *            对象的访问权限
+     *
+     * @param acl 对象的访问权限
      */
     public void setAcl(AccessControlList acl) {
         this.acl = acl;
@@ -137,7 +101,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 获取请求操作响应成功后的重定向地址
-     * 
+     *
      * @return 重定向地址
      */
     public String getSuccessRedirectLocation() {
@@ -146,9 +110,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 设置请求操作响应成功后的重定向地址
-     * 
-     * @param successRedirectLocation
-     *            重定向地址
+     *
+     * @param successRedirectLocation 重定向地址
      */
     public void setSuccessRedirectLocation(String successRedirectLocation) {
         this.successRedirectLocation = successRedirectLocation;
@@ -156,31 +119,23 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 为用户授予OBS扩展权限
-     * 
-     * @param domainId
-     *            用户的domainId
-     * @param extensionPermissionEnum
-     *            OBS扩展权限
+     *
+     * @param domainId                用户的domainId
+     * @param extensionPermissionEnum OBS扩展权限
      */
     public void grantExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
             return;
         }
-        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (users == null) {
-            users = new HashSet<String>();
-            getExtensionPermissionMap().put(extensionPermissionEnum, users);
-        }
+        Set<String> users = getExtensionPermissionMap().computeIfAbsent(extensionPermissionEnum, k -> new HashSet<>());
         users.add(domainId.trim());
     }
 
     /**
      * 撤回用户的OBS扩展权限
-     * 
-     * @param domainId
-     *            用户的domainId
-     * @param extensionPermissionEnum
-     *            OBS扩展权限
+     *
+     * @param domainId                用户的domainId
+     * @param extensionPermissionEnum OBS扩展权限
      */
     public void withdrawExtensionPermission(String domainId, ExtensionObjectPermissionEnum extensionPermissionEnum) {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
@@ -195,9 +150,8 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * 撤回用户的所有OBS扩展权限
-     * 
-     * @param domainId
-     *            用户的domainId
+     *
+     * @param domainId 用户的domainId
      */
     public void withdrawExtensionPermissions(String domainId) {
         if (ServiceUtils.isValid(domainId)) {
@@ -217,7 +171,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
     public Set<String> getDomainIdsByGrantPermission(ExtensionObjectPermissionEnum extensionPermissionEnum) {
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
         if (domainIds == null) {
-            domainIds = new HashSet<String>();
+            domainIds = new HashSet<>();
         }
         return domainIds;
     }
@@ -238,7 +192,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
         if (extensionPermissionMap == null) {
-            extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
+            extensionPermissionMap = new HashMap<>();
         }
         return extensionPermissionMap;
     }
@@ -248,25 +202,6 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
             return;
         }
         this.extensionPermissionMap = extensionPermissionMap;
-    }
-
-    /**
-     * 设置是否对返回的头域的字段进行编解码
-     *
-     * @param encodeHeaders
-     *        是否对头域字段进行编解码
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * 获取是否对返回的头域的字段进行编解码
-     *
-     * @return 是否对头域字段进行编解码
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
 }

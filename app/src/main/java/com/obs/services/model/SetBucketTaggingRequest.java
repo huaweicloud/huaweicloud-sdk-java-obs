@@ -21,14 +21,18 @@ package com.obs.services.model;
  *
  */
 public class SetBucketTaggingRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketTagInfo bucketTagInfo;
 
     public SetBucketTaggingRequest() {
-
     }
 
     public SetBucketTaggingRequest(String bucketName, BucketTagInfo bucketTagInfo) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketTagInfo = bucketTagInfo;
     }
 

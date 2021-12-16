@@ -73,7 +73,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            上传文件夹的本地路径
      */
     public PutObjectsRequest(String bucketName, String folderPath) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.folderPath = folderPath;
     }
 
@@ -86,7 +86,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            批量上传文件的本地路径列表
      */
     public PutObjectsRequest(String bucketName, List<String> filePaths) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.filePaths = filePaths;
     }
 
@@ -187,10 +187,8 @@ public class PutObjectsRequest extends AbstractBulkRequest {
     public void setTaskNum(int taskNum) {
         if (taskNum < 1) {
             this.taskNum = 1;
-        } else if (taskNum > 1000) {
-            this.taskNum = 1000;
         } else {
-            this.taskNum = taskNum;
+            this.taskNum = Math.min(taskNum, 1000);
         }
     }
 
@@ -255,11 +253,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            详细信息刷间隔
      */
     public void setTaskProgressInterval(long taskProgressInterval) {
-        if (taskProgressInterval < this.detailProgressInterval) {
-            this.taskProgressInterval = this.detailProgressInterval;
-        } else {
-            this.taskProgressInterval = taskProgressInterval;
-        }
+        this.taskProgressInterval = Math.max(taskProgressInterval, this.detailProgressInterval);
     }
 
     /**
@@ -369,11 +363,7 @@ public class PutObjectsRequest extends AbstractBulkRequest {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
             return;
         }
-        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (users == null) {
-            users = new HashSet<String>();
-            getExtensionPermissionMap().put(extensionPermissionEnum, users);
-        }
+        Set<String> users = getExtensionPermissionMap().computeIfAbsent(extensionPermissionEnum, k -> new HashSet<>());
         users.add(domainId.trim());
     }
 

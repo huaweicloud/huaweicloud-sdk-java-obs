@@ -20,11 +20,14 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class BaseObjectRequest extends GenericRequest {
-    private String bucketName;
-    private String objectKey;
-    private String versionId;
+    protected String objectKey;
+    protected boolean encodeHeaders = true;
 
     public BaseObjectRequest() {
+    }
+
+    public BaseObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     public BaseObjectRequest(String bucketName, String objectKey) {
@@ -32,28 +35,23 @@ public class BaseObjectRequest extends GenericRequest {
         this.objectKey = objectKey;
     }
 
-    public BaseObjectRequest(String bucketName, String objectKey, String versionId) {
-        this(bucketName, objectKey);
-        this.versionId = versionId;
+    /**
+     * 设置是否对返回的头域的字段进行编解码
+     *
+     * @param encodeHeaders
+     *        是否对头域字段进行编解码
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
     }
 
     /**
-     * 获取桶名
-     * 
-     * @return 桶名
+     * 获取是否对返回的头域的字段进行编解码
+     *
+     * @return 是否对头域字段进行编解码
      */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * 
-     * @param bucketName
-     *            桶名
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
     }
 
     /**
@@ -75,28 +73,9 @@ public class BaseObjectRequest extends GenericRequest {
         this.objectKey = objectKey;
     }
 
-    /**
-     * 获取对象版本号
-     * 
-     * @return 对象版本号
-     */
-    public String getVersionId() {
-        return versionId;
-    }
-
-    /**
-     * 设置对象版本号
-     * 
-     * @param versionId
-     *            对象版本号
-     */
-    public void setVersionId(String versionId) {
-        this.versionId = versionId;
-    }
-
     @Override
     public String toString() {
-        return "BaseObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId=" + versionId
+        return "BaseObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey
                 + ", isRequesterPays()=" + isRequesterPays() + "]";
     }
 }

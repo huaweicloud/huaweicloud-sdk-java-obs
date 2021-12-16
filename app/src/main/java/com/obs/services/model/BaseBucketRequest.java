@@ -21,29 +21,11 @@ package com.obs.services.model;
  *
  */
 public class BaseBucketRequest extends GenericRequest {
-    private String bucketName;
 
     public BaseBucketRequest() {
-
     }
 
     public BaseBucketRequest(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * 获取桶名
-     * @return 桶名
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * 设置桶名
-     * @param bucketName 桶名
-     */
-    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 

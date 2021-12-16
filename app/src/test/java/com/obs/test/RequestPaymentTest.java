@@ -226,6 +226,7 @@ public static class CaseInfo {
         
         /**
          * 当前开启请求者付费，失败之后的检测
+         * @param response
          */
         public void checkPaymentByRequesterException(ObsException exception) {
             assertNotNull(exception);

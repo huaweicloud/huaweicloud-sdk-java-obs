@@ -43,6 +43,7 @@ public class BucketTools {
      * 设置桶的ACL
      * @param obsClient
      * @param bucketName
+     * @param objectKey
      * @param isRecover 是否覆盖
      * @param isRequesterPays 是否开启请求者付费头域
      */
@@ -68,6 +69,7 @@ public class BucketTools {
     
     /**
      * 设置桶策略
+     * @param srcUser
      * @param bucketName
      * @param policy
      */
@@ -77,7 +79,9 @@ public class BucketTools {
     
     /**
      * 删除桶策略
+     * @param srcUser
      * @param bucketName
+     * @param policy
      */
     public static void deleteBucketPolicy (ObsClient obsClient, String bucketName) {
         obsClient.deleteBucketPolicy(bucketName);
@@ -145,6 +149,7 @@ public class BucketTools {
     
     /**
      * 设置请求者这付费状态
+     * @param now
      */
     public static RequestPaymentConfiguration getBucketRequestPayment(ObsClient obsClient, String bucketName, boolean isRequesterPays) {
         BaseBucketRequest request = new BaseBucketRequest(bucketName);

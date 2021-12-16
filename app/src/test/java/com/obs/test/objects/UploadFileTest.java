@@ -6,15 +6,13 @@ import com.obs.services.model.CompleteMultipartUploadResult;
 import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.UploadFileRequest;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
-import com.obs.test.tools.PropertiesTools;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 

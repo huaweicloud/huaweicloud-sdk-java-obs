@@ -117,6 +117,7 @@ public class ObjectTools {
     
     /**
      * 设置对象的ACL
+     * @param obsClient
      * @param bucketName
      * @param objectKey
      */

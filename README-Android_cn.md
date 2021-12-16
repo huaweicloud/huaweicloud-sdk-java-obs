@@ -1,3 +1,15 @@
+Version 3.21.11
+新特性：
+1. 用户可以在发送请求时自定义头域
+
+三方依赖:
+1. 使用 jackson-core 2.12.5 替代 jackson-core 2.11.1
+2. 使用 jackson-databind 2.12.5 替代 jackson-databind 2.11.1
+3. 使用 jackson-annotations 2.12.5 替代 jackson-annotations 2.11.1
+4. 使用 okhttp 4.9.1 替代okhttp 4.8.0
+5. 使用 log4j2 2.16.0 替代 log4j2 2.14.1
+-----------------------------------------------------------------------------------
+
 Version 3.21.8
 
 1. okhttp 由 3.14.9 升级至 4.8.0 

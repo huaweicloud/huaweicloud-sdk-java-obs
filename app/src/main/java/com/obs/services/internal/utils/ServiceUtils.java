@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -14,6 +14,23 @@
 
 package com.obs.services.internal.utils;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.ObsConfiguration;
+import com.obs.services.exception.ObsException;
+import com.obs.services.internal.Constants;
+import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.ObsProperties;
+import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.ext.ExtObsConfiguration;
+import com.obs.services.internal.ext.ExtObsConstraint;
+import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.HttpProtocolTypeEnum;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -40,27 +57,6 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.ObsConfiguration;
-import com.obs.services.exception.ObsException;
-import com.obs.services.internal.Constants;
-import com.obs.services.internal.ObsConstraint;
-import com.obs.services.internal.ObsProperties;
-import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.ext.ExtObsConfiguration;
-import com.obs.services.internal.ext.ExtObsConstraint;
-import com.obs.services.model.AuthTypeEnum;
-import com.obs.services.model.HttpProtocolTypeEnum;
-
-import okhttp3.Headers;
 
 public class ServiceUtils {
     private static final ILogger log = LoggerBuilder.getLogger(ServiceUtils.class);
@@ -111,7 +107,7 @@ public class ServiceUtils {
     }
 
     public static Date parseIso8601Date(String dateString) throws ParseException {
-        ParseException exception = null;
+        ParseException exception;
         SimpleDateFormat iso8601TimeParser = new SimpleDateFormat(ISO_8601_TIME_PARSER_STRING);
         TimeZone gmt = Constants.GMT_TIMEZONE;
         iso8601TimeParser.setTimeZone(gmt);
@@ -163,10 +159,10 @@ public class ServiceUtils {
     }
 
     public static String signWithHmacSha1(String sk, String canonicalString) throws ServiceException {
-        SecretKeySpec signingKey = null;
+        SecretKeySpec signingKey;
         signingKey = new SecretKeySpec(sk.getBytes(StandardCharsets.UTF_8), Constants.HMAC_SHA1_ALGORITHM);
 
-        Mac mac = null;
+        Mac mac;
         try {
             mac = Mac.getInstance(Constants.HMAC_SHA1_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
@@ -181,116 +177,29 @@ public class ServiceUtils {
         return ServiceUtils.toBase64(mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8)));
     }
 
-    @Deprecated
-    public static Map<String, Object> cleanRestMetadataMap(Map<String, List<String>> metadata, String headerPrefix,
-            String metadataPrefix) {
-        if (log.isDebugEnabled()) {
-            log.debug("Cleaning up REST metadata items");
-        }
-        Map<String, Object> cleanMap = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
-        if (metadata != null) {
-            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
-                formatKeyAndValue(headerPrefix, metadataPrefix, cleanMap, entry);
-            }
-        }
-        return cleanMap;
-    }
-
-    private static void formatKeyAndValue(String headerPrefix, String metadataPrefix, Map<String, Object> cleanMap,
-            Map.Entry<String, List<String>> entry) {
-        String key = entry.getKey();
-        List<String> values = entry.getValue();
-
-        if (key == null || values == null) {
-            return;
-        }
-
-        Object value = values.size() == 1 ? values.get(0) : values;
-        if ((Constants.CommonHeaders.DATE.equalsIgnoreCase(key)
-                || Constants.CommonHeaders.LAST_MODIFIED.equalsIgnoreCase(key))) {
-            if (log.isDebugEnabled()) {
-                log.debug("Parsing date string '" + value + "' into Date object for key: " + key);
-            }
-            try {
-                value = ServiceUtils.parseRfc822Date(value.toString());
-            } catch (ParseException pe) {
-                // Try ISO-8601
-                try {
-                    value = ServiceUtils.parseIso8601Date(value.toString());
-                } catch (ParseException pe2) {
-                    if (log.isWarnEnabled()) {
-                        log.warn("Date string is not RFC 822 or ISO-8601 compliant for metadata field " + key,
-                                pe);
-                    }
-                }
-            }
-        } else if (key.toLowerCase().startsWith(headerPrefix)) {
-            try {
-                key = transRealKey(headerPrefix, metadataPrefix, key);
-                value = transRealValue(values, value);
-            } catch (UnsupportedEncodingException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Error to decode value of key:" + key);
-                }
-            }
-        } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
-            try {
-                key = transRealKey(Constants.OBS_HEADER_PREFIX, Constants.OBS_HEADER_META_PREFIX, key);
-                value = transRealValue(values, value);
-            } catch (UnsupportedEncodingException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Error to decode value of key:" + key);
-                }
-            }
-        } else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES
-                .contains(key.toLowerCase(Locale.getDefault()))) {
-            if (log.isDebugEnabled()) {
-                log.debug("Leaving HTTP header item unchanged: " + key + "=" + values);
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Ignoring metadata item: " + key + "=" + values);
-            }
-            return;
-        }
-        cleanMap.put(key, value);
-    }
-
-    private static Object transRealValue(List<String> values, Object value) throws UnsupportedEncodingException {
-        if (value instanceof List) {
-            List<String> metadataValues = new ArrayList<String>(values.size());
-            for (String metadataValue : values) {
-                metadataValues.add(metadataValue != null
-                        ? URLDecoder.decode(metadataValue, Constants.DEFAULT_ENCODING) : null);
-            }
-            value = metadataValues;
-        } else {
-            value = URLDecoder.decode(value.toString(), Constants.DEFAULT_ENCODING);
-        }
-        return value;
-    }
-
-    private static String transRealKey(String headerPrefix, String metadataPrefix, String key)
+    private static String transRealKey(String headerPrefix, String metadataPrefix, String key, boolean needDecode)
             throws UnsupportedEncodingException {
         if (key.toLowerCase().startsWith(metadataPrefix)) {
-            key = key.substring(metadataPrefix.length(), key.length());
-            key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
+            key = key.substring(metadataPrefix.length());
+            if (needDecode) {
+                key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
+            }
             if (log.isDebugEnabled()) {
-                log.debug("Removed meatadata header prefix " + metadataPrefix + " from key: " + key
+                log.debug("Removed metadata header prefix " + metadataPrefix + " from key: " + key
                         + "=>" + key);
             }
         } else {
-            key = key.substring(headerPrefix.length(), key.length());
+            key = key.substring(headerPrefix.length());
         }
         return key;
     }
 
     public static Map<String, String> cleanRestMetadataMapV2(Map<String, String> metadata, String headerPrefix,
-            String metadataPrefix) {
+                                                             String metadataPrefix, boolean needDecode) {
         if (log.isDebugEnabled()) {
             log.debug("Cleaning up REST metadata items");
         }
-        Map<String, String> cleanMap = new IdentityHashMap<String, String>();
+        Map<String, String> cleanMap = new IdentityHashMap<>();
 
         if (metadata != null) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
@@ -301,9 +210,11 @@ public class ServiceUtils {
                 key = key != null ? key : "";
                 if (key.toLowerCase().startsWith(headerPrefix)) {
                     try {
-                        key = transRealKey(headerPrefix, metadataPrefix, key);
-                        value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
-                    } catch (UnsupportedEncodingException e) {
+                        key = transRealKey(headerPrefix, metadataPrefix, key, needDecode);
+                        if (needDecode) {
+                            value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
+                        }
+                    } catch (UnsupportedEncodingException | IllegalArgumentException e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Error to decode value of key:" + key);
                         }
@@ -311,9 +222,12 @@ public class ServiceUtils {
 
                 } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
                     try {
-                        key = transRealKey(Constants.OBS_HEADER_PREFIX, Constants.OBS_HEADER_META_PREFIX, key);
-                        value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
-                    } catch (UnsupportedEncodingException e) {
+                        key = transRealKey(Constants.OBS_HEADER_PREFIX,
+                                Constants.OBS_HEADER_META_PREFIX, key, needDecode);
+                        if (needDecode) {
+                            value = URLDecoder.decode(value, Constants.DEFAULT_ENCODING);
+                        }
+                    } catch (UnsupportedEncodingException | IllegalArgumentException  e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Error to decode value of key:" + key);
                         }
@@ -331,10 +245,51 @@ public class ServiceUtils {
                 }
 
                 // FIXME
-                cleanMap.put(new StringBuilder(key).toString(), value);
+                cleanMap.put(key, value);
             }
         }
         return cleanMap;
+    }
+
+    public static Map<String, Object> cleanUserMetadata(Map<String, Object> originalHeaders, boolean decodeHeaders) {
+        Map<String, Object> userMetadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Map.Entry<String, Object> entry : originalHeaders.entrySet()) {
+            String key = entry.getKey();
+            if (key.toLowerCase().startsWith("x-obs-meta-") || key.toLowerCase().startsWith("x-amz-meta-")) {
+                Object originalValue = originalHeaders.get(key);
+                try {
+                    if (originalValue instanceof ArrayList) {
+                        cleanListMetadata(originalHeaders, decodeHeaders, userMetadata, key);
+                    } else {
+                        if (decodeHeaders) {
+                            userMetadata.put(key.substring(11), URLDecoder.decode((String) originalValue,
+                                    Constants.DEFAULT_ENCODING));
+                        } else {
+                            userMetadata.put(key.substring(11), originalHeaders.get(key));
+                        }
+                    }
+                } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Error to decode value of key:" + key);
+                    }
+                }
+            }
+        }
+        return userMetadata;
+    }
+
+    public static void cleanListMetadata(Map<String, Object> originalHeaders, boolean decodeHeaders,
+                                   Map<String, Object> userMetadata, String key)
+            throws UnsupportedEncodingException {
+        List<String> cleanedValue = new ArrayList<>();
+        for (Object v : (List<?>) originalHeaders.get(key)) {
+            if (decodeHeaders) {
+                cleanedValue.add(URLDecoder.decode((String) v, Constants.DEFAULT_ENCODING));
+            } else {
+                cleanedValue.add((String) v);
+            }
+        }
+        userMetadata.put(key.substring(11), cleanedValue);
     }
 
     public static String toHex(byte[] data) {
@@ -345,8 +300,8 @@ public class ServiceUtils {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < data.length; i++) {
-            String hv = Integer.toHexString(data[i]);
+        for (byte datum : data) {
+            String hv = Integer.toHexString(datum);
             if (hv.length() < 2) {
                 sb.append("0");
             } else if (hv.length() == 8) {
@@ -367,7 +322,7 @@ public class ServiceUtils {
         }
 
         byte[] result = new byte[(hexData.length() + 1) / 2];
-        String hexNumber = null;
+        String hexNumber;
         int offset = 0;
         int byteIndex = 0;
         while (offset < hexData.length()) {
@@ -380,17 +335,6 @@ public class ServiceUtils {
 
     public static String toBase64(byte[] data) {
         return ReflectUtils.toBase64(data);
-    }
-
-    public static String join(Object[] items, String delimiter) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < items.length; i++) {
-            sb.append(items[i]);
-            if (i < items.length - 1) {
-                sb.append(delimiter);
-            }
-        }
-        return sb.toString();
     }
 
     public static String join(List<?> items, String delimiter, boolean needTrim) {
@@ -407,35 +351,6 @@ public class ServiceUtils {
 
     public static String join(List<?> items, String delimiter) {
         return join(items, delimiter, false);
-    }
-
-    public static String join(Headers headers, String delimiter, List<String> excludes) {
-        if (excludes == null) {
-            excludes = new ArrayList<String>();
-        }
-        StringBuilder sb = new StringBuilder();
-        Map<String, List<String>> map = headers.toMultimap();
-        int i = 0;
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            if (!excludes.contains(entry.getKey())) {
-                sb.append(entry.getValue());
-            }
-            if (i < map.size() - 1) {
-                sb.append(delimiter);
-            }
-        }
-        return sb.toString();
-    }
-
-    public static String join(int[] ints, String delimiter) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ints.length; i++) {
-            sb.append(ints[i]);
-            if (i < ints.length - 1) {
-                sb.append(delimiter);
-            }
-        }
-        return sb.toString();
     }
 
     public static byte[] fromBase64(String b64Data) throws UnsupportedEncodingException {
@@ -504,11 +419,7 @@ public class ServiceUtils {
     public static String computeMD5(String data) throws ServiceException {
         try {
             return ServiceUtils.toBase64(ServiceUtils.computeMD5Hash(data.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException("Failed to get MD5 for requestXmlElement:" + data);
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException("Failed to get MD5 for requestXmlElement:" + data);
-        } catch (IOException e) {
+        } catch (NoSuchAlgorithmException | IOException e) {
             throw new ServiceException("Failed to get MD5 for requestXmlElement:" + data);
         }
     }
@@ -531,9 +442,9 @@ public class ServiceUtils {
         }
 
         String[] fragments = bucketName.split("\\.");
-        for (int i = 0; i < fragments.length; i++) {
-            if (Pattern.matches("^-.*", fragments[i]) || Pattern.matches(".*-$", fragments[i])
-                    || Pattern.matches("^$", fragments[i])) {
+        for (String fragment : fragments) {
+            if (Pattern.matches("^-.*", fragment) || Pattern.matches(".*-$", fragment)
+                    || Pattern.matches("^$", fragment)) {
                 return false;
             }
         }
@@ -556,19 +467,36 @@ public class ServiceUtils {
     public static XMLReader loadXMLReader() throws ServiceException {
         Exception ex;
         try {
-            return XMLReaderFactory.createXMLReader();
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            try {
+                reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            } catch (Exception e) {
+                log.warn("Enable protection for XML External Entity Injection Failed");
+            }
+            return reader;
         } catch (Exception e) {
             // Ignore failure
             ex = e;
         }
 
-        String[] altXmlReaderClasspaths = new String[]{"org.apache.crimson.parser.XMLReaderImpl",
-            "org.xmlpull.v1.sax2.Driver"
-        };
-        for (int i = 0; i < altXmlReaderClasspaths.length; i++) {
-            String xmlReaderClasspath = altXmlReaderClasspaths[i];
+        String[] altXmlReaderClasspaths = new String[]{"org.apache.crimson."
+                + "parser.XMLReaderImpl", "org.xmlpull.v1.sax2.Driver"};
+        for (String xmlReaderClasspath : altXmlReaderClasspaths) {
             try {
-                return XMLReaderFactory.createXMLReader(xmlReaderClasspath);
+                XMLReader reader = XMLReaderFactory.createXMLReader(xmlReaderClasspath);
+                try {
+                    reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                } catch (Exception e) {
+                    log.warn("Enable protection for XML External Entity Injection Failed");
+                }
+
+                return reader;
             } catch (Exception e) {
                 // Ignore failure
             }
@@ -585,12 +513,6 @@ public class ServiceUtils {
 
     public static SimpleDateFormat getLongDateFormat() {
         SimpleDateFormat format = new SimpleDateFormat(Constants.LONG_DATE_FORMATTER);
-        format.setTimeZone(Constants.GMT_TIMEZONE);
-        return format;
-    }
-
-    public static SimpleDateFormat getHeaderDateFormat() {
-        SimpleDateFormat format = new SimpleDateFormat(Constants.HEADER_DATE_FORMATTER);
         format.setTimeZone(Constants.GMT_TIMEZONE);
         return format;
     }
@@ -767,7 +689,7 @@ public class ServiceUtils {
         }
         if (null != config.getXmlDocumentBuilderFactoryClass()
                 && !config.getXmlDocumentBuilderFactoryClass().trim().equals("")) {
-            obsProperties.setProperty(ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY, 
+            obsProperties.setProperty(ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY,
                     config.getXmlDocumentBuilderFactoryClass());
         }
     }
