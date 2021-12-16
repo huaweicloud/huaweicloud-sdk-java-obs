@@ -21,12 +21,16 @@ import java.util.List;
  *
  */
 public class BucketMetadataInfoRequest extends OptionsInfoRequest {
-    protected String bucketName;
 
+    {
+        httpMethod = HttpMethodEnum.HEAD;
+    }
+
+    // todo 这个 requestHeaders 具体作用，如何合并？
     private List<String> requestHeaders;
 
     public BucketMetadataInfoRequest() {
-
+        super();
     }
 
     /**
@@ -36,7 +40,7 @@ public class BucketMetadataInfoRequest extends OptionsInfoRequest {
      *            Bucket name
      */
     public BucketMetadataInfoRequest(String bucketName) {
-        this.bucketName = bucketName;
+        super(bucketName);
     }
 
     /**

@@ -14,16 +14,6 @@
 
 package com.obs.services.internal.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -67,8 +57,18 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.fs.ListContentSummaryRequest;
 import com.obs.services.model.fs.NewBucketRequest;
 import com.obs.services.model.fs.WriteFileRequest;
-
 import okhttp3.RequestBody;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class RequestConvertor extends AclHeaderConvertor {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");

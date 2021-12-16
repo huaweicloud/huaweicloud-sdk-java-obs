@@ -23,10 +23,12 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.SpecialParamEnum;
 
 public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
@@ -164,21 +166,26 @@ public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
     protected void putAclImpl(String bucketName, String objectKey, AccessControlList acl, String versionId,
             boolean isRequesterPays) throws ServiceException {
         if (acl != null) {
-            Map<String, String> requestParameters = new HashMap<String, String>();
-            requestParameters.put(SpecialParamEnum.ACL.getOriginalStringCode(), "");
+            Map<String, String> requestParams = new HashMap<>();
+            requestParams.put(SpecialParamEnum.ACL.getOriginalStringCode(), "");
             if (versionId != null) {
-                requestParameters.put(Constants.ObsRequestParams.VERSION_ID, versionId);
+                requestParams.put(Constants.ObsRequestParams.VERSION_ID, versionId);
             }
 
-            Map<String, String> metadata = new HashMap<String, String>();
-            metadata.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
-            String aclAsXml = this.getIConvertor().transAccessControlList(acl, !ServiceUtils.isValid(objectKey));
-            metadata.put(Constants.CommonHeaders.CONTENT_LENGTH, String.valueOf(aclAsXml.length()));
-
-            transRequestPaymentHeaders(isRequesterPays, metadata, this.getIHeaders());
-
-            performRestPut(bucketName, objectKey, metadata, requestParameters,
-                    createRequestBody(Mimetypes.MIMETYPE_XML, aclAsXml), true);
+            Map<String, String> headers = new HashMap<>();
+            headers.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+            String xml = this.getIConvertor().transAccessControlList(acl, !ServiceUtils.isValid(objectKey));
+            headers.put(Constants.CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+            headers.put(Constants.CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+            transRequestPaymentHeaders(isRequesterPays, headers, this.getIHeaders());
+            NewTransResult result = new NewTransResult();
+            result.setHttpMethod(HttpMethodEnum.PUT);
+            result.setBucketName(bucketName);
+            result.setObjectKey(objectKey);
+            result.setHeaders(headers);
+            result.setParams(requestParams);
+            result.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+            performRequest(result);
         }
     }
 }

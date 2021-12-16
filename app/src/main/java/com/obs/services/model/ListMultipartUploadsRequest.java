@@ -18,7 +18,10 @@ package com.obs.services.model;
  * Parameters in a request for listing multipart uploads
  */
 public class ListMultipartUploadsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -55,7 +58,7 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      *            Maximum number of listed multipart uploads
      */
     public ListMultipartUploadsRequest(String bucketName, Integer maxUploads) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxUploads = maxUploads;
     }
 
@@ -82,7 +85,8 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
                                        String keyMarker, String uploadIdMarker) {
-        this(bucketName, maxUploads);
+        this.bucketName = bucketName;
+        this.maxUploads = maxUploads;
         this.prefix = prefix;
         this.delimiter = delimiter;
         this.keyMarker = keyMarker;
@@ -115,7 +119,12 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      */
     public ListMultipartUploadsRequest(String bucketName, String prefix, String delimiter, Integer maxUploads,
                                        String keyMarker, String uploadIdMarker, String encodingType) {
-        this(bucketName, prefix, delimiter, maxUploads, keyMarker, uploadIdMarker);
+        this.bucketName = bucketName;
+        this.maxUploads = maxUploads;
+        this.prefix = prefix;
+        this.delimiter = delimiter;
+        this.keyMarker = keyMarker;
+        this.uploadIdMarker = uploadIdMarker;
         this.encodingType = encodingType;
     }
 
@@ -201,25 +210,6 @@ public class ListMultipartUploadsRequest extends GenericRequest {
      */
     public void setUploadIdMarker(String uploadIdMarker) {
         this.uploadIdMarker = uploadIdMarker;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     *
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

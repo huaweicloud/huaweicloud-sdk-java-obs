@@ -52,9 +52,14 @@ import com.obs.services.model.V4PostSignatureRequest;
 import com.obs.services.model.V4PostSignatureResponse;
 import com.obs.services.model.V4TemporarySignatureRequest;
 import com.obs.services.model.V4TemporarySignatureResponse;
+import static com.jamesmurty.utils.BaseXMLBuilder.failIfExternalEntityParsingCannotBeConfigured;
 
 public abstract class AbstractClient extends ObsService implements Closeable, IObsClient, IFSClient {
     private static final ILogger ILOG = LoggerBuilder.getLogger(AbstractClient.class);
+
+    static {
+        failIfExternalEntityParsingCannotBeConfigured = false;
+    }
     
     protected void init(String accessKey, String secretKey, String securityToken, ObsConfiguration config) {
         InterfaceLogBean reqBean = new InterfaceLogBean("ObsClient", config.getEndPoint(), "");

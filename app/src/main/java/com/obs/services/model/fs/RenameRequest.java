@@ -14,17 +14,18 @@
 
 package com.obs.services.model.fs;
 
-import com.obs.services.model.GenericRequest;
+import com.obs.services.model.BaseObjectRequest;
+import com.obs.services.model.HttpMethodEnum;
 
 /**
  * Parameters in a request for renaming a file or folder
  *
  */
-public class RenameRequest extends GenericRequest {
+public class RenameRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private String newObjectKey;
 
@@ -43,49 +44,9 @@ public class RenameRequest extends GenericRequest {
      *            New file or folder name
      */
     public RenameRequest(String bucketName, String objectKey, String newObjectKey) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newObjectKey = newObjectKey;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the file or folder name.
-     * 
-     * @return File or folder name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the file or folder name.
-     * 
-     * @param objectKey
-     *            File or folder name
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

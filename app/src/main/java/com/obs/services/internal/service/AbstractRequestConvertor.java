@@ -15,6 +15,31 @@
 
 package com.obs.services.internal.service;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.internal.Constants;
+import com.obs.services.internal.IHeaders;
+import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.RestStorageService;
+import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.Mimetypes;
+import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.AvailableZoneEnum;
+import com.obs.services.model.BaseObjectRequest;
+import com.obs.services.model.BucketTypeEnum;
+import com.obs.services.model.GenericRequest;
+import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.SpecialParamEnum;
+import com.obs.services.model.StorageClassEnum;
+import com.obs.services.model.fs.FSStatusEnum;
+import com.obs.services.model.fs.GetBucketFSStatusResult;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
@@ -26,30 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.internal.Constants;
-import com.obs.services.internal.IHeaders;
-import com.obs.services.internal.ObsConstraint;
-import com.obs.services.internal.RestStorageService;
-import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.utils.Mimetypes;
-import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.AuthTypeEnum;
-import com.obs.services.model.AvailableZoneEnum;
-import com.obs.services.model.BucketTypeEnum;
-import com.obs.services.model.GenericRequest;
-import com.obs.services.model.HeaderResponse;
-import com.obs.services.model.SpecialParamEnum;
-import com.obs.services.model.StorageClassEnum;
-import com.obs.services.model.fs.FSStatusEnum;
-import com.obs.services.model.fs.GetBucketFSStatusResult;
-
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public abstract class AbstractRequestConvertor extends RestStorageService {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
 
@@ -57,6 +58,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         private Map<String, String> headers;
 
         private Map<String, String> params;
+        private Map<String, String> userHeaders = new HashMap<>();
 
         private RequestBody body;
 
@@ -76,14 +78,22 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
 
         public Map<String, String> getHeaders() {
             if (this.headers == null) {
-                headers = new HashMap<String, String>();
+                headers = new HashMap<>();
             }
             return this.headers;
         }
 
+        public Map<String, String> getUserHeaders() {
+            return this.userHeaders;
+        }
+
+        public void addUserHeaders(String key, String value) {
+            userHeaders.put(key, value);
+        }
+
         public Map<String, String> getParams() {
             if (this.params == null) {
-                params = new HashMap<String, String>();
+                params = new HashMap<>();
             }
             return this.params;
         }
@@ -113,7 +123,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
                                                              IHeaders iheaders) throws ServiceException {
         if (isRequesterPays) {
             if (null == headers) {
-                headers = new HashMap<String, String>();
+                headers = new HashMap<>();
             }
             putHeader(headers, iheaders.requestPaymentHeader(), "requester");
         }
@@ -221,7 +231,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
                 if (needDecode) {
                     try {
                         cleanedValues.add(URLDecoder.decode(value, Constants.DEFAULT_ENCODING));
-                    } catch (UnsupportedEncodingException e) {
+                    } catch (UnsupportedEncodingException | IllegalArgumentException e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Error to decode value of key:" + key);
                         }
@@ -233,7 +243,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
             if (needDecode) {
                 try {
                     cleanedKey = URLDecoder.decode(cleanedKey, Constants.DEFAULT_ENCODING);
-                } catch (UnsupportedEncodingException e) {
+                } catch (UnsupportedEncodingException | IllegalArgumentException e) {
                     if (log.isWarnEnabled()) {
                         log.debug("Error to decode key:" + key);
                     }
@@ -350,8 +360,41 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
     }
 
     private Response getAuthTypeNegotiationResponseImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put("apiversion", "");
         return performRestForApiVersion(bucketName, null, requestParameters, null);
+    }
+
+    protected NewTransResult transRequestWithResult(TransResult result, GenericRequest request) {
+        NewTransResult newResult = new NewTransResult();
+        newResult.setHttpMethod(request.getHttpMethod());
+        newResult.setBucketName(request.getBucketName());
+        newResult.setHeaders(result.getHeaders());
+        newResult.setUserHeaders(request.getUserHeaders());
+        newResult.setBody(result.getBody());
+        newResult.setParams(result.getParams());
+        return newResult;
+    }
+
+    protected NewTransResult transObjectRequestWithResult(TransResult result, BaseObjectRequest request) {
+        NewTransResult newTransResult = transRequestWithResult(result, request);
+        newTransResult.setObjectKey(request.getObjectKey());
+        newTransResult.setIsEncodeHeaders(request.isEncodeHeaders());
+        return newTransResult;
+    }
+
+    protected NewTransResult transRequest(GenericRequest request) {
+        NewTransResult newResult = new NewTransResult();
+        newResult.setHttpMethod(request.getHttpMethod());
+        newResult.setBucketName(request.getBucketName());
+        newResult.setUserHeaders(request.getUserHeaders());
+        return newResult;
+    }
+
+    protected NewTransResult transObjectRequest(BaseObjectRequest request) {
+        NewTransResult newTransResult = transRequest(request);
+        newTransResult.setObjectKey(request.getObjectKey());
+        newTransResult.setIsEncodeHeaders(request.isEncodeHeaders());
+        return newTransResult;
     }
 }

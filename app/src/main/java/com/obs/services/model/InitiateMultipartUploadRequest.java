@@ -18,6 +18,11 @@ package com.obs.services.model;
  * Parameters in a request for initializing a multipart upload
  */
 public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
+
     private ObjectMetadata metadata;
 
     private int expires;
@@ -52,7 +57,8 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
      *            Use this encoding type to encode keys that contains invalid characters, the value could be "url"
      */
     public InitiateMultipartUploadRequest(String bucketName, String objectKey, String encodingType) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.encodingType = encodingType;
     }
 
@@ -75,44 +81,6 @@ public class InitiateMultipartUploadRequest extends PutObjectBasicRequest {
      */
     public void setExpires(int expires) {
         this.expires = expires;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     *
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the name of the object involved in the multipart upload.
-     *
-     * @return Name of the object involved in the multipart upload
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the name for the object involved in the multipart upload.
-     *
-     * @param objectKey
-     *            Name of the object involved in the multipart upload
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

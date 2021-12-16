@@ -38,7 +38,7 @@ public class SetBucketFSStatusRequest extends BaseBucketRequest {
      *            Status of the file gateway feature
      */
     public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.setStatus(status);
     }
 

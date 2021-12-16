@@ -17,10 +17,11 @@ package com.obs.services.model;
 /**
  * Parameters in a request for listing uploaded parts
  */
-public class ListPartsRequest extends GenericRequest {
-    private String bucketName;
+public class ListPartsRequest extends BaseObjectRequest {
 
-    private String key;
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String uploadId;
 
@@ -37,127 +38,89 @@ public class ListPartsRequest extends GenericRequest {
     /**
      * Constructor
      *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     * @param key
-     *            Name of the object involved in the multipart upload
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey        Name of the object involved in the multipart upload
      */
-    public ListPartsRequest(String bucketName, String key) {
+    public ListPartsRequest(String bucketName, String objectKey) {
         this.bucketName = bucketName;
-        this.key = key;
+        this.objectKey = objectKey;
     }
 
     /**
      * Constructor
      *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     * @param key
-     *            Name of the object involved in the multipart upload
-     * @param uploadId
-     *            Multipart upload ID
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey        Name of the object involved in the multipart upload
+     * @param uploadId   Multipart upload ID
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId) {
-        this(bucketName, key);
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.uploadId = uploadId;
     }
 
     /**
      * Constructor
      *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     * @param key
-     *            Name of the object involved in the multipart upload
-     * @param uploadId
-     *            Multipart upload ID
-     * @param maxParts
-     *            Maximum number of uploaded parts that can be listed
+     * @param bucketName Name of the bucket to which the multipart upload belongs
+     * @param objectKey        Name of the object involved in the multipart upload
+     * @param uploadId   Multipart upload ID
+     * @param maxParts   Maximum number of uploaded parts that can be listed
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts) {
-        this(bucketName, key, uploadId);
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts) {
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
         this.maxParts = maxParts;
     }
 
     /**
      * Constructor
      *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     * @param key
-     *            Name of the object involved in the multipart upload
-     * @param uploadId
-     *            Multipart upload ID
-     * @param maxParts
-     *            Maximum number of uploaded parts that can be listed
-     * @param partNumberMarker
-     *            Start position for listing parts
+     * @param bucketName       Name of the bucket to which the multipart upload belongs
+     * @param objectKey              Name of the object involved in the multipart upload
+     * @param uploadId         Multipart upload ID
+     * @param maxParts         Maximum number of uploaded parts that can be listed
+     * @param partNumberMarker Start position for listing parts
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts,
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts,
                             Integer partNumberMarker) {
-        this(bucketName, key, uploadId, maxParts);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
+        this.maxParts = maxParts;
         this.partNumberMarker = partNumberMarker;
     }
 
     /**
      * Constructor
      *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     * @param key
-     *            Name of the object involved in the multipart upload
-     * @param uploadId
-     *            Multipart upload ID
-     * @param maxParts
-     *            Maximum number of uploaded parts that can be listed
-     * @param partNumberMarker
-     *            Start position for listing parts
-     * @param encodingType
-     *            Use this encoding type to encode keys that contains invalid characters, the value could be "url"
+     * @param bucketName       Name of the bucket to which the multipart upload belongs
+     * @param objectKey              Name of the object involved in the multipart upload
+     * @param uploadId         Multipart upload ID
+     * @param maxParts         Maximum number of uploaded parts that can be listed
+     * @param partNumberMarker Start position for listing parts
+     * @param encodingType     Use this encoding type to encode keys that contains invalid characters,
+     *                         the value could be "url"
      */
-    public ListPartsRequest(String bucketName, String key, String uploadId, Integer maxParts,
+    public ListPartsRequest(String bucketName, String objectKey, String uploadId, Integer maxParts,
                             Integer partNumberMarker, String encodingType) {
-        this(bucketName, key, uploadId, maxParts, partNumberMarker);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadId = uploadId;
+        this.maxParts = maxParts;
+        this.partNumberMarker = partNumberMarker;
         this.encodingType = encodingType;
     }
 
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     *
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     *
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     *
-     * @return Name of the bucket to which the multipart upload belongs
-     */
+    @Deprecated
     public String getKey() {
-        return key;
+        return objectKey;
     }
 
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     *
-     * @param key
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setKey(String key) {
-        this.key = key;
+    @Deprecated
+    public void setKey(String objectKey) {
+        this.objectKey = objectKey;
     }
 
     /**
@@ -172,8 +135,7 @@ public class ListPartsRequest extends GenericRequest {
     /**
      * Set the multipart upload ID.
      *
-     * @param uploadId
-     *            Multipart upload ID
+     * @param uploadId Multipart upload ID
      */
     public void setUploadId(String uploadId) {
         this.uploadId = uploadId;
@@ -191,8 +153,7 @@ public class ListPartsRequest extends GenericRequest {
     /**
      * Set the maximum number of uploaded parts that can be listed.
      *
-     * @param maxParts
-     *            Maximum number of uploaded parts that can be listed
+     * @param maxParts Maximum number of uploaded parts that can be listed
      */
     public void setMaxParts(Integer maxParts) {
         this.maxParts = maxParts;
@@ -210,8 +171,7 @@ public class ListPartsRequest extends GenericRequest {
     /**
      * Set the start position for listing parts.
      *
-     * @param partNumberMarker
-     *            Start position for listing parts
+     * @param partNumberMarker Start position for listing parts
      */
     public void setPartNumberMarker(Integer partNumberMarker) {
         this.partNumberMarker = partNumberMarker;
@@ -220,8 +180,7 @@ public class ListPartsRequest extends GenericRequest {
     /**
      * Set encoding type to encode objectkeys, the value could be url
      *
-     * @param encodingType
-     *             encoding type for encoding 
+     * @param encodingType encoding type for encoding
      */
     public void setEncodingType(String encodingType) {
         this.encodingType = encodingType;
@@ -238,7 +197,8 @@ public class ListPartsRequest extends GenericRequest {
 
     @Override
     public String toString() {
-        return "ListPartsRequest [bucketName=" + bucketName + ", key=" + key + ", uploadId=" + uploadId + ", maxParts="
-                + maxParts + ", partNumberMarker=" + partNumberMarker + ", encodingType=" + encodingType + "]";
+        return "ListPartsRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", uploadId="
+                + uploadId + ", maxParts=" + maxParts + ", partNumberMarker=" + partNumberMarker
+                + ", encodingType=" + encodingType + "]";
     }
 }

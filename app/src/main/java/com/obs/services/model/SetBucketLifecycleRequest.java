@@ -20,10 +20,15 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketLifecycleRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private LifecycleConfiguration lifecycleConfig;
 
     public SetBucketLifecycleRequest(String bucketName, LifecycleConfiguration lifecycleConfig) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.lifecycleConfig = lifecycleConfig;
     }
 

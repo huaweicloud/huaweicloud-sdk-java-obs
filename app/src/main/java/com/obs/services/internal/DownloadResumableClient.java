@@ -638,7 +638,7 @@ public class DownloadResumableClient {
          * 判断序列化文件、临时文件和实际信息是否一致
          * 
          * @param tmpFilePath
-         * @param objectMetadata
+         * @param obsClient
          * @return
          */
         public boolean isValid(String tmpFilePath, ObjectMetadata objectMetadata) {

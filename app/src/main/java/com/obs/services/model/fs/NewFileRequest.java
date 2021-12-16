@@ -26,7 +26,10 @@ import com.obs.services.model.PutObjectRequest;
 public class NewFileRequest extends PutObjectRequest {
 
     public NewFileRequest() {
-        super();
+    }
+
+    public NewFileRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     /**
@@ -40,7 +43,9 @@ public class NewFileRequest extends PutObjectRequest {
      *            Local path to the file
      */
     public NewFileRequest(String bucketName, String objectKey, File file) {
-        super(bucketName, objectKey, file);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.file = file;
     }
 
     /**
@@ -54,7 +59,9 @@ public class NewFileRequest extends PutObjectRequest {
      *            Data stream to be uploaded
      */
     public NewFileRequest(String bucketName, String objectKey, InputStream input) {
-        super(bucketName, objectKey, input);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.input = input;
     }
 
     /**
@@ -66,7 +73,8 @@ public class NewFileRequest extends PutObjectRequest {
      *            File name
      */
     public NewFileRequest(String bucketName, String objectKey) {
-        super(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
     }
 
 }

@@ -23,7 +23,6 @@ import com.obs.services.model.PutObjectBasicRequest;
 public class NewFolderRequest extends PutObjectBasicRequest {
 
     public NewFolderRequest() {
-        super();
     }
 
     /**
@@ -35,7 +34,6 @@ public class NewFolderRequest extends PutObjectBasicRequest {
      *            Folder name
      */
     public NewFolderRequest(String bucketName, String objectKey) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
     }

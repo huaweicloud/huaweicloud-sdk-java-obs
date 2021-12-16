@@ -1,3 +1,13 @@
+Version 3.21.11
+New features:
+1. Allowed you to add any custom header field in a request.
+Third-party dependence:
+1. Replace jackson-core 2.12.5 with jackson-core 2.11.1
+2. Replace jackson-databind 2.12.5 with jackson-databind 2.11.1
+3. Replace jackson-annotations 2.12.5 with jackson-annotations 2.11.1
+4. Replace okhttp 4.9.1 with okhttp 4.8.0
+5. Replace log4j2 2.14.1 with log4j2 2.16.0
+-----------------------------------------------------------------------------------
 Version 3.21.8
 
 1. Replace okhttp 3.14.9 with okhttp 4.8.0.

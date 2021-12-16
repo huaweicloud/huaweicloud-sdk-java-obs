@@ -17,8 +17,11 @@ package com.obs.services.model;
 /**
  * Parameters in the request for copying a part
  */
-public class CopyPartRequest extends GenericRequest {
-    private String uploadId;
+public class CopyPartRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String sourceBucketName;
 
@@ -169,25 +172,6 @@ public class CopyPartRequest extends GenericRequest {
     }
 
     /**
-     * Obtain the multipart upload ID.
-     * 
-     * @return Multipart upload ID
-     */
-    public String getUploadId() {
-        return uploadId;
-    }
-
-    /**
-     * Set the multipart upload ID.
-     * 
-     * @param uploadId
-     *            Multipart upload ID
-     */
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
-    }
-
-    /**
      * Obtain the source bucket name.
      * 
      * @return Source bucket name
@@ -291,6 +275,54 @@ public class CopyPartRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
+    }
+
+    /**
+     * Obtain the name of the bucket (destination bucket) to which the multipart
+     * upload belongs.
+     * 
+     * @return Name of the bucket to which the multipart upload belongs
+     */
+    @Override
+    public String getBucketName() {
+        return this.destinationBucketName;
+    }
+
+    /**
+     * Set the name of the bucket (destination bucket) to which the multipart
+     * upload belongs.
+     * 
+     * @param destBucketName
+     *            Name of the bucket to which the multipart upload belongs
+     * 
+     */
+    @Override
+    public void setBucketName(String bucketName) {
+        this.destinationBucketName = bucketName;
+    }
+
+    /**
+     * Obtain the name of the object (destination object) involved in the
+     * multipart upload.
+     * 
+     * @return Name of the object involved in the multipart upload
+     * 
+     */
+    @Override
+    public void setObjectKey(String objectKey) {
+        this.destinationObjectKey = objectKey;
+    }
+
+    /**
+     * Obtain the name of the object (destination object) involved in the
+     * multipart upload.
+     * 
+     * @return Name of the object involved in the multipart upload
+     * 
+     */
+    @Override
+    public String getObjectKey() {
+        return this.destinationObjectKey;
     }
 
     @Override

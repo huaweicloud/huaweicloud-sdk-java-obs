@@ -17,19 +17,17 @@ package com.obs.services.model;
 /**
  * Parameters in a request for obtaining the properties of an object
  */
-public class GetObjectMetadataRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectMetadataRequest extends BaseObjectRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.HEAD;
+    }
 
-    private String versionId;
+    protected String versionId;
 
-    private SseCHeader sseCHeader;
-
-    private boolean encodeHeaders = true;
+    protected SseCHeader sseCHeader;
 
     public GetObjectMetadataRequest() {
-
     }
 
     /**
@@ -81,25 +79,6 @@ public class GetObjectMetadataRequest extends GenericRequest {
     }
 
     /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
      * Obtain the object name.
      * 
      * @return Object name
@@ -135,25 +114,6 @@ public class GetObjectMetadataRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @param encodeHeaders
-     *        Specifies whether to encode and decode header fields.
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @return Specifies whether to encode and decode header fields.
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
     @Override

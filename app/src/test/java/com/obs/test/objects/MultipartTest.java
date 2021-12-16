@@ -3,14 +3,18 @@ package com.obs.test.objects;
 import com.obs.services.ObsClient;
 import com.obs.services.model.CompleteMultipartUploadRequest;
 import com.obs.services.model.CompleteMultipartUploadResult;
+import com.obs.services.model.CopyPartRequest;
+import com.obs.services.model.CopyPartResult;
 import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.InitiateMultipartUploadRequest;
 import com.obs.services.model.InitiateMultipartUploadResult;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PartEtag;
+import com.obs.services.model.PutObjectRequest;
+import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,7 +118,7 @@ public class MultipartTest {
     public void test_initiate_multipart_upload_with_chinese_metadata_003() {
         String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         ObsClient obsClient = TestTools.getPipelineEnvironment();
-        String objectKey = "test_initiate_mutipart_upload_with_chinese_metadata_003";
+        String objectKey = "test_initiate_multipart_upload_with_chinese_metadata_003";
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentDisposition("测试中文");
@@ -132,5 +136,40 @@ public class MultipartTest {
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Unexpected char "));
         }
+    }
+
+    @Test
+    public void test_copy_part_001() {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String objectKey = "test_copy_part_001";
+
+        PutObjectRequest putRequest = new PutObjectRequest();
+        putRequest.setObjectKey(objectKey);
+        putRequest.setBucketName(bucketName);
+        putRequest.setInput(new ByteArrayInputStream("testObject".getBytes(StandardCharsets.UTF_8)));
+
+        PutObjectResult putResult = obsClient.putObject(putRequest);
+        assertEquals(200, putResult.getStatusCode());
+
+        InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest();
+        request.setBucketName(bucketName);
+        request.setObjectKey(objectKey);
+        InitiateMultipartUploadResult initiateResult = obsClient.initiateMultipartUpload(request);
+
+        assertEquals(200, initiateResult.getStatusCode());
+
+        CopyPartRequest copyRequest = new CopyPartRequest();
+        copyRequest.setPartNumber(1);
+        copyRequest.setSourceObjectKey(objectKey);
+        copyRequest.setSourceBucketName(bucketName);
+        copyRequest.setBucketName(bucketName);
+        copyRequest.setUploadId(initiateResult.getUploadId());
+        copyRequest.setDestinationBucketName(bucketName);
+        copyRequest.setDestinationObjectKey(objectKey);
+        CopyPartResult result = obsClient.copyPart(copyRequest);
+
+        assertEquals(200, result.getStatusCode());
+
     }
 }

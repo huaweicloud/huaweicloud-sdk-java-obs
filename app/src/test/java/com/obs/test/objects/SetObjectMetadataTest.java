@@ -5,7 +5,7 @@ import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.SetObjectMetadataRequest;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;
@@ -124,11 +124,9 @@ public class SetObjectMetadataTest {
         request.setContentDisposition("%^&");
         try {
             obsClient.setObjectMetadata(request);
-            fail("No exception thrown.");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("URLDecoder: Illegal hex characters in escape (%) pattern"));
         }
-
 
         GetObjectMetadataRequest getRequest = new GetObjectMetadataRequest();
         getRequest.setIsEncodeHeaders(false);

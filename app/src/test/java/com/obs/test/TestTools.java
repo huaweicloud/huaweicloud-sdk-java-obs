@@ -15,11 +15,20 @@ import com.obs.services.model.MultipartUpload;
 import com.obs.services.model.MultipartUploadListing;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.test.tools.PropertiesTools;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -59,6 +68,24 @@ public class TestTools {
         }
 
         return null;
+    }
+
+    public static String getKMSID() {
+        try {
+            return PropertiesTools.getInstance(file).getProperties("kmsID");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getAuthType() {
+        try {
+            return PropertiesTools.getInstance(file).getProperties("environment.authType");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     /**
@@ -229,12 +256,15 @@ public class TestTools {
         return obsClient.deleteBucket(bucketName);
     }
 
-    public static HeaderResponse createBucket(ObsClient obsClient, String bucketName, String location) {
+    public static HeaderResponse createBucket(ObsClient obsClient, String bucketName, String location, boolean isPosix) {
         CreateBucketRequest request = new CreateBucketRequest();
         request.setBucketName(bucketName);
         request.setBucketType(BucketTypeEnum.OBJECT);
         request.setLocation(location);
-        return obsClient.createBucket(bucketName);
+        if (isPosix) {
+            request.setBucketType(BucketTypeEnum.PFS);
+        }
+        return obsClient.createBucket(request);
     }
 
     public static void genTestFile(String filePath, int fileSize) throws IOException {
@@ -251,5 +281,25 @@ public class TestTools {
             outputStream.write(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
         }
         outputStream.close();
+    }
+
+    public static void initLog(StringWriter writer) {
+        LoggerContext context = LoggerContext.getContext(false);
+        Configuration config = context.getConfiguration();
+        LoggerConfig LoggerConfig = config.getLoggerConfig("com.obs.services.internal.RestStorageService");
+        if (!LoggerConfig.getName().equals("com.obs.services.internal.RestStorageService")) {
+            LoggerConfig = new LoggerConfig("com.obs.services.internal.RestStorageService",
+                    Level.DEBUG, true);
+        }
+        config.addLogger("com.obs.services.internal.RestStorageService", LoggerConfig);
+
+        PatternLayout layout = PatternLayout.createDefaultLayout(config);
+        Appender appender = WriterAppender.createAppender(layout, null, writer, "StringWriter",
+                false, true);
+        config.addAppender(appender);
+        LoggerConfig.addAppender(appender, Level.DEBUG, null);
+        appender.start();
+        context.updateLoggers();
+        Configurator.setLevel("com.obs.services.internal.RestStorageService", Level.DEBUG);
     }
 }

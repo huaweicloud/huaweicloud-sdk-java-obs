@@ -15,43 +15,52 @@
 
 package com.obs.services.internal.service;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ReadAheadQueryResult;
 import com.obs.services.model.ReadAheadRequest;
 import com.obs.services.model.ReadAheadResult;
 import com.oef.services.model.CreateAsynchFetchJobsResult;
-import com.oef.services.model.DisPolicy;
-import com.oef.services.model.GetDisPolicyResult;
 import com.oef.services.model.QueryAsynchFetchJobsResult;
 import com.oef.services.model.QueryExtensionPolicyResult;
 import com.oef.services.model.RequestParamEnum;
-
 import okhttp3.Response;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ObsExtensionService extends ObsFileService {
     protected HeaderResponse setExtensionPolicyImpl(String bucketName, String policyDocument) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
 
-        return performRestPut(bucketName, policyDocument, requestParameters);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+        headers.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
+                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
+        NewTransResult result = new NewTransResult();
+        result.setParams(requestParams);
+        result.setHttpMethod(HttpMethodEnum.PUT);
+        result.setBucketName(bucketName);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument));
+        return build(performRequest(result, true, false, true));
     }
 
     protected QueryExtensionPolicyResult queryExtensionPolicyImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParams = new HashMap<String, String>();
+        Map<String, String> requestParams = new HashMap<>();
         requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
 
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         Response response = performRestGet(bucketName, requestParams, metadata);
 
         String body = readBodyFromResponse(response);
@@ -78,36 +87,41 @@ public abstract class ObsExtensionService extends ObsFileService {
         metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
                 : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
-        Response response = performRestGet(bucketName, null, requestParams, metadata, true);
+        Response response = performRestGet(bucketName, null, requestParams, metadata, null, true);
 
         this.verifyResponseContentTypeForJson(response);
         return response;
     }
 
     protected HeaderResponse deleteExtensionPolicyImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParams = new HashMap<String, String>();
+        Map<String, String> requestParams = new HashMap<>();
         requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
 
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
                 : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
-        Response response = performRestDelete(bucketName, null, requestParams, metadata, true, true);
+        Response response = performRestDelete(bucketName, null, requestParams, metadata, null, true, true);
         return this.build(response);
     }
 
     protected CreateAsynchFetchJobsResult createFetchJobImpl(String bucketName, String policyDocument)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(RequestParamEnum.ASYNC_FETCH_JOBS.getOriginalStringCode(), "");
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(RequestParamEnum.ASYNC_FETCH_JOBS.getOriginalStringCode(), "");
 
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
-        metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
+        Map<String, String> headers = new HashMap<>();
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+        headers.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
                 : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
-        Response response = performRestPost(bucketName, null, metadata, requestParameters,
-                this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument), false, true);
+        NewTransResult result = new NewTransResult();
+        result.setBucketName(bucketName);
+        result.setHttpMethod(HttpMethodEnum.POST);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        result.setBody(this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument));
+        Response response = performRequest(result, true, false, true);
 
         this.verifyResponseContentTypeForJson(response);
 
@@ -121,10 +135,10 @@ public abstract class ObsExtensionService extends ObsFileService {
     }
 
     protected QueryAsynchFetchJobsResult queryFetchJobImpl(String bucketName, String jobId) throws ServiceException {
-        Map<String, String> requestParams = new HashMap<String, String>();
+        Map<String, String> requestParams = new HashMap<>();
         requestParams.put(RequestParamEnum.ASYNC_FETCH_JOBS.getOriginalStringCode() + "/" + jobId, "");
 
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
         Response response = performRestGet(bucketName, requestParams, metadata);
 
@@ -138,63 +152,19 @@ public abstract class ObsExtensionService extends ObsFileService {
         return ret;
     }
 
-    protected HeaderResponse putDisPolicyImpl(String bucketName, String policyDocument) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(RequestParamEnum.DIS_POLICIES.getOriginalStringCode(), "");
-
-        return performRestPut(bucketName, policyDocument, requestParameters);
-    }
-
-    private HeaderResponse performRestPut(String bucketName, String policyDocument,
-            Map<String, String> requestParameters) {
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
-        metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
-
-        Response response = performRestPut(bucketName, null, metadata, requestParameters,
-                this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument), false, true);
-        return build(response);
-    }
-
-    protected GetDisPolicyResult getDisPolicyImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParams = new HashMap<String, String>();
-        requestParams.put(RequestParamEnum.DIS_POLICIES.getOriginalStringCode(), "");
-
-        Map<String, String> metadata = new HashMap<String, String>();
-        Response response = performRestGet(bucketName, requestParams, metadata);
-
-        String body = readBodyFromResponse(response);
-
-        DisPolicy policy = (DisPolicy) JSONChange.jsonToObj(new DisPolicy(), body);
-        GetDisPolicyResult ret = new GetDisPolicyResult(policy);
-
-        setHeadersAndStatus(ret, response);
-        return ret;
-    }
-
-    protected HeaderResponse deleteDisPolicyImpl(String bucketName) throws ServiceException {
-        Map<String, String> requestParams = new HashMap<String, String>();
-        requestParams.put(RequestParamEnum.DIS_POLICIES.getOriginalStringCode(), "");
-
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
-
-        Response response = performRestDelete(bucketName, null, requestParams, metadata, true, true);
-        return this.build(response);
-    }
-    
     protected ReadAheadResult readAheadObjectsImpl(ReadAheadRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(Constants.ObsRequestParams.READAHEAD, "");
-        requestParameters.put(Constants.ObsRequestParams.PREFIX, request.getPrefix());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(Constants.ObsRequestParams.READAHEAD, "");
+        requestParams.put(Constants.ObsRequestParams.PREFIX, request.getPrefix());
 
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         String cacheControl = request.getCacheOption().getCode() + ", ttl=" + request.getTtl();
-        metadata.put(ObsRequestParams.X_CACHE_CONTROL, cacheControl);
+        headers.put(ObsRequestParams.X_CACHE_CONTROL, cacheControl);
+        NewTransResult transResult = transRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
 
-        Response response = performRestPost(request.getBucketName(), null, metadata, requestParameters, null, false);
+        Response response = performRequest(transResult);
 
         this.verifyResponseContentTypeForJson(response);
 
@@ -208,11 +178,11 @@ public abstract class ObsExtensionService extends ObsFileService {
     }
 
     protected ReadAheadResult deleteReadAheadObjectsImpl(String bucketName, String prefix) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(Constants.ObsRequestParams.READAHEAD, "");
         requestParameters.put(Constants.ObsRequestParams.PREFIX, prefix);
 
-        Response response = performRestDelete(bucketName, null, requestParameters, false);
+        Response response = performRestDelete(bucketName, null, requestParameters, null, false);
 
         this.verifyResponseContentTypeForJson(response);
 
@@ -227,11 +197,11 @@ public abstract class ObsExtensionService extends ObsFileService {
 
     protected ReadAheadQueryResult queryReadAheadObjectsTaskImpl(String bucketName, String taskId)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(Constants.ObsRequestParams.READAHEAD, "");
         requestParameters.put(Constants.ObsRequestParams.TASKID, taskId);
 
-        Response response = performRestGet(bucketName, null, requestParameters, null);
+        Response response = performRestGet(bucketName, null, requestParameters, null, null);
 
         this.verifyResponseContentTypeForJson(response);
 

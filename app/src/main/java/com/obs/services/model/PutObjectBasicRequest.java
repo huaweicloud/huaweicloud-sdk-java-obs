@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ **/
 
 package com.obs.services.model;
 
@@ -21,11 +21,11 @@ import java.util.Set;
 
 import com.obs.services.internal.utils.ServiceUtils;
 
-public abstract class PutObjectBasicRequest extends GenericRequest {
+public abstract class PutObjectBasicRequest extends BaseObjectRequest {
 
-    protected String bucketName;
-
-    protected String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     protected Map<ExtensionObjectPermissionEnum, Set<String>> extensionPermissionMap;
 
@@ -35,52 +35,19 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     protected SseKmsHeader sseKmsHeader;
 
-    protected boolean encodeHeaders = true;
-
     protected SseCHeader sseCHeader;
 
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
+    public PutObjectBasicRequest() {
     }
 
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
+    public PutObjectBasicRequest(String bucketName) {
         this.bucketName = bucketName;
     }
 
-    /**
-     * Obtain the object name.
-     * 
-     * @return Object name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the object name.
-     * 
-     * @param objectKey
-     *            Object name
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
 
     /**
      * Obtain SSE-KMS encryption headers of the object.
-     * 
+     *
      * @return SSE-KMS encryption headers
      */
     public SseKmsHeader getSseKmsHeader() {
@@ -89,7 +56,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Set SSE-KMS encryption headers of the object.
-     * 
+     *
      * @param sseKmsHeader
      *            SSE-KMS encryption headers
      */
@@ -99,7 +66,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Obtain SSE-C encryption headers of the object.
-     * 
+     *
      * @return SSE-C encryption headers
      */
     public SseCHeader getSseCHeader() {
@@ -108,7 +75,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Set SSE-C encryption headers of the object.
-     * 
+     *
      * @param sseCHeader
      *            SSE-C encryption headers
      */
@@ -118,7 +85,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Obtain the ACL of the object.
-     * 
+     *
      * @return Object ACL
      */
     public AccessControlList getAcl() {
@@ -127,7 +94,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Set the object ACL.
-     * 
+     *
      * @param acl
      *            Bucket ACL
      */
@@ -137,7 +104,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Obtain the redirection address after a successfully responded request.
-     * 
+     *
      * @return Redirection address
      */
     public String getSuccessRedirectLocation() {
@@ -146,7 +113,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Set the redirection address after a successfully responded request.
-     * 
+     *
      * @param successRedirectLocation
      *            Redirection address
      */
@@ -156,7 +123,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Grant the OBS extension permission to users.
-     * 
+     *
      * @param domainId
      *            ID of the domain to which the user belongs
      * @param extensionPermissionEnum
@@ -166,17 +133,13 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
             return;
         }
-        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (users == null) {
-            users = new HashSet<String>();
-            getExtensionPermissionMap().put(extensionPermissionEnum, users);
-        }
+        Set<String> users = getExtensionPermissionMap().computeIfAbsent(extensionPermissionEnum, k -> new HashSet<>());
         users.add(domainId.trim());
     }
 
     /**
      * Withdraw the OBS extension permission.
-     * 
+     *
      * @param domainId
      *            ID of the domain to which the user belongs
      * @param extensionPermissionEnum
@@ -195,7 +158,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     /**
      * Withdraw all OBS extension permissions.
-     * 
+     *
      * @param domainId
      *            ID of the domain to which the user belongs
      */
@@ -217,7 +180,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
     public Set<String> getDomainIdsByGrantPermission(ExtensionObjectPermissionEnum extensionPermissionEnum) {
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
         if (domainIds == null) {
-            domainIds = new HashSet<String>();
+            domainIds = new HashSet<>();
         }
         return domainIds;
     }
@@ -238,7 +201,7 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
 
     public Map<ExtensionObjectPermissionEnum, Set<String>> getExtensionPermissionMap() {
         if (extensionPermissionMap == null) {
-            extensionPermissionMap = new HashMap<ExtensionObjectPermissionEnum, Set<String>>();
+            extensionPermissionMap = new HashMap<>();
         }
         return extensionPermissionMap;
     }
@@ -248,25 +211,6 @@ public abstract class PutObjectBasicRequest extends GenericRequest {
             return;
         }
         this.extensionPermissionMap = extensionPermissionMap;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @param encodeHeaders
-     *        Specifies whether to encode and decode header fields.
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @return Specifies whether to encode and decode header fields.
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
 }

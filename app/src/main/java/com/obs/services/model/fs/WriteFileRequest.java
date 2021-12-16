@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import com.obs.services.model.AppendObjectRequest;
+import com.obs.services.model.HttpMethodEnum;
 
 /**
  * Parameters in a request for writing data to a file
@@ -25,8 +26,11 @@ import com.obs.services.model.AppendObjectRequest;
  */
 public class WriteFileRequest extends AppendObjectRequest {
 
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     public WriteFileRequest() {
-        super();
     }
 
     /**

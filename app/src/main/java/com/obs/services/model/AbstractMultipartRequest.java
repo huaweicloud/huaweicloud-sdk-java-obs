@@ -15,51 +15,17 @@
 
 package com.obs.services.model;
 
-public class AbstractMultipartRequest extends GenericRequest {
-    private String bucketName;
+public class AbstractMultipartRequest extends BaseObjectRequest {
 
-    private String objectKey;
-    
-    private String uploadId;
-    
-    /**
-     * Obtain the name of the bucket to which the multipart upload belongs.
-     * 
-     * @return Name of the bucket to which the multipart upload belongs
-     */
-    public String getBucketName() {
-        return bucketName;
+    protected String uploadId;
+
+    public AbstractMultipartRequest() {
     }
 
-    /**
-     * Set the name for the bucket to which the multipart upload belongs.
-     * 
-     * @param bucketName
-     *            Name of the bucket to which the multipart upload belongs
-     */
-    public void setBucketName(String bucketName) {
+    public AbstractMultipartRequest(String bucketName) {
         this.bucketName = bucketName;
     }
 
-    /**
-     * Obtain the name of the object involved in the multipart upload.
-     * 
-     * @return Name of the object involved in the multipart upload
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the name for the object involved in the multipart upload.
-     * 
-     * @param objectKey
-     *            Name of the object involved in the multipart upload
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
-    
     /**
      * Obtain the multipart upload ID.
      * 

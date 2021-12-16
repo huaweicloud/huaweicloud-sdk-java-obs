@@ -22,8 +22,6 @@ import com.obs.services.internal.ObsConstraint;
  */
 public abstract class AbstractBulkRequest extends GenericRequest {
 
-    protected String bucketName;
-
     protected TaskProgressListener listener;
 
     protected int taskThreadNum = ObsConstraint.DEFAULT_TASK_THREAD_NUM;
@@ -36,25 +34,6 @@ public abstract class AbstractBulkRequest extends GenericRequest {
     }
 
     public AbstractBulkRequest(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
 

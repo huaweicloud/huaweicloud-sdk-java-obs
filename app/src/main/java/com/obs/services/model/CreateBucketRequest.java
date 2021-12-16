@@ -25,9 +25,11 @@ import com.obs.services.internal.utils.ServiceUtils;
  * Parameters in a bucket creation request
  *
  */
-public class CreateBucketRequest {
+public class CreateBucketRequest extends GenericRequest {
 
-    private String bucketName;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String location;
 
@@ -84,11 +86,7 @@ public class CreateBucketRequest {
         if (extensionPermissionEnum == null || !ServiceUtils.isValid(domainId)) {
             return;
         }
-        Set<String> users = getExtensionPermissionMap().get(extensionPermissionEnum);
-        if (users == null) {
-            users = new HashSet<String>();
-            getExtensionPermissionMap().put(extensionPermissionEnum, users);
-        }
+        Set<String> users = getExtensionPermissionMap().computeIfAbsent(extensionPermissionEnum, k -> new HashSet<>());
         users.add(domainId.trim());
     }
 
@@ -134,7 +132,7 @@ public class CreateBucketRequest {
     public Set<String> getDomainIdsByGrantPermission(ExtensionBucketPermissionEnum extensionPermissionEnum) {
         Set<String> domainIds = getExtensionPermissionMap().get(extensionPermissionEnum);
         if (domainIds == null) {
-            domainIds = new HashSet<String>();
+            domainIds = new HashSet<>();
         }
         return domainIds;
     }
@@ -150,26 +148,6 @@ public class CreateBucketRequest {
             }
         }
         return grantPermissions;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name. The value can contain only lowercase letters,
-     * digits, hyphens (-), and periods (.).
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**
@@ -265,14 +243,14 @@ public class CreateBucketRequest {
 
     Map<ExtensionBucketPermissionEnum, Set<String>> getExtensionPermissionMap() {
         if (extensionPermissionMap == null) {
-            extensionPermissionMap = new HashMap<ExtensionBucketPermissionEnum, Set<String>>();
+            extensionPermissionMap = new HashMap<>();
         }
         return extensionPermissionMap;
     }
 
     public Map<String, String> getExtensionHeaderMap() {
         if (extensionHeaderMap == null) {
-            extensionHeaderMap = new HashMap<String, String>();
+            extensionHeaderMap = new HashMap<>();
         }
         return extensionHeaderMap;
     }

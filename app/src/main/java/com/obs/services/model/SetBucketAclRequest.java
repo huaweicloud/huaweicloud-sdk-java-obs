@@ -21,6 +21,11 @@ package com.obs.services.model;
  *
  */
 public class SetBucketAclRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private AccessControlList acl;
     private String cannedACL;
     
@@ -29,7 +34,7 @@ public class SetBucketAclRequest extends BaseBucketRequest {
     }
     
     public SetBucketAclRequest(String bucketName, AccessControlList acl) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.acl = acl;
     }
 

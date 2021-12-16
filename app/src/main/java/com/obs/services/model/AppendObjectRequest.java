@@ -24,6 +24,17 @@ public class AppendObjectRequest extends PutObjectRequest {
 
     protected long position;
 
+    {
+        this.httpMethod = HttpMethodEnum.POST;
+    }
+
+    public AppendObjectRequest() {
+    }
+
+    public AppendObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
     /**
      * Obtain the position where data is to be appended.
      * 

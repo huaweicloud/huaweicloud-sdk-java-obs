@@ -19,16 +19,15 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class TruncateObjectRequest extends GenericRequest {
+public class TruncateObjectRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private long newLength;
 
     public TruncateObjectRequest() {
-
     }
 
     /**
@@ -42,49 +41,9 @@ public class TruncateObjectRequest extends GenericRequest {
      *            File size after the truncation
      */
     public TruncateObjectRequest(String bucketName, String objectKey, long newLength) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newLength = newLength;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the file name.
-     * 
-     * @return File name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the file name.
-     * 
-     * @param objectKey
-     *            File name
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

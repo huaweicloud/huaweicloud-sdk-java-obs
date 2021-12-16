@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -28,6 +28,7 @@ import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
@@ -38,6 +39,7 @@ import com.obs.services.model.BucketMetadataInfoResult;
 import com.obs.services.model.BucketPolicyResponse;
 import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
+import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ListBucketsRequest;
@@ -58,17 +60,17 @@ import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import okhttp3.Response;
 
 public abstract class ObsBucketBaseService extends RequestConvertor {
-    
+
     private static final ILogger log = LoggerBuilder.getLogger(ObsBucketBaseService.class);
-    
+
     protected ObsBucket createBucketImpl(CreateBucketRequest request) throws ServiceException {
         TransResult result = this.transCreateBucketRequest(request);
         String bucketName = request.getBucketName();
         AccessControlList acl = request.getAcl();
 
         boolean isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
-
-        Response response = performRestPut(bucketName, null, result.getHeaders(), null, result.getBody(), true);
+        NewTransResult newTransResult = transRequestWithResult(result, request);
+        Response response = performRequest(newTransResult);
 
         if (isExtraAclPutRequired && acl != null) {
             if (log.isDebugEnabled()) {
@@ -91,15 +93,15 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         setHeadersAndStatus(bucket, response);
         return bucket;
     }
-    
+
     protected HeaderResponse deleteBucketImpl(BaseBucketRequest request) throws ServiceException {
         Response response = performRestDelete(request.getBucketName(), null, null,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
         return this.build(response);
     }
-    
+
     protected ListBucketsResult listAllBucketsImpl(ListBucketsRequest request) throws ServiceException {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         if (request != null && request.isQueryLocation()) {
             this.putHeader(headers, this.getIHeaders().locationHeader(), Constants.TRUE);
         }
@@ -118,11 +120,11 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         return result;
     }
-    
+
     protected boolean headBucketImpl(BaseBucketRequest request) throws ServiceException {
         try {
             performRestHead(request.getBucketName(), null, null,
-                    transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                    transRequestPaymentHeaders(request, null, this.getIHeaders()), null, true);
             return true;
         } catch (ServiceException e) {
             if (e.getResponseCode() == 404) {
@@ -131,26 +133,26 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
             throw e;
         }
     }
-    
+
     protected GetBucketFSStatusResult getBucketMetadataImpl(BucketMetadataInfoRequest bucketMetadataInfoRequest)
             throws ServiceException {
         GetBucketFSStatusResult output = null;
         String origin = bucketMetadataInfoRequest.getOrigin();
         List<String> requestHeaders = bucketMetadataInfoRequest.getRequestHeaders();
         if (origin != null && requestHeaders != null && requestHeaders.size() > 0) {
-            for (int i = 0; i < requestHeaders.size(); i++) {
-                String value = requestHeaders.get(i);
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put(Constants.CommonHeaders.ORIGIN, origin);
-                headers.put(Constants.CommonHeaders.ACCESS_CONTROL_REQUEST_HEADERS, value);
+            for (String value : requestHeaders) {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(CommonHeaders.ORIGIN, origin);
+                headers.put(CommonHeaders.ACCESS_CONTROL_REQUEST_HEADERS, value);
                 transRequestPaymentHeaders(bucketMetadataInfoRequest, headers, this.getIHeaders());
 
-                Response response = performRestHead(bucketMetadataInfoRequest.getBucketName(), null, null, headers);
+                Response response = performRestHead(bucketMetadataInfoRequest.getBucketName(), null,
+                        null, headers, bucketMetadataInfoRequest.getUserHeaders(), true);
 
                 if (output == null) {
                     output = this.getOptionInfoResult(response);
                 } else {
-                    String header = response.header(Constants.CommonHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
+                    String header = response.header(CommonHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
                     if (header != null) {
                         if (!output.getAllowHeaders().contains(header)) {
                             output.getAllowHeaders().add(header);
@@ -160,37 +162,45 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 response.close();
             }
         } else {
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
             if (origin != null) {
                 headers.put(Constants.CommonHeaders.ORIGIN, origin);
             }
             transRequestPaymentHeaders(bucketMetadataInfoRequest, headers, this.getIHeaders());
 
-            Response response = performRestHead(bucketMetadataInfoRequest.getBucketName(), null, null, headers);
+            Response response = performRestHead(bucketMetadataInfoRequest.getBucketName(), null,
+                    null, headers, bucketMetadataInfoRequest.getUserHeaders(), true);
             output = this.getOptionInfoResult(response);
             response.close();
         }
 
         return output;
     }
-    
+
     protected HeaderResponse setBucketFSStatusImpl(SetBucketFSStatusRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.FILEINTERFACE.getOriginalStringCode(), "");
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.FILEINTERFACE.getOriginalStringCode(), "");
+
+        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+
         String xml = this.getIConvertor().transBucketFileInterface(request.getStatus());
-        Response response = performRestPut(request.getBucketName(), null,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters,
-                createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        NewTransResult result = transRequest(request);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(result);
         return build(response);
     }
-    
+
     protected BucketStoragePolicyConfiguration getBucketStoragePolicyImpl(BaseBucketRequest request)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(this.getSpecialParamForStorageClass().getOriginalStringCode(), "");
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -201,28 +211,33 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
-    
+
     protected HeaderResponse setBucketStorageImpl(SetBucketStoragePolicyRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(this.getSpecialParamForStorageClass().getOriginalStringCode(), "");
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(this.getSpecialParamForStorageClass().getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
         String xml = request.getBucketStorage() == null ? ""
                 : this.getIConvertor().transStoragePolicy(request.getBucketStorage());
-        metadata.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
-        transRequestPaymentHeaders(request, metadata, this.getIHeaders());
 
-        Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
-                createRequestBody(Mimetypes.MIMETYPE_XML, xml), true);
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+
+        transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        NewTransResult result = transRequest(request);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(result);
         return build(response);
     }
-    
+
     protected BucketStorageInfo getBucketStorageInfoImpl(BaseBucketRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.STORAGEINFO.getOriginalStringCode(), "");
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -231,13 +246,13 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
-    
+
     protected BucketLocationResponse getBucketLocationImpl(BaseBucketRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.LOCATION.getOriginalStringCode(), "");
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -248,27 +263,29 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         setHeadersAndStatus(ret, httpResponse);
         return ret;
     }
-    
+
     protected HeaderResponse setBucketPolicyImpl(SetBucketPolicyRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.POLICY.getOriginalStringCode(), "");
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.POLICY.getOriginalStringCode(), "");
 
-        Map<String, String> metadata = new HashMap<String, String>();
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_TEXT_PLAIN);
-        transRequestPaymentHeaders(request, metadata, this.getIHeaders());
-
-        Response response = performRestPut(request.getBucketName(), null, metadata, requestParameters,
-                createRequestBody(Mimetypes.MIMETYPE_TEXT_PLAIN, request.getPolicy()), true);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_TEXT_PLAIN);
+        transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        NewTransResult result = transRequest(request);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_TEXT_PLAIN, request.getPolicy()));
+        Response response = performRequest(result);
         return build(response);
     }
-    
+
     protected BucketPolicyResponse getBucketPolicyImpl(BaseBucketRequest request) throws ServiceException {
         try {
-            Map<String, String> requestParameters = new HashMap<String, String>();
+            Map<String, String> requestParameters = new HashMap<>();
             requestParameters.put(SpecialParamEnum.POLICY.getOriginalStringCode(), "");
 
             Response response = performRestGet(request.getBucketName(), null, requestParameters,
-                    transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                    transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
             BucketPolicyResponse ret = new BucketPolicyResponse(response.body().string());
 
             setHeadersAndStatus(ret, response);
@@ -277,20 +294,21 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
             throw new ServiceException(e);
         }
     }
-    
+
     protected HeaderResponse deleteBucketPolicyImpl(BaseBucketRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.POLICY.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()));
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
         return build(response);
     }
-    
+
     protected ListVersionsResult listVersionsImpl(ListVersionsRequest request) throws ServiceException {
 
         TransResult result = this.transListVersionsRequest(request);
 
-        Response response = performRestGet(request.getBucketName(), null, result.getParams(), result.getHeaders());
+        Response response = performRestGet(request.getBucketName(), null, result.getParams(),
+                result.getHeaders(), request.getUserHeaders());
 
         this.verifyResponseContentType(response);
 
@@ -303,7 +321,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 .prefix(handler.getRequestPrefix() == null ? request.getPrefix() : handler.getRequestPrefix())
                 .keyMarker(handler.getKeyMarker() == null ? request.getKeyMarker() : handler.getKeyMarker())
                 .nextKeyMarker(handler.getNextKeyMarker())
-                .versionIdMarker(handler.getVersionIdMarker() == null 
+                .versionIdMarker(handler.getVersionIdMarker() == null
                         ? request.getVersionIdMarker() : handler.getVersionIdMarker())
                 .nextVersionIdMarker(handler.getNextVersionIdMarker())
                 .maxKeys(String.valueOf(handler.getRequestMaxKeys()))
@@ -317,13 +335,13 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         setHeadersAndStatus(listVersionsResult, response);
         return listVersionsResult;
     }
-    
+
     protected ObjectListing listObjectsImpl(ListObjectsRequest listObjectsRequest) throws ServiceException {
 
         TransResult result = this.transListObjectsRequest(listObjectsRequest);
 
         Response httpResponse = performRestGet(listObjectsRequest.getBucketName(), null, result.getParams(),
-                result.getHeaders());
+                result.getHeaders(), listObjectsRequest.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -333,28 +351,28 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         ObjectListing objList = new ObjectListing.Builder()
                 .objectSummaries(listObjectsHandler.getObjects())
                 .commonPrefixes(listObjectsHandler.getCommonPrefixes())
-                .bucketName(listObjectsHandler.getBucketName() == null 
+                .bucketName(listObjectsHandler.getBucketName() == null
                         ? listObjectsRequest.getBucketName() : listObjectsHandler.getBucketName())
                 .truncated(listObjectsHandler.isListingTruncated())
-                .prefix(listObjectsHandler.getRequestPrefix() == null 
+                .prefix(listObjectsHandler.getRequestPrefix() == null
                         ? listObjectsRequest.getPrefix() : listObjectsHandler.getRequestPrefix())
-                .marker(listObjectsHandler.getRequestMarker() == null 
+                .marker(listObjectsHandler.getRequestMarker() == null
                         ? listObjectsRequest.getMarker() : listObjectsHandler.getRequestMarker())
                 .maxKeys(listObjectsHandler.getRequestMaxKeys())
-                .delimiter(listObjectsHandler.getRequestDelimiter() == null 
+                .delimiter(listObjectsHandler.getRequestDelimiter() == null
                         ? listObjectsRequest.getDelimiter() : listObjectsHandler.getRequestDelimiter())
                 .nextMarker(listObjectsHandler.getMarkerForNextListing())
                 .location(httpResponse.header(this.getIHeaders().bucketRegionHeader()))
                 .extendCommonPrefixes(listObjectsHandler.getExtendCommonPrefixes())
                 .builder();
-        
+
         setHeadersAndStatus(objList, httpResponse);
         return objList;
     }
-    
+
     protected BucketMetadataInfoResult optionsImpl(String bucketName, String objectName, OptionsInfoRequest option)
             throws ServiceException {
-        Map<String, String> metadata = new IdentityHashMap<String, String>();
+        Map<String, String> metadata = new IdentityHashMap<>();
 
         if (ServiceUtils.isValid(option.getOrigin())) {
             metadata.put(CommonHeaders.ORIGIN, option.getOrigin().trim());
@@ -370,8 +388,20 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         }
         transRequestPaymentHeaders(option.isRequesterPays(), metadata, this.getIHeaders());
 
-        Response rsult = performRestOptions(bucketName, objectName, metadata, null, true);
-        return getOptionInfoResult(rsult);
+        Response result = performRestOptions(bucketName, objectName, metadata, null, true);
+        return getOptionInfoResult(result);
 
+    }
+
+    protected BucketVersioningConfiguration getBucketVersioningImpl(BaseBucketRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.VERSIONING.getOriginalStringCode(), "");
+        Response response = performRestGet(request.getBucketName(), null, requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
+        this.verifyResponseContentType(response);
+        BucketVersioningConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.BucketVersioningHandler.class, false).getVersioningStatus();
+        setHeadersAndStatus(ret, response);
+        return ret;
     }
 }

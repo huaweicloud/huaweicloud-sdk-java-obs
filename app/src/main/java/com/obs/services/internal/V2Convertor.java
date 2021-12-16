@@ -53,7 +53,7 @@ public class V2Convertor extends V2BucketConvertor {
 
     private static IConvertor instance = new V2Convertor();
 
-    protected V2Convertor() {
+    public V2Convertor() {
 
     }
 

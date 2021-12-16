@@ -2,10 +2,11 @@ package com.obs.test.objects;
 
 import com.obs.services.ObsClient;
 import com.obs.services.model.GetObjectMetadataRequest;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ModifyObjectRequest;
 import com.obs.services.model.ModifyObjectResult;
 import com.obs.services.model.ObjectMetadata;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;

@@ -48,7 +48,7 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
      *            Bucket name
      */
     public RestoreObjectsRequest(String bucketName) {
-        super(bucketName);
+        this.bucketName = bucketName;
     }
 
     /**
@@ -62,7 +62,7 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
      *            Restore option
      */
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.days = days;
         this.tier = tier;
     }
@@ -80,7 +80,7 @@ public class RestoreObjectsRequest extends AbstractBulkRequest {
      *            The encoding type use for encode objectKey.
      */
     public RestoreObjectsRequest(String bucketName, int days, RestoreTierEnum tier, String encodingType) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.days = days;
         this.tier = tier;
         this.encodingType = encodingType;

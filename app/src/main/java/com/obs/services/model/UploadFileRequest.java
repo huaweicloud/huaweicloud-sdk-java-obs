@@ -67,7 +67,8 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      *            To-be-uploaded local file
      */
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.uploadFile = uploadFile;
     }
 
@@ -84,7 +85,9 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      *            Encoding type used for encoding objectKey
      */
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile, String encodingType) {
-        this(bucketName, objectKey, uploadFile);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadFile = uploadFile;
         this.encodingType = encodingType;
     }
 
@@ -101,7 +104,9 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      *            Part size
      */
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize) {
-        this(bucketName, objectKey, uploadFile);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadFile = uploadFile;
         this.partSize = partSize;
     }
 
@@ -121,7 +126,10 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      *            concurrently
      */
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize, int taskNum) {
-        this(bucketName, objectKey, uploadFile, partSize);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.uploadFile = uploadFile;
+        this.partSize = partSize;
         this.taskNum = taskNum;
     }
 
@@ -169,7 +177,8 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      */
     public UploadFileRequest(String bucketName, String objectKey, String uploadFile, long partSize, int taskNum,
             boolean enableCheckpoint, String checkpointFile) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.taskNum = taskNum;
         this.uploadFile = uploadFile;
@@ -250,10 +259,8 @@ public class UploadFileRequest extends PutObjectBasicRequest {
     public void setTaskNum(int taskNum) {
         if (taskNum < 1) {
             this.taskNum = 1;
-        } else if (taskNum > 1000) {
-            this.taskNum = 1000;
         } else {
-            this.taskNum = taskNum;
+            this.taskNum = Math.min(taskNum, 1000);
         }
     }
 
