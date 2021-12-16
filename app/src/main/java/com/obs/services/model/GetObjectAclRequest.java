@@ -19,10 +19,11 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class GetObjectAclRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectAclRequest extends BaseObjectRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
     
     private String versionId;
 
@@ -63,25 +64,6 @@ public class GetObjectAclRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the object belongs.
-     * 
-     * @return Name of the bucket to which the object belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set name for the bucket to which the object belongs.
-     * 
-     * @param bucketName
-     *            Name of the bucket to which the object belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

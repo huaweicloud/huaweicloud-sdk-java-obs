@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -17,8 +17,11 @@ package com.obs.services.model;
 /**
  * Request parameters for reading ahead objects
  */
-public class ReadAheadRequest {
-    private String bucketName;
+public class ReadAheadRequest extends GenericRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private String prefix;
 
@@ -28,20 +31,20 @@ public class ReadAheadRequest {
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param prefix
      *            Name prefix of objects to be read ahead
      */
     public ReadAheadRequest(String bucketName, String prefix) {
-        this.setBucketName(bucketName);
-        this.setPrefix(prefix);
+        this.bucketName = bucketName;
+        this.prefix = prefix;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param prefix
@@ -53,34 +56,15 @@ public class ReadAheadRequest {
      *            from 0 to 259200 (3 days)
      */
     public ReadAheadRequest(String bucketName, String prefix, CacheOptionEnum cacheOption, long ttl) {
-        this.setBucketName(bucketName);
-        this.setPrefix(prefix);
-        this.setCacheOption(cacheOption);
-        this.setTtl(ttl);
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+        this.prefix = prefix;
+        this.cacheOption = cacheOption;
+        this.ttl = ttl;
     }
 
     /**
      * Obtain the name prefix of objects to be read ahead.
-     * 
+     *
      * @return Name prefix of objects to be read ahead
      */
     public String getPrefix() {
@@ -89,7 +73,7 @@ public class ReadAheadRequest {
 
     /**
      * Set the name prefix of objects to be read ahead.
-     * 
+     *
      * @param prefix
      *            Name prefix of objects to be read ahead
      */
@@ -99,7 +83,7 @@ public class ReadAheadRequest {
 
     /**
      * Obtain the control option of the read-ahead cache.
-     * 
+     *
      * @return Control option of the read-ahead cache
      */
     public CacheOptionEnum getCacheOption() {
@@ -108,7 +92,7 @@ public class ReadAheadRequest {
 
     /**
      * Set the control option of the read-ahead cache.
-     * 
+     *
      * @param cacheOption
      *            Control option of the read-ahead cache
      */
@@ -118,7 +102,7 @@ public class ReadAheadRequest {
 
     /**
      * Obtain the cache data expiration time.
-     * 
+     *
      * @return Expiration time of cached data, in seconds
      */
     public long getTtl() {
@@ -127,7 +111,7 @@ public class ReadAheadRequest {
 
     /**
      * Set the cache data expiration time.
-     * 
+     *
      * @param ttl
      *            Expiration time of cached data, in seconds. The value ranges
      *            from 0 to 259200 (72 hours). The default value is 24 hours.

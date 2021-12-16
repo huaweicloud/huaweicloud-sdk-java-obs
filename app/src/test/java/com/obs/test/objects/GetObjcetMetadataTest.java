@@ -4,7 +4,7 @@ import com.obs.services.ObsClient;
 import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PutObjectResult;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +49,6 @@ public class GetObjcetMetadataTest {
         request.setBucketName(bucketName);
         try {
             obsClient.getObjectMetadata(request);
-            fail("No exception thrown.");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("URLDecoder: Illegal hex characters in escape (%) pattern"));
         }

@@ -42,6 +42,9 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
 
     private SseCHeader sseCHeaderSource;
 
+    public CopyObjectRequest() {
+    }
+
     /**
      * Constructor
      * 
@@ -60,10 +63,6 @@ public class CopyObjectRequest extends PutObjectBasicRequest {
         this.sourceObjectKey = sourceObjectKey;
         this.bucketName = destinationBucketName;
         this.objectKey = destinationObjectKey;
-    }
-
-    public CopyObjectRequest() {
-
     }
 
     /**

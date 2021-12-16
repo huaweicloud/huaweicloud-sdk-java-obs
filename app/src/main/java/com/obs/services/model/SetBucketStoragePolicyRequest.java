@@ -20,10 +20,22 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketStoragePolicyRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketStoragePolicyConfiguration bucketStorage;
 
+    public SetBucketStoragePolicyRequest() {
+    }
+
+    public SetBucketStoragePolicyRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
     public SetBucketStoragePolicyRequest(String bucketName, BucketStoragePolicyConfiguration bucketStorage) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketStorage = bucketStorage;
     }
 

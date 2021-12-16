@@ -20,11 +20,14 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class BaseObjectRequest extends GenericRequest {
-    private String bucketName;
-    private String objectKey;
-    private String versionId;
+    protected String objectKey;
+    protected boolean encodeHeaders = true;
 
     public BaseObjectRequest() {
+    }
+
+    public BaseObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     public BaseObjectRequest(String bucketName, String objectKey) {
@@ -32,28 +35,23 @@ public class BaseObjectRequest extends GenericRequest {
         this.objectKey = objectKey;
     }
 
-    public BaseObjectRequest(String bucketName, String objectKey, String versionId) {
-        this(bucketName, objectKey);
-        this.versionId = versionId;
+    /**
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @param encodeHeaders
+     *        Specifies whether to encode and decode header fields.
+     */
+    public void setIsEncodeHeaders(boolean encodeHeaders) {
+        this.encodeHeaders = encodeHeaders;
     }
 
     /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
+     * Specifies whether to encode and decode the returned header fields.
+     *
+     * @return Specifies whether to encode and decode header fields.
      */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    public boolean isEncodeHeaders() {
+        return encodeHeaders;
     }
 
     /**
@@ -75,28 +73,9 @@ public class BaseObjectRequest extends GenericRequest {
         this.objectKey = objectKey;
     }
 
-    /**
-     * Obtain the object version ID.
-     * 
-     * @return Version ID of the object
-     */
-    public String getVersionId() {
-        return versionId;
-    }
-
-    /**
-     * Set the version ID of the object.
-     * 
-     * @param versionId
-     *            Version ID of the object
-     */
-    public void setVersionId(String versionId) {
-        this.versionId = versionId;
-    }
-
     @Override
     public String toString() {
-        return "BaseObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", versionId=" + versionId
+        return "BaseObjectRequest [bucketName=" + bucketName + ", objectKey=" + objectKey
                 + ", isRequesterPays()=" + isRequesterPays() + "]";
     }
 }

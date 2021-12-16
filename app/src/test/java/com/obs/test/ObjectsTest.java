@@ -295,11 +295,4 @@ public class ObjectsTest {
 
         ListVersionsResult result = obsClient.listVersions("test-version-002");
     }
-    @Test
-    public void test_list_version_with_encoding_type() {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
-        ListVersionsRequest request = new ListVersionsRequest();
-
-
-    }
 }

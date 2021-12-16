@@ -20,10 +20,15 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketCorsRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketCors bucketCors;
 
     public SetBucketCorsRequest(String bucketName, BucketCors bucketCors) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.bucketCors = bucketCors;
     }
 

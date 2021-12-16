@@ -93,7 +93,7 @@ public class SimpleMultipartUploadSample
             completeMultipartUploadRequest.setUploadId(result.getUploadId());
             PartEtag partEtag = new PartEtag();
             partEtag.setPartNumber(uploadPartResult.getPartNumber());
-            partEtag.seteTag(uploadPartResult.getEtag());
+            partEtag.setEtag(uploadPartResult.getEtag());
             completeMultipartUploadRequest.getPartEtag().add(partEtag);
             obsClient.completeMultipartUpload(completeMultipartUploadRequest);
         }

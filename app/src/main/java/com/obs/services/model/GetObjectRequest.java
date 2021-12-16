@@ -23,20 +23,17 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * Parameters in an object download request
  */
-public class GetObjectRequest extends GenericRequest {
-    private String bucketName;
+public class GetObjectRequest extends GetObjectMetadataRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private Long rangeStart;
 
     private Long rangeEnd;
 
-    private String versionId;
-
     private ObjectRepleaceMetadata replaceMetadata;
-
-    private SseCHeader sseCHeader;
 
     private Date ifModifiedSince;
 
@@ -59,8 +56,6 @@ public class GetObjectRequest extends GenericRequest {
     private Map<String, String> requestParameters;
 
     private boolean autoUnzipResponse = false;
-
-    private boolean encodeHeaders = true;
 
     public GetObjectRequest() {
 
@@ -171,46 +166,6 @@ public class GetObjectRequest extends GenericRequest {
      */
     public void setRangeEnd(Long rangeEnd) {
         this.rangeEnd = rangeEnd;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     * 
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the object name.
-     * 
-     * @return Object name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the object name.
-     * 
-     * @param objectKey
-     *            Object name
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**

@@ -22,10 +22,14 @@ package com.obs.services.model;
  */
 public class SetBucketWebsiteRequest extends BaseBucketRequest {
 
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private WebsiteConfiguration websiteConfig;
 
     public SetBucketWebsiteRequest(String bucketName, WebsiteConfiguration websiteConfig) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.websiteConfig = websiteConfig;
     }
 

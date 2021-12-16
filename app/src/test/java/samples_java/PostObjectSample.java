@@ -47,7 +47,7 @@ public class PostObjectSample
     private static final String protocol = "https://";
     
     /*
-     * Example：obs.cn-north-1.myhuaweicloud.com
+     * Example: obs.cn-north-1.myhuaweicloud.com
      */
     private static final String endPoint = "your-endpoint";
     

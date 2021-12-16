@@ -19,11 +19,11 @@ package com.obs.services.model;
  * Only the parallel file system supports this interface.
  * @since 3.20.3
  */
-public class RenameObjectRequest extends GenericRequest {
+public class RenameObjectRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private String newObjectKey;
 
@@ -42,50 +42,11 @@ public class RenameObjectRequest extends GenericRequest {
      *            Name of the new file or folder
      */
     public RenameObjectRequest(String bucketName, String objectKey, String newObjectKey) {
-        super();
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.newObjectKey = newObjectKey;
     }
 
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the file or folder name.
-     * 
-     * @return File or folder name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the file or folder name.
-     * 
-     * @param objectKey
-     *            File or folder name
-     * 
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
-    }
 
     /**
      * Obtain the new file or folder name.

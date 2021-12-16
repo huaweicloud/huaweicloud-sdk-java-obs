@@ -18,7 +18,10 @@ package com.obs.services.model;
  * Parameters in a request for listing objects in a bucket
  */
 public class ListObjectsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -54,7 +57,7 @@ public class ListObjectsRequest extends GenericRequest {
      *            Maximum number of objects to be listed
      */
     public ListObjectsRequest(String bucketName, int maxKeys) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxKeys = maxKeys;
     }
 
@@ -73,9 +76,10 @@ public class ListObjectsRequest extends GenericRequest {
      *            Maximum number of objects to be listed
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys) {
-        this(bucketName, maxKeys);
-        this.prefix = prefix;
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
         this.marker = marker;
+        this.prefix = prefix;
         this.delimiter = delimiter;
 
     }
@@ -98,28 +102,14 @@ public class ListObjectsRequest extends GenericRequest {
      */
     public ListObjectsRequest(String bucketName, String prefix, String marker, String delimiter, int maxKeys,
                               String encodingType) {
-        this(bucketName, prefix, marker, delimiter, maxKeys);
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
+        this.marker = marker;
+        this.delimiter = delimiter;
+        this.prefix = prefix;
         this.encodingType = encodingType;
     }
 
-    /**
-     * Obtain the bucket name.
-     *
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     *
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
 
     /**
      * Obtain the object name prefix used for filtering objects to be listed.

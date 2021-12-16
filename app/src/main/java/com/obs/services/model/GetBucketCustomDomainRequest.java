@@ -21,6 +21,10 @@ package com.obs.services.model;
  * @since 3.21.8
  */
 public class GetBucketCustomDomainRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
     
     public GetBucketCustomDomainRequest(String bucketName) {
         super(bucketName);

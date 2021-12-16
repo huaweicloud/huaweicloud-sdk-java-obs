@@ -16,7 +16,7 @@ package com.obs.services.internal;
 
 public class V2Headers implements IHeaders {
 
-    protected V2Headers() {
+    public V2Headers() {
 
     }
 

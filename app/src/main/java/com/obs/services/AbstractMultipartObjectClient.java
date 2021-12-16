@@ -197,7 +197,7 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
     public ListPartsResult listParts(final ListPartsRequest request) throws ObsException {
 
         ServiceUtils.asserParameterNotNull(request, "ListPartsRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getKey(), "objectKey is null");
+        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
         ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("listParts", request.getBucketName(),
                 new ActionCallbackWithResult<ListPartsResult>() {

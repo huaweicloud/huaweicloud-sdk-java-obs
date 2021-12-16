@@ -1,16 +1,16 @@
 /**
-* Copyright 2019 Huawei Technologies Co.,Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-* this file except in compliance with the License.  You may obtain a copy of the
-* License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software distributed
-* under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-* CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations under the License.
-**/
+ * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License.  You may obtain a copy of the
+ * License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ **/
 
 package com.obs.services.model;
 
@@ -21,17 +21,25 @@ import java.util.List;
  * Parameters in a request for combining parts
  */
 public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
+    
     private List<PartEtag> partEtag;
 
     private String encodingType;
 
     public CompleteMultipartUploadRequest() {
-        super();
+    }
+
+    public CompleteMultipartUploadRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -42,7 +50,7 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
      *            List of parts to be combined
      */
     public CompleteMultipartUploadRequest(String bucketName, String objectKey, String uploadId,
-            List<PartEtag> partEtag) {
+                                          List<PartEtag> partEtag) {
         super();
         this.setUploadId(uploadId);
         this.setBucketName(bucketName);
@@ -50,9 +58,9 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
         this.partEtag = partEtag;
     }
 
-   /**
+    /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -76,7 +84,7 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain the to-be-combined part list.
-     * 
+     *
      * @return List of parts to be combined
      */
     public List<PartEtag> getPartEtag() {
@@ -88,7 +96,7 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
 
     /**
      * Set the to-be-combined part list.
-     * 
+     *
      * @param partEtags
      *            List of parts to be combined
      */

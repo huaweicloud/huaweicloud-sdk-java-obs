@@ -21,10 +21,22 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketPolicyRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private String policy;
 
+    public SetBucketPolicyRequest() {
+    }
+
+    public SetBucketPolicyRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
     public SetBucketPolicyRequest(String bucketName, String policy) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.policy = policy;
     }
 

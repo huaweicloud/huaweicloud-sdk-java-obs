@@ -34,7 +34,7 @@ public abstract class AbstractAuthentication {
 
     protected abstract String getAuthPrefix();
 
-    public static String caculateSignature(String stringToSign, String sk) throws ServiceException {
+    public static String calculateSignature(String stringToSign, String sk) throws ServiceException {
         return ServiceUtils.signWithHmacSha1(sk, stringToSign);
     }
 
@@ -50,9 +50,8 @@ public abstract class AbstractAuthentication {
 
         String accessKey = securityKey.getAccessKey();
         String secretKey = securityKey.getSecretKey();
-        String signedCanonical = AbstractAuthentication.caculateSignature(canonicalString, secretKey);
-        String auth = new StringBuilder(this.getAuthPrefix()).append(" ").append(accessKey).append(":")
-                .append(signedCanonical).toString();
+        String signedCanonical = AbstractAuthentication.calculateSignature(canonicalString, secretKey);
+        String auth = this.getAuthPrefix() + " " + accessKey + ":" + signedCanonical;
         return new DefaultAuthentication(canonicalString, canonicalString, auth);
     }
 
@@ -66,7 +65,7 @@ public abstract class AbstractAuthentication {
         if (queryIndex < 0) {
             canonicalStringBuf.append(resource);
         } else {
-            canonicalStringBuf.append(resource.substring(0, queryIndex));
+            canonicalStringBuf.append(resource, 0, queryIndex);
 
             SortedMap<String, String> sortedResourceParams = new TreeMap<String, String>();
 
@@ -155,11 +154,11 @@ public abstract class AbstractAuthentication {
                 if (lk.equals(contentTypeHeader) || lk.equals(contentMd5Header) || lk.equals(dateHeader)) {
                     interestingHeaders.put(lk, value);
                 } else if (lk.startsWith(headerPrefix)) {
-                    List<String> values = null;
+                    List<String> values;
                     if (interestingHeaders.containsKey(lk)) {
                         values = (List<String>) interestingHeaders.get(lk);
                     } else {
-                        values = new ArrayList<String>();
+                        values = new ArrayList<>();
                         interestingHeaders.put(lk, values);
                     }
                     values.add(value);

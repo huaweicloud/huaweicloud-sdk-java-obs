@@ -22,11 +22,23 @@ import java.util.List;
  * 
  */
 public class OptionsInfoRequest extends GenericRequest {
+
+    {
+        httpMethod = HttpMethodEnum.OPTIONS;
+    }
+
     private String origin;
 
     private List<String> requestMethod;
 
     private List<String> requestHeaders;
+
+    public OptionsInfoRequest() {
+    }
+
+    public OptionsInfoRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
     /**
      * Obtain the origin of the preflight request.
@@ -54,7 +66,7 @@ public class OptionsInfoRequest extends GenericRequest {
      */
     public List<String> getRequestMethod() {
         if (this.requestMethod == null) {
-            this.requestMethod = new ArrayList<String>();
+            this.requestMethod = new ArrayList<>();
         }
         return requestMethod;
     }
@@ -76,7 +88,7 @@ public class OptionsInfoRequest extends GenericRequest {
      */
     public List<String> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = new ArrayList<String>();
+            this.requestHeaders = new ArrayList<>();
         }
         return requestHeaders;
     }

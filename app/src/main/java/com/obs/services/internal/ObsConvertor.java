@@ -45,7 +45,7 @@ public class ObsConvertor extends V2Convertor {
 
     private static ObsConvertor instance = new ObsConvertor();
 
-    ObsConvertor() {
+    public ObsConvertor() {
 
     }
 

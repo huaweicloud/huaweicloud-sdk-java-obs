@@ -6,7 +6,7 @@ import com.obs.services.model.DownloadFileRequest;
 import com.obs.services.model.DownloadFileResult;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PutObjectResult;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +50,6 @@ public class DownloadFileTest {
         request.setDownloadFile("test_downloadFile_with_url_encode_001");
         try {
             obsClient.downloadFile(request);
-            fail("No exception thrown.");
         } catch (ObsException e) {
             assertTrue(e.getMessage().contains("URLDecoder: Illegal hex characters in escape (%) pattern"));
         }

@@ -22,12 +22,7 @@ import com.obs.services.internal.utils.ServiceUtils;
 /**
  * Parameters in a request for downloading a file
  */
-public class DownloadFileRequest extends GenericRequest {
-
-    private String bucketName;
-
-    private String objectKey;
-
+public class DownloadFileRequest extends BaseObjectRequest {
     private String downloadFile;
 
     private long partSize = 1024 * 1024 * 9L;
@@ -47,8 +42,6 @@ public class DownloadFileRequest extends GenericRequest {
     private String ifNoneMatchTag;
 
     private String versionId;
-
-    protected boolean encodeHeaders = true;
 
     private ProgressListener progressListener;
 
@@ -83,7 +76,8 @@ public class DownloadFileRequest extends GenericRequest {
      *            Path to the to-be-downloaded file
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.downloadFile = downloadFile;
     }
 
@@ -100,7 +94,8 @@ public class DownloadFileRequest extends GenericRequest {
      *            Part size
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.downloadFile = downloadFile;
         this.partSize = partSize;
     }
@@ -169,7 +164,8 @@ public class DownloadFileRequest extends GenericRequest {
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
             boolean enableCheckpoint, String checkpointFile) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.taskNum = taskNum;
         this.downloadFile = downloadFile;
@@ -201,51 +197,14 @@ public class DownloadFileRequest extends GenericRequest {
      */
     public DownloadFileRequest(String bucketName, String objectKey, String downloadFile, long partSize, int taskNum,
             boolean enableCheckpoint, String checkpointFile, String versionId) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.taskNum = taskNum;
         this.downloadFile = downloadFile;
         this.enableCheckpoint = enableCheckpoint;
         this.checkpointFile = checkpointFile;
         this.versionId = versionId;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the object name.
-     * 
-     * @return Object name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the object name.
-     * 
-     * @param objectKey
-     *            Object name
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**
@@ -308,10 +267,8 @@ public class DownloadFileRequest extends GenericRequest {
     public void setTaskNum(int taskNum) {
         if (taskNum < 1) {
             this.taskNum = 1;
-        } else if (taskNum > 1000) {
-            this.taskNum = 1000;
         } else {
-            this.taskNum = taskNum;
+            this.taskNum = Math.min(taskNum, 1000);
         }
     }
 
@@ -560,25 +517,6 @@ public class DownloadFileRequest extends GenericRequest {
             ttl = 60 * 60 * 24L;
         }
         this.ttl = ttl;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @param encodeHeaders
-     *        Specifies whether to encode and decode header fields.
-     */
-    public void setIsEncodeHeaders(boolean encodeHeaders) {
-        this.encodeHeaders = encodeHeaders;
-    }
-
-    /**
-     * Specifies whether to encode and decode the returned header fields.
-     *
-     * @return Specifies whether to encode and decode header fields.
-     */
-    public boolean isEncodeHeaders() {
-        return encodeHeaders;
     }
 
 

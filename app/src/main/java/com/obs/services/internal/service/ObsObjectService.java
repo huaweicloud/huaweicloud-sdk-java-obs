@@ -26,6 +26,7 @@ import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
 import com.obs.services.internal.RepeatableRequestEntity;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
@@ -49,24 +50,30 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectService.class);
     
     protected TruncateObjectResult truncateObjectImpl(TruncateObjectRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.TRUNCATE.getOriginalStringCode(), "");
         requestParameters.put(Constants.ObsRequestParams.LENGTH, String.valueOf(request.getNewLength()));
-
-        Response response = performRestPut(request.getBucketName(), request.getObjectKey(),
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
+        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParameters);
+        Response response = performRequest(transResult);
         TruncateObjectResult result = new TruncateObjectResult();
         setHeadersAndStatus(result, response);
         return result;
     }
     
     protected RenameObjectResult renameObjectImpl(RenameObjectRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
-        requestParameters.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
+        requestParams.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
 
-        Response response = performRestPost(request.getBucketName(), request.getObjectKey(),
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
+        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setParams(requestParams);
+        transResult.setHeaders(headers);
+        Response response = performRequest(transResult);
         RenameObjectResult result = new RenameObjectResult();
         setHeadersAndStatus(result, response);
         return result;
@@ -77,24 +84,28 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         return transRestoreObjectResultToRestoreObjectStatus(restoreObjectResult);
     }
 
-    protected RestoreObjectResult restoreObjectV2Impl(RestoreObjectRequest restoreObjectRequest)
+    protected RestoreObjectResult restoreObjectV2Impl(RestoreObjectRequest request)
             throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.RESTORE.getOriginalStringCode(), "");
-        if (restoreObjectRequest.getVersionId() != null) {
-            requestParameters.put(ObsRequestParams.VERSION_ID, restoreObjectRequest.getVersionId());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.RESTORE.getOriginalStringCode(), "");
+        if (request.getVersionId() != null) {
+            requestParams.put(ObsRequestParams.VERSION_ID, request.getVersionId());
         }
-        Map<String, String> metadata = new HashMap<String, String>();
-        String requestXmlElement = this.getIConvertor().transRestoreObjectRequest(restoreObjectRequest);
-        metadata.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(requestXmlElement));
-        metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
-        transRequestPaymentHeaders(restoreObjectRequest, metadata, this.getIHeaders());
 
-        Response response = this.performRestPost(restoreObjectRequest.getBucketName(),
-                restoreObjectRequest.getObjectKey(), metadata, requestParameters,
-                createRequestBody(Mimetypes.MIMETYPE_XML, requestXmlElement), true);
-        RestoreObjectResult ret = new RestoreObjectResult(restoreObjectRequest.getBucketName(),
-                restoreObjectRequest.getObjectKey(), restoreObjectRequest.getVersionId());
+        Map<String, String> headers = new HashMap<>();
+        String xml = this.getIConvertor().transRestoreObjectRequest(request);
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        transRequestPaymentHeaders(request, headers, this.getIHeaders());
+
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setParams(requestParams);
+        transResult.setHeaders(headers);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = this.performRequest(transResult);
+
+        RestoreObjectResult ret = new RestoreObjectResult(request.getBucketName(),
+                request.getObjectKey(), request.getVersionId());
 
         setHeadersAndStatus(ret, response);
         return ret;
@@ -110,8 +121,8 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
 
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
 
-            response = performRestPost(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true, false, request.isEncodeHeaders());
+            NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+            response = performRequest(newTransResult);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 RepeatableRequestEntity entity = (RepeatableRequestEntity) result.getBody();
@@ -147,9 +158,9 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
             result = this.transModifyObjectRequest(request);
 
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
-
-            response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true, false, request.isEncodeHeaders());
+            // todo prepareRESTHeaderAcl 也会操作头域，下次重构可以将其合并
+            NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+            response = performRequest(newTransResult);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 if (result.getBody() instanceof Closeable) {

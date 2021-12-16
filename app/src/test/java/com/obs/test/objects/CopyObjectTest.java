@@ -7,7 +7,7 @@ import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.SetObjectMetadataRequest;
-import com.obs.test.PrepareTestBucket;
+import com.obs.test.tools.PrepareTestBucket;
 import com.obs.test.TestTools;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +32,6 @@ public class CopyObjectTest {
 
     @Rule
     public TestName testName = new TestName();
-
 
     @Test
     public void test_copyObject_with_chinese_metadata_001() {

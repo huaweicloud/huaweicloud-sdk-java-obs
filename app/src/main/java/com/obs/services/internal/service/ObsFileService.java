@@ -15,10 +15,6 @@
 
 package com.obs.services.internal.service;
 
-import java.io.Closeable;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants;
@@ -26,6 +22,7 @@ import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.SpecialParamEnum;
@@ -38,31 +35,41 @@ import com.obs.services.model.fs.RenameResult;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
-
 import okhttp3.Response;
+
+import java.io.Closeable;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ObsFileService extends ObsObjectService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsFileService.class);
     
     protected TruncateFileResult truncateFileImpl(TruncateFileRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.TRUNCATE.getOriginalStringCode(), "");
-        requestParameters.put(Constants.ObsRequestParams.LENGTH, String.valueOf(request.getNewLength()));
-
-        Response response = performRestPut(request.getBucketName(), request.getObjectKey(),
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.TRUNCATE.getOriginalStringCode(), "");
+        requestParams.put(Constants.ObsRequestParams.LENGTH, String.valueOf(request.getNewLength()));
+        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setParams(requestParams);
+        transResult.setHeaders(headers);
+        Response response = performRequest(transResult);
         TruncateFileResult result = new TruncateFileResult();
         setHeadersAndStatus(result, response);
         return result;
     }
 
     protected RenameResult renameFileImpl(RenameRequest request) throws ServiceException {
-        Map<String, String> requestParameters = new HashMap<String, String>();
-        requestParameters.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
-        requestParameters.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
+        requestParams.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
 
-        Response response = performRestPost(request.getBucketName(), request.getObjectKey(),
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), requestParameters, null, true);
+        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+
+        NewTransResult transResult = transObjectRequest(request);
+        transResult.setParams(requestParams);
+        transResult.setHeaders(headers);
+        Response response = performRequest(transResult);
+
         RenameResult result = new RenameResult();
         setHeadersAndStatus(result, response);
         return result;
@@ -77,9 +84,8 @@ public abstract class ObsFileService extends ObsObjectService {
             result = this.transWriteFileRequest(request);
 
             isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
-
-            response = performRestPut(request.getBucketName(), request.getObjectKey(), result.getHeaders(),
-                    result.getParams(), result.getBody(), true);
+            NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+            response = performRequest(newTransResult);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 if (result.getBody() instanceof Closeable) {
@@ -111,8 +117,8 @@ public abstract class ObsFileService extends ObsObjectService {
 
         TransResult result = this.transListContentSummaryRequest(listContentSummaryRequest);
 
-        Response httpResponse = performRestGet(listContentSummaryRequest.getBucketName(), null, result.getParams(),
-                null);
+        Response httpResponse = performRestGet(listContentSummaryRequest.getBucketName(), null,
+                result.getParams(), null, listContentSummaryRequest.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 

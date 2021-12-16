@@ -18,7 +18,10 @@ package com.obs.services.model;
  * Parameters in a request for listing versioning objects in a bucket
  */
 public class ListVersionsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.GET;
+    }
 
     private String prefix;
 
@@ -56,7 +59,7 @@ public class ListVersionsRequest extends GenericRequest {
      *            Maximum number of versioning objects to be listed
      */
     public ListVersionsRequest(String bucketName, int maxKeys) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.maxKeys = maxKeys;
     }
 
@@ -75,8 +78,8 @@ public class ListVersionsRequest extends GenericRequest {
      *            Maximum number of versioning objects to be listed
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter, int maxKeys) {
-        this(bucketName, maxKeys);
-        this.prefix = prefix;
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
         this.keyMarker = keyMarker;
         this.delimiter = delimiter;
     }
@@ -99,7 +102,11 @@ public class ListVersionsRequest extends GenericRequest {
      */
     public ListVersionsRequest(String bucketName, String prefix, String keyMarker, String delimiter,
                                int maxKeys, String encodingType) {
-        this(bucketName, prefix, keyMarker, delimiter, maxKeys);
+        this.bucketName = bucketName;
+        this.maxKeys = maxKeys;
+        this.prefix = prefix;
+        this.keyMarker = keyMarker;
+        this.delimiter = delimiter;
         this.encodingType = encodingType;
     }
 
@@ -119,25 +126,6 @@ public class ListVersionsRequest extends GenericRequest {
      */
     public String getEncodingType() {
         return encodingType;
-    }
-
-    /**
-     * Obtain the bucket name.
-     *
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     *
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     /**

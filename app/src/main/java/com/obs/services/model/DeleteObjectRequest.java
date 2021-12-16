@@ -19,15 +19,19 @@ package com.obs.services.model;
  * 
  * @since 3.20.3
  */
-public class DeleteObjectRequest extends GenericRequest {
-    private String bucketName;
+public class DeleteObjectRequest extends BaseObjectRequest {
 
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.DELETE;
+    }
     
     private String versionId;
 
     public DeleteObjectRequest() {
+    }
 
+    public DeleteObjectRequest(String bucketName) {
+        this.bucketName = bucketName;
     }
 
     /**
@@ -54,7 +58,8 @@ public class DeleteObjectRequest extends GenericRequest {
      *            Object version ID
      */
     public DeleteObjectRequest(String bucketName, String objectKey, String versionId) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.versionId = versionId;
     }
 
@@ -75,44 +80,6 @@ public class DeleteObjectRequest extends GenericRequest {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    /**
-     * Obtain the name of the bucket to which the to-be-deleted object belongs.
-     * 
-     * @return Name of the bucket to which the to-be-deleted object belongs
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the name of the bucket to which the to-be-deleted object belongs.
-     * 
-     * @param bucketName
-     *            Name of the bucket to which the to-be-deleted object belongs
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the name of the object to be deleted.
-     * 
-     * @return Name of the object to be deleted
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the name of the object to be deleted.
-     * 
-     * @param objectKey
-     *            Name of the object to be deleted
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     @Override

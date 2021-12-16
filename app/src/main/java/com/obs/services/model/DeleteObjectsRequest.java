@@ -22,7 +22,10 @@ import java.util.List;
  * Parameters in an object batch deletion request
  */
 public class DeleteObjectsRequest extends GenericRequest {
-    private String bucketName;
+
+    {
+        httpMethod = HttpMethodEnum.POST;
+    }
 
     private boolean quiet;
 
@@ -31,7 +34,6 @@ public class DeleteObjectsRequest extends GenericRequest {
     private String encodingType;
 
     public DeleteObjectsRequest() {
-
     }
 
     /**
@@ -57,7 +59,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            To-be-deleted object array
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions) {
-        this(bucketName);
+        this.bucketName = bucketName;
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
     }
@@ -77,27 +79,10 @@ public class DeleteObjectsRequest extends GenericRequest {
      *            The encoding type use for encode objectKey.
      */
     public DeleteObjectsRequest(String bucketName, boolean quiet, KeyAndVersion[] keyAndVersions, String encodingType) {
-        this(bucketName, quiet, keyAndVersions);
-        this.setEncodingType(encodingType);
-    }
-
-   /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+        this.quiet = quiet;
+        this.setKeyAndVersions(keyAndVersions);
+        this.setEncodingType(encodingType);
     }
 
     /**
@@ -148,7 +133,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public List<KeyAndVersion> getKeyAndVersionsList() {
         if (this.keyAndVersions == null) {
-            this.keyAndVersions = new ArrayList<KeyAndVersion>();
+            this.keyAndVersions = new ArrayList<>();
         }
         return this.keyAndVersions;
     }
@@ -196,7 +181,7 @@ public class DeleteObjectsRequest extends GenericRequest {
      */
     public void setKeyAndVersions(KeyAndVersion[] keyAndVersions) {
         if (keyAndVersions != null && keyAndVersions.length > 0) {
-            this.keyAndVersions = new ArrayList<KeyAndVersion>(Arrays.asList(keyAndVersions));
+            this.keyAndVersions = new ArrayList<>(Arrays.asList(keyAndVersions));
         }
     }
 

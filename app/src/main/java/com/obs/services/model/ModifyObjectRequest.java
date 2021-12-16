@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -23,13 +23,16 @@ import java.io.InputStream;
  */
 public class ModifyObjectRequest extends AppendObjectRequest {
 
+    {
+        this.httpMethod = HttpMethodEnum.PUT;
+    }
+
     public ModifyObjectRequest() {
-        super();
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -42,7 +45,7 @@ public class ModifyObjectRequest extends AppendObjectRequest {
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -51,13 +54,14 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            Local path to the file
      */
     public ModifyObjectRequest(String bucketName, String objectKey, File file) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = file;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -68,13 +72,15 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            Start position for writing data to a file
      */
     public ModifyObjectRequest(String bucketName, String objectKey, File file, long position) {
-        this(bucketName, objectKey, file);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.file = file;
         this.position = position;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -83,13 +89,14 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            Data stream to be uploaded
      */
     public ModifyObjectRequest(String bucketName, String objectKey, InputStream input) {
-        this(bucketName, objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.input = input;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Bucket name
      * @param objectKey
@@ -100,7 +107,9 @@ public class ModifyObjectRequest extends AppendObjectRequest {
      *            Start position for writing data to a file
      */
     public ModifyObjectRequest(String bucketName, String objectKey, InputStream input, long position) {
-        this(bucketName, objectKey, input);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
+        this.input = input;
         this.position = position;
     }
 }

@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -21,9 +21,14 @@ import com.obs.services.internal.ObsConstraint;
 
 /**
  * Parameters in a part upload request
- * 
+ *
  */
 public class UploadPartRequest extends AbstractMultipartRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private int partNumber;
 
     private Long partSize;
@@ -47,26 +52,24 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     public UploadPartRequest() {
-        super();
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      * @param objectKey
      *            Name of the object involved in the multipart upload
      */
     public UploadPartRequest(String bucketName, String objectKey) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      * @param objectKey
@@ -75,15 +78,14 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            File name to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, String fileName) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = new File(fileName);
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      * @param objectKey
@@ -92,15 +94,14 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, File file) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.file = file;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      * @param objectKey
@@ -111,16 +112,15 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            Data stream to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, InputStream input) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.input = input;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param bucketName
      *            Name of the bucket to which the multipart upload belongs
      * @param objectKey
@@ -134,9 +134,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      *            File to be uploaded
      */
     public UploadPartRequest(String bucketName, String objectKey, Long partSize, long offset, File file) {
-        super();
-        this.setBucketName(bucketName);
-        this.setObjectKey(objectKey);
+        this.bucketName = bucketName;
+        this.objectKey = objectKey;
         this.partSize = partSize;
         this.offset = offset;
         this.file = file;
@@ -144,7 +143,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain SSE-C encryption headers.
-     * 
+     *
      * @return SSE-C encryption headers
      */
     public SseCHeader getSseCHeader() {
@@ -153,7 +152,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set SSE-C encryption headers.
-     * 
+     *
      * @param sseCHeader
      *            SSE-C encryption headers
      */
@@ -164,7 +163,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Obtain the offset of the part in the file. The default value is 0 (in
      * bytes).
-     * 
+     *
      * @return Offset of the part in the file
      */
     public long getOffset() {
@@ -175,7 +174,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      * Set the start position of the to-be-uploaded content in the file. This
      * parameter is effective only when the path where the file is to be
      * uploaded is configured. The unit is byte and the default value is 0.
-     * 
+     *
      * @param offset
      *            Offset of the part in the file
      */
@@ -185,7 +184,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain the part number.
-     * 
+     *
      * @return Part number
      */
     public int getPartNumber() {
@@ -194,7 +193,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set the part number.
-     * 
+     *
      * @param partNumber
      *            Part number
      */
@@ -204,7 +203,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set the part size (in bytes).
-     * 
+     *
      * @param partSize
      *            Part size
      */
@@ -214,7 +213,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain the part size, in bytes.
-     * 
+     *
      * @return Part size
      */
     public Long getPartSize() {
@@ -224,7 +223,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Obtain the file to be uploaded, which cannot be used with the data
      * stream.
-     * 
+     *
      * @return File to be uploaded
      */
     public File getFile() {
@@ -233,7 +232,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set the file to be uploaded, which cannot be used with the data stream.
-     * 
+     *
      * @param file
      *            File to be uploaded
      */
@@ -245,7 +244,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Obtain the data stream to be uploaded, which cannot be used with the file
      * to be uploaded.
-     * 
+     *
      * @return Data stream to be uploaded
      */
     public InputStream getInput() {
@@ -255,7 +254,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Set the data stream to be uploaded, which cannot be used with the file to
      * be uploaded.
-     * 
+     *
      * @param input
      *            Data stream to be uploaded
      */
@@ -268,7 +267,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
      * Check whether the MD5 value of the data to be uploaded will be
      * automatically calculated. If the MD5 value is set, this parameter can be
      * ignored.
-     * 
+     *
      * @return Identifier specifying whether to automatically calculate the MD5
      *         value of the data to be uploaded
      */
@@ -279,7 +278,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Specify whether to automatically calculate the MD5 value of the data to
      * be uploaded. If the MD5 value is set, this parameter can be ignored.
-     * 
+     *
      * @param attachMd5
      *            Identifier specifying whether to automatically calculate the
      *            MD5 value of the data to be uploaded
@@ -290,7 +289,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set the MD5 value of the data to be uploaded.
-     * 
+     *
      * @return MD5 value of the data to be uploaded
      */
     public String getContentMd5() {
@@ -299,7 +298,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain the MD5 value of the data to be uploaded.
-     * 
+     *
      * @param contentMd5
      *            MD5 value of the data to be uploaded
      */
@@ -310,7 +309,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Check whether the input stream will be automatically closed. The default
      * value is "true".
-     * 
+     *
      * @return Identifier specifying whether the input stream will be
      *         automatically closed
      */
@@ -321,7 +320,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Specify whether to automatically close the input stream. The default
      * value is "true".
-     * 
+     *
      * @param autoClose
      *            Identifier specifying whether the input stream will be
      *            automatically closed
@@ -332,7 +331,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Obtain the data transfer listener.
-     * 
+     *
      * @return Data transfer listener
      */
     public ProgressListener getProgressListener() {
@@ -341,7 +340,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     /**
      * Set the data transfer listener.
-     * 
+     *
      * @param progressListener
      *            Data transfer listener
      */
@@ -352,7 +351,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Obtain the callback threshold of the data transfer listener. The default
      * value is 100 KB.
-     * 
+     *
      * @return Callback threshold of the data transfer listener
      */
     public long getProgressInterval() {
@@ -362,7 +361,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     /**
      * Set the callback threshold of the data transfer listener. The default
      * value is 100 KB.
-     * 
+     *
      * @param progressInterval
      *            Callback threshold of the data transfer listener
      */
@@ -372,7 +371,7 @@ public class UploadPartRequest extends AbstractMultipartRequest {
 
     @Override
     public String toString() {
-        return "UploadPartRequest [uploadId=" + this.getUploadId() + ", bucketName=" + this.getBucketName() 
+        return "UploadPartRequest [uploadId=" + this.getUploadId() + ", bucketName=" + this.getBucketName()
                 + ", objectKey=" + this.getObjectKey()
                 + ", partNumber=" + partNumber + ", partSize=" + partSize + ", offset=" + offset + ", sseCHeader="
                 + sseCHeader + ", contentMd5=" + contentMd5 + ", attachMd5=" + attachMd5 + ", file=" + file + ", input="

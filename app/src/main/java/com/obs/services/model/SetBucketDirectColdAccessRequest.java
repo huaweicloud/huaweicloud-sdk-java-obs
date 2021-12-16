@@ -20,10 +20,15 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class SetBucketDirectColdAccessRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private BucketDirectColdAccess access;
 
     public SetBucketDirectColdAccessRequest(String bucketName, BucketDirectColdAccess access) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.access = access;
     }
 

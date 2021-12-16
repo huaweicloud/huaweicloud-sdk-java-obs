@@ -20,10 +20,22 @@ package com.obs.services.model;
  *
  */
 public class SetBucketReplicationRequest extends BaseBucketRequest {
+
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
+
     private ReplicationConfiguration replicationConfiguration;
-    
+
+    public SetBucketReplicationRequest() {
+    }
+
+    public SetBucketReplicationRequest(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
     public SetBucketReplicationRequest(String bucketName, ReplicationConfiguration replicationConfiguration) {
-        super(bucketName);
+        this.bucketName = bucketName;
         this.replicationConfiguration = replicationConfiguration;
     }
 

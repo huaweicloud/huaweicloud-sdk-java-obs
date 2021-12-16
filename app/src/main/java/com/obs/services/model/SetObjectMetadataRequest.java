@@ -20,11 +20,11 @@ import java.util.Map;
 /**
  * Parameters in a request for setting object properties
  */
-public class SetObjectMetadataRequest extends GenericRequest {
+public class SetObjectMetadataRequest extends BaseObjectRequest {
 
-    private String bucketName;
-
-    private String objectKey;
+    {
+        httpMethod = HttpMethodEnum.PUT;
+    }
 
     private String versionId;
 
@@ -70,44 +70,6 @@ public class SetObjectMetadataRequest extends GenericRequest {
         this.bucketName = bucketName;
         this.objectKey = objectKey;
         this.versionId = versionId;
-    }
-
-    /**
-     * Obtain the bucket name.
-     * 
-     * @return Bucket name
-     */
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    /**
-     * Set the bucket name.
-     * 
-     * @param bucketName
-     *            Bucket name
-     */
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    /**
-     * Obtain the object name.
-     * 
-     * @return Object name
-     */
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    /**
-     * Set the object name.
-     * 
-     * @param objectKey
-     *            Object name
-     */
-    public void setObjectKey(String objectKey) {
-        this.objectKey = objectKey;
     }
 
     /**
