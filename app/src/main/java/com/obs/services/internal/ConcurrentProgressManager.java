@@ -62,14 +62,18 @@ public class ConcurrentProgressManager extends ProgressManager {
     protected void doProgressChanged(int bytes) {
         long transferred = this.transferredBytes.addAndGet(bytes);
         long newlyTransferred = this.newlyTransferredBytes.addAndGet(bytes);
+        // 获取当前时间戳，减去上次更新速度的时间，如若时间差大于 1000ms，则对上一秒传输字节数进行更新
         long now = System.currentTimeMillis();
+        // 采用局部变量保证线程安全
         long swapIntervalTime = now - lastSwapTimeStamp.get();
         currentSecondBytes.addAndGet(bytes);
+        // 上一秒传输字节设置为 当前传输字节 / 耗时，更新当前传输字节为 0，重设更新时间
         if (swapIntervalTime > 1000) {
             lastSecondBytes.set((long) (currentSecondBytes.get() / (swapIntervalTime / 1000.0)));
             currentSecondBytes.set(0);
             lastSwapTimeStamp.set(now);
         }
+        // 当新传输字节数大于用户设置阈值时更新回调函数，其中瞬时速度使用上一秒传输字节数作为近似值
         if (newlyTransferred >= this.intervalBytes
                 && (transferred < this.totalBytes || this.totalBytes == -1)) {
             if (this.newlyTransferredBytes.compareAndSet(newlyTransferred, -newlyTransferred)) {
