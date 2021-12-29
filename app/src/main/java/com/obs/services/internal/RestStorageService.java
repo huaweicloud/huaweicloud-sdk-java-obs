@@ -18,7 +18,6 @@ import com.obs.log.ILogger;
 import com.obs.log.InterfaceLogBean;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants.CommonHeaders;
-import com.obs.services.internal.consensus.CacheManager;
 import com.obs.services.internal.ext.ExtObsConstraint;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.UnrecoverableIOException;
@@ -106,8 +105,8 @@ public abstract class RestStorageService extends RestConnectionService {
      *
      * @param builder Request in OKHttp3.0
      */
-    private void addUserHeaderToRequest(Request.Builder builder, boolean needEncode) {
-        Map<String, String> userHeaderMap = formatMetadataAndHeader(userHeaders.get(), needEncode);
+    private void addUserHeaderToRequest(String bucketName, Request.Builder builder, boolean needEncode) {
+        Map<String, String> userHeaderMap = formatMetadataAndHeader(bucketName, userHeaders.get(), needEncode);
         for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
@@ -116,7 +115,7 @@ public abstract class RestStorageService extends RestConnectionService {
         }
     }
 
-    private Map<String, String> formatMetadataAndHeader(Map<String, String> metadataAndHeader,
+    private Map<String, String> formatMetadataAndHeader(String bucketName, Map<String, String> metadataAndHeader,
                                                         boolean needEncode) {
         Map<String, String> format = new HashMap<>();
         if (metadataAndHeader != null) {
@@ -127,13 +126,14 @@ public abstract class RestStorageService extends RestConnectionService {
                     continue;
                 }
                 key = key.trim();
-                if (!key.startsWith(this.getRestHeaderPrefix()) && !key.startsWith(Constants.OBS_HEADER_PREFIX)
+                if (!key.startsWith(this.getRestHeaderPrefix(bucketName))
+                        && !key.startsWith(Constants.OBS_HEADER_PREFIX)
                         && !Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES
                         .contains(key.toLowerCase(Locale.getDefault()))) {
-                    key = this.getRestMetadataPrefix() + key;
+                    key = this.getRestMetadataPrefix(bucketName) + key;
                 }
                 try {
-                    if (key.startsWith(this.getRestMetadataPrefix())) {
+                    if (key.startsWith(this.getRestMetadataPrefix(bucketName))) {
                         if (needEncode) {
                             key = RestUtils.uriEncode(key, true);
                         }
@@ -190,7 +190,7 @@ public abstract class RestStorageService extends RestConnectionService {
         return !call.isCanceled();
     }
 
-    private ServiceException handleThrowable(Request request, Response response, Call call,
+    private ServiceException handleThrowable(String bucketName, Request request, Response response, Call call,
                                              Throwable t, boolean needEncode) {
         ServiceException serviceException = (t instanceof ServiceException) ? (ServiceException) t
                 : new ServiceException("Request Error: " + t, t);
@@ -205,11 +205,11 @@ public abstract class RestStorageService extends RestConnectionService {
             serviceException.setResponseDate(response.header(CommonHeaders.DATE));
             serviceException.setErrorIndicator(response.header(CommonHeaders.X_RESERVED_INDICATOR));
             serviceException.setResponseHeaders(ServiceUtils.cleanRestMetadataMapV2(
-                    convertHeadersToMap(response.headers()), getRestHeaderPrefix(),
-                    getRestMetadataPrefix(), needEncode));
+                    convertHeadersToMap(response.headers()), getRestHeaderPrefix(bucketName),
+                    getRestMetadataPrefix(bucketName), needEncode));
             if (!ServiceUtils.isValid(serviceException.getErrorRequestId())) {
-                serviceException.setRequestAndHostIds(response.header(getIHeaders().requestIdHeader()),
-                        response.header(getIHeaders().requestId2Header()));
+                serviceException.setRequestAndHostIds(response.header(getIHeaders(bucketName).requestIdHeader()),
+                        response.header(getIHeaders(bucketName).requestId2Header()));
             }
         }
 
@@ -372,7 +372,7 @@ public abstract class RestStorageService extends RestConnectionService {
         try {
             tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo, needEncode);
         } catch (Throwable t) {
-            throw this.handleThrowable(requestInfo.getRequest(),
+            throw this.handleThrowable(bucketName, requestInfo.getRequest(),
                     requestInfo.getResponse(), requestInfo.getCall(), t, needEncode);
         }
 
@@ -394,7 +394,7 @@ public abstract class RestStorageService extends RestConnectionService {
                                       boolean autoRelease, boolean isOEF) {
         Request.Builder builder = setupConnection(result.getHttpMethod(), result.getBucketName(),
                 result.getObjectKey(), result.getParams(), result.getBody(), isOEF);
-        renameMetadataKeys(builder, result.getHeaders(), result.isEncodeHeaders());
+        renameMetadataKeys(result.getBucketName(), builder, result.getHeaders(), result.isEncodeHeaders());
         if (result.getUserHeaders() != null) {
             result.getUserHeaders().forEach(builder::addHeader);
         }
@@ -404,7 +404,7 @@ public abstract class RestStorageService extends RestConnectionService {
             tryRequest(result.getParams(), result.getBucketName(), needSignature,
                     isOEF, requestInfo, result.isEncodeHeaders());
         } catch (Throwable t) {
-            throw this.handleThrowable(requestInfo.getRequest(),
+            throw this.handleThrowable(result.getBucketName(), requestInfo.getRequest(),
                     requestInfo.getResponse(), requestInfo.getCall(), t, result.isEncodeHeaders());
         }
 
@@ -422,13 +422,11 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private void tryRequest(Map<String, String> requestParameters, String bucketName, boolean doSignature,
                             boolean isOEF, RequestInfo requestInfo, boolean needEncode) throws Exception {
-        requestInfo.setRequest(initRequest(requestInfo.getRequest(), needEncode));
+        requestInfo.setRequest(initRequest(bucketName, requestInfo.getRequest(), needEncode));
 
-        if (log.isDebugEnabled()) {
-            log.debug("Performing " + requestInfo.getRequest().method()
-                    + " request for '" + requestInfo.getRequest().url());
-            log.debug("Headers: " + requestInfo.getRequest().headers());
-        }
+        log.debug("Performing " + requestInfo.getRequest().method()
+                + " request for '" + requestInfo.getRequest().url());
+        log.debug("Headers: " + requestInfo.getRequest().headers());
 
         RetryController retryController = new RetryController(new RetryCounter(
                 obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
@@ -454,7 +452,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
             int responseCode = requestInfo.getResponse().code();
             requestInfo.getReqBean().setRespParams("[responseCode: " + responseCode + "][request-id: "
-                    + requestInfo.getResponse().header(this.getIHeaders().requestIdHeader(), "") + "]");
+                    + requestInfo.getResponse().header(this.getIHeaders(bucketName).requestIdHeader(), "") + "]");
 
             String contentType = requestInfo.getResponse().header(CommonHeaders.CONTENT_TYPE);
             if (log.isDebugEnabled()) {
@@ -712,24 +710,24 @@ public abstract class RestStorageService extends RestConnectionService {
         return request;
     }
 
-    private Request initRequest(Request request, boolean needEncode) {
+    private Request initRequest(String bucketName, Request request, boolean needEncode) {
         if (userHeaders.get() != null && userHeaders.get().size() > 0) {
             // create a new Builder from current Request
             Request.Builder builderTmp = request.newBuilder();
             // add user header
-            addUserHeaderToRequest(builderTmp, needEncode);
+            addUserHeaderToRequest(bucketName, builderTmp, needEncode);
             // build new request
             request = builderTmp.build();
         }
         return request;
     }
 
-    protected String getRestMetadataPrefix() {
-        return this.getIHeaders().headerMetaPrefix();
+    protected String getRestMetadataPrefix(String bucketName) {
+        return this.getIHeaders(bucketName).headerMetaPrefix();
     }
 
-    protected String getRestHeaderPrefix() {
-        return this.getIHeaders().headerPrefix();
+    protected String getRestHeaderPrefix(String bucketName) {
+        return this.getIHeaders(bucketName).headerPrefix();
     }
 
     private boolean isProviderCredentialsInValid(ProviderCredentials providerCredentials) {
@@ -760,8 +758,8 @@ public abstract class RestStorageService extends RestConnectionService {
         return uri;
     }
 
-    private Date parseDate(Request request, boolean isV4) {
-        String dateHeader = this.getIHeaders().dateHeader();
+    private Date parseDate(String bucketName, Request request, boolean isV4) {
+        String dateHeader = this.getIHeaders(bucketName).dateHeader();
         String date = request.header(dateHeader);
 
         if (date != null) {
@@ -789,7 +787,7 @@ public abstract class RestStorageService extends RestConnectionService {
         if (isProviderCredentialsInValid(providerCredentials)) {
             providerCredentials = this.getProviderCredentials();
         } else {
-            providerCredentials.setAuthType(this.getProviderCredentials().getAuthType());
+            providerCredentials.setAuthType(this.getProviderCredentials().getLocalAuthType(bucketName));
         }
         if (isProviderCredentialsInValid(providerCredentials)) {
             if (log.isInfoEnabled()) {
@@ -798,16 +796,16 @@ public abstract class RestStorageService extends RestConnectionService {
             return request;
         }
 
-        boolean isV4 = providerCredentials.getAuthType() == AuthTypeEnum.V4;
+        boolean isV4 = providerCredentials.getLocalAuthType(bucketName) == AuthTypeEnum.V4;
 
-        Date now = parseDate(request, isV4);
+        Date now = parseDate(bucketName, request, isV4);
 
         builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
 
         BasicSecurityKey securityKey = providerCredentials.getSecurityKey();
         String securityToken = securityKey.getSecurityToken();
         if (ServiceUtils.isValid(securityToken)) {
-            builder.header(this.getIHeaders().securityTokenHeader(), securityToken);
+            builder.header(this.getIHeaders(bucketName).securityTokenHeader(), securityToken);
         }
 
         String fullUrl = uri.getRawPath();
@@ -833,16 +831,16 @@ public abstract class RestStorageService extends RestConnectionService {
 
         IAuthentication iauthentication;
         if (isV4) {
-            builder.header(this.getIHeaders().contentSha256Header(), V4Authentication.CONTENT_SHA256);
+            builder.header(this.getIHeaders(bucketName).contentSha256Header(), V4Authentication.CONTENT_SHA256);
             iauthentication = V4Authentication.makeServiceCanonicalString(request.method(),
                     convertHeadersToMap(builder.build().headers()), fullUrl, providerCredentials, now, securityKey);
             if (log.isDebugEnabled()) {
                 log.debug("CanonicalRequest:" + iauthentication.getCanonicalRequest());
             }
         } else {
-            iauthentication = Constants.AUTHTICATION_MAP.get(providerCredentials.getAuthType()).makeAuthorizationString(
-                    request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
-                    Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
+            iauthentication = Constants.AUTHTICATION_MAP.get(providerCredentials.getLocalAuthType(bucketName))
+                    .makeAuthorizationString(request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
+                            Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
         }
         log.debug("StringToSign ('|' is a newline): "
                 + iauthentication.getStringToSign().replace('\n', '|'));
@@ -858,7 +856,7 @@ public abstract class RestStorageService extends RestConnectionService {
                                        boolean needEncode) throws ServiceException {
         Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null);
 
-        addRequestHeadersToConnection(builder, requestHeaders);
+        addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         if (userHeaders != null) {
             userHeaders.forEach(builder::addHeader);
         }
@@ -879,7 +877,7 @@ public abstract class RestStorageService extends RestConnectionService {
         Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
                 false, true);
 
-        addRequestHeadersToConnection(builder, requestHeaders);
+        addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         return performRequest(builder.build(), requestParameters, bucketName, true, false);
     }
 
@@ -897,7 +895,7 @@ public abstract class RestStorageService extends RestConnectionService {
         Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
                 isOEF);
 
-        addRequestHeadersToConnection(builder, requestHeaders);
+        addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         if (userHeaders != null) {
             userHeaders.forEach(builder::addHeader);
         }
@@ -918,7 +916,7 @@ public abstract class RestStorageService extends RestConnectionService {
         Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters, null,
                 isOEF);
 
-        renameMetadataKeys(builder, metadata);
+        renameMetadataKeys(bucketName, builder, metadata);
         if (userHeaders != null) {
             userHeaders.forEach(builder::addHeader);
         }
@@ -945,7 +943,7 @@ public abstract class RestStorageService extends RestConnectionService {
         Request.Builder builder = setupConnection(HttpMethodEnum.OPTIONS, bucketName, objectKey, requestParameters,
                 null);
 
-        addRequestHeadersToConnection(builder, metadata);
+        addRequestHeadersToConnection(bucketName, builder, metadata);
 
         Response result = performRequest(builder.build(), requestParameters, bucketName);
 
@@ -968,7 +966,7 @@ public abstract class RestStorageService extends RestConnectionService {
             builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null, false, true);
         }
 
-        addRequestHeadersToConnection(builder, requestHeaders);
+        addRequestHeadersToConnection(bucketName, builder, requestHeaders);
 
         return performRequestWithoutSignature(builder.build(), requestParameters, bucketName);
     }
@@ -1007,8 +1005,9 @@ public abstract class RestStorageService extends RestConnectionService {
         this.credentials = credentials;
     }
 
-    protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata, boolean needEncode) {
-        Map<String, String> convertedMetadata = formatMetadataAndHeader(metadata, needEncode);
+    protected void renameMetadataKeys(String bucketName, Request.Builder builder, Map<String, String> metadata,
+                                      boolean needEncode) {
+        Map<String, String> convertedMetadata = formatMetadataAndHeader(bucketName, metadata, needEncode);
         for (Map.Entry<String, String> entry : convertedMetadata.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
@@ -1017,15 +1016,16 @@ public abstract class RestStorageService extends RestConnectionService {
         }
     }
 
-    protected void renameMetadataKeys(Request.Builder builder, Map<String, String> metadata) {
-        renameMetadataKeys(builder, metadata, true);
+    protected void renameMetadataKeys(String bucketName, Request.Builder builder, Map<String, String> metadata) {
+        renameMetadataKeys(bucketName, builder, metadata, true);
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
         return new XmlResponsesSaxParser();
     }
 
-    protected void addRequestHeadersToConnection(Request.Builder builder, Map<String, String> requestHeaders) {
+    protected void addRequestHeadersToConnection(String bucketName, Request.Builder builder,
+                                                 Map<String, String> requestHeaders) {
         if (requestHeaders != null) {
             for (Map.Entry<String, String> entry : requestHeaders.entrySet()) {
                 String key = entry.getKey();
@@ -1036,7 +1036,7 @@ public abstract class RestStorageService extends RestConnectionService {
                 key = key.trim();
 
                 if (!Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase(Locale.getDefault()))
-                        && !key.startsWith(this.getRestHeaderPrefix())) {
+                        && !key.startsWith(this.getRestHeaderPrefix(bucketName))) {
                     continue;
                 }
                 builder.addHeader(key, value);
@@ -1047,20 +1047,16 @@ public abstract class RestStorageService extends RestConnectionService {
         }
     }
 
-    protected IHeaders getIHeaders() {
-        return Constants.HEADERS_MAP.get(this.getProviderCredentials().getAuthType());
+    protected IHeaders getIHeaders(String bucketName) {
+        return Constants.HEADERS_MAP.get(this.getProviderCredentials().getLocalAuthType(bucketName));
     }
 
-    protected IConvertor getIConvertor() {
-        return Constants.CONVERTOR_MAP.get(this.getProviderCredentials().getAuthType());
+    protected IConvertor getIConvertor(String bucketName) {
+        return Constants.CONVERTOR_MAP.get(this.getProviderCredentials().getLocalAuthType(bucketName));
     }
 
     protected boolean isAuthTypeNegotiation() {
         return this.obsProperties.getBoolProperty(ObsConstraint.AUTH_TYPE_NEGOTIATION, true);
-    }
-
-    protected CacheManager getApiVersionCache() {
-        return apiVersionCache;
     }
 
     protected String getFileSystemDelimiter() {

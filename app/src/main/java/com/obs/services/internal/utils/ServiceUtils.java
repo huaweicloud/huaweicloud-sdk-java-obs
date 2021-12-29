@@ -337,7 +337,6 @@ public class ServiceUtils {
         return ReflectUtils.toBase64(data);
     }
 
-
     public static String join(List<?> items, String delimiter, boolean needTrim) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.size(); i++) {

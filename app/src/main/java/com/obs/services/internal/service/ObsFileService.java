@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -43,12 +43,13 @@ import java.util.Map;
 
 public abstract class ObsFileService extends ObsObjectService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsFileService.class);
-    
+
     protected TruncateFileResult truncateFileImpl(TruncateFileRequest request) throws ServiceException {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(SpecialParamEnum.TRUNCATE.getOriginalStringCode(), "");
         requestParams.put(Constants.ObsRequestParams.LENGTH, String.valueOf(request.getNewLength()));
-        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        Map<String, String> headers = transRequestPaymentHeaders(request, null,
+                this.getIHeaders(request.getBucketName()));
         NewTransResult transResult = transObjectRequest(request);
         transResult.setParams(requestParams);
         transResult.setHeaders(headers);
@@ -63,7 +64,8 @@ public abstract class ObsFileService extends ObsObjectService {
         requestParams.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
         requestParams.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
 
-        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        Map<String, String> headers = transRequestPaymentHeaders(request, null,
+                this.getIHeaders(request.getBucketName()));
 
         NewTransResult transResult = transObjectRequest(request);
         transResult.setParams(requestParams);
@@ -74,7 +76,7 @@ public abstract class ObsFileService extends ObsObjectService {
         setHeadersAndStatus(result, response);
         return result;
     }
-    
+
     protected ObsFSFile writeFileImpl(WriteFileRequest request) throws ServiceException {
         TransResult result = null;
         Response response;
@@ -83,7 +85,7 @@ public abstract class ObsFileService extends ObsObjectService {
         try {
             result = this.transWriteFileRequest(request);
 
-            isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
+            isExtraAclPutRequired = !prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), acl);
             NewTransResult newTransResult = transObjectRequestWithResult(result, request);
             response = performRequest(newTransResult);
         } finally {
@@ -95,8 +97,10 @@ public abstract class ObsFileService extends ObsObjectService {
         }
 
         ObsFSFile ret = new ObsFSFile(request.getBucketName(), request.getObjectKey(),
-                response.header(CommonHeaders.ETAG), response.header(this.getIHeaders().versionIdHeader()),
-                StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())),
+                response.header(CommonHeaders.ETAG),
+                response.header(this.getIHeaders(request.getBucketName()).versionIdHeader()),
+                StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
+                        .storageClassHeader())),
                 this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
 
         setHeadersAndStatus(ret, response);
@@ -111,7 +115,7 @@ public abstract class ObsFileService extends ObsObjectService {
         }
         return ret;
     }
-    
+
     protected ListContentSummaryResult listContentSummaryImpl(ListContentSummaryRequest listContentSummaryRequest)
             throws ServiceException {
 
@@ -128,7 +132,7 @@ public abstract class ObsFileService extends ObsObjectService {
 
         ListContentSummaryResult contentSummaryResult = new ListContentSummaryResult.Builder()
                 .folderContentSummaries(listContentSummaryHandler.getFolderContentSummaries())
-                .bucketName(listContentSummaryHandler.getBucketName() == null 
+                .bucketName(listContentSummaryHandler.getBucketName() == null
                         ? listContentSummaryRequest.getBucketName() : listContentSummaryHandler.getBucketName())
                 .truncated(listContentSummaryHandler.isListingTruncated())
                 .prefix(listContentSummaryHandler.getRequestPrefix() == null ? listContentSummaryRequest.getPrefix()
@@ -136,10 +140,11 @@ public abstract class ObsFileService extends ObsObjectService {
                 .marker(listContentSummaryHandler.getRequestMarker() == null ? listContentSummaryRequest.getMarker()
                         : listContentSummaryHandler.getRequestMarker())
                 .maxKeys(listContentSummaryHandler.getRequestMaxKeys())
-                .delimiter(listContentSummaryHandler.getRequestDelimiter() == null 
+                .delimiter(listContentSummaryHandler.getRequestDelimiter() == null
                         ? listContentSummaryRequest.getDelimiter() : listContentSummaryHandler.getRequestDelimiter())
                 .nextMarker(listContentSummaryHandler.getMarkerForNextListing())
-                .location(httpResponse.header(this.getIHeaders().bucketRegionHeader()))
+                .location(httpResponse
+                        .header(this.getIHeaders(listContentSummaryRequest.getBucketName()).bucketRegionHeader()))
                 .builder();
 
         setHeadersAndStatus(contentSummaryResult, httpResponse);

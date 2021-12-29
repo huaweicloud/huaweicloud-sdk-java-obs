@@ -43,6 +43,34 @@ public class TestTools {
     }
 
     /**
+     * 获取自定义内部环境
+     */
+    public static ObsClient getCustomPipelineEnvironment() {
+        try {
+            String endPoint = PropertiesTools.getInstance(file).getProperties("environment.endpoint");
+            String ak = PropertiesTools.getInstance(file).getProperties("environment.ak");
+            String sk = PropertiesTools.getInstance(file).getProperties("environment.sk");
+            String authType = PropertiesTools.getInstance(file).getProperties("environment.authType");
+            ObsConfiguration config = new ObsConfiguration();
+            config.setSocketTimeout(30000);
+            config.setConnectionTimeout(10000);
+            config.setEndPoint(endPoint);
+            config.setLocalAuthTypeCacheCapacity(3);
+            if (authType.equals("v2")) {
+                config.setAuthType(AuthTypeEnum.V2);
+            } else {
+                config.setAuthType(AuthTypeEnum.OBS);
+            }
+            return new ObsClient(ak, sk, config);
+
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
      * 获取内部环境
      */
     public static ObsClient getPipelineEnvironment() {

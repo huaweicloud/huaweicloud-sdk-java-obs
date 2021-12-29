@@ -53,7 +53,8 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.TRUNCATE.getOriginalStringCode(), "");
         requestParameters.put(Constants.ObsRequestParams.LENGTH, String.valueOf(request.getNewLength()));
-        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        Map<String, String> headers = transRequestPaymentHeaders(request, null,
+                this.getIHeaders(request.getBucketName()));
         NewTransResult transResult = transObjectRequest(request);
         transResult.setHeaders(headers);
         transResult.setParams(requestParameters);
@@ -68,7 +69,8 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         requestParams.put(SpecialParamEnum.RENAME.getOriginalStringCode(), "");
         requestParams.put(Constants.ObsRequestParams.NAME, request.getNewObjectKey());
 
-        Map<String, String> headers = transRequestPaymentHeaders(request, null, this.getIHeaders());
+        Map<String, String> headers = transRequestPaymentHeaders(request, null,
+                this.getIHeaders(request.getBucketName()));
 
         NewTransResult transResult = transObjectRequest(request);
         transResult.setParams(requestParams);
@@ -93,10 +95,10 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         }
 
         Map<String, String> headers = new HashMap<>();
-        String xml = this.getIConvertor().transRestoreObjectRequest(request);
+        String xml = this.getIConvertor(request.getBucketName()).transRestoreObjectRequest(request);
         headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
-        transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
 
         NewTransResult transResult = transObjectRequest(request);
         transResult.setParams(requestParams);
@@ -119,7 +121,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         try {
             result = this.transAppendObjectRequest(request);
 
-            isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
+            isExtraAclPutRequired = !prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), acl);
 
             NewTransResult newTransResult = transObjectRequestWithResult(result, request);
             response = performRequest(newTransResult);
@@ -129,10 +131,11 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 ServiceUtils.closeStream(entity);
             }
         }
-        String nextPosition = response.header(this.getIHeaders().nextPositionHeader());
+        String nextPosition = response.header(this.getIHeaders(request.getBucketName()).nextPositionHeader());
         AppendObjectResult ret = new AppendObjectResult(request.getBucketName(), request.getObjectKey(),
                 response.header(CommonHeaders.ETAG), nextPosition != null ? Long.parseLong(nextPosition) : -1,
-                StorageClassEnum.getValueFromCode(response.header(this.getIHeaders().storageClassHeader())),
+                StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
+                        .storageClassHeader())),
                 this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
 
         setHeadersAndStatus(ret, response);
@@ -157,7 +160,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
         try {
             result = this.transModifyObjectRequest(request);
 
-            isExtraAclPutRequired = !prepareRESTHeaderAcl(result.getHeaders(), acl);
+            isExtraAclPutRequired = !prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), acl);
             // todo prepareRESTHeaderAcl 也会操作头域，下次重构可以将其合并
             NewTransResult newTransResult = transObjectRequestWithResult(result, request);
             response = performRequest(newTransResult);

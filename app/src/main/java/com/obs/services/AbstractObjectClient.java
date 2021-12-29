@@ -69,8 +69,10 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
                 } catch (ServiceException e) {
                     if (AbstractObjectClient.this.isAuthTypeNegotiation() && e.getResponseCode() == 400
                             && "Unsupported Authorization Type".equals(e.getErrorMessage())
-                            && AbstractObjectClient.this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS) {
-                        AbstractObjectClient.this.getProviderCredentials().setThreadLocalAuthType(AuthTypeEnum.V2);
+                            && AbstractObjectClient.this.getProviderCredentials()
+                            .getLocalAuthType(request.getBucketName()) == AuthTypeEnum.OBS) {
+                        AbstractObjectClient.this.getProviderCredentials()
+                                .setLocalAuthType(request.getBucketName(), AuthTypeEnum.V2);
                         return AbstractObjectClient.this.doesObjectExistImpl(request);
                     } else {
                         throw e;

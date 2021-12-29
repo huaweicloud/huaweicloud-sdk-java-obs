@@ -105,6 +105,8 @@ public class ObsConstraint {
 
     public static final int DEFAULT_TASK_PROGRESS_INTERVAL = 50;
 
+    public static final int DEFAULT_LOCAL_AUTH_TYPE_CACHE_CAPACITY = 50;
+
     // HTTP代理配置
     public static final String PROXY_ISABLE = "httpclient.proxy-enable";
 
