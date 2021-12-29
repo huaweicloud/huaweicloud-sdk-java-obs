@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -45,8 +45,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
-        headers.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
+        headers.put((this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
+                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
         NewTransResult result = new NewTransResult();
         result.setParams(requestParams);
         result.setHttpMethod(HttpMethodEnum.PUT);
@@ -83,9 +83,9 @@ public abstract class ObsExtensionService extends ObsFileService {
     }
 
     private Response performRestGet(String bucketName, Map<String, String> requestParams,
-            Map<String, String> metadata) {
-        metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
+                                    Map<String, String> metadata) {
+        metadata.put((this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
+                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
         Response response = performRestGet(bucketName, null, requestParams, metadata, null, true);
 
@@ -98,8 +98,8 @@ public abstract class ObsExtensionService extends ObsFileService {
         requestParams.put(RequestParamEnum.EXTENSION_POLICY.getOriginalStringCode(), "");
 
         Map<String, String> metadata = new HashMap<>();
-        metadata.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
+        metadata.put((this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
+                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
         Response response = performRestDelete(bucketName, null, requestParams, metadata, null, true, true);
         return this.build(response);
@@ -112,8 +112,8 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
-        headers.put((this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX
-                : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
+        headers.put((this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
+                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + Constants.OEF_MARKER, Constants.YES);
 
         NewTransResult result = new NewTransResult();
         result.setBucketName(bucketName);

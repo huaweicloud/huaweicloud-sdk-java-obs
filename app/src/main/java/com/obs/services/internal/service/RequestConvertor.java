@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
@@ -13,7 +13,6 @@
  */
 
 package com.obs.services.internal.service;
-
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -96,19 +95,20 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
         Map<String, String> headers = new HashMap<String, String>();
         if (request.getListTimeout() > 0) {
-            putHeader(headers, this.getIHeaders().listTimeoutHeader(), String.valueOf(request.getListTimeout()));
+            putHeader(headers, this.getIHeaders(request.getBucketName()).listTimeoutHeader(),
+                    String.valueOf(request.getListTimeout()));
         }
 
-        this.transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        this.transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
 
         return new TransResult(headers, params, null);
     }
 
-    protected TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request) 
+    protected TransResult transInitiateMultipartUploadRequest(InitiateMultipartUploadRequest request)
             throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-        IConvertor iconvertor = this.getIConvertor();
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
+        IConvertor iconvertor = this.getIConvertor(request.getBucketName());
 
         ObjectMetadata objectMetadata = request.getMetadata() == null ? new ObjectMetadata() : request.getMetadata();
 
@@ -127,7 +127,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
         }
 
-        setBaseHeaderFromMetadata(headers, objectMetadata);
+        setBaseHeaderFromMetadata(request.getBucketName(), headers, objectMetadata);
 
         transRequestPaymentHeaders(request, headers, iheaders);
 
@@ -179,7 +179,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                 for (String domainId : domainIds) {
                     domainIdList.add("id=" + domainId);
                 }
-                putHeader(headers, getHeaderByMethodName(extensionPermissionEnum.getCode()),
+                putHeader(headers, getHeaderByMethodName(request.getBucketName(), extensionPermissionEnum.getCode()),
                         ServiceUtils.join(domainIdList, ","));
             }
         }
@@ -190,11 +190,11 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (null != request.getSseCHeader()) {
             this.transSseCHeaders(request.getSseCHeader(), headers, iheaders);
         } else if (null != request.getSseKmsHeader()) {
-            this.transSseKmsHeaders(request.getSseKmsHeader(), headers, iheaders);
+            this.transSseKmsHeaders(request.getSseKmsHeader(), headers, iheaders, request.getBucketName());
         }
     }
 
-    protected void transSseCHeaders(SseCHeader ssecHeader, Map<String, String> headers, IHeaders iheaders) 
+    protected void transSseCHeaders(SseCHeader ssecHeader, Map<String, String> headers, IHeaders iheaders)
             throws ServiceException {
         if (ssecHeader == null) {
             return;
@@ -230,27 +230,28 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
     protected TransResult transCreateBucketRequest(CreateBucketRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        IConvertor convertor = this.getIConvertor();
+        IConvertor convertor = this.getIConvertor(request.getBucketName());
 
         if (request.getBucketStorageClass() != null) {
-            putHeader(headers, getIHeaders().defaultStorageClassHeader(),
+            putHeader(headers, getIHeaders(request.getBucketName()).defaultStorageClassHeader(),
                     convertor.transStorageClass(request.getBucketStorageClass()));
         }
 
         if (request.getEpid() != null) {
-            putHeader(headers, getIHeaders().epidHeader(), request.getEpid());
+            putHeader(headers, getIHeaders(request.getBucketName()).epidHeader(), request.getEpid());
         }
 
         if (request instanceof NewBucketRequest) {
-            putHeader(headers, getIHeaders().fsFileInterfaceHeader(), Constants.ENABLED);
+            putHeader(headers, getIHeaders(request.getBucketName()).fsFileInterfaceHeader(), Constants.ENABLED);
         }
 
         if (null != request.getBucketType() && BucketTypeEnum.PFS == request.getBucketType()) {
-            putHeader(headers, getIHeaders().fsFileInterfaceHeader(), Constants.ENABLED);
+            putHeader(headers, getIHeaders(request.getBucketName()).fsFileInterfaceHeader(), Constants.ENABLED);
         }
 
         if (request.getAvailableZone() != null) {
-            putHeader(headers, getIHeaders().azRedundancyHeader(), request.getAvailableZone().getCode());
+            putHeader(headers, getIHeaders(request.getBucketName()).azRedundancyHeader(),
+                    request.getAvailableZone().getCode());
         }
 
         Set<ExtensionBucketPermissionEnum> extensionPermissionEnums = request.getAllGrantPermissions();
@@ -261,7 +262,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                 for (String domainId : domainIds) {
                     domainIdList.add("id=" + domainId);
                 }
-                putHeader(headers, getHeaderByMethodName(extensionPermissionEnum.getCode()),
+                putHeader(headers, getHeaderByMethodName(request.getBucketName(), extensionPermissionEnum.getCode()),
                         ServiceUtils.join(domainIdList, ","));
             }
         }
@@ -294,16 +295,16 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
     protected TransResult transPutObjectRequest(PutObjectRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
 
         ObjectMetadata objectMetadata = request.getMetadata() == null ? new ObjectMetadata() : request.getMetadata();
 
-        setBaseHeaderFromMetadata(headers, objectMetadata);
+        setBaseHeaderFromMetadata(request.getBucketName(), headers, objectMetadata);
 
         if (request.getExpires() >= 0) {
             putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
         }
-        
+
         if (request.getSuccessRedirectLocation() != null) {
             putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
         }
@@ -338,7 +339,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             } catch (FileNotFoundException e) {
                 throw new IllegalArgumentException("File doesnot exist");
             }
-            
+
             contentLengthValue = getContentLengthFromFile(request, contentLengthValue, fileSize);
         }
 
@@ -352,13 +353,13 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (request.getInput() != null && request.getProgressListener() != null) {
             ProgressManager progressManager = new SimpleProgressManager(contentLengthValue, 0,
                     request.getProgressListener(), request.getProgressInterval() > 0 ? request.getProgressInterval()
-                            : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
+                    : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
             request.setInput(new ProgressInputStream(request.getInput(), progressManager));
         }
 
         RequestBody body = request.getInput() == null ? null
                 : new RepeatableRequestEntity(request.getInput(), contentTypeStr, contentLengthValue,
-                        this.obsProperties);
+                this.obsProperties);
 
         return new TransResult(headers, body);
     }
@@ -383,12 +384,13 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         return contentLengthValue;
     }
 
-    private void setBaseHeaderFromMetadata(Map<String, String> headers, ObjectMetadata objectMetadata) {
-        IConvertor iconvertor = this.getIConvertor();
-        IHeaders iheaders = this.getIHeaders();
-        
+    private void setBaseHeaderFromMetadata(String bucketName, Map<String, String> headers,
+                                           ObjectMetadata objectMetadata) {
+        IConvertor iconvertor = this.getIConvertor(bucketName);
+        IHeaders iheaders = this.getIHeaders(bucketName);
+
         selectAllowedHeader(headers, objectMetadata);
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentMd5())) {
             headers.put(CommonHeaders.CONTENT_MD5, objectMetadata.getContentMd5().trim());
         }
@@ -396,19 +398,19 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (ServiceUtils.isValid(objectMetadata.getContentEncoding())) {
             headers.put(CommonHeaders.CONTENT_ENCODING, objectMetadata.getContentEncoding().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentDisposition())) {
             headers.put(CommonHeaders.CONTENT_DISPOSITION, objectMetadata.getContentDisposition().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getCacheControl())) {
             headers.put(CommonHeaders.CACHE_CONTROL, objectMetadata.getCacheControl().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getContentLanguage())) {
             headers.put(CommonHeaders.CONTENT_LANGUAGE, objectMetadata.getContentLanguage().trim());
         }
-        
+
         if (ServiceUtils.isValid(objectMetadata.getExpires())) {
             headers.put(CommonHeaders.EXPIRES, objectMetadata.getExpires().trim());
         }
@@ -456,8 +458,8 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
     protected TransResult transCopyObjectRequest(CopyObjectRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        IConvertor iconvertor = this.getIConvertor();
-        IHeaders iheaders = this.getIHeaders();
+        IConvertor iconvertor = this.getIConvertor(request.getBucketName());
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
 
         ObjectMetadata objectMetadata = request.getNewObjectMetadata() == null ? new ObjectMetadata()
                 : request.getNewObjectMetadata();
@@ -480,7 +482,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             }
         }
 
-        setBaseHeaderFromMetadata(headers, objectMetadata);
+        setBaseHeaderFromMetadata(request.getBucketName(), headers, objectMetadata);
 
         if (objectMetadata.getObjectStorageClass() != null) {
             putHeader(headers, iheaders.storageClassHeader(),
@@ -545,7 +547,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
     }
 
     protected void transConditionCopyHeaders(CopyObjectRequest request, Map<String, String> headers,
-            IHeaders iheaders) {
+                                             IHeaders iheaders) {
         if (request.getIfModifiedSince() != null) {
             putHeader(headers, iheaders.copySourceIfModifiedSinceHeader(),
                     ServiceUtils.formatRfc822Date(request.getIfModifiedSince()));
@@ -564,10 +566,10 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
     protected TransResult transGetObjectRequest(GetObjectRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders());
+        this.transSseCHeaders(request.getSseCHeader(), headers, this.getIHeaders(request.getBucketName()));
         this.transConditionGetObjectHeaders(request, headers);
 
-        this.transRequestPaymentHeaders(request, headers, this.getIHeaders());
+        this.transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
         transRangeHeader(request, headers);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -666,8 +668,8 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
     protected TransResult transSetObjectMetadataRequest(SetObjectMetadataRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
-        IConvertor iconvertor = this.getIConvertor();
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
+        IConvertor iconvertor = this.getIConvertor(request.getBucketName());
 
         for (Map.Entry<String, String> entry : request.getAllUserMetadata().entrySet()) {
             String key = entry.getKey();
@@ -730,7 +732,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         params.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
 
         Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
 
         String sourceKey = RestUtils.encodeUrlString(request.getSourceBucketName()) + "/"
                 + RestUtils.encodeUrlString(request.getSourceObjectKey());
@@ -771,9 +773,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
 
         Map<String, String> headers = new HashMap<String, String>();
-        transRequestPaymentHeaders(listObjectsRequest, headers, this.getIHeaders());
+        transRequestPaymentHeaders(listObjectsRequest, headers, this.getIHeaders(listObjectsRequest.getBucketName()));
         if (listObjectsRequest.getListTimeout() > 0) {
-            putHeader(headers, this.getIHeaders().listTimeoutHeader(),
+            putHeader(headers, this.getIHeaders(listObjectsRequest.getBucketName()).listTimeoutHeader(),
                     String.valueOf(listObjectsRequest.getListTimeout()));
         }
 
@@ -799,9 +801,10 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         params.put(SpecialParamEnum.LISTCONTENTSUMMARY.getOriginalStringCode(), "");
 
         Map<String, String> headers = new HashMap<String, String>();
-        transRequestPaymentHeaders(listContentSummaryRequest, headers, this.getIHeaders());
+        transRequestPaymentHeaders(listContentSummaryRequest, headers,
+                this.getIHeaders(listContentSummaryRequest.getBucketName()));
         if (listContentSummaryRequest.getListTimeout() > 0) {
-            putHeader(headers, this.getIHeaders().listTimeoutHeader(),
+            putHeader(headers, this.getIHeaders(listContentSummaryRequest.getBucketName()).listTimeoutHeader(),
                     String.valueOf(listContentSummaryRequest.getListTimeout()));
         }
         return new TransResult(headers, params, null);
@@ -813,7 +816,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         params.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
 
         Map<String, String> headers = new HashMap<String, String>();
-        IHeaders iheaders = this.getIHeaders();
+        IHeaders iheaders = this.getIHeaders(request.getBucketName());
 
         if (ServiceUtils.isValid(request.getContentMd5())) {
             headers.put(CommonHeaders.CONTENT_MD5, request.getContentMd5().trim());
@@ -868,12 +871,13 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         return new TransResult(headers, params, body);
     }
 
-    protected void transSseKmsHeaders(SseKmsHeader kmsHeader, Map<String, String> headers, IHeaders iheaders) {
+    protected void transSseKmsHeaders(SseKmsHeader kmsHeader, Map<String, String> headers, IHeaders iheaders,
+                                      String bucketName) {
         if (kmsHeader == null) {
             return;
         }
 
-        String sseKmsEncryption = this.getProviderCredentials().getAuthType() != AuthTypeEnum.OBS
+        String sseKmsEncryption = this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
                 ? "aws:" + kmsHeader.getSSEAlgorithm().getCode() : kmsHeader.getSSEAlgorithm().getCode();
         putHeader(headers, iheaders.sseKmsHeader(), ServiceUtils.toValid(sseKmsEncryption));
         if (ServiceUtils.isValid(kmsHeader.getKmsKeyId())) {

@@ -115,10 +115,10 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                         } catch (ServiceException e) {
                             if (AbstractBucketClient.this.isAuthTypeNegotiation() && e.getResponseCode() == 400
                                     && "Unsupported Authorization Type".equals(e.getErrorMessage())
-                                    && AbstractBucketClient.this.getProviderCredentials().getAuthType() 
-                                    == AuthTypeEnum.OBS) {
-                                AbstractBucketClient.this.getProviderCredentials().setThreadLocalAuthType(
-                                        AuthTypeEnum.V2);
+                                    && AbstractBucketClient.this.getProviderCredentials()
+                                    .getLocalAuthType(request.getBucketName()) == AuthTypeEnum.OBS) {
+                                AbstractBucketClient.this.getProviderCredentials()
+                                        .setLocalAuthType(request.getBucketName(), AuthTypeEnum.V2);
                                 return AbstractBucketClient.this.createBucketImpl(request);
                             } else {
                                 throw e;
@@ -128,12 +128,13 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
 
                     @Override
                     void authTypeNegotiate(String bucketName) throws ServiceException {
-                        AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getApiVersionCache()
-                                .getApiVersionInCache(bucketName);
+                        AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getProviderCredentials()
+                                .getLocalAuthType().get(bucketName);
                         if (authTypeEnum == null) {
                             authTypeEnum = AbstractBucketClient.this.getApiVersion("");
+                            AbstractBucketClient.this.getProviderCredentials()
+                                    .setLocalAuthType(bucketName, authTypeEnum);
                         }
-                        AbstractBucketClient.this.getProviderCredentials().setThreadLocalAuthType(authTypeEnum);
                     }
                 });
     }
@@ -168,8 +169,12 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
 
             @Override
             void authTypeNegotiate(String bucketName) throws ServiceException {
-                AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getApiVersion("");
-                AbstractBucketClient.this.getProviderCredentials().setThreadLocalAuthType(authTypeEnum);
+                AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getProviderCredentials()
+                        .getLocalAuthType().get(bucketName);
+                if (authTypeEnum == null) {
+                    authTypeEnum = AbstractBucketClient.this.getApiVersion("");
+                    AbstractBucketClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                }
             }
         });
     }
@@ -203,8 +208,12 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
             @Override
             void authTypeNegotiate(String bucketName) throws ServiceException {
                 try {
-                    AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getApiVersion(bucketName);
-                    AbstractBucketClient.this.getProviderCredentials().setThreadLocalAuthType(authTypeEnum);
+                    AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getProviderCredentials()
+                            .getLocalAuthType().get(bucketName);
+                    if (authTypeEnum == null) {
+                        authTypeEnum = AbstractBucketClient.this.getApiVersion(bucketName);
+                        AbstractBucketClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                    }
                 } catch (ServiceException e) {
                     if (e.getResponseCode() != 404) {
                         throw e;

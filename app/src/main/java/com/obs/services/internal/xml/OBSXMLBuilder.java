@@ -58,9 +58,7 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
             return DocumentBuilderFactory.newInstance();
         }
 
-        return newInstance(DocumentBuilderFactory.class,
-                xmlDocumentBuilderFactoryClass, 
-                null, true, false);
+        return newInstance(DocumentBuilderFactory.class, xmlDocumentBuilderFactoryClass, null, true, false);
     }
 
     protected static Document createDocumentImpl(String name, String namespaceURI, boolean enableExternalEntities,

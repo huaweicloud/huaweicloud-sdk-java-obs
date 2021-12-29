@@ -34,7 +34,7 @@ import com.obs.services.model.SpecialParamEnum;
 public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
     
-    boolean prepareRESTHeaderAclForV2(Map<String, String> metadata, AccessControlList acl) {
+    boolean prepareRESTHeaderAclForV2(String bucketName, Map<String, String> metadata, AccessControlList acl) {
         String restHeaderAclValue = null;
         if (acl == AccessControlList.REST_CANNED_PRIVATE) {
             restHeaderAclValue = Constants.ACL_PRIVATE;
@@ -55,14 +55,15 @@ public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
         } else if (acl == AccessControlList.REST_CANNED_LOG_DELIVERY_WRITE) {
             restHeaderAclValue = Constants.ACL_LOG_DELIVERY_WRITE;
         }
-        String aclHeader = this.getIHeaders().aclHeader();
+        String aclHeader = this.getIHeaders(bucketName).aclHeader();
         if (restHeaderAclValue != null) {
             metadata.put(aclHeader, restHeaderAclValue);
         }
         return metadata.containsKey(aclHeader);
     }
     
-    boolean prepareRESTHeaderAclForOBS(Map<String, String> metadata, AccessControlList acl) throws ServiceException {
+    boolean prepareRESTHeaderAclForOBS(String bucketName, Map<String, String> metadata,
+                                       AccessControlList acl) throws ServiceException {
         String restHeaderAclValue = null;
         boolean invalid = false;
         if (acl == AccessControlList.REST_CANNED_PRIVATE) {
@@ -92,20 +93,21 @@ public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
             log.info("Invalid Canned ACL:" + restHeaderAclValue);
         }
 
-        String aclHeader = this.getIHeaders().aclHeader();
+        String aclHeader = this.getIHeaders(bucketName).aclHeader();
         if (restHeaderAclValue != null) {
             metadata.put(aclHeader, restHeaderAclValue);
         }
         return metadata.containsKey(aclHeader);
     }
 
-    protected boolean prepareRESTHeaderAclObject(Map<String, String> metadata, AccessControlList acl) 
+    protected boolean prepareRESTHeaderAclObject(String bucketName, Map<String, String> metadata, AccessControlList acl)
             throws ServiceException {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS
-                ? this.prepareRESTHeaderAclForOBSObject(metadata, acl) : this.prepareRESTHeaderAclForV2(metadata, acl);
+        return this.getProviderCredentials().getLocalAuthType(bucketName) == AuthTypeEnum.OBS
+                ? this.prepareRESTHeaderAclForOBSObject(bucketName, metadata, acl)
+                : this.prepareRESTHeaderAclForV2(bucketName, metadata, acl);
     }
 
-    boolean prepareRESTHeaderAclForOBSObject(Map<String, String> metadata, AccessControlList acl)
+    boolean prepareRESTHeaderAclForOBSObject(String bucketName, Map<String, String> metadata, AccessControlList acl)
             throws ServiceException {
         String restHeaderAclValue = null;
         boolean invalid = false;
@@ -136,17 +138,18 @@ public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
             log.info("Invalid Canned ACL:" + restHeaderAclValue);
         }
 
-        String aclHeader = this.getIHeaders().aclHeader();
+        String aclHeader = this.getIHeaders(bucketName).aclHeader();
         if (restHeaderAclValue != null) {
             metadata.put(aclHeader, restHeaderAclValue);
         }
         return metadata.containsKey(aclHeader);
     }
 
-    protected boolean prepareRESTHeaderAcl(Map<String, String> metadata, AccessControlList acl) 
+    protected boolean prepareRESTHeaderAcl(String bucketName, Map<String, String> metadata, AccessControlList acl)
             throws ServiceException {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS
-                ? this.prepareRESTHeaderAclForOBS(metadata, acl) : this.prepareRESTHeaderAclForV2(metadata, acl);
+        return this.getProviderCredentials().getLocalAuthType(bucketName) == AuthTypeEnum.OBS
+                ? this.prepareRESTHeaderAclForOBS(bucketName, metadata, acl)
+                : this.prepareRESTHeaderAclForV2(bucketName, metadata, acl);
     }
     
     protected String getCredential(String shortDate, String accessKey) {
@@ -174,10 +177,10 @@ public abstract class AclHeaderConvertor extends AbstractRequestConvertor {
 
             Map<String, String> headers = new HashMap<>();
             headers.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
-            String xml = this.getIConvertor().transAccessControlList(acl, !ServiceUtils.isValid(objectKey));
+            String xml = this.getIConvertor(bucketName).transAccessControlList(acl, !ServiceUtils.isValid(objectKey));
             headers.put(Constants.CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
             headers.put(Constants.CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
-            transRequestPaymentHeaders(isRequesterPays, headers, this.getIHeaders());
+            transRequestPaymentHeaders(isRequesterPays, headers, this.getIHeaders(bucketName));
             NewTransResult result = new NewTransResult();
             result.setHttpMethod(HttpMethodEnum.PUT);
             result.setBucketName(bucketName);

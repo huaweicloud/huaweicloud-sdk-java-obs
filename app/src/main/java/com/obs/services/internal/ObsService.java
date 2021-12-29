@@ -82,14 +82,14 @@ public class ObsService extends ObsExtensionService {
         if (request.getSpecialParam() != null) {
             if (request.getSpecialParam() == SpecialParamEnum.STORAGECLASS
                     || request.getSpecialParam() == SpecialParamEnum.STORAGEPOLICY) {
-                request.setSpecialParam(this.getSpecialParamForStorageClass());
+                request.setSpecialParam(this.getSpecialParamForStorageClass(request.getBucketName()));
             }
             uriPath += request.getSpecialParam().getOriginalStringCode() + "&";
         }
 
         BasicSecurityKey securityKey = this.getProviderCredentials().getSecurityKey();
         
-        uriPath = appendAccessKey(uriPath, securityKey);
+        uriPath = appendAccessKey(request.getBucketName(), uriPath, securityKey);
 
         String expiresOrPolicy = getExpiresParams(request);
         uriPath = appendExpiresParams(request, uriPath, expiresOrPolicy);
@@ -102,7 +102,7 @@ public class ObsService extends ObsExtensionService {
         }
 
         AbstractAuthentication authentication = 
-                Constants.AUTHTICATION_MAP.get(this.getProviderCredentials().getAuthType());
+                Constants.AUTHTICATION_MAP.get(this.getProviderCredentials().getLocalAuthType(request.getBucketName()));
         if (authentication == null) {
             authentication = V2Authentication.getInstance();
         }
@@ -113,7 +113,7 @@ public class ObsService extends ObsExtensionService {
                 hostname + ":" + (this.getHttpsOnly() ? this.getHttpsPort() : this.getHttpPort()));
         String requestMethod = request.getMethod() != null ? request.getMethod().getOperationType() : "GET";
         
-        Map<String, String> actualSignedRequestHeaders = convertHeader(headers, requestMethod);
+        Map<String, String> actualSignedRequestHeaders = convertHeader(request.getBucketName(), headers, requestMethod);
         String canonicalString = authentication.makeServiceCanonicalString(requestMethod, resource,
                 actualSignedRequestHeaders, expiresOrPolicy, Constants.ALLOWED_RESOURCE_PARAMTER_NAMES);
 
@@ -148,9 +148,9 @@ public class ObsService extends ObsExtensionService {
         return uriPath;
     }
 
-    private String appendAccessKey(String uriPath, BasicSecurityKey securityKey) {
-        String accessKeyIdPrefix = this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? "AccessKeyId="
-                : "AWSAccessKeyId=";
+    private String appendAccessKey(String bucketName, String uriPath, BasicSecurityKey securityKey) {
+        String accessKeyIdPrefix = this.getProviderCredentials().getLocalAuthType(bucketName)
+                == AuthTypeEnum.OBS ? "AccessKeyId=" : "AWSAccessKeyId=";
         uriPath += accessKeyIdPrefix + securityKey.getAccessKey();
         return uriPath;
     }
@@ -172,17 +172,17 @@ public class ObsService extends ObsExtensionService {
         return expiresOrPolicy;
     }
     
-    private Map<String, String> convertHeader(Map<String, String> headers, String requestMethod) {
+    private Map<String, String> convertHeader(String bucketName, Map<String, String> headers, String requestMethod) {
         Map<String, String> actualSignedRequestHeaders = new TreeMap<String, String>();
         
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             if (ServiceUtils.isValid(entry.getKey())) {
                 String key = entry.getKey().toLowerCase().trim();
-                key = formatHeaderKey(requestMethod, key);
+                key = formatHeaderKey(bucketName, requestMethod, key);
                 
                 if (null != key) {
                     String value = entry.getValue() == null ? "" : entry.getValue().trim();
-                    if (key.startsWith(this.getRestMetadataPrefix())) {
+                    if (key.startsWith(this.getRestMetadataPrefix(bucketName))) {
                         value = RestUtils.uriEncode(value, true);
                     }
                     actualSignedRequestHeaders.put(entry.getKey().trim(), value);
@@ -206,9 +206,9 @@ public class ObsService extends ObsExtensionService {
         Map<String, Object> queryParams = new TreeMap<String, Object>();
         queryParams.putAll(request.getQueryParams());
         String securityToken = securityKey.getSecurityToken();
-        if (!queryParams.containsKey(this.getIHeaders().securityTokenHeader())) {
+        if (!queryParams.containsKey(this.getIHeaders(request.getBucketName()).securityTokenHeader())) {
             if (ServiceUtils.isValid(securityToken)) {
-                queryParams.put(this.getIHeaders().securityTokenHeader(), securityToken);
+                queryParams.put(this.getIHeaders(request.getBucketName()).securityTokenHeader(), securityToken);
             }
         }
         
@@ -245,6 +245,10 @@ public class ObsService extends ObsExtensionService {
             appendOriginPolicy(request, isV4, securityKey, originPolicy, longDate, credential);
         }
 
+        if (originPolicy.length() > 0 && originPolicy.charAt(originPolicy.length() - 1) == ',') {
+            originPolicy.deleteCharAt(originPolicy.length() - 1);
+        }
+
         originPolicy.append("]}");
         String policy = ServiceUtils.toBase64(originPolicy.toString().getBytes(StandardCharsets.UTF_8));
 
@@ -279,7 +283,7 @@ public class ObsService extends ObsExtensionService {
                 }
 
                 if (!Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key)
-                        && !key.startsWith(this.getRestHeaderPrefix())
+                        && !key.startsWith(this.getRestHeaderPrefix(request.getBucketName()))
                         && !key.startsWith(Constants.OBS_HEADER_PREFIX) && !key.equals("acl")
                         && !key.equals("bucket") && !key.equals("key") && !key.equals("success_action_redirect")
                         && !key.equals("redirect") && !key.equals("success_action_status")) {
@@ -321,9 +325,9 @@ public class ObsService extends ObsExtensionService {
 
         params.putAll(request.getFormParams());
 
-        if (!params.containsKey(this.getIHeaders().securityTokenHeader())) {
+        if (!params.containsKey(this.getIHeaders(request.getBucketName()).securityTokenHeader())) {
             if (ServiceUtils.isValid(securityToken)) {
-                params.put(this.getIHeaders().securityTokenHeader(), securityToken);
+                params.put(this.getIHeaders(request.getBucketName()).securityTokenHeader(), securityToken);
             }
         }
 
@@ -372,7 +376,8 @@ public class ObsService extends ObsExtensionService {
         
         StringBuilder signedHeaders = new StringBuilder();
         StringBuilder canonicalHeaders = new StringBuilder();
-        concatHeaderString(requestMethod, actualSignedRequestHeaders, headers, signedHeaders, canonicalHeaders);
+        concatHeaderString(bucketName, requestMethod, actualSignedRequestHeaders,
+                headers, signedHeaders, canonicalHeaders);
 
         Date requestDate = request.getRequestDate();
         if (requestDate == null) {
@@ -443,29 +448,30 @@ public class ObsService extends ObsExtensionService {
         }
     }
 
-    private String formatHeaderKey(String requestMethod, String originalKey) {
+    private String formatHeaderKey(String bucketName, String requestMethod, String originalKey) {
         if (Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(originalKey)
-                || originalKey.startsWith(this.getRestHeaderPrefix()) 
+                || originalKey.startsWith(this.getRestHeaderPrefix(bucketName))
                 || originalKey.startsWith(Constants.OBS_HEADER_PREFIX)) {
             return originalKey;
         } else if (requestMethod.equals("PUT") || requestMethod.equals("POST")) {
-            return this.getRestMetadataPrefix() + originalKey;
+            return this.getRestMetadataPrefix(bucketName) + originalKey;
         }
         
         return null;
     }
-    
-    private void concatHeaderString(String requestMethod, Map<String, String> actualSignedRequestHeaders,
-            Map<String, String> headers, StringBuilder signedHeaders, StringBuilder canonicalHeaders) {
+
+    private void concatHeaderString(String bucketName, String requestMethod,
+                                    Map<String, String> actualSignedRequestHeaders, Map<String, String> headers,
+                                    StringBuilder signedHeaders, StringBuilder canonicalHeaders) {
         int index = 0;
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             if (ServiceUtils.isValid(entry.getKey())) {
                 String key = entry.getKey().toLowerCase().trim();
-                key = formatHeaderKey(requestMethod, key);
+                key = formatHeaderKey(bucketName, requestMethod, key);
                 
                 if (null != key) {
                     String value = entry.getValue() == null ? "" : entry.getValue().trim();
-                    if (key.startsWith(this.getRestMetadataPrefix())) {
+                    if (key.startsWith(this.getRestMetadataPrefix(bucketName))) {
                         value = RestUtils.uriEncode(value, true);
                     }
                     signedHeaders.append(key);
@@ -495,9 +501,9 @@ public class ObsService extends ObsExtensionService {
             String shortDate, String longDate, String accessKey, String securityToken) {
         Map<String, Object> queryParams = new TreeMap<String, Object>();
         queryParams.putAll(request.getQueryParams());
-        if (!queryParams.containsKey(this.getIHeaders().securityTokenHeader())) {
+        if (!queryParams.containsKey(this.getIHeaders(request.getBucketName()).securityTokenHeader())) {
             if (ServiceUtils.isValid(securityToken)) {
-                queryParams.put(this.getIHeaders().securityTokenHeader(), securityToken);
+                queryParams.put(this.getIHeaders(request.getBucketName()).securityTokenHeader(), securityToken);
             }
         }
         
@@ -512,7 +518,7 @@ public class ObsService extends ObsExtensionService {
         if (request.getSpecialParam() != null) {
             if (request.getSpecialParam() == SpecialParamEnum.STORAGECLASS
                     || request.getSpecialParam() == SpecialParamEnum.STORAGEPOLICY) {
-                request.setSpecialParam(this.getSpecialParamForStorageClass());
+                request.setSpecialParam(this.getSpecialParamForStorageClass(request.getBucketName()));
             }
             queryParams.put(request.getSpecialParam().getOriginalStringCode(), null);
         }

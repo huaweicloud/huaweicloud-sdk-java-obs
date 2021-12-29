@@ -26,8 +26,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
-import com.obs.services.internal.consensus.CacheManager;
-import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -54,10 +52,6 @@ public class RestConnectionService {
     protected AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
     protected volatile ProviderCredentials credentials;
-
-    protected CacheManager apiVersionCache;
-
-    protected SegmentLock segmentLock;
 
     protected void initHttpClient(Dispatcher httpDispatcher) {
 
@@ -94,14 +88,6 @@ public class RestConnectionService {
                 }
                 httpClient = null;
             }
-        }
-        if (apiVersionCache != null) {
-            apiVersionCache.clear();
-            apiVersionCache = null;
-        }
-        if (segmentLock != null) {
-            segmentLock.clear();
-            segmentLock = null;
         }
     }
 
