@@ -136,7 +136,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     
     public ObjectListing listObjects(ListObjectsRequest listObjectsRequest, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(listObjectsRequest.getBucketName(), accessKey, secretKey);
         try {
             return super.listObjects(listObjectsRequest);
         } finally {
@@ -146,7 +146,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ObjectListing listObjects(ListObjectsRequest listObjectsRequest, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(listObjectsRequest.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.listObjects(listObjectsRequest);
         } finally {
@@ -159,7 +159,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     public ListVersionsResult listVersions(String bucketName, String prefix, String delimiter, String keyMarker,
             String versionIdMarker, long maxKeys, String nextVersionIdMarker, String accessKey, String secretKey)
                     throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.listVersions(bucketName, prefix, delimiter, keyMarker, versionIdMarker, maxKeys,
                     nextVersionIdMarker);
@@ -173,7 +173,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     public ListVersionsResult listVersions(String bucketName, String prefix, String delimiter, String keyMarker,
             String versionIdMarker, long maxKeys, String nextVersionIdMarker, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.listVersions(bucketName, prefix, delimiter, keyMarker, versionIdMarker, maxKeys,
                     nextVersionIdMarker);
@@ -184,7 +184,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListVersionsResult listVersions(ListVersionsRequest request, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.listVersions(request);
         } finally {
@@ -194,7 +194,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListVersionsResult listVersions(ListVersionsRequest request, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.listVersions(request);
         } finally {
@@ -203,7 +203,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     }
 
     public ListVersionsResult listVersions(String bucketName, String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.listVersions(bucketName);
         } finally {
@@ -213,7 +213,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListVersionsResult listVersions(String bucketName, String accessKey, String secretKey, String securityToken)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.listVersions(bucketName);
         } finally {
@@ -223,7 +223,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListVersionsResult listVersions(String bucketName, long maxKeys, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.listVersions(bucketName, maxKeys);
         } finally {
@@ -233,7 +233,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListVersionsResult listVersions(String bucketName, long maxKeys, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.listVersions(bucketName, maxKeys);
         } finally {
@@ -244,7 +244,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     @Deprecated
     public OptionsInfoResult optionsObject(String bucketName, String objectKey, OptionsInfoRequest optionInfo,
             String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.optionsObject(bucketName, objectKey, optionInfo);
         } finally {
@@ -255,7 +255,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     @Deprecated
     public OptionsInfoResult optionsObject(String bucketName, String objectKey, OptionsInfoRequest optionInfo,
             String accessKey, String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.optionsObject(bucketName, objectKey, optionInfo);
         } finally {
@@ -264,7 +264,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     }
 
     public PutObjectResult putObject(PutObjectRequest request, String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.putObject(request);
         } finally {
@@ -274,7 +274,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public PutObjectResult putObject(PutObjectRequest request, String accessKey, String secretKey, String securityToken)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.putObject(request);
         } finally {
@@ -284,7 +284,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ObsObject getObject(GetObjectRequest getObjectRequest, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(getObjectRequest.getBucketName(), accessKey, secretKey);
         try {
             return super.getObject(getObjectRequest);
         } finally {
@@ -294,7 +294,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ObsObject getObject(GetObjectRequest getObjectRequest, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(getObjectRequest.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.getObject(getObjectRequest);
         } finally {
@@ -304,7 +304,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ObjectMetadata getObjectMetadata(GetObjectMetadataRequest request, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.getObjectMetadata(request);
         } finally {
@@ -314,7 +314,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ObjectMetadata getObjectMetadata(GetObjectMetadataRequest request, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.getObjectMetadata(request);
         } finally {
@@ -324,7 +324,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public RestoreObjectStatus restoreObject(RestoreObjectRequest restoreObjectRequest, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(restoreObjectRequest.getBucketName(), accessKey, secretKey);
         try {
             return super.restoreObject(restoreObjectRequest);
         } finally {
@@ -334,7 +334,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public RestoreObjectStatus restoreObject(RestoreObjectRequest restoreObjectRequest, String accessKey,
             String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(restoreObjectRequest.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.restoreObject(restoreObjectRequest);
         } finally {
@@ -344,7 +344,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse deleteObject(String bucketName, String objectKey, String versionId, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.deleteObject(bucketName, objectKey, versionId);
         } finally {
@@ -354,7 +354,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse deleteObject(String bucketName, String objectKey, String versionId, String accessKey,
             String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.deleteObject(bucketName, objectKey, versionId);
         } finally {
@@ -364,7 +364,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse deleteObject(String bucketName, String objectKey, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.deleteObject(bucketName, objectKey);
         } finally {
@@ -374,7 +374,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public DeleteObjectsResult deleteObjects(DeleteObjectsRequest deleteObjectsRequest, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(deleteObjectsRequest.getBucketName(), accessKey, secretKey);
         try {
             return super.deleteObjects(deleteObjectsRequest);
         } finally {
@@ -384,7 +384,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public DeleteObjectsResult deleteObjects(DeleteObjectsRequest deleteObjectsRequest, String accessKey,
             String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(deleteObjectsRequest.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.deleteObjects(deleteObjectsRequest);
         } finally {
@@ -394,7 +394,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public AccessControlList getObjectAcl(String bucketName, String objectKey, String versionId, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.getObjectAcl(bucketName, objectKey, versionId);
         } finally {
@@ -404,7 +404,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public AccessControlList getObjectAcl(String bucketName, String objectKey, String versionId, String accessKey,
             String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.getObjectAcl(bucketName, objectKey, versionId);
         } finally {
@@ -414,7 +414,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public AccessControlList getObjectAcl(String bucketName, String objectKey, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.getObjectAcl(bucketName, objectKey);
         } finally {
@@ -425,7 +425,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     @Deprecated
     public HeaderResponse setObjectAcl(String bucketName, String objectKey, String cannedACL, AccessControlList acl,
             String versionId, String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.setObjectAcl(bucketName, objectKey, cannedACL, acl, versionId);
         } finally {
@@ -436,7 +436,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     @Deprecated
     public HeaderResponse setObjectAcl(String bucketName, String objectKey, String cannedACL, AccessControlList acl,
             String versionId, String accessKey, String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.setObjectAcl(bucketName, objectKey, cannedACL, acl, versionId);
         } finally {
@@ -446,7 +446,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.setObjectAcl(bucketName, objectKey, acl);
         } finally {
@@ -456,7 +456,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl, String versionId,
             String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey);
         try {
             return super.setObjectAcl(bucketName, objectKey, acl, versionId);
         } finally {
@@ -466,7 +466,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse setObjectAcl(String bucketName, String objectKey, AccessControlList acl, String versionId,
             String accessKey, String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(bucketName, accessKey, secretKey, securityToken);
         try {
             return super.setObjectAcl(bucketName, objectKey, acl, versionId);
         } finally {
@@ -476,7 +476,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public CopyObjectResult copyObject(CopyObjectRequest copyObjectRequest, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(copyObjectRequest.getBucketName(), accessKey, secretKey);
         try {
             return super.copyObject(copyObjectRequest);
         } finally {
@@ -486,7 +486,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public CopyObjectResult copyObject(CopyObjectRequest copyObjectRequest, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(copyObjectRequest.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.copyObject(copyObjectRequest);
         } finally {
@@ -496,7 +496,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public InitiateMultipartUploadResult initiateMultipartUpload(InitiateMultipartUploadRequest request,
             String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.initiateMultipartUpload(request);
         } finally {
@@ -506,7 +506,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public InitiateMultipartUploadResult initiateMultipartUpload(InitiateMultipartUploadRequest request,
             String accessKey, String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.initiateMultipartUpload(request);
         } finally {
@@ -516,7 +516,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse abortMultipartUpload(AbortMultipartUploadRequest request, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.abortMultipartUpload(request);
         } finally {
@@ -526,7 +526,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public HeaderResponse abortMultipartUpload(AbortMultipartUploadRequest request, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.abortMultipartUpload(request);
         } finally {
@@ -536,7 +536,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public UploadPartResult uploadPart(UploadPartRequest request, String accessKey, String secretKey)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.uploadPart(request);
         } finally {
@@ -546,7 +546,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public UploadPartResult uploadPart(UploadPartRequest request, String accessKey, String secretKey,
             String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.uploadPart(request);
         } finally {
@@ -555,7 +555,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     }
 
     public CopyPartResult copyPart(CopyPartRequest request, String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getSourceBucketName(), accessKey, secretKey);
         try {
             return super.copyPart(request);
         } finally {
@@ -565,7 +565,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public CopyPartResult copyPart(CopyPartRequest request, String accessKey, String secretKey, String securityToken)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getSourceBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.copyPart(request);
         } finally {
@@ -575,7 +575,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request,
             String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.completeMultipartUpload(request);
         } finally {
@@ -585,7 +585,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request,
             String accessKey, String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.completeMultipartUpload(request);
         } finally {
@@ -594,7 +594,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
     }
 
     public ListPartsResult listParts(ListPartsRequest request, String accessKey, String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.listParts(request);
         } finally {
@@ -604,7 +604,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public ListPartsResult listParts(ListPartsRequest request, String accessKey, String secretKey, String securityToken)
             throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.listParts(request);
         } finally {
@@ -614,7 +614,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request, String accessKey,
             String secretKey) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey);
         try {
             return super.listMultipartUploads(request);
         } finally {
@@ -624,7 +624,7 @@ public class SecretFlexibleObsClient extends SecretFlexibleBucketObsClient {
 
     public MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request, String accessKey,
             String secretKey, String securityToken) throws ObsException {
-        this.setContextProviderCredentials(accessKey, secretKey, securityToken);
+        this.setContextProviderCredentials(request.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.listMultipartUploads(request);
         } finally {

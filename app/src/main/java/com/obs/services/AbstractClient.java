@@ -33,8 +33,6 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ObsProperties;
 import com.obs.services.internal.ObsService;
 import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.consensus.CacheManager;
-import com.obs.services.internal.consensus.SegmentLock;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.utils.AccessLoggerUtils;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -66,15 +64,13 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         ProviderCredentials credentials = new ProviderCredentials(accessKey, secretKey, securityToken);
         ObsProperties obsProperties = ServiceUtils.changeFromObsConfiguration(config);
         credentials.setAuthType(config.getAuthType());
+        credentials.setLocalAuthTypeCacheCapacity(config.getLocalAuthTypeCacheCapacity());
         this.obsProperties = obsProperties;
         this.credentials = credentials;
         this.keyManagerFactory = config.getKeyManagerFactory();
         this.trustManagerFactory = config.getTrustManagerFactory();
         if (this.isAuthTypeNegotiation()) {
-            this.apiVersionCache = new CacheManager();
             this.getProviderCredentials().setIsAuthTypeNegotiation(true);
-            this.getProviderCredentials().initThreadLocalAuthType();
-            this.segmentLock = new SegmentLock();
         }
         this.initHttpClient(config.getHttpDispatcher());
         OBSXMLBuilder.setXmlDocumentBuilderFactoryClass(config.getXmlDocumentBuilderFactoryClass());
@@ -225,7 +221,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         ServiceUtils.asserParameterNotNull(request, "TemporarySignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createTemporarySignature", this.getEndpoint(), "");
         try {
-            return this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4
+            return this.getProviderCredentials().getLocalAuthType(request.getBucketName()) == AuthTypeEnum.V4
                     ? this.createV4TemporarySignature(request) : this.createTemporarySignatureResponse(request);
         } catch (Exception e) {
             reqBean.setRespTime(new Date());
@@ -319,8 +315,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             String objectKey) throws ObsException {
         PostSignatureRequest request = new PostSignatureRequest(expires, new Date(), bucketName, objectKey);
         request.getFormParams().put(
-                this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4 ? "acl" : this.getIHeaders().aclHeader(),
-                acl);
+                this.getProviderCredentials().getLocalAuthType(bucketName)
+                        == AuthTypeEnum.V4 ? "acl" : this.getIHeaders(bucketName).aclHeader(), acl);
         request.getFormParams().put(com.obs.services.internal.Constants.CommonHeaders.CONTENT_TYPE, contentType);
         return this.createPostSignature(request);
     }
@@ -355,7 +351,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
     public PostSignatureResponse createPostSignature(PostSignatureRequest request) throws ObsException {
         ServiceUtils.asserParameterNotNull(request, "PostSignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createPostSignature", this.getEndpoint(), "");
-        return createPostSignature(request, reqBean, this.getProviderCredentials().getAuthType() == AuthTypeEnum.V4);
+        return createPostSignature(request, reqBean, this.getProviderCredentials()
+                .getLocalAuthType(request.getBucketName()) == AuthTypeEnum.V4);
     }
 
     protected abstract class ActionCallbackWithResult<T> {
@@ -363,8 +360,12 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         public abstract T action() throws ServiceException;
 
         void authTypeNegotiate(String bucketName) throws ServiceException {
-            AuthTypeEnum authTypeEnum = AbstractClient.this.getApiVersion(bucketName);
-            AbstractClient.this.getProviderCredentials().setThreadLocalAuthType(authTypeEnum);
+            AuthTypeEnum authTypeEnum = AbstractClient.this.getProviderCredentials()
+                    .getLocalAuthType().get(bucketName);
+            if (authTypeEnum == null) {
+                authTypeEnum = AbstractClient.this.getApiVersion(bucketName);
+                AbstractClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+            }
         }
     }
 
@@ -403,9 +404,6 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             }
             throw ex;
         } finally {
-            if (this.isAuthTypeNegotiation()) {
-                this.getProviderCredentials().removeThreadLocalAuthType();
-            }
             AccessLoggerUtils.printLog();
         }
     }
@@ -421,6 +419,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         ProviderCredentials credentials = new ProviderCredentials(accessKey, secretKey, securityToken);
         credentials.setIsAuthTypeNegotiation(this.credentials.getIsAuthTypeNegotiation());
         credentials.setAuthType(this.credentials.getAuthType());
+        credentials.setLocalAuthType(this.credentials.getLocalAuthType());
         this.setProviderCredentials(credentials);
     }
     

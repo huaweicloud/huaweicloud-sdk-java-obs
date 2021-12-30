@@ -70,6 +70,8 @@ public class ObsConfiguration implements Cloneable {
 
     private AuthTypeEnum authType;
 
+    private int localAuthTypeCacheCapacity;
+
     private String signatString;
     private String defaultBucketLocation;
     private int bufferSize;
@@ -125,6 +127,7 @@ public class ObsConfiguration implements Cloneable {
         this.delimiter = "/";
         this.httpProtocolType = HttpProtocolTypeEnum.HTTP1_1;
         this.xmlDocumentBuilderFactoryClass = ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY_CLASS;
+        this.localAuthTypeCacheCapacity = ObsConstraint.DEFAULT_LOCAL_AUTH_TYPE_CACHE_CAPACITY;
     }
 
     public String getDelimiter() {
@@ -831,5 +834,17 @@ public class ObsConfiguration implements Cloneable {
 
     public void setXmlDocumentBuilderFactoryClass(String xmlDocumentBuilderFactoryClass) {
         this.xmlDocumentBuilderFactoryClass = xmlDocumentBuilderFactoryClass;
+    }
+
+    /**
+     * 设置桶协议缓存
+     * @return
+     */
+    public int getLocalAuthTypeCacheCapacity() {
+        return localAuthTypeCacheCapacity;
+    }
+
+    public void setLocalAuthTypeCacheCapacity(int localAuthTypeCacheCapacity) {
+        this.localAuthTypeCacheCapacity = localAuthTypeCacheCapacity;
     }
 }

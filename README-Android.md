@@ -1,3 +1,8 @@
+Version 3.21.12
+Third-party dependence:
+1. Replace log4j2 2.16.0 with log4j2 2.17.0
+-----------------------------------------------------------------------------------
+
 Version 3.21.11
 New features:
 1. Allowed you to add any custom header field in a request.

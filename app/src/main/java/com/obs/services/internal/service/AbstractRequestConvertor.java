@@ -150,9 +150,9 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         return null;
     }
 
-    protected String getHeaderByMethodName(String code) {
+    protected String getHeaderByMethodName(String bucketName, String code) {
         try {
-            IHeaders iheaders = this.getIHeaders();
+            IHeaders iheaders = this.getIHeaders(bucketName);
             Method m = iheaders.getClass().getMethod(code);
             Object result = m.invoke(iheaders);
             return result == null ? "" : result.toString();
@@ -256,9 +256,9 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         responseHeaders.put(cleanedKey, finalValues);
     }
 
-    protected SpecialParamEnum getSpecialParamForStorageClass() {
-        return this.getProviderCredentials().getAuthType() == AuthTypeEnum.OBS ? SpecialParamEnum.STORAGECLASS
-                : SpecialParamEnum.STORAGEPOLICY;
+    protected SpecialParamEnum getSpecialParamForStorageClass(String bucketName) {
+        return this.getProviderCredentials().getLocalAuthType(bucketName) == AuthTypeEnum.OBS
+                ? SpecialParamEnum.STORAGECLASS : SpecialParamEnum.STORAGEPOLICY;
     }
 
     protected RequestBody createRequestBody(String mimeType, String content) throws ServiceException {
@@ -268,14 +268,14 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         return RequestBody.create(content.getBytes(StandardCharsets.UTF_8), MediaType.parse(mimeType));
     }
 
-    protected GetBucketFSStatusResult getOptionInfoResult(Response response) {
+    protected GetBucketFSStatusResult getOptionInfoResult(String bucketName, Response response) {
 
         Headers headers = response.headers();
 
         Map<String, List<String>> map = headers.toMultimap();
         String maxAge = headers.get(Constants.CommonHeaders.ACCESS_CONTROL_MAX_AGE);
 
-        IHeaders iheaders = this.getIHeaders();
+        IHeaders iheaders = this.getIHeaders(bucketName);
         FSStatusEnum status = FSStatusEnum.getValueFromCode(headers.get(iheaders.fsFileInterfaceHeader()));
 
         BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
@@ -305,20 +305,8 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         if (!ServiceUtils.isValid(bucketName)) {
             return parseAuthTypeInResponse("");
         }
-        AuthTypeEnum apiVersion = apiVersionCache.getApiVersionInCache(bucketName);
-        if (apiVersion == null) {
-            try {
-                segmentLock.lock(bucketName);
-                apiVersion = apiVersionCache.getApiVersionInCache(bucketName);
-                if (apiVersion == null) {
-                    apiVersion = parseAuthTypeInResponse(bucketName);
-                    apiVersionCache.addApiVersion(bucketName, apiVersion);
-                }
-            } finally {
-                segmentLock.unlock(bucketName);
-            }
-        }
-        return apiVersion;
+
+        return parseAuthTypeInResponse(bucketName);
     }
 
     protected void verifyResponseContentType(Response response) throws ServiceException {

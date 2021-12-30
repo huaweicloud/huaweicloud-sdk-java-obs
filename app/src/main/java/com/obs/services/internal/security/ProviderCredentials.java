@@ -21,12 +21,15 @@ import com.obs.services.IObsCredentialsProvider;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.model.AuthTypeEnum;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class ProviderCredentials {
     protected static final ILogger log = LoggerBuilder.getLogger(ProviderCredentials.class);
 
     protected AuthTypeEnum authType;
 
-    private static ThreadLocal<AuthTypeEnum> threadLocalAuthType;
+    private LinkedHashMap<String, AuthTypeEnum> localAuthType;
 
     private IObsCredentialsProvider obsCredentialsProvider;
 
@@ -36,19 +39,21 @@ public class ProviderCredentials {
         return ObsConstraint.DEFAULT_BUCKET_LOCATION_VALUE;
     }
 
-    public ProviderCredentials(String accessKey, String secretKey) {
-        this.setObsCredentialsProvider(new BasicObsCredentialsProvider(accessKey, secretKey));
-    }
-
     public ProviderCredentials(String accessKey, String secretKey, String securityToken) {
         this.setObsCredentialsProvider(new BasicObsCredentialsProvider(accessKey, secretKey, securityToken));
     }
 
+    public void setLocalAuthTypeCacheCapacity(int localAuthTypeCacheCapacity) {
+        localAuthType = new LinkedHashMap<String, AuthTypeEnum>(localAuthTypeCacheCapacity, 0.7F, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, AuthTypeEnum> entry) {
+                return this.size() > localAuthTypeCacheCapacity;
+            }
+        };
+    }
+
     public AuthTypeEnum getAuthType() {
-        if (!isAuthTypeNegotiation) {
-            return authType;
-        }
-        return (threadLocalAuthType == null) ? authType : threadLocalAuthType.get();
+        return authType;
     }
 
     public void setAuthType(AuthTypeEnum authType) {
@@ -75,26 +80,27 @@ public class ProviderCredentials {
         return (BasicSecurityKey) this.obsCredentialsProvider.getSecurityKey();
     }
 
-    public void setThreadLocalAuthType(AuthTypeEnum authType) {
-        if (threadLocalAuthType != null) {
-            threadLocalAuthType.set(authType);
+    public AuthTypeEnum getLocalAuthType(String bucketName) {
+        if (!isAuthTypeNegotiation) {
+            return authType;
         }
+        AuthTypeEnum authTypeEnum = localAuthType.get(bucketName);
+        return authTypeEnum == null ? authType : authTypeEnum;
     }
 
-    public void removeThreadLocalAuthType() {
-        if (threadLocalAuthType != null) {
-            threadLocalAuthType.remove();
+    public void setLocalAuthType(String bucketName, AuthTypeEnum authType) {
+        if (localAuthType == null || bucketName.isEmpty()) {
+            return;
         }
+
+        localAuthType.put(bucketName, authType);
     }
 
-    public void initThreadLocalAuthType() {
-        if (threadLocalAuthType == null) {
-            threadLocalAuthType = new ThreadLocal<AuthTypeEnum>() {
-                @Override
-                protected AuthTypeEnum initialValue() {
-                    return ProviderCredentials.this.authType;
-                }
-            };
-        }
+    public LinkedHashMap<String, AuthTypeEnum> getLocalAuthType() {
+        return localAuthType;
+    }
+
+    public void setLocalAuthType(LinkedHashMap<String, AuthTypeEnum> localAuthType) {
+        this.localAuthType = localAuthType;
     }
 }

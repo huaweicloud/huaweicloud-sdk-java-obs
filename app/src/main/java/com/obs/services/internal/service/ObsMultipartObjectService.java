@@ -52,7 +52,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         TransResult result = this.transInitiateMultipartUploadRequest(request);
 
-        this.prepareRESTHeaderAcl(result.getHeaders(), request.getAcl());
+        this.prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), request.getAcl());
 
         NewTransResult newTransResult = transObjectRequestWithResult(result, request);
         Response response = performRequest(newTransResult, true, false, false);
@@ -72,7 +72,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         requestParameters.put(ObsRequestParams.UPLOAD_ID, request.getUploadId());
 
         Response response = performRestDelete(request.getBucketName(), request.getObjectKey(), requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
         return build(response);
     }
 
@@ -87,8 +88,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         Map<String, String> headers = new HashMap<>();
 
 
-        transRequestPaymentHeaders(request, headers, this.getIHeaders());
-        String xml = this.getIConvertor().transCompleteMultipartUpload(request.getPartEtag());
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        String xml = this.getIConvertor(request.getBucketName()).transCompleteMultipartUpload(request.getPartEtag());
         headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
         headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
@@ -106,7 +107,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
                 new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.CompleteMultipartUploadHandler.class,
                 true);
 
-        String versionId = response.header(this.getIHeaders().versionIdHeader());
+        String versionId = response.header(this.getIHeaders(request.getBucketName()).versionIdHeader());
 
         CompleteMultipartUploadResult ret = new CompleteMultipartUploadResult(handler.getBucketName(),
                 handler.getObjectKey(), handler.getEtag(), handler.getLocation(), versionId,
@@ -140,7 +141,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         }
 
         Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
@@ -185,7 +187,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         }
 
         Response httpResponse = performRestGet(request.getBucketName(), request.getObjectKey(), requestParameters,
-                transRequestPaymentHeaders(request, null, this.getIHeaders()), request.getUserHeaders());
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
 
         this.verifyResponseContentType(httpResponse);
 
