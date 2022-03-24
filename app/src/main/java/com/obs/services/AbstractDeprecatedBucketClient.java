@@ -46,7 +46,7 @@ public abstract class AbstractDeprecatedBucketClient extends AbstractClient {
     
     @Deprecated
     public ObsBucket createBucket(final S3Bucket bucket) throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucket, "bucket is null");
+        ServiceUtils.assertParameterNotNull(bucket, "bucket is null");
         ObsBucket obsBucket = new ObsBucket();
         obsBucket.setBucketName(bucket.getBucketName());
         obsBucket.setLocation(bucket.getLocation());
@@ -89,7 +89,7 @@ public abstract class AbstractDeprecatedBucketClient extends AbstractClient {
     
     @Deprecated
     public HeaderResponse setBucketCors(final String bucketName, final S3BucketCors s3BucketCors) throws ObsException {
-        ServiceUtils.asserParameterNotNull(s3BucketCors,
+        ServiceUtils.assertParameterNotNull(s3BucketCors,
                 "The bucket '" + bucketName + "' does not include Cors information");
         BucketCors bucketCors = new BucketCors();
         bucketCors.setRules(s3BucketCors.getRules());
@@ -115,7 +115,7 @@ public abstract class AbstractDeprecatedBucketClient extends AbstractClient {
 
             @Override
             public OptionsInfoResult action() throws ServiceException {
-                ServiceUtils.asserParameterNotNull(optionInfo, "OptionsInfoRequest is null");
+                ServiceUtils.assertParameterNotNull(optionInfo, "OptionsInfoRequest is null");
                 return AbstractDeprecatedBucketClient.this.optionsImpl(bucketName, null, optionInfo);
             }
         });

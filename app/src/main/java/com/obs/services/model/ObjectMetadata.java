@@ -45,6 +45,8 @@ public class ObjectMetadata extends HeaderResponse {
 
     private String contentMd5;
 
+    private String crc64;
+
     private StorageClassEnum storageClass;
 
     private String webSiteRedirectLocation;
@@ -378,6 +380,14 @@ public class ObjectMetadata extends HeaderResponse {
      */
     public void setContentMd5(String contentMd5) {
         this.contentMd5 = contentMd5;
+    }
+
+    public String getCrc64() {
+        return crc64;
+    }
+
+    public void setCrc64(String crc64) {
+        this.crc64 = crc64;
     }
 
     /**

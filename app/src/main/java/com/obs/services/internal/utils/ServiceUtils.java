@@ -82,19 +82,19 @@ public class ServiceUtils {
         return s == null ? "" : s;
     }
 
-    public static void asserParameterNotNull(String value, String errorMessage) {
+    public static void assertParameterNotNull(String value, String errorMessage) {
         if (!isValid(value)) {
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
-    public static void asserParameterNotNull2(String value, String errorMessage) {
+    public static void assertParameterNotNull2(String value, String errorMessage) {
         if (value == null) {
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
-    public static void asserParameterNotNull(Object value, String errorMessage) {
+    public static void assertParameterNotNull(Object value, String errorMessage) {
         if (value == null) {
             throw new IllegalArgumentException(errorMessage);
         }

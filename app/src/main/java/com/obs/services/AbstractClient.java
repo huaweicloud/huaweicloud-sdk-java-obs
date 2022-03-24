@@ -173,7 +173,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
 
     @Deprecated
     public V4TemporarySignatureResponse createV4TemporarySignature(V4TemporarySignatureRequest request) {
-        ServiceUtils.asserParameterNotNull(request, "V4TemporarySignatureRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "V4TemporarySignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createV4TemporarySignature", this.getEndpoint(), "");
         try {
             TemporarySignatureResponse response = this.createV4TemporarySignature((TemporarySignatureRequest) request);
@@ -207,7 +207,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
 
     @Deprecated
     public V4PostSignatureResponse createV4PostSignature(V4PostSignatureRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "V4PostSignatureRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "V4PostSignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createV4PostSignature", this.getEndpoint(), "");
         return (V4PostSignatureResponse)createPostSignature(request, reqBean, true);
     }
@@ -221,7 +221,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
      */
     @Override
     public TemporarySignatureResponse createTemporarySignature(TemporarySignatureRequest request) {
-        ServiceUtils.asserParameterNotNull(request, "TemporarySignatureRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "TemporarySignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createTemporarySignature", this.getEndpoint(), "");
         try {
             return this.getProviderCredentials().getLocalAuthType(request.getBucketName()) == AuthTypeEnum.V4
@@ -358,7 +358,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
      */
     @Override
     public PostSignatureResponse createPostSignature(PostSignatureRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "PostSignatureRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "PostSignatureRequest is null");
         InterfaceLogBean reqBean = new InterfaceLogBean("createPostSignature", this.getEndpoint(), "");
         return createPostSignature(request, reqBean, this.getProviderCredentials()
                 .getLocalAuthType(request.getBucketName()) == AuthTypeEnum.V4);
@@ -381,7 +381,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
     protected <T> T doActionWithResult(String action, String bucketName, ActionCallbackWithResult<T> callback)
             throws ObsException {
         if (!this.isCname()) {
-            ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
+            ServiceUtils.assertParameterNotNull(bucketName, "bucketName is null");
         }
         InterfaceLogBean reqBean = new InterfaceLogBean(action, this.getEndpoint(), "");
         try {

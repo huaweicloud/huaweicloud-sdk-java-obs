@@ -125,8 +125,8 @@ public class OefClient extends ObsClient implements IOefClient {
     @Override
     public HeaderResponse putExtensionPolicy(final String bucketName, final PutExtensionPolicyRequest request)
             throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucket is null");
-        ServiceUtils.asserParameterNotNull(request, "policy is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucket is null");
+        ServiceUtils.assertParameterNotNull(request, "policy is null");
         if (null == request.getCompress() && null == request.getFetch() && null == request.getTranscode()) {
             throw new IllegalArgumentException(
                     "putExtensionPolicy failed: compress, fetch and transcode cannot be empty at the same time");
@@ -143,7 +143,7 @@ public class OefClient extends ObsClient implements IOefClient {
 
     @Override
     public QueryExtensionPolicyResult queryExtensionPolicy(final String bucketName) throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucket is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucket is null");
         return this.doActionWithResult("queryExtensionPolicy", bucketName,
                 new ActionCallbackWithResult<QueryExtensionPolicyResult>() {
                     @Override
@@ -156,7 +156,7 @@ public class OefClient extends ObsClient implements IOefClient {
 
     @Override
     public HeaderResponse deleteExtensionPolicy(final String bucketName) throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucket is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucket is null");
         return this.doActionWithResult("deleteExtensionPolicy", bucketName,
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -168,11 +168,11 @@ public class OefClient extends ObsClient implements IOefClient {
 
     @Override
     public CreateAsynchFetchJobsResult createFetchJob(final CreateAsyncFetchJobsRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucket is null");
-        ServiceUtils.asserParameterNotNull(request, "policy is null");
-        ServiceUtils.asserParameterNotNull(request.getUrl(), "url is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucket is null");
+        ServiceUtils.assertParameterNotNull(request, "policy is null");
+        ServiceUtils.assertParameterNotNull(request.getUrl(), "url is null");
         if (request.getCallBackUrl() != null) {
-            ServiceUtils.asserParameterNotNull(request.getCallBackBody(),
+            ServiceUtils.assertParameterNotNull(request.getCallBackBody(),
                     "callbackbody is null when callbackurl is not null");
         }
         return this.doActionWithResult("CreateFetchJob", request.getBucketName(),
@@ -188,8 +188,8 @@ public class OefClient extends ObsClient implements IOefClient {
 
     @Override
     public QueryAsynchFetchJobsResult queryFetchJob(final String bucketName, final String jobId) throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucket is null");
-        ServiceUtils.asserParameterNotNull(jobId, "jobId is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucket is null");
+        ServiceUtils.assertParameterNotNull(jobId, "jobId is null");
         return this.doActionWithResult("queryFetchJob", bucketName,
                 new ActionCallbackWithResult<QueryAsynchFetchJobsResult>() {
                     @Override

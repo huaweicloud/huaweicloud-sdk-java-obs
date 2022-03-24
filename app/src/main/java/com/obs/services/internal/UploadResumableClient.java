@@ -60,14 +60,20 @@ public class UploadResumableClient {
     }
 
     public CompleteMultipartUploadResult uploadFileResume(UploadFileRequest uploadFileRequest) {
-        ServiceUtils.asserParameterNotNull(uploadFileRequest, "UploadFileRequest is null");
-        ServiceUtils.asserParameterNotNull(uploadFileRequest.getBucketName(), "bucketName is null");
-        ServiceUtils.asserParameterNotNull2(uploadFileRequest.getObjectKey(), "objectKey is null");
-        ServiceUtils.asserParameterNotNull(uploadFileRequest.getUploadFile(), "uploadfile is null");
+        ServiceUtils.assertParameterNotNull(uploadFileRequest, "UploadFileRequest is null");
+        ServiceUtils.assertParameterNotNull(uploadFileRequest.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(uploadFileRequest.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(uploadFileRequest.getUploadFile(), "uploadfile is null");
         if (uploadFileRequest.isEnableCheckpoint()) {
             if (!ServiceUtils.isValid(uploadFileRequest.getCheckpointFile())) {
                 uploadFileRequest.setCheckpointFile(uploadFileRequest.getUploadFile() + ".uploadFile_record");
             }
+        }
+        if (uploadFileRequest.getCallback() != null) {
+            ServiceUtils.assertParameterNotNull(uploadFileRequest.getCallback().getCallbackUrl(),
+                    "callbackUrl is null");
+            ServiceUtils.assertParameterNotNull(uploadFileRequest.getCallback().getCallbackBody(),
+                    "callbackBody is null");
         }
         try {
             return uploadFileCheckPoint(uploadFileRequest);
@@ -131,6 +137,8 @@ public class UploadResumableClient {
                 uploadCheckPoint.partEtags);
         completeMultipartUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
         completeMultipartUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
+        completeMultipartUploadRequest.setIsIgnorePort(uploadFileRequest.getIsIgnorePort());
+        completeMultipartUploadRequest.setCallback(uploadFileRequest.getCallback());
 
         try {
             CompleteMultipartUploadResult result = this.obsClient

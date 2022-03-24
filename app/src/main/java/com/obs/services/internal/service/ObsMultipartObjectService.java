@@ -15,9 +15,12 @@
 
 package com.obs.services.internal.service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
 import com.obs.services.internal.RepeatableRequestEntity;
@@ -25,9 +28,11 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbortMultipartUploadRequest;
+import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.CompleteMultipartUploadRequest;
 import com.obs.services.model.CompleteMultipartUploadResult;
 import com.obs.services.model.CopyPartRequest;
@@ -87,12 +92,16 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         Map<String, String> headers = new HashMap<>();
 
-
         transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
         String xml = this.getIConvertor(request.getBucketName()).transCompleteMultipartUpload(request.getPartEtag());
         headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
         headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        if (request.getCallback() != null) {
+            headers.put((this.getProviderCredentials().getLocalAuthType(request.getBucketName()) != AuthTypeEnum.OBS
+                            ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + CommonHeaders.CALLBACK,
+                    ServiceUtils.toBase64(JSONChange.objToJson(request.getCallback()).getBytes(StandardCharsets.UTF_8)));
+        }
 
         NewTransResult transResult = transObjectRequest(request);
         transResult.setParams(requestParams);
@@ -101,19 +110,30 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         Response response = performRequest(transResult, true, false, false);
 
-        this.verifyResponseContentType(response);
+        CompleteMultipartUploadResult ret;
+        if (request.getCallback() == null) {
+            this.verifyResponseContentType(response);
+            XmlResponsesSaxParser.CompleteMultipartUploadHandler handler = getXmlResponseSaxParser().parse(
+                    new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.CompleteMultipartUploadHandler.class,
+                    true);
 
-        XmlResponsesSaxParser.CompleteMultipartUploadHandler handler = getXmlResponseSaxParser().parse(
-                new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.CompleteMultipartUploadHandler.class,
-                true);
+            String versionId = response.header(this.getIHeaders(request.getBucketName()).versionIdHeader());
 
-        String versionId = response.header(this.getIHeaders(request.getBucketName()).versionIdHeader());
-
-        CompleteMultipartUploadResult ret = new CompleteMultipartUploadResult(handler.getBucketName(),
-                handler.getObjectKey(), handler.getEtag(), handler.getLocation(), versionId,
-                this.getObjectUrl(handler.getBucketName(), handler.getObjectKey()));
-
+            ret = new CompleteMultipartUploadResult(handler.getBucketName(),
+                    handler.getObjectKey(), handler.getEtag(), handler.getLocation(), versionId,
+                    this.getObjectUrl(handler.getBucketName(), handler.getObjectKey(), request.getIsIgnorePort()));
+        } else {
+            ret = new CompleteMultipartUploadResult(request.getBucketName(),
+                    request.getObjectKey(), null, null, null, this.getObjectUrl(request.getBucketName(),
+                    request.getObjectKey(), request.getIsIgnorePort()));
+            try {
+                ret.setCallbackResponseBody(Objects.requireNonNull(response.body()).byteStream());
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            }
+        }
         setHeadersAndStatus(ret, response);
+
         return ret;
     }
 

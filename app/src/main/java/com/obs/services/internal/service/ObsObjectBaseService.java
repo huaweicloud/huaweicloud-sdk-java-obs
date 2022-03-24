@@ -116,7 +116,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 response.header(CommonHeaders.ETAG),
                 response.header(this.getIHeaders(request.getBucketName()).versionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
-                        .storageClassHeader())), this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
+                        .storageClassHeader())), this.getObjectUrl(request.getBucketName(), request.getObjectKey(),
+                request.getIsIgnorePort()));
 
         setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
@@ -335,13 +336,17 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         return ret;
     }
 
-    protected String getObjectUrl(String bucketName, String objectKey) {
+    protected String getObjectUrl(String bucketName, String objectKey, boolean isIgnorePort) {
         boolean pathStyle = this.isPathStyle();
         boolean https = this.getHttpsOnly();
         boolean isCname = this.isCname();
+        String port = "";
+        if (!isIgnorePort) {
+            port = ":" + (https ? this.getHttpsPort() : this.getHttpPort());
+        }
         return (https ? "https://" : "http://") + (pathStyle || isCname ? "" : bucketName + ".")
-                + this.getEndpoint() + ":" + (https ? this.getHttpsPort() : this.getHttpPort()) + "/"
-                + (pathStyle ? bucketName + "/" : "") + RestUtils.uriEncode(objectKey, false);
+                + this.getEndpoint() + port + "/" + (pathStyle ? bucketName + "/" : "")
+                + RestUtils.uriEncode(objectKey, false);
     }
 
     private ObsFSAttribute getObsFSAttributeFromResponse(String bucketName, Response response, boolean needDecode) {
@@ -365,6 +370,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         objMetadata.setContentLanguage(response.header(CommonHeaders.CONTENT_LANGUAGE));
         objMetadata.setCacheControl(response.header(CommonHeaders.CACHE_CONTROL));
         objMetadata.setExpires(response.header(CommonHeaders.EXPIRES));
+        objMetadata.setCrc64(response.header(CommonHeaders.HASH_CRC64ECMA));
 
         String contentLength = response.header(CommonHeaders.CONTENT_LENGTH);
         if (contentLength != null) {

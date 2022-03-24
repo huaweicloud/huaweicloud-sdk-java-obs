@@ -81,6 +81,6 @@ public class ObsFSFolder extends PutObjectResult {
     }
 
     protected void checkInternalClient() {
-        ServiceUtils.asserParameterNotNull(this.innerClient, "ObsClient is null");
+        ServiceUtils.assertParameterNotNull(this.innerClient, "ObsClient is null");
     }
 }

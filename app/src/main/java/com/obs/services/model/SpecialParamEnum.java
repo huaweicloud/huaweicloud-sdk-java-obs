@@ -145,6 +145,16 @@ public enum SpecialParamEnum {
     LISTCONTENTSUMMARY("listcontentsummary"),
 
     /**
+     * obtain folder contentSummary of fs
+     */
+    LISTCONTENTSUMMARYFS("multilistcontentsummary"),
+
+    /**
+     * get content summary of fs
+     */
+    GETCONTENTSUMMARY("getcontentsummary"),
+
+    /**
      * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
      */
     DIRECTCOLDACCESS("directcoldaccess"),

@@ -60,7 +60,7 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
                 || (expiryDate.getTime() - getUtcTime().getTime()) < WILL_SOON_EXPIRE_SECONDS * 1000;
     }
 
-    private static Date getUtcTime() {
+    public static Date getUtcTime() {
         Calendar calendar = Calendar.getInstance();
         int offset = calendar.get(Calendar.ZONE_OFFSET);
         calendar.add(Calendar.MILLISECOND, -offset);

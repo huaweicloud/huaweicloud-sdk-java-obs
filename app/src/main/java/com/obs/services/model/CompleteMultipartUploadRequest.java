@@ -30,6 +30,8 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
 
     private String encodingType;
 
+    private Callback callback;
+
     public CompleteMultipartUploadRequest() {
     }
 
@@ -120,6 +122,14 @@ public class CompleteMultipartUploadRequest extends AbstractMultipartRequest {
      */
     public String getEncodingType() {
         return encodingType;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
     }
 
     @Override

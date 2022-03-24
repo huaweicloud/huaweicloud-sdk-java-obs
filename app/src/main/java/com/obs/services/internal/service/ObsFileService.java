@@ -35,6 +35,10 @@ import com.obs.services.model.fs.RenameResult;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.fs.ContentSummaryFsRequest;
+import com.obs.services.model.fs.ContentSummaryFsResult;
+import com.obs.services.model.fs.ListContentSummaryFsRequest;
+import com.obs.services.model.fs.ListContentSummaryFsResult;
 import okhttp3.Response;
 
 import java.io.Closeable;
@@ -101,7 +105,7 @@ public abstract class ObsFileService extends ObsObjectService {
                 response.header(this.getIHeaders(request.getBucketName()).versionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
                         .storageClassHeader())),
-                this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
+                this.getObjectUrl(request.getBucketName(), request.getObjectKey(), request.getIsIgnorePort()));
 
         setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
@@ -149,5 +153,49 @@ public abstract class ObsFileService extends ObsObjectService {
 
         setHeadersAndStatus(contentSummaryResult, httpResponse);
         return contentSummaryResult;
+    }
+
+    protected ListContentSummaryFsResult listContentSummaryFsImpl(
+            ListContentSummaryFsRequest listContentSummaryFsRequest) throws ServiceException {
+
+        TransResult result = this.transListContentSummaryFsRequest(listContentSummaryFsRequest);
+
+        Response httpResponse = performRestGet(listContentSummaryFsRequest.getBucketName(), null,
+                result.getParams(), result.getHeaders(), listContentSummaryFsRequest.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+
+        XmlResponsesSaxParser.ListContentSummaryFsHandler listContentSummaryFsHandler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListContentSummaryFsHandler.class,
+                true);
+
+        ListContentSummaryFsResult listContentSummaryFsResult = new ListContentSummaryFsResult();
+        listContentSummaryFsResult.setDirContentSummaries(listContentSummaryFsHandler.getDirContentSummaries());
+        listContentSummaryFsResult.setErrorResults(listContentSummaryFsHandler.getErrorResults());
+
+        setHeadersAndStatus(listContentSummaryFsResult, httpResponse);
+        return listContentSummaryFsResult;
+    }
+
+    protected ContentSummaryFsResult getContentSummaryFsImpl(ContentSummaryFsRequest contentSummaryFsRequest)
+            throws ServiceException {
+
+        TransResult result = this.transGetContentSummaryFs(contentSummaryFsRequest);
+
+        Response httpResponse = performRestGet(contentSummaryFsRequest.getBucketName(),
+                contentSummaryFsRequest.getDirName().equals("/") ? null : contentSummaryFsRequest.getDirName(),
+                result.getParams(), null, contentSummaryFsRequest.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+
+        XmlResponsesSaxParser.ContentSummaryFsHandler contentSummaryFsHandler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ContentSummaryFsHandler.class,
+                true);
+
+        ContentSummaryFsResult contentSummaryFsResult = new ContentSummaryFsResult();
+        contentSummaryFsResult.setContentSummary(contentSummaryFsHandler.getContentSummary());
+
+        setHeadersAndStatus(contentSummaryFsResult, httpResponse);
+        return contentSummaryFsResult;
     }
 }

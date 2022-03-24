@@ -59,8 +59,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
 
     @Override
     public boolean doesObjectExist(final GetObjectMetadataRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucket is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucket is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return doActionWithResult("doesObjectExist", request.getBucketName(), new ActionCallbackWithResult<Boolean>() {
             @Override
             public Boolean action() throws ServiceException {
@@ -102,7 +102,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
 
             @Override
             public OptionsInfoResult action() throws ServiceException {
-                ServiceUtils.asserParameterNotNull(optionInfo, "OptionsInfoRequest is null");
+                ServiceUtils.assertParameterNotNull(optionInfo, "OptionsInfoRequest is null");
                 return AbstractObjectClient.this.optionsImpl(bucketName, objectKey, optionInfo);
             }
         });
@@ -116,7 +116,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public ObjectListing listObjects(final ListObjectsRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "ListObjectsRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "ListObjectsRequest is null");
         return this.doActionWithResult("listObjects", request.getBucketName(),
                 new ActionCallbackWithResult<ObjectListing>() {
                     @Override
@@ -185,7 +185,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public ListVersionsResult listVersions(final ListVersionsRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "ListVersionsRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "ListVersionsRequest is null");
         return this.doActionWithResult("listVersions", request.getBucketName(),
                 new ActionCallbackWithResult<ListVersionsResult>() {
                     @Override
@@ -271,8 +271,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
     public PutObjectResult putObject(final PutObjectRequest request) throws ObsException {
 
-        ServiceUtils.asserParameterNotNull(request, "PutObjectRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "PutObjectRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
 
         return this.doActionWithResult("putObject", request.getBucketName(),
                 new ActionCallbackWithResult<PutObjectResult>() {
@@ -323,8 +323,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
     public ObsObject getObject(final GetObjectRequest request) throws ObsException {
 
-        ServiceUtils.asserParameterNotNull(request, "GetObjectRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "GetObjectRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("getObject", request.getBucketName(), new ActionCallbackWithResult<ObsObject>() {
 
             @Override
@@ -390,13 +390,13 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public DeleteObjectResult deleteObject(final DeleteObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "DeleteObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "DeleteObjectRequest is null");
         return this.doActionWithResult("deleteObject", request.getBucketName(),
                 new ActionCallbackWithResult<DeleteObjectResult>() {
 
                     @Override
                     public DeleteObjectResult action() throws ServiceException {
-                        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return AbstractObjectClient.this.deleteObjectImpl(request);
                     }
                 });
@@ -410,7 +410,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public DeleteObjectsResult deleteObjects(final DeleteObjectsRequest deleteObjectsRequest) throws ObsException {
-        ServiceUtils.asserParameterNotNull(deleteObjectsRequest, "DeleteObjectsRequest is null");
+        ServiceUtils.assertParameterNotNull(deleteObjectsRequest, "DeleteObjectsRequest is null");
         return this.doActionWithResult("deleteObjects", deleteObjectsRequest.getBucketName(),
                 new ActionCallbackWithResult<DeleteObjectsResult>() {
 
@@ -429,10 +429,10 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public CopyObjectResult copyObject(final CopyObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "CopyObjectRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getDestinationBucketName(), "destinationBucketName is null");
-        ServiceUtils.asserParameterNotNull2(request.getSourceObjectKey(), "sourceObjectKey is null");
-        ServiceUtils.asserParameterNotNull2(request.getDestinationObjectKey(), "destinationObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "CopyObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getDestinationBucketName(), "destinationBucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getSourceObjectKey(), "sourceObjectKey is null");
+        ServiceUtils.assertParameterNotNull2(request.getDestinationObjectKey(), "destinationObjectKey is null");
         return this.doActionWithResult("copyObject", request.getSourceBucketName(),
                 new ActionCallbackWithResult<CopyObjectResult>() {
                     @Override
@@ -486,8 +486,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public AccessControlList getObjectAcl(final GetObjectAclRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "GetObjectAclRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "GetObjectAclRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("getObjectAcl", request.getBucketName(),
                 new ActionCallbackWithResult<AccessControlList>() {
                     @Override
@@ -533,7 +533,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public HeaderResponse setObjectAcl(final SetObjectAclRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetObjectAclRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "SetObjectAclRequest is null");
         return this.doActionWithResult("setObjectAcl", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -580,8 +580,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public ObjectMetadata getObjectMetadata(final GetObjectMetadataRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "GetObjectMetadataRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "GetObjectMetadataRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("getObjectMetadata", request.getBucketName(),
                 new ActionCallbackWithResult<ObjectMetadata>() {
 
@@ -601,7 +601,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public ObjectMetadata setObjectMetadata(final SetObjectMetadataRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetObjectMetadataRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "SetObjectMetadataRequest is null");
         return this.doActionWithResult("setObjectMetadata", request.getBucketName(),
                 new ActionCallbackWithResult<ObjectMetadata>() {
                     @Override
@@ -645,8 +645,8 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public AppendObjectResult appendObject(final AppendObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "AppendObjectRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "AppendObjectRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
 
         return this.doActionWithResult("appendObject", request.getBucketName(),
                 new ActionCallbackWithResult<AppendObjectResult>() {
@@ -668,14 +668,14 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     public RestoreObjectRequest.RestoreObjectStatus restoreObject(
             final RestoreObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "RestoreObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "RestoreObjectRequest is null");
         return this.doActionWithResult("restoreObject", request.getBucketName(),
                 new ActionCallbackWithResult<RestoreObjectRequest.RestoreObjectStatus>() {
 
                     @Override
                     public RestoreObjectRequest.RestoreObjectStatus action()
                             throws ServiceException {
-                        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return AbstractObjectClient.this.restoreObjectImpl(request);
                     }
                 });
@@ -689,13 +689,13 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
      */
     @Override
     public RestoreObjectResult restoreObjectV2(final RestoreObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "RestoreObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "RestoreObjectRequest is null");
         return this.doActionWithResult("restoreObjectV2", request.getBucketName(),
                 new ActionCallbackWithResult<RestoreObjectResult>() {
 
                     @Override
                     public RestoreObjectResult action() throws ServiceException {
-                        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return AbstractObjectClient.this.restoreObjectV2Impl(request);
                     }
                 });

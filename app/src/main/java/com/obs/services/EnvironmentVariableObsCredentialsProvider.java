@@ -37,8 +37,8 @@ public class EnvironmentVariableObsCredentialsProvider implements IObsCredential
                     String secretKey = stringTrim(System.getenv(ObsConstraint.SECRET_KEY_ENV_VAR));
                     String securityToken = stringTrim(System.getenv(ObsConstraint.SECURITY_TOKEN_ENV_VAR));
 
-                    ServiceUtils.asserParameterNotNull(accessKey, "access key should not be null or empty.");
-                    ServiceUtils.asserParameterNotNull(secretKey, "secret key should not be null or empty.");
+                    ServiceUtils.assertParameterNotNull(accessKey, "access key should not be null or empty.");
+                    ServiceUtils.assertParameterNotNull(secretKey, "secret key should not be null or empty.");
 
                     securityKey = new BasicSecurityKey(accessKey, secretKey, securityToken);
                 }

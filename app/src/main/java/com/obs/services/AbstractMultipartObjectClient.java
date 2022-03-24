@@ -47,8 +47,8 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
     @Override
     public InitiateMultipartUploadResult initiateMultipartUpload(final InitiateMultipartUploadRequest request)
             throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "InitiateMultipartUploadRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "InitiateMultipartUploadRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("initiateMultipartUpload", request.getBucketName(),
                 new ActionCallbackWithResult<InitiateMultipartUploadResult>() {
                     @Override
@@ -67,9 +67,9 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
      */
     @Override
     public HeaderResponse abortMultipartUpload(final AbortMultipartUploadRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "AbortMultipartUploadRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
+        ServiceUtils.assertParameterNotNull(request, "AbortMultipartUploadRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("abortMultipartUpload", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -124,9 +124,9 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
     @Override
     public UploadPartResult uploadPart(final UploadPartRequest request) throws ObsException {
 
-        ServiceUtils.asserParameterNotNull(request, "UploadPartRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
+        ServiceUtils.assertParameterNotNull(request, "UploadPartRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("uploadPart", request.getBucketName(),
                 new ActionCallbackWithResult<UploadPartResult>() {
 
@@ -149,11 +149,11 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
      */
     @Override
     public CopyPartResult copyPart(final CopyPartRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "CopyPartRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getSourceObjectKey(), "sourceObjectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getDestinationBucketName(), "destinationBucketName is null");
-        ServiceUtils.asserParameterNotNull2(request.getDestinationObjectKey(), "destinationObjectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
+        ServiceUtils.assertParameterNotNull(request, "CopyPartRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getSourceObjectKey(), "sourceObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getDestinationBucketName(), "destinationBucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getDestinationObjectKey(), "destinationObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("copyPart", request.getSourceBucketName(),
                 new ActionCallbackWithResult<CopyPartResult>() {
 
@@ -175,9 +175,9 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
     @Override
     public CompleteMultipartUploadResult completeMultipartUpload(final CompleteMultipartUploadRequest request)
             throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "CompleteMultipartUploadRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
+        ServiceUtils.assertParameterNotNull(request, "CompleteMultipartUploadRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("completeMultipartUpload", request.getBucketName(),
                 new ActionCallbackWithResult<CompleteMultipartUploadResult>() {
                     @Override
@@ -196,9 +196,9 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
     @Override
     public ListPartsResult listParts(final ListPartsRequest request) throws ObsException {
 
-        ServiceUtils.asserParameterNotNull(request, "ListPartsRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
-        ServiceUtils.asserParameterNotNull(request.getUploadId(), "uploadId is null");
+        ServiceUtils.assertParameterNotNull(request, "ListPartsRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getUploadId(), "uploadId is null");
         return this.doActionWithResult("listParts", request.getBucketName(),
                 new ActionCallbackWithResult<ListPartsResult>() {
 
@@ -219,7 +219,7 @@ public abstract class AbstractMultipartObjectClient extends AbstractObjectClient
      */
     @Override
     public MultipartUploadListing listMultipartUploads(final ListMultipartUploadsRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "ListMultipartUploadsRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "ListMultipartUploadsRequest is null");
         return this.doActionWithResult("listMultipartUploads", request.getBucketName(),
                 new ActionCallbackWithResult<MultipartUploadListing>() {
 

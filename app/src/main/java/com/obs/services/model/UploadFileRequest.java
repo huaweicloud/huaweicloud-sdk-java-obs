@@ -41,6 +41,8 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 
     private String encodingType;
 
+    private Callback callback;
+
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
     /**
@@ -416,6 +418,14 @@ public class UploadFileRequest extends PutObjectBasicRequest {
      */
     public String getEncodingType() {
         return encodingType;
+    }
+
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
     }
 
     @Override
