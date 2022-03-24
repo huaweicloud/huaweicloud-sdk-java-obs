@@ -34,7 +34,7 @@
 
     <Loggers>
     	<!-- north log -->
-        <Logger name="com.obs.services.ObsClient" level="WARN"
+        <Logger name="com.obs.services.AbstractClient" level="WARN"
                 additivity="false">
             <AppenderRef ref="NorthInterfaceLogAppender" />
         </Logger>

@@ -185,9 +185,9 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
     }
 
     private void checkRestoreObjectsRequest(RestoreObjectsRequest request) {
-        ServiceUtils.asserParameterNotNull(request, "RestoreObjectsRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "RestoreObjectsRequest is null");
         if (!this.isCname()) {
-            ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+            ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
         }
 
         if (request.getKeyAndVersions() != null && request.getPrefix() != null) {
@@ -202,7 +202,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
     
     @Override
     public UploadProgressStatus putObjects(final PutObjectsRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "PutObjectsRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "PutObjectsRequest is null");
 
         ThreadPoolExecutor executor = this.initThreadPool(request);
         Date now = new Date();

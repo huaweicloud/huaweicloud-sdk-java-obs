@@ -136,7 +136,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 response.header(CommonHeaders.ETAG), nextPosition != null ? Long.parseLong(nextPosition) : -1,
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
                         .storageClassHeader())),
-                this.getObjectUrl(request.getBucketName(), request.getObjectKey()));
+                this.getObjectUrl(request.getBucketName(), request.getObjectKey(), request.getIsIgnorePort()));
 
         setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {

@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import java.io.InputStream;
+
 /**
  * Response to a request for combining parts
  */
@@ -31,6 +33,8 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
     private String objectUrl;
 
     private String encodingType;
+
+    private InputStream callbackResponseBody;
 
     public CompleteMultipartUploadResult(String bucketName, String objectKey, String etag, String location,
             String versionId, String objectUrl) {
@@ -114,6 +118,14 @@ public class CompleteMultipartUploadResult extends HeaderResponse {
      */
     public String getEncodingType() {
         return encodingType;
+    }
+
+    public InputStream getCallbackResponseBody() {
+        return callbackResponseBody;
+    }
+
+    public void setCallbackResponseBody(InputStream callbackResponseBody) {
+        this.callbackResponseBody = callbackResponseBody;
     }
 
     @Override

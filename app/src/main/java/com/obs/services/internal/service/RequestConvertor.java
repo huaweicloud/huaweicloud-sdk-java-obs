@@ -30,6 +30,7 @@ import com.obs.services.internal.io.ProgressInputStream;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketTypeEnum;
@@ -53,14 +54,20 @@ import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.SseCHeader;
 import com.obs.services.model.SseKmsHeader;
 import com.obs.services.model.UploadPartRequest;
+import com.obs.services.model.fs.ContentSummaryFsRequest;
+import com.obs.services.model.fs.ListContentSummaryFsRequest;
 import com.obs.services.model.fs.ListContentSummaryRequest;
 import com.obs.services.model.fs.NewBucketRequest;
 import com.obs.services.model.fs.WriteFileRequest;
 import okhttp3.RequestBody;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +132,10 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
         if (ServiceUtils.isValid(request.getSuccessRedirectLocation())) {
             putHeader(headers, iheaders.successRedirectLocationHeader(), request.getSuccessRedirectLocation());
+        }
+
+        if (request.getExpires() > 0) {
+            putHeader(headers, iheaders.expiresHeader(), String.valueOf(request.getExpires()));
         }
 
         setBaseHeaderFromMetadata(request.getBucketName(), headers, objectMetadata);
@@ -413,6 +424,12 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
         if (ServiceUtils.isValid(objectMetadata.getExpires())) {
             headers.put(CommonHeaders.EXPIRES, objectMetadata.getExpires().trim());
+        }
+
+        if (ServiceUtils.isValid(objectMetadata.getCrc64())) {
+            headers.put(this.getProviderCredentials().getLocalAuthType(bucketName) != AuthTypeEnum.OBS
+                            ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX + CommonHeaders.HASH_CRC64ECMA,
+                    objectMetadata.getCrc64().trim());
         }
 
         if (objectMetadata.getObjectStorageClass() != null) {
@@ -807,6 +824,50 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             putHeader(headers, this.getIHeaders(listContentSummaryRequest.getBucketName()).listTimeoutHeader(),
                     String.valueOf(listContentSummaryRequest.getListTimeout()));
         }
+        return new TransResult(headers, params, null);
+    }
+
+    protected TransResult transListContentSummaryFsRequest(ListContentSummaryFsRequest listContentSummaryFsRequest) {
+        Map<String, String> params = new HashMap<>();
+        params.put(SpecialParamEnum.LISTCONTENTSUMMARYFS.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<String, String>();
+        String sbXml = "";
+        try {
+            OBSXMLBuilder builder = OBSXMLBuilder.create("MultiListContentSummary");
+            builder.elem("MaxKeys").text(String.valueOf(listContentSummaryFsRequest.getMaxKeys()));
+            if (listContentSummaryFsRequest.getDirLayers().size() > 0) {
+                for (ListContentSummaryFsRequest.DirLayer dir : listContentSummaryFsRequest.getDirLayers()) {
+                    OBSXMLBuilder builderDir = OBSXMLBuilder.create("Dir");
+                    builderDir.elem("Key").text(dir.getKey());
+                    if (ServiceUtils.isValid(dir.getMarker())) {
+                        builderDir.elem("Marker").text(dir.getMarker());
+                    }
+                    if (dir.getInode() != 0) {
+                        builderDir.elem("Inode").text(String.valueOf(dir.getInode()));
+                    }
+                    builder.importXMLBuilder(builderDir);
+                }
+            }
+            sbXml = builder.asString();
+        } catch (ParserConfigurationException | FactoryConfigurationError | TransformerException e) {
+            throw new ServiceException("Failed to build XML document for MultiListContentSummary", e);
+        }
+
+        putHeader(headers, (this.getProviderCredentials().getLocalAuthType(listContentSummaryFsRequest.getBucketName())
+                        != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX)
+                        + Constants.FS_SUMMARY_DIR_LIST,
+                ServiceUtils.toBase64(sbXml.getBytes(StandardCharsets.UTF_8)));
+        transRequestPaymentHeaders(listContentSummaryFsRequest, headers,
+                this.getIHeaders(listContentSummaryFsRequest.getBucketName()));
+        return new TransResult(headers, params, null);
+    }
+
+    protected TransResult transGetContentSummaryFs(ContentSummaryFsRequest contentSummaryFsRequest) {
+        Map<String, String> params = new HashMap<>();
+        params.put(SpecialParamEnum.GETCONTENTSUMMARY.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(contentSummaryFsRequest, headers,
+                this.getIHeaders(contentSummaryFsRequest.getBucketName()));
         return new TransResult(headers, params, null);
     }
 

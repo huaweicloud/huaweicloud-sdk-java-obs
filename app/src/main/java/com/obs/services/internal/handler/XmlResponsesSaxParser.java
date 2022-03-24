@@ -66,7 +66,10 @@ import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.VersioningStatusEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.fs.DirContentSummary;
+import com.obs.services.model.fs.DirSummary;
 import com.obs.services.model.fs.FolderContentSummary;
+import com.obs.services.model.fs.ListContentSummaryFsResult;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -479,6 +482,179 @@ public class XmlResponsesSaxParser {
                 currentFolderContentSummary.getLayerSummaries().add(currentLayerSummary);
             } else if (name.equals("Contents")) {
                 folderContentSummaries.add(currentFolderContentSummary);
+            }
+        }
+    }
+
+    public static class ListContentSummaryFsHandler extends DefaultXmlHandler {
+
+        private String bucketName;
+
+        private DirSummary dirSummary;
+
+        private DirContentSummary dirContentSummary;
+
+        private ListContentSummaryFsResult.ErrorResult errorResult;
+
+        private List<DirContentSummary> dirContentSummaries = new ArrayList<>();
+
+        private List<ListContentSummaryFsResult.ErrorResult> errorResults = new ArrayList<>();
+
+        private List<DirSummary> subDirs;
+
+        public DirContentSummary getDirContentSummary() {
+            return dirContentSummary;
+        }
+
+        public void setDirContentSummary(DirContentSummary dirContentSummary) {
+            this.dirContentSummary = dirContentSummary;
+        }
+
+        public ListContentSummaryFsResult.ErrorResult getErrorResult() {
+            return errorResult;
+        }
+
+        public void setErrorResult(ListContentSummaryFsResult.ErrorResult errorResult) {
+            this.errorResult = errorResult;
+        }
+
+        public List<DirContentSummary> getDirContentSummaries() {
+            return dirContentSummaries;
+        }
+
+        public void setDirContentSummaries(List<DirContentSummary> dirContentSummaries) {
+            this.dirContentSummaries = dirContentSummaries;
+        }
+
+        public List<ListContentSummaryFsResult.ErrorResult> getErrorResults() {
+            return errorResults;
+        }
+
+        public void setErrorResults(List<ListContentSummaryFsResult.ErrorResult> errorResults) {
+            this.errorResults = errorResults;
+        }
+
+        public String getBucketName() {
+            return bucketName;
+        }
+
+        public void setBucketName(String bucketName) {
+            this.bucketName = bucketName;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals("Contents")) {
+                dirContentSummary = new DirContentSummary();
+                subDirs = new ArrayList<>();
+                errorResult = null;
+            } else if (name.equals("ErrContents")) {
+                errorResult = new ListContentSummaryFsResult.ErrorResult();
+                dirContentSummary = null;
+            } else if (name.equals("SubDir")) {
+                dirSummary = new DirSummary();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (name.equals("BucketName")) {
+                bucketName = elementText;
+            } else if (name.equals("Key")) {
+                fnSetKey(elementText);
+            } else if (name.equals("Inode")) {
+                fnSetInode(elementText);
+            } else if (name.equals("IsTruncated")) {
+                dirContentSummary.setTruncated(Boolean.parseBoolean(elementText));
+            } else if (name.equals("NextMarker")) {
+                dirContentSummary.setNextMarker(elementText);
+            } else if (name.equals("SubDir")) {
+                subDirs.add(dirSummary);
+                dirSummary = null;
+            } else if (name.equals("Name")) {
+                dirSummary.setName(elementText);
+            } else if (name.equals("DirCount")) {
+                dirSummary.setDirCount(Long.parseLong(elementText));
+            } else if (name.equals("FileCount")) {
+                dirSummary.setFileCount(Long.parseLong(elementText));
+            } else if (name.equals("FileSize")) {
+                dirSummary.setFileSize(Long.parseLong(elementText));
+            } else if (name.equals("ErrContents")) {
+                errorResults.add(errorResult);
+            } else if (name.equals("ErrorCode")) {
+                errorResult.setErrorCode(elementText);
+            } else if (name.equals("Message")) {
+                errorResult.setMessage(elementText);
+            } else if (name.equals("StatusCode")) {
+                errorResult.setStatusCode(elementText);
+            } else if (name.equals("Contents")) {
+                dirContentSummary.setSubDir(subDirs);
+                dirContentSummaries.add(dirContentSummary);
+            }
+        }
+
+        private void fnSetInode(String elementText) {
+            if (dirSummary != null) {
+                dirSummary.setInode(Long.parseLong(elementText));
+            } else if (errorResult != null) {
+                errorResult.setInode(Long.parseLong(elementText));
+            } else if (dirContentSummary != null) {
+                dirContentSummary.setInode(Long.parseLong(elementText));
+            }
+        }
+
+        private void fnSetKey(String elementText) {
+            if ((dirContentSummary != null)) {
+                dirContentSummary.setKey(elementText);
+            } else {
+                errorResult.setKey(elementText);
+            }
+        }
+    }
+
+    public static class ContentSummaryFsHandler extends DefaultXmlHandler {
+
+        private String bucketName;
+
+        private DirSummary contentSummary;
+
+        public String getBucketName() {
+            return bucketName;
+        }
+
+        public void setBucketName(String bucketName) {
+            this.bucketName = bucketName;
+        }
+
+        public DirSummary getContentSummary() {
+            return contentSummary;
+        }
+
+        public void setContentSummary(DirSummary contentSummary) {
+            this.contentSummary = contentSummary;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals("GetContentSummaryResult")) {
+                contentSummary = new DirSummary();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (name.equals("BucketName")) {
+                bucketName = elementText;
+            } else if (name.equals("Name")) {
+                contentSummary.setName(elementText);
+            } else if (name.equals("DirCount")) {
+                contentSummary.setDirCount(Long.parseLong(elementText));
+            } else if (name.equals("FileCount")) {
+                contentSummary.setFileCount(Long.parseLong(elementText));
+            } else if (name.equals("FileSize")) {
+                contentSummary.setFileSize(Long.parseLong(elementText));
+            } else if (name.equals("Inode")) {
+                contentSummary.setInode(Long.parseLong(elementText));
             }
         }
     }

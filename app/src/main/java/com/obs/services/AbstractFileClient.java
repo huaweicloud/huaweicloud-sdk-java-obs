@@ -88,9 +88,9 @@ public abstract class AbstractFileClient extends AbstractPFSClient {
      */
     @Override
     public TaskProgressStatus dropFolder(DropFolderRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "DropFolderRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "DropFolderRequest is null");
         if (!this.isCname()) {
-            ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+            ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
         }
         ThreadPoolExecutor executor = this.initThreadPool(request);
         DefaultTaskProgressStatus progressStatus = new DefaultTaskProgressStatus();

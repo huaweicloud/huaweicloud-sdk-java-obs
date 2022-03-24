@@ -1,3 +1,13 @@
+Version 3.22.3
+Third-party dependence:
+1. Replace log4j2 2.17.0 with log4j2 2.17.1
+2. Replace okhttp 4.9.1 with okhttp 4.9.3
+3. Replace okio 2.7.0 with okio 2.10.0
+4. Replace jackson-core 2.12.5 with jackson-core 2.13.0
+5. Replace jackson-databind 2.12.5 with jackson-databind 2.13.0
+6. Replace jackson-annotations 2.12.5 with jackson-annotations 2.13.0
+-----------------------------------------------------------------------------------
+
 Version 3.21.12
 Third-party dependence:
 1. Replace log4j2 2.16.0 with log4j2 2.17.0

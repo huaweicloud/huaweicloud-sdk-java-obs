@@ -145,7 +145,7 @@ public class ObsClient extends AbstractBatchClient {
     }
 
     public ObsClient(IObsCredentialsProvider provider, String endPoint) {
-        ServiceUtils.asserParameterNotNull(provider, "ObsCredentialsProvider is null");
+        ServiceUtils.assertParameterNotNull(provider, "ObsCredentialsProvider is null");
         ObsConfiguration config = new ObsConfiguration();
         config.setEndPoint(endPoint);
         this.init(provider.getSecurityKey().getAccessKey(), provider.getSecurityKey().getSecretKey(),
@@ -154,7 +154,7 @@ public class ObsClient extends AbstractBatchClient {
     }
 
     public ObsClient(IObsCredentialsProvider provider, ObsConfiguration config) {
-        ServiceUtils.asserParameterNotNull(provider, "ObsCredentialsProvider is null");
+        ServiceUtils.assertParameterNotNull(provider, "ObsCredentialsProvider is null");
         if (config == null) {
             config = new ObsConfiguration();
         }
@@ -165,7 +165,7 @@ public class ObsClient extends AbstractBatchClient {
 
     @Override
     public ReadAheadResult readAheadObjects(final ReadAheadRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "request is null");
+        ServiceUtils.assertParameterNotNull(request, "request is null");
         return this.doActionWithResult("readAheadObjects", request.getBucketName(),
                 new ActionCallbackWithResult<ReadAheadResult>() {
                     @Override
@@ -178,8 +178,8 @@ public class ObsClient extends AbstractBatchClient {
 
     @Override
     public ReadAheadResult deleteReadAheadObjects(final String bucketName, final String prefix) throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
-        ServiceUtils.asserParameterNotNull(prefix, "prefix is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucketName is null");
+        ServiceUtils.assertParameterNotNull(prefix, "prefix is null");
         return this.doActionWithResult("deleteReadAheadObjects", bucketName,
                 new ActionCallbackWithResult<ReadAheadResult>() {
                     @Override
@@ -193,8 +193,8 @@ public class ObsClient extends AbstractBatchClient {
     @Override
     public ReadAheadQueryResult queryReadAheadObjectsTask(final String bucketName, final String taskId)
             throws ObsException {
-        ServiceUtils.asserParameterNotNull(bucketName, "bucketName is null");
-        ServiceUtils.asserParameterNotNull(taskId, "taskId is null");
+        ServiceUtils.assertParameterNotNull(bucketName, "bucketName is null");
+        ServiceUtils.assertParameterNotNull(taskId, "taskId is null");
         return this.doActionWithResult("queryReadAheadObjectsTask", bucketName,
                 new ActionCallbackWithResult<ReadAheadQueryResult>() {
                     @Override
@@ -222,7 +222,7 @@ public class ObsClient extends AbstractBatchClient {
 
     @Override
     public ObsFSFolder newFolder(NewFolderRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "CreateFolderRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "CreateFolderRequest is null");
         if (request.getObjectKey() != null) {
             String delimiter = this.getFileSystemDelimiter();
             if (!request.getObjectKey().endsWith(delimiter)) {
@@ -237,8 +237,8 @@ public class ObsClient extends AbstractBatchClient {
     
     @Override
     public ObsFSFile writeFile(final WriteFileRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "WriteFileRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "WriteFileRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         ObsFSFile obsFile = this.doActionWithResult("writeFile", request.getBucketName(),
                 new ActionCallbackWithResult<ObsFSFile>() {
                     @Override

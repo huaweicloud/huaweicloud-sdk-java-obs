@@ -42,6 +42,10 @@ import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.fs.ContentSummaryFsResult;
+import com.obs.services.model.fs.ContentSummaryFsRequest;
+import com.obs.services.model.fs.ListContentSummaryFsResult;
+import com.obs.services.model.fs.ListContentSummaryFsRequest;
 
 /**
  * Gateway interface for OBS files
@@ -184,9 +188,28 @@ public interface IFSClient {
      *
      * @param request Request parameters for obtain folder contentSummary
      * @return Response to the request for obtain folder contentSummary
-     * @throws ObsException OBS SDK self-defined exception, 
+     * @throws ObsException OBS SDK self-defined exception,
      *                      thrown when the interface fails to be called or access to OBS fails
      * @since 3.20.5
      */
     ListContentSummaryResult listContentSummary(ListContentSummaryRequest request) throws ObsException;
+
+    /**
+     * obtain folder contentSummary
+     *
+     * @param request Request parameters for obtain folder contentSummary
+     * @return Response to the request for obtain folder contentSummary
+     * @throws ObsException OBS SDK self-defined exception,
+     *                      thrown when the interface fails to be called or access to OBS fails
+     */
+    ListContentSummaryFsResult listContentSummaryFs(ListContentSummaryFsRequest request) throws ObsException;
+
+    /**
+     * obtain current folder contentSummary
+     * @param request Request parameters for obtain current folder contentSummary
+     * @return Response to the request for obtain current folder contentSummary
+     * @throws ObsException ObsException OBS SDK self-defined exception,
+     *                     thrown when the interface fails to be called or access to OBS fails
+     */
+    ContentSummaryFsResult getContentSummaryFs(ContentSummaryFsRequest request) throws ObsException;
 }

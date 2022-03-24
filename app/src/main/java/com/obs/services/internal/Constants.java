@@ -60,6 +60,8 @@ public class Constants {
 
         public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
+        public static final String HASH_CRC64ECMA = "hash-crc64ecma";
+
         public static final String CONTENT_ENCODING = "Content-Encoding";
 
         public static final String CONTENT_LANGUAGE = "Content-Language";
@@ -87,6 +89,8 @@ public class Constants {
         public static final String X_RESERVED_INDICATOR = "x-reserved-indicator";
         
         public static final String ACCETP_ENCODING = "Accept-Encoding";
+
+        public static final String CALLBACK = "callback";
     }
 
     public static class ObsRequestParams {
@@ -199,7 +203,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.21.12";
+    public static final String OBS_SDK_VERSION = "3.22.3";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -227,6 +231,8 @@ public class Constants {
     public static final String REQUEST_ID_HEADER = "request-id";
 
     public static final String OEF_MARKER = "oef-marker";
+
+    public static final String FS_SUMMARY_DIR_LIST = "fs-summary-dir-list";
 
     public static final String TRUE = "true";
 
@@ -260,22 +266,24 @@ public class Constants {
                     "cache-control", "content-disposition", "content-encoding", "access-control-request-method",
                     "access-control-request-headers", "success-action-redirect", "x-default-storage-class", "location",
                     "date", "etag", "range", "host", "if-modified-since", "if-unmodified-since", "if-match",
-                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type", 
-                    "accept-encoding"));
+                    "if-none-match", "last-modified", "content-range", "x-cache-control", "x-obs-bucket-type",
+                    "accept-encoding", "x-amz-fs-summary-dir-list", "x-obs-fs-summary-dir-list", "x-obs-callback",
+                    "x-amz-callback", "x-obs-hash-crc64ecma", "x-amz-hash-crc64ecma"));
 
     public static final List<String> ALLOWED_RESOURCE_PARAMTER_NAMES = Collections.unmodifiableList(
             Arrays.asList("acl", "backtosource", "policy", "torrent", "logging", "location", "storageinfo", "quota",
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
-                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh", 
+                    "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
                     "mirrorbacktosource",
                     /**
                      * File System API
                      */
-                    "append", "position", "truncate", "modify", "rename", "length", "name", "fileinterface", 
-                    "readahead", "response-content-type", "response-content-language", "response-expires", 
-                    "response-cache-control", "response-content-disposition", "response-content-encoding", 
-                    "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id", 
-                    "x-oss-process", "ignore-sign-in-query","listcontentsummary"));
+                    "append", "position", "truncate", "modify", "rename", "length", "name", "fileinterface",
+                    "readahead", "response-content-type", "response-content-language", "response-expires",
+                    "response-cache-control", "response-content-disposition", "response-content-encoding",
+                    "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
+                    "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
+                    "getcontentsummary"));
 
 }

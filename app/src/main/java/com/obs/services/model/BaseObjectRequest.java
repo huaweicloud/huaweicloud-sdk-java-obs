@@ -20,6 +20,7 @@ package com.obs.services.model;
  * @since 3.20.3
  */
 public class BaseObjectRequest extends GenericRequest {
+    protected boolean isIgnorePort;
     protected String objectKey;
     protected boolean encodeHeaders = true;
 
@@ -71,6 +72,14 @@ public class BaseObjectRequest extends GenericRequest {
      */
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
+    }
+
+    public boolean getIsIgnorePort() {
+        return isIgnorePort;
+    }
+
+    public void setIsIgnorePort(boolean ignorePort) {
+        isIgnorePort = ignorePort;
     }
 
     @Override

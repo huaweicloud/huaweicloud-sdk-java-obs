@@ -1,3 +1,13 @@
+Version 3.22.3
+Third-party dependence:
+1. 使用 log4j2 2.17.1 替代 log4j2 2.17.0
+2. 使用 okhttp 4.9.3 替代 okhttp 4.9.1
+3. 使用 okio 2.10.0 替代 okio 2.7.0
+4. 使用 jackson-core 2.13.0 替代 jackson-core 2.12.5
+5. 使用 jackson-databind 2.13.0 替代 jackson-databind 2.12.5
+6. 使用 jackson-annotations 2.13.0 替代 jackson-annotations 2.12.5
+-----------------------------------------------------------------------------------
+
 Version 3.21.12
 三方依赖:
 1. 使用 log4j2 2.17.0 替代 log4j2 2.16.0

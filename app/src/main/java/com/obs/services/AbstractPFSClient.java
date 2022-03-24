@@ -44,6 +44,10 @@ import com.obs.services.model.fs.RenameResult;
 import com.obs.services.model.fs.TruncateFileRequest;
 import com.obs.services.model.fs.TruncateFileResult;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.fs.ListContentSummaryFsResult;
+import com.obs.services.model.fs.ListContentSummaryFsRequest;
+import com.obs.services.model.fs.ContentSummaryFsRequest;
+import com.obs.services.model.fs.ContentSummaryFsResult;
 
 public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
     
@@ -52,7 +56,7 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
      */
     @Override
     public ListContentSummaryResult listContentSummary(final ListContentSummaryRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "ListContentSummaryRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "ListContentSummaryRequest is null");
         return this.doActionWithResult("listcontentsummary", request.getBucketName(),
             new ActionCallbackWithResult<ListContentSummaryResult>() {
                 @Override
@@ -74,9 +78,9 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public RenameObjectResult renameObject(final RenameObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "RenameObjectRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
-        ServiceUtils.asserParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "RenameObjectRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
+        ServiceUtils.assertParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
 
         return this.doActionWithResult("renameObject", request.getBucketName(),
                 new ActionCallbackWithResult<RenameObjectResult>() {
@@ -99,9 +103,9 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public TruncateObjectResult truncateObject(final TruncateObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "TruncateObjectRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getNewLength(), "NewLength is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "TruncateObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getNewLength(), "NewLength is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
         return this.doActionWithResult("truncateObject", request.getBucketName(),
                 new ActionCallbackWithResult<TruncateObjectResult>() {
 
@@ -136,9 +140,9 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public ModifyObjectResult modifyObject(final ModifyObjectRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "ModifyObjectRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getPosition(), "position is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "ModifyObjectRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getPosition(), "position is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("modifyObject", request.getBucketName(),
                 new ActionCallbackWithResult<ModifyObjectResult>() {
 
@@ -161,8 +165,8 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public ObsFSFile appendFile(WriteFileRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "WriteFileRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "WriteFileRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
         ObjectMetadata metadata = this
                 .getObjectMetadata(new GetObjectMetadataRequest(request.getBucketName(), request.getObjectKey()));
         if (request.getPosition() >= 0L && request.getPosition() != metadata.getNextPosition()) {
@@ -174,9 +178,9 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public RenameResult renameFile(final RenameRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "RenameRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
-        ServiceUtils.asserParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "RenameRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
+        ServiceUtils.assertParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
 
         return this.doActionWithResult("rename", request.getBucketName(), new ActionCallbackWithResult<RenameResult>() {
             @Override
@@ -188,9 +192,9 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public RenameResult renameFolder(RenameRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "RenameRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
-        ServiceUtils.asserParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "RenameRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
+        ServiceUtils.assertParameterNotNull2(request.getNewObjectKey(), "NewObjectKey is null");
         
         String delimiter = this.getFileSystemDelimiter();
         if (!request.getObjectKey().endsWith(delimiter)) {
@@ -206,8 +210,8 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public TruncateFileResult truncateFile(final TruncateFileRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "TruncateFileRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
+        ServiceUtils.assertParameterNotNull(request, "TruncateFileRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "ObjectKey is null");
         return this.doActionWithResult("truncateFile", request.getBucketName(),
                 new ActionCallbackWithResult<TruncateFileResult>() {
 
@@ -220,15 +224,40 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
 
     @Override
     public DropFileResult dropFile(final DropFileRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "DropFileRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "DropFileRequest is null");
         return this.doActionWithResult("dropFile", request.getBucketName(),
                 new ActionCallbackWithResult<DropFileResult>() {
 
                     @Override
                     public DropFileResult action() throws ServiceException {
-                        ServiceUtils.asserParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return (DropFileResult) AbstractPFSClient.this.deleteObjectImpl(new DeleteObjectRequest(
                                 request.getBucketName(), request.getObjectKey(), request.getVersionId()));
+                    }
+                });
+    }
+
+    @Override
+    public ListContentSummaryFsResult listContentSummaryFs(final ListContentSummaryFsRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "ListContentSummaryFsRequest is null");
+        return this.doActionWithResult("listcontentsummaryfs", request.getBucketName(),
+                new ActionCallbackWithResult<ListContentSummaryFsResult>() {
+                    @Override
+                    public ListContentSummaryFsResult action() throws ServiceException {
+                        return AbstractPFSClient.this.listContentSummaryFsImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public ContentSummaryFsResult getContentSummaryFs(final ContentSummaryFsRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "ContentSummaryFsRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getDirName(), "DirName is null");
+        return this.doActionWithResult("contentsummaryfs", request.getBucketName(),
+                new ActionCallbackWithResult<ContentSummaryFsResult>() {
+                    @Override
+                    public ContentSummaryFsResult action() throws ServiceException {
+                        return AbstractPFSClient.this.getContentSummaryFsImpl(request);
                     }
                 });
     }

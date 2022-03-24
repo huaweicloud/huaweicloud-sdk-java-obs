@@ -61,10 +61,10 @@ public class DownloadResumableClient {
     }
 
     public DownloadFileResult downloadFileResume(DownloadFileRequest downloadFileRequest) {
-        ServiceUtils.asserParameterNotNull(downloadFileRequest, "DownloadFileRequest is null");
-        ServiceUtils.asserParameterNotNull(downloadFileRequest.getBucketName(), "the bucketName is null");
+        ServiceUtils.assertParameterNotNull(downloadFileRequest, "DownloadFileRequest is null");
+        ServiceUtils.assertParameterNotNull(downloadFileRequest.getBucketName(), "the bucketName is null");
         String key = downloadFileRequest.getObjectKey();
-        ServiceUtils.asserParameterNotNull2(key, "the objectKey is null");
+        ServiceUtils.assertParameterNotNull2(key, "the objectKey is null");
 
         if (downloadFileRequest.getDownloadFile() == null) {
             downloadFileRequest.setDownloadFile(key);

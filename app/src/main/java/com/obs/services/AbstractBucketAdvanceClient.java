@@ -58,8 +58,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public LifecycleConfiguration getBucketLifecycle(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketLifecycleConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<LifecycleConfiguration>() {
 
@@ -90,9 +90,9 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketLifecycle(final SetBucketLifecycleRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketLifecycleRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getLifecycleConfig(), "LifecycleConfiguration is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketLifecycleRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getLifecycleConfig(), "LifecycleConfiguration is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("setBucketLifecycleConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -120,8 +120,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketLifecycle(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("deleteBucketLifecycleConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -169,8 +169,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public BucketPolicyResponse getBucketPolicyV2(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketPolicy", request.getBucketName(),
                 new ActionCallbackWithResult<BucketPolicyResponse>() {
                     @Override
@@ -200,8 +200,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketPolicy(final SetBucketPolicyRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketPolicyRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getPolicy(), "policy is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketPolicyRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getPolicy(), "policy is null");
         return this.doActionWithResult("setBucketPolicy", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -229,8 +229,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketPolicy(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("deleteBucketPolicy", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -257,8 +257,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public WebsiteConfiguration getBucketWebsite(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketWebsiteConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<WebsiteConfiguration>() {
 
@@ -289,9 +289,9 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketWebsite(final SetBucketWebsiteRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketWebsiteRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getWebsiteConfig(), "WebsiteConfiguration is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketWebsiteRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getWebsiteConfig(), "WebsiteConfiguration is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
 
         return this.doActionWithResult("setBucketWebsiteConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -321,8 +321,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketWebsite(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("deleteBucketWebsiteConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -350,8 +350,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public BucketTagInfo getBucketTagging(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketTagging", request.getBucketName(),
                 new ActionCallbackWithResult<BucketTagInfo>() {
 
@@ -382,8 +382,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketTagging(final SetBucketTaggingRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketTaggingRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketTaggingRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("setBucketTagging", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -411,8 +411,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketTagging(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
 
         return this.doActionWithResult("deleteBucketTagging", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -441,7 +441,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public BucketEncryption getBucketEncryption(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
         return this.doActionWithResult("getBucketEncryption", request.getBucketName(),
                 new ActionCallbackWithResult<BucketEncryption>() {
 
@@ -472,8 +472,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketEncryption(final SetBucketEncryptionRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketEncryptionRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getBucketEncryption(),
+        ServiceUtils.assertParameterNotNull(request, "SetBucketEncryptionRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketEncryption(),
                 "SetBucketEncryptionRequest.bucketEncryption is null");
         return this.doActionWithResult("setBucketEncryption", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -502,7 +502,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketEncryption(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
         return this.doActionWithResult("deleteBucketEncryption", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
@@ -532,9 +532,9 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketReplication(final SetBucketReplicationRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketReplicationRequest is null");
-        ServiceUtils.asserParameterNotNull(request.getReplicationConfiguration(), "ReplicationConfiguration is null");
-        ServiceUtils.asserParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketReplicationRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getReplicationConfiguration(), "ReplicationConfiguration is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("setBucketReplication", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -562,8 +562,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public ReplicationConfiguration getBucketReplication(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketReplicationConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<ReplicationConfiguration>() {
 
@@ -593,8 +593,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketReplication(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
 
         return this.doActionWithResult("deleteBucketReplicationConfiguration", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -623,7 +623,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public BucketNotificationConfiguration getBucketNotification(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
         return this.doActionWithResult("getBucketNotification", request.getBucketName(),
                 new ActionCallbackWithResult<BucketNotificationConfiguration>() {
 
@@ -655,7 +655,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse setBucketNotification(final SetBucketNotificationRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketNotificationRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketNotificationRequest is null");
         return this.doActionWithResult("setBucketNotification", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -671,7 +671,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
     
     @Override
     public HeaderResponse setBucketFSStatus(final SetBucketFSStatusRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketFileInterfaceRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketFileInterfaceRequest is null");
         return this.doActionWithResult("setBucketFSStatus", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
 
@@ -684,7 +684,7 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
 
     @Override
     public GetBucketFSStatusResult getBucketFSStatus(final GetBucketFSStatusRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "GetBucketFSStatusRequest is null");
+        ServiceUtils.assertParameterNotNull(request, "GetBucketFSStatusRequest is null");
         return this.doActionWithResult("getBucketFSStatus", request.getBucketName(),
                 new ActionCallbackWithResult<GetBucketFSStatusResult>() {
 
@@ -714,9 +714,9 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
     @Override
     public HeaderResponse setBucketDirectColdAccess(final SetBucketDirectColdAccessRequest request)
             throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "SetBucketDirectColdAccessRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
-        ServiceUtils.asserParameterNotNull(request.getAccess(), "bucketDirectColdAccess is null");
+        ServiceUtils.assertParameterNotNull(request, "SetBucketDirectColdAccessRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getAccess(), "bucketDirectColdAccess is null");
 
         return this.doActionWithResult("setBucketDirectColdAccess", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
@@ -744,8 +744,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public BucketDirectColdAccess getBucketDirectColdAccess(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("getBucketDirectColdAccess", request.getBucketName(),
                 new ActionCallbackWithResult<BucketDirectColdAccess>() {
                     @Override
@@ -772,8 +772,8 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
      */
     @Override
     public HeaderResponse deleteBucketDirectColdAccess(final BaseBucketRequest request) throws ObsException {
-        ServiceUtils.asserParameterNotNull(request, "BaseBucketRequest is null");
-        ServiceUtils.asserParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request, "BaseBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
         return this.doActionWithResult("deleteBucketDirectColdAccess", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {
                     @Override
