@@ -15,16 +15,21 @@
 
 package com.obs.services.internal.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
+import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BaseBucketRequest;
@@ -33,18 +38,26 @@ import com.obs.services.model.BucketCustomDomainInfo;
 import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketLoggingConfiguration;
+import com.obs.services.model.BucketMetadataInfoRequest;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketQuota;
 import com.obs.services.model.BucketTagInfo;
+import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.CreateVirtualBucketRequest;
+import com.obs.services.model.CreateVirtualBucketResult;
 import com.obs.services.model.DeleteBucketCustomDomainRequest;
 import com.obs.services.model.GetBucketCustomDomainRequest;
 import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GroupGrantee;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.HistoricalObjectReplicationEnum;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.ListBucketAliasResult;
 import com.obs.services.model.Permission;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RequestPaymentConfiguration;
+import com.obs.services.model.RuleStatusEnum;
 import com.obs.services.model.SetBucketAclRequest;
 import com.obs.services.model.SetBucketCorsRequest;
 import com.obs.services.model.SetBucketCustomDomainRequest;
@@ -60,11 +73,19 @@ import com.obs.services.model.SetBucketTaggingRequest;
 import com.obs.services.model.SetBucketVersioningRequest;
 import com.obs.services.model.SetBucketWebsiteRequest;
 import com.obs.services.model.SpecialParamEnum;
+import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.fs.GetBucketFSStatusResult;
+import com.obs.services.model.http.HttpStatusCode;
+import com.oef.services.model.RequestParamEnum;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
@@ -698,5 +719,208 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
                 transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
                 request.getUserHeaders());
         return this.build(response);
+    }
+
+    protected CreateVirtualBucketResult createVirtualBucketImpl(CreateVirtualBucketRequest request) throws ServiceException {
+        // step 1: 列举指定region下的集群信息
+        List<String> azTextIds = listAvailableZoneInfo(request.getRegionId(), request.getToken());
+        // step 2: 指定集群id创桶
+        createBucketWithClusterId(request, azTextIds);
+        // step 3: 创建一次别名
+        createBucketAliasImpl(request);
+        // step 4: 绑定两次别名，为两个真实桶分别绑定
+        bindBucketAliasImpl(request.getBucketName1(), request.getBucketAlias());
+        bindBucketAliasImpl(request.getBucketName2(), request.getBucketAlias());
+        // step 5: 双向配置复制关系，并开启历史对象复制
+        setVirtualReplication(request.getAgencyId(), request.getBucketName1(), request.getBucketName2());
+        setVirtualReplication(request.getAgencyId(), request.getBucketName2(), request.getBucketName1());
+
+        CreateVirtualBucketResult result = new CreateVirtualBucketResult();
+        result.setBucketName1(request.getBucketName1());
+        result.setBucketName2(request.getBucketName2());
+        result.setVirtualBucketName(request.getBucketAlias());
+        result.setMessage("create virtual bucket success, virtualBucketName: " + request.getBucketAlias()
+                + "bucketName1: " + request.getBucketName1() + ", bucketName2: " + request.getBucketName2());
+        result.setStatusCode(HttpStatusCode.HTTP_OK.getCode());
+        return result;
+    }
+
+    protected List<String> listAvailableZoneInfo(String regionId, String token) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("regionId", regionId);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+        NewTransResult result = new NewTransResult();
+        result.setParams(requestParams);
+        result.setHttpMethod(HttpMethodEnum.GET);
+        result.setHeaders(headers);
+        Map<String, String> userHeaders = new HashMap<>();
+        userHeaders.put(Constants.CommonHeaders.X_AUTH_TOKEN, token);
+        result.setUserHeaders(userHeaders);
+        result.setEncodeUrl(false);
+        result.setObjectKey(RequestParamEnum.SERVICES_CLUSTERS.getOriginalStringCode());
+        Response response = performRequest(result, true, false, false, true);
+        this.verifyResponseContentTypeForJson(response);
+
+        List<JsonNode> azIds = JSONChange.readNodeFromJson(RestUtils.readBodyFromResponse(response))
+                .get("infos").findValues("id");
+        if (azIds.size() != 2) {
+            throw new ServiceException("az info is not 2az.");
+        }
+        List<String> azTextIds = new ArrayList<>();
+        azTextIds.add(azIds.get(0).asText());
+        azTextIds.add(azIds.get(1).asText());
+
+        return azTextIds;
+    }
+
+    protected ListBucketAliasResult listAliasBucketsImpl() {
+        try {
+            Map<String, String> requestParams = new HashMap<>();
+            requestParams.put(SpecialParamEnum.OBSBUCKETALIAS.getOriginalStringCode(), "");
+            Map<String, String> headers = new HashMap<>();
+            headers.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+            Response response = performRestGetForListBuckets("", null, requestParams, headers);
+            this.verifyResponseContentType(response);
+
+            XmlResponsesSaxParser.ListBucketAliasHandler handler = getXmlResponseSaxParser().parse(
+                    new HttpMethodReleaseInputStream(response), XmlResponsesSaxParser.ListBucketAliasHandler.class,
+                    true);
+
+            ListBucketAliasResult listBucketAliasResult = new ListBucketAliasResult(handler.getListBucketAlias(), handler.getBucketAliasOwner());
+            setHeadersAndStatus(listBucketAliasResult, response);
+            return listBucketAliasResult;
+        } catch (Exception e) {
+            throw new ObsException("get alias buckets  failed ", e.getMessage());
+        }
+    }
+
+    protected void createBucketWithClusterId(CreateVirtualBucketRequest request, List<String> azIds) {
+        String locationClusterGroupIdHeader = this.getProviderCredentials().getLocalAuthType("")
+                != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX
+                + CommonHeaders.LOCATION_CLUSTERGROUP_ID;
+        BucketMetadataInfoRequest bucketMetadataInfoRequest = new BucketMetadataInfoRequest();
+        bucketMetadataInfoRequest.setBucketName(request.getBucketName1());
+        String bucket1Id = "";
+        String bucket2Id = "";
+        try {
+            GetBucketFSStatusResult bucket1Metadata = getBucketMetadataImpl(bucketMetadataInfoRequest);
+            bucket1Id = bucket1Metadata.getOriginalHeaders().get(locationClusterGroupIdHeader).toString();
+        } catch (ServiceException e) {
+            if (e.getResponseCode() == 404) {
+                log.warn("Bucket is existed when create " + request.getBucketName1());
+            } else {
+                throw e;
+            }
+        }
+
+        try {
+            bucketMetadataInfoRequest.setBucketName(request.getBucketName2());
+            GetBucketFSStatusResult bucket2Metadata = getBucketMetadataImpl(bucketMetadataInfoRequest);
+            bucket2Id = bucket2Metadata.getOriginalHeaders().get(locationClusterGroupIdHeader).toString();
+        } catch (ServiceException e) {
+            if (e.getResponseCode() == 404) {
+                log.warn("Bucket is existed when create " + request.getBucketName2());
+            } else {
+                throw e;
+            }
+        }
+
+        //two bucket is not existed
+        if (bucket1Id.isEmpty() && bucket2Id.isEmpty()) {
+            createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName1(),
+                    request.getRegionId(), azIds.get(0));
+            createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName2(),
+                    request.getRegionId(), azIds.get(1));
+        } else if (bucket1Id.isEmpty() && !bucket2Id.isEmpty()) {
+            createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName1(),
+                    request.getRegionId(), azIds.get(0) == bucket2Id ? azIds.get(1) : azIds.get(0));
+        } else if (!bucket1Id.isEmpty() && bucket2Id.isEmpty()) {
+            createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName2(),
+                    request.getRegionId(), azIds.get(0) == bucket1Id ? azIds.get(1) : azIds.get(0));
+        } else if (bucket1Id == bucket2Id) {
+            throw new ObsException("the two bucket is in same az");
+        }
+    }
+
+    private void createBucketWithClusterGroupId(String locationClusterGroupIdHeader, String bucketName, String regionId,
+                                                String azId) {
+        CreateBucketRequest request = new CreateBucketRequest();
+        request.setBucketName(bucketName);
+        request.addUserHeaders(locationClusterGroupIdHeader, azId);
+        request.setLocation(regionId);
+        createBucketImpl(request);
+    }
+
+    protected void bindBucketAliasImpl(String bucketName, String bucketAlias) {
+        try {
+            Map<String, String> httpHeaders = new HashMap<>();
+            httpHeaders.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+            Map<String, String> requestParams = new HashMap<>();
+            requestParams.put(SpecialParamEnum.OBSALIAS.getOriginalStringCode(), "");
+            NewTransResult transResult = new NewTransResult();
+            transResult.setHttpMethod(HttpMethodEnum.PUT);
+            transResult.setParams(requestParams);
+            transResult.setBucketName(bucketName);
+            OBSXMLBuilder xmlBuilder = OBSXMLBuilder.create("AliasList");
+            xmlBuilder.elem("Alias").t(bucketAlias);
+            transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xmlBuilder.asString()));
+            Request.Builder builder = setupConnection(transResult, false, false);
+
+            renameMetadataKeys(bucketName, builder, httpHeaders);
+
+            Response response = performRequest(
+                    builder.build(), requestParams, bucketName, true, true);
+        } catch (Exception e) {
+            throw new ObsException("bind bucket alias ", e.getMessage());
+        }
+
+    }
+
+    protected void createBucketAliasImpl(CreateVirtualBucketRequest request) {
+        try {
+            Map<String, String> httpHeaders = new HashMap<>();
+            httpHeaders.put(Constants.CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+            Map<String, String> requestParams = new HashMap<>();
+            requestParams.put(SpecialParamEnum.OBSBUCKETALIAS.getOriginalStringCode(), "");
+            NewTransResult transResult = new NewTransResult();
+            transResult.setHttpMethod(HttpMethodEnum.PUT);
+            transResult.setParams(requestParams);
+            transResult.setBucketName(request.getBucketAlias());
+
+            OBSXMLBuilder xmlBuilder = OBSXMLBuilder.create("CreateBucketAlias");
+            xmlBuilder = xmlBuilder.elem("BucketList");
+            xmlBuilder.elem("Bucket").t(request.getBucketName1());
+            xmlBuilder.elem("Bucket").t(request.getBucketName2());
+            transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xmlBuilder.asString()));
+            Request.Builder builder = setupConnection(transResult, false, false);
+
+            renameMetadataKeys(request.getBucketAlias(), builder, httpHeaders);
+
+            Response response = performRequest(
+                    builder.build(), requestParams, request.getBucketAlias(), true, false);
+        } catch (Exception e) {
+            throw new ObsException("create bucket alias ", e.getMessage());
+        }
+    }
+
+    protected void setVirtualReplication(String agencyId, String sourceBucketName, String destBucketName) {
+        ReplicationConfiguration replicationConfiguration = new ReplicationConfiguration();
+        ReplicationConfiguration.Rule rule = new ReplicationConfiguration.Rule();
+        rule.setId(sourceBucketName + "_to_" + destBucketName);
+        rule.setStatus(RuleStatusEnum.ENABLED);
+        rule.setHistoricalObjectReplication(HistoricalObjectReplicationEnum.ENABLED);
+        ReplicationConfiguration.Destination destination = new ReplicationConfiguration.Destination();
+        destination.setBucket(destBucketName);
+        destination.setObjectStorageClass(StorageClassEnum.STANDARD);
+        rule.setDestination(destination);
+        List<ReplicationConfiguration.Rule> rules = new ArrayList<>();
+        rules.add(rule);
+        replicationConfiguration.setRules(rules);
+        replicationConfiguration.setAgency(agencyId);
+        SetBucketReplicationRequest request = new SetBucketReplicationRequest(sourceBucketName, replicationConfiguration);
+        setBucketReplicationConfigurationImpl(request);
     }
 }

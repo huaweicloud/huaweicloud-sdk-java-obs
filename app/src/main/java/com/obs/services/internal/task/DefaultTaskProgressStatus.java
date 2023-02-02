@@ -25,9 +25,6 @@ public class DefaultTaskProgressStatus implements TaskProgressStatus {
     private AtomicInteger failTaskNum = new AtomicInteger();
     private AtomicInteger totalTaskNum = new AtomicInteger();
 
-    public DefaultTaskProgressStatus() {
-    }
-
     public void execTaskIncrement() {
         execTaskNum.incrementAndGet();
     }

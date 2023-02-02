@@ -45,10 +45,6 @@ public class ObsConvertor extends V2Convertor {
 
     private static ObsConvertor instance = new ObsConvertor();
 
-    public ObsConvertor() {
-
-    }
-
     public static IConvertor getInstance() {
         return instance;
     }
@@ -316,6 +312,9 @@ public class ObsConvertor extends V2Convertor {
                 case COLD:
                     storageClassStr = "COLD";
                     break;
+                case DEEP_ARCHIVE:
+                    storageClassStr = "DEEP_ARCHIVE";
+                    break;
                 default:
                     break;
             }
@@ -342,14 +341,8 @@ public class ObsConvertor extends V2Convertor {
     @Override
     public String transGroupGrantee(GroupGranteeEnum groupGrantee) {
         String groupGranteeStr = "";
-        if (groupGrantee != null) {
-            switch (groupGrantee) {
-                case ALL_USERS:
-                    groupGranteeStr = "Everyone";
-                    break;
-                default:
-                    break;
-            }
+        if (groupGrantee == GroupGranteeEnum.ALL_USERS) {
+            groupGranteeStr = "Everyone";
         }
         return groupGranteeStr;
     }

@@ -46,6 +46,8 @@ import com.obs.services.model.CopyObjectResult;
 import com.obs.services.model.CopyPartRequest;
 import com.obs.services.model.CopyPartResult;
 import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.CreateVirtualBucketRequest;
+import com.obs.services.model.CreateVirtualBucketResult;
 import com.obs.services.model.DeleteObjectRequest;
 import com.obs.services.model.DeleteObjectResult;
 import com.obs.services.model.DeleteObjectsRequest;
@@ -59,6 +61,7 @@ import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.InitiateMultipartUploadRequest;
 import com.obs.services.model.InitiateMultipartUploadResult;
 import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.ListBucketAliasResult;
 import com.obs.services.model.ListBucketsRequest;
 import com.obs.services.model.ListBucketsResult;
 import com.obs.services.model.ListMultipartUploadsRequest;
@@ -118,6 +121,8 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
 import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.select.SelectObjectRequest;
+import com.obs.services.model.select.SelectObjectResult;
 
 /**
  * Basic OBS interface
@@ -269,6 +274,24 @@ public interface IObsClient extends IObsBucketExtendClient {
      *
      */
     ObsBucket createBucket(CreateBucketRequest request) throws ObsException;
+
+    /**
+     * Create a virtual bucket.
+     *
+     * @param request Request parameters for creating a virtual bucket
+     * @return Virtual bucket information
+     * @throws ObsException
+     */
+    CreateVirtualBucketResult createVirtualBucket(CreateVirtualBucketRequest request) throws ObsException;
+
+    /**
+     * Obtain the bucket alias list.
+     *
+     * @return Alias Bucket list
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     */
+    ListBucketAliasResult listAliasBuckets() throws ObsException;
 
     /**
      * Rename a file or directory. Only the parallel file system supports this interface.
@@ -1670,6 +1693,19 @@ public interface IObsClient extends IObsBucketExtendClient {
      *             fails to be called or access to OBS fails
      */
     ObsObject getObject(GetObjectRequest request) throws ObsException;
+
+    /**
+     * Selects rows from an object using a SQL statement.
+     *
+     * @param selectRequest
+     *            Parameters in an object select request
+     * @return Select result container
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    SelectObjectResult selectObjectContent(final SelectObjectRequest selectRequest)
+        throws ObsException;
 
     /**
      * Download an object.

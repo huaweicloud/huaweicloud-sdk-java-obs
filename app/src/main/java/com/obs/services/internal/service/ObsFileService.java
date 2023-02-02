@@ -15,6 +15,7 @@
 
 package com.obs.services.internal.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants;
@@ -23,8 +24,12 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.JSONChange;
+import com.obs.services.internal.utils.Mimetypes;
+import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.fs.ListContentSummaryRequest;
@@ -39,10 +44,19 @@ import com.obs.services.model.fs.ContentSummaryFsRequest;
 import com.obs.services.model.fs.ContentSummaryFsResult;
 import com.obs.services.model.fs.ListContentSummaryFsRequest;
 import com.obs.services.model.fs.ListContentSummaryFsResult;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelResult;
 import okhttp3.Response;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ObsFileService extends ObsObjectService {
@@ -197,5 +211,84 @@ public abstract class ObsFileService extends ObsObjectService {
 
         setHeadersAndStatus(contentSummaryFsResult, httpResponse);
         return contentSummaryFsResult;
+    }
+
+    protected SetAccessLabelResult setAccessLabelFsImpl(SetAccessLabelRequest request)
+            throws ServiceException {
+        NewTransResult newResult = new NewTransResult();
+        newResult.setHttpMethod(HttpMethodEnum.PUT);
+        newResult.setBucketName(request.getBucketName());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
+        newResult.setParams(requestParams);
+        newResult.setEncodeUrl(false);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
+        newResult.setHeaders(headers);
+        newResult.setObjectKey(request.getDir());
+        SetAccessLabelJson setAccessLabelJson = new SetAccessLabelJson();
+        setAccessLabelJson.setAccesslabel(request.getRoleLabel());
+        newResult.setBody(createRequestBody(Mimetypes.MIMETYPE_JSON, JSONChange.objToJson(setAccessLabelJson)));
+        Response httpResponse = performRequest(newResult);
+
+        SetAccessLabelResult setAccessLabelResult = new SetAccessLabelResult();
+
+        setHeadersAndStatus(setAccessLabelResult, httpResponse);
+        return setAccessLabelResult;
+    }
+
+    private class SetAccessLabelJson {
+        private List<String> accesslabel;
+
+        public List<String> getAccesslabel() {
+            return accesslabel;
+        }
+
+        public void setAccesslabel(List<String> accesslabel) {
+            this.accesslabel = accesslabel;
+        }
+    }
+
+    protected GetAccessLabelResult getAccessLabelFsImpl(GetAccessLabelRequest request)
+            throws ServiceException {
+        NewTransResult newResult = new NewTransResult();
+        newResult.setHttpMethod(HttpMethodEnum.GET);
+        newResult.setBucketName(request.getBucketName());
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
+        newResult.setParams(requestParams);
+        newResult.setEncodeUrl(false);
+        newResult.setObjectKey(request.getDir());
+        Response httpResponse = performRequest(newResult, true, false, false, false);
+
+        this.verifyResponseContentTypeForJson(httpResponse);
+        String body = RestUtils.readBodyFromResponse(httpResponse);
+        Iterator<JsonNode> iterator = JSONChange.readNodeFromJson(body).get("accesslabel").iterator();
+        List<String> roleLabel = new ArrayList<>();
+        while (iterator.hasNext()) {
+            roleLabel.add(iterator.next().textValue());
+        }
+        GetAccessLabelResult getAccessLabelResult = new GetAccessLabelResult();
+        getAccessLabelResult.setRoleLabel(roleLabel);
+        setHeadersAndStatus(getAccessLabelResult, httpResponse);
+        return getAccessLabelResult;
+    }
+
+    protected DeleteAccessLabelResult deleteAccessLabelFsImpl(DeleteAccessLabelRequest request)
+            throws ServiceException {
+        NewTransResult newResult = new NewTransResult();
+        newResult.setBucketName(request.getBucketName());
+        newResult.setHttpMethod(HttpMethodEnum.DELETE);
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
+        newResult.setEncodeUrl(false);
+        newResult.setParams(requestParams);
+        Map<String, String> headers = new HashMap<>();
+        newResult.setHeaders(headers);
+        newResult.setObjectKey(request.getDir());
+        Response httpResponse = performRequest(newResult);
+        DeleteAccessLabelResult deleteAccessLabelResult = new DeleteAccessLabelResult();
+        setHeadersAndStatus(deleteAccessLabelResult, httpResponse);
+        return deleteAccessLabelResult;
     }
 }

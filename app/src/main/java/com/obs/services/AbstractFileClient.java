@@ -100,7 +100,7 @@ public abstract class AbstractFileClient extends AbstractPFSClient {
             if (!folderName.endsWith(delimiter)) {
                 folderName = folderName + delimiter;
             }
-            TaskCallback<DeleteObjectResult, String> callback = (request.getCallback() == null) 
+            TaskCallback<DeleteObjectResult, String> callback = (request.getCallback() == null)
                     ? new LazyTaksCallback<DeleteObjectResult, String>()
                     : request.getCallback();
             TaskProgressListener listener = request.getProgressListener();
@@ -123,10 +123,12 @@ public abstract class AbstractFileClient extends AbstractPFSClient {
 
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (ObsException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ObsException(e.getMessage(), e);
+            if (e instanceof ObsException) {
+                throw (ObsException) e;
+            } else {
+                throw new ObsException(e.getMessage(), e);
+            }
         }
         return progressStatus;
     }

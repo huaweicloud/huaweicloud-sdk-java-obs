@@ -61,6 +61,7 @@ import okhttp3.Authenticator;
 import okhttp3.ConnectionPool;
 import okhttp3.Credentials;
 import okhttp3.Dispatcher;
+import okhttp3.Dns;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
@@ -73,13 +74,6 @@ public class RestUtils {
 
     //CHECKSTYLE:OFF
     private static Pattern chinesePattern = Pattern.compile("[\u4e00-\u9fa5]");
-
-    private static final HostnameVerifier ALLOW_ALL_HOSTNAME = new HostnameVerifier() {
-        @Override
-        public boolean verify(String arg0, SSLSession arg1) {
-            return true;
-        }
-    };
 
     private static final X509TrustManager TRUST_ALL_MANAGER = new X509TrustManager() {
 
@@ -185,7 +179,7 @@ public class RestUtils {
                 }
             }
         }
-        sslContext.init(km, tm, new SecureRandom());
+        sslContext.init(km, tm, SecureRandom.getInstanceStrong());
         return sslContext;
     }
 
@@ -204,7 +198,7 @@ public class RestUtils {
                 }
             }
         }
-        sslContext.init(km, tm, new SecureRandom());
+        sslContext.init(km, tm, SecureRandom.getInstanceStrong());
         return sslContext;
     }
 
@@ -360,8 +354,13 @@ public class RestUtils {
                 .readTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_SOCKET_TIMEOUT,
                         ObsConstraint.HTTP_SOCKET_TIMEOUT_VALUE), TimeUnit.MILLISECONDS)
                 .connectionPool(pool)
-                .hostnameVerifier(obsProperties.getBoolProperty(ObsConstraint.HTTP_STRICT_HOSTNAME_VERIFICATION, false)
-                        ? HttpsURLConnection.getDefaultHostnameVerifier() : ALLOW_ALL_HOSTNAME);
+                .hostnameVerifier((hostname, session) -> !obsProperties.getBoolProperty(ObsConstraint.HTTP_STRICT_HOSTNAME_VERIFICATION, false)
+                        || HttpsURLConnection.getDefaultHostnameVerifier().verify(obsProperties.getStringProperty(ObsConstraint.END_POINT, ""), session))
+                .dns(hostname -> {
+                    List<InetAddress> adds = Dns.SYSTEM.lookup(hostname);
+                    log.info("internet host address:" + adds);
+                    return adds;
+                });
 
         int socketReadBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_READ_BUFFER_SIZE, -1);
         int socketWriteBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_WRITE_BUFFER_SIZE, -1);
@@ -461,5 +460,15 @@ public class RestUtils {
                 builder.proxyAuthenticator(proxyAuthenticator);
             }
         }
+    }
+
+    public static String readBodyFromResponse(Response response) {
+        String body;
+        try {
+            body = response.body().string();
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
+        return body;
     }
 }

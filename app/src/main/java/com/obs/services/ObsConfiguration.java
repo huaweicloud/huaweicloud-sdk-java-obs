@@ -527,8 +527,8 @@ public class ObsConfiguration implements Cloneable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public ObsConfiguration clone() throws CloneNotSupportedException {
+        return (ObsConfiguration) super.clone();
     }
 
     /**

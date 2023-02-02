@@ -30,10 +30,6 @@ public class PutExtensionPolicyRequest {
     @JsonProperty(value = "compress")
     private CompressBean compress;
 
-    public PutExtensionPolicyRequest() {
-
-    }
-
     /**
      * Obtain the content of the asynchronous fetch policy.
      * 

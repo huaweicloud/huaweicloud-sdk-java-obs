@@ -75,21 +75,23 @@ public class UploadResumableClient {
             ServiceUtils.assertParameterNotNull(uploadFileRequest.getCallback().getCallbackBody(),
                     "callbackBody is null");
         }
+
         try {
             return uploadFileCheckPoint(uploadFileRequest);
-        } catch (ObsException e) {
-            throw e;
         } catch (ServiceException e) {
             throw ServiceUtils.changeFromServiceException(e);
         } catch (Exception e) {
-            throw new ObsException(e.getMessage(), e);
+            if (e instanceof ObsException) {
+                throw (ObsException) e;
+            } else {
+                throw new ObsException(e.getMessage(), e);
+            }
         }
     }
 
-    protected void abortMultipartUploadSilent(String uploadId, String bucketName, String objectKey,
-            boolean isRequesterPays) {
+    protected void abortMultipartUploadSilent(String uploadId, UploadFileRequest uploadFileRequest) {
         try {
-            abortMultipartUpload(uploadId, bucketName, objectKey, isRequesterPays);
+            abortMultipartUpload(uploadId, uploadFileRequest);
         } catch (Exception e) {
             if (log.isWarnEnabled()) {
                 log.warn("Abort multipart upload failed", e);
@@ -97,10 +99,11 @@ public class UploadResumableClient {
         }
     }
 
-    protected HeaderResponse abortMultipartUpload(String uploadId, String bucketName, String objectKey,
-            boolean isRequesterPays) {
-        AbortMultipartUploadRequest request = new AbortMultipartUploadRequest(bucketName, objectKey, uploadId);
-        request.setRequesterPays(isRequesterPays);
+    protected HeaderResponse abortMultipartUpload(String uploadId, UploadFileRequest uploadFileRequest) {
+        AbortMultipartUploadRequest request = new AbortMultipartUploadRequest(uploadFileRequest.getBucketName(),
+                uploadFileRequest.getObjectKey(), uploadId);
+        request.setRequesterPays(uploadFileRequest.isRequesterPays());
+        request.setUserHeaders(uploadFileRequest.getUserHeaders());
         return this.obsClient.abortMultipartUpload(request);
     }
 
@@ -120,12 +123,12 @@ public class UploadResumableClient {
             if (partResult.isFailed() && partResult.getException() != null) {
                 // 未开启，取消多段
                 if (!uploadFileRequest.isEnableCheckpoint()) {
-                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
+                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
                 } else if (uploadCheckPoint.isAbort) {
-                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
-                    ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
+                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
+                    if (uploadCheckPoint.isDeleteUploadRecordFile) {
+                        ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
+                    }
                 }
                 throw partResult.getException();
             }
@@ -139,6 +142,7 @@ public class UploadResumableClient {
         completeMultipartUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
         completeMultipartUploadRequest.setIsIgnorePort(uploadFileRequest.getIsIgnorePort());
         completeMultipartUploadRequest.setCallback(uploadFileRequest.getCallback());
+        completeMultipartUploadRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
 
         try {
             CompleteMultipartUploadResult result = this.obsClient
@@ -149,12 +153,10 @@ public class UploadResumableClient {
             return result;
         } catch (ObsException e) {
             if (!uploadFileRequest.isEnableCheckpoint()) {
-                this.abortMultipartUpload(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                        uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
+                this.abortMultipartUpload(uploadCheckPoint.uploadID, uploadFileRequest);
             } else {
                 if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
-                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
+                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
                     ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
                 }
             }
@@ -184,8 +186,7 @@ public class UploadResumableClient {
         if (needRecreate) {
             if (uploadCheckPoint.bucketName != null && uploadCheckPoint.objectKey != null
                     && uploadCheckPoint.uploadID != null) {
-                this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadCheckPoint.bucketName,
-                        uploadCheckPoint.objectKey, uploadFileRequest.isRequesterPays());
+                this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
             }
             ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
             prepare(uploadFileRequest, uploadCheckPoint);
@@ -244,8 +245,7 @@ public class UploadResumableClient {
                 pieceResults.add(tr);
             } catch (ExecutionException e) {
                 if (!uploadFileRequest.isEnableCheckpoint()) {
-                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest.getBucketName(),
-                            uploadFileRequest.getObjectKey(), uploadFileRequest.isRequesterPays());
+                    this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
                 }
                 throw e;
             }
@@ -291,6 +291,7 @@ public class UploadResumableClient {
                     uploadPartRequest.setPartSize(uploadPart.size);
                     uploadPartRequest.setPartNumber(uploadPart.partNumber);
                     uploadPartRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
+                    uploadPartRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
 
                     if (this.progressManager == null) {
                         uploadPartRequest.setFile(new File(uploadFileRequest.getUploadFile()));
@@ -321,6 +322,9 @@ public class UploadResumableClient {
                 } catch (ObsException e) {
                     if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
                         uploadCheckPoint.isAbort = true;
+                    }
+                    if (e.getResponseCode() == 403) {
+                        uploadCheckPoint.isDeleteUploadRecordFile = false;
                     }
                     // 有异常打印到日志文件
                     tr.setFailed(true);
@@ -375,6 +379,7 @@ public class UploadResumableClient {
         initiateUploadRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
         initiateUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
         initiateUploadRequest.setIsEncodeHeaders(uploadFileRequest.isEncodeHeaders());
+        initiateUploadRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
 
         InitiateMultipartUploadResult initiateUploadResult = this.obsClient
                 .initiateMultipartUpload(initiateUploadRequest);
@@ -383,8 +388,7 @@ public class UploadResumableClient {
             try {
                 uploadCheckPoint.record(uploadFileRequest.getCheckpointFile());
             } catch (Exception e) {
-                this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadCheckPoint.bucketName,
-                        uploadCheckPoint.objectKey, uploadFileRequest.isRequesterPays());
+                this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
                 throw e;
             }
         }
@@ -595,7 +599,7 @@ public class UploadResumableClient {
         public ArrayList<UploadPart> uploadParts;
         public ArrayList<PartEtag> partEtags;
         public transient volatile boolean isAbort = false;
-
+        public transient volatile boolean isDeleteUploadRecordFile = true;
     }
 
     static class FileStatus implements Serializable {

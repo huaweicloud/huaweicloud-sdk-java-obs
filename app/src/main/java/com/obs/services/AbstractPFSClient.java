@@ -48,6 +48,12 @@ import com.obs.services.model.fs.ListContentSummaryFsResult;
 import com.obs.services.model.fs.ListContentSummaryFsRequest;
 import com.obs.services.model.fs.ContentSummaryFsRequest;
 import com.obs.services.model.fs.ContentSummaryFsResult;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelResult;
 
 public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
     
@@ -258,6 +264,39 @@ public abstract class AbstractPFSClient extends AbstractMultipartObjectClient {
                     @Override
                     public ContentSummaryFsResult action() throws ServiceException {
                         return AbstractPFSClient.this.getContentSummaryFsImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public SetAccessLabelResult setAccessLabelFs(SetAccessLabelRequest request) throws ObsException {
+        return this.doActionWithResult("setaccesslabel", request.getBucketName(),
+                new ActionCallbackWithResult<SetAccessLabelResult>() {
+                    @Override
+                    public SetAccessLabelResult action() throws ServiceException {
+                        return AbstractPFSClient.this.setAccessLabelFsImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public GetAccessLabelResult getAccessLabelFs(GetAccessLabelRequest request) throws ObsException {
+        return this.doActionWithResult("getaccesslabel", request.getBucketName(),
+                new ActionCallbackWithResult<GetAccessLabelResult>() {
+                    @Override
+                    public GetAccessLabelResult action() throws ServiceException {
+                        return AbstractPFSClient.this.getAccessLabelFsImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public DeleteAccessLabelResult deleteAccessLabelFs(DeleteAccessLabelRequest request) throws ObsException {
+        return this.doActionWithResult("deleteaccesslabel", request.getBucketName(),
+                new ActionCallbackWithResult<DeleteAccessLabelResult>() {
+                    @Override
+                    public DeleteAccessLabelResult action() throws ServiceException {
+                        return AbstractPFSClient.this.deleteAccessLabelFsImpl(request);
                     }
                 });
     }

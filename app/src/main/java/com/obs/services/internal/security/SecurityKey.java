@@ -20,10 +20,6 @@ public class SecurityKey {
     @JsonProperty(value = "credential")
     private SecurityKeyBean bean;
 
-    public SecurityKey() {
-
-    }
-
     public SecurityKeyBean getBean() {
         return bean;
     }

@@ -91,6 +91,10 @@ public class Constants {
         public static final String ACCETP_ENCODING = "Accept-Encoding";
 
         public static final String CALLBACK = "callback";
+
+        public static final String X_AUTH_TOKEN = "X-Auth-Token";
+
+        public static final String LOCATION_CLUSTERGROUP_ID = "location-clustergroup-id";
     }
 
     public static class ObsRequestParams {
@@ -203,7 +207,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.22.3";
+    public static final String OBS_SDK_VERSION = "3.22.12";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -216,6 +220,8 @@ public class Constants {
     public static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
     public static final String OBS_HEADER_PREFIX = "x-obs-";
+
+    public static final String PROPERTY_NAME_OBS = "obs";
 
     public static final String OBS_HEADER_META_PREFIX = "x-obs-meta-";
 
@@ -275,7 +281,7 @@ public class Constants {
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
                     "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
-                    "mirrorbacktosource",
+                    "mirrorbacktosource", "obsbucketalias", "obsalias",
                     /**
                      * File System API
                      */
@@ -284,6 +290,6 @@ public class Constants {
                     "response-cache-control", "response-content-disposition", "response-content-encoding",
                     "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
                     "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
-                    "getcontentsummary"));
+                    "getcontentsummary", "select", "select-type"));
 
 }

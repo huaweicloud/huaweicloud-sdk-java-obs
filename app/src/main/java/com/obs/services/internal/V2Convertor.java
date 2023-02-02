@@ -53,10 +53,6 @@ public class V2Convertor extends V2BucketConvertor {
 
     private static IConvertor instance = new V2Convertor();
 
-    public V2Convertor() {
-
-    }
-
     public static IConvertor getInstance() {
         return instance;
     }
@@ -472,6 +468,9 @@ public class V2Convertor extends V2BucketConvertor {
                     break;
                 case COLD:
                     storageClassStr = "GLACIER";
+                    break;
+                case DEEP_ARCHIVE:
+                    storageClassStr = "DEEP_ARCHIVE";
                     break;
                 default:
                     break;

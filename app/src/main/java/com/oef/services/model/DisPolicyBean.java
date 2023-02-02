@@ -45,11 +45,11 @@ public class DisPolicyBean {
     }
 
     public DisPolicyBean(String id, String stream, String project, ArrayList<String> events, String agency) {
-        this.setId(id);
-        this.setStream(stream);
-        this.setProject(project);
-        this.setEvents(events);
-        this.setAgency(agency);
+        this.id = id;
+        this.stream = stream;
+        this.project = project;
+        this.agency = agency;
+        this.events = events;
     }
 
     public String getId() {

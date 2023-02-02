@@ -26,7 +26,9 @@ public enum RequestParamEnum {
      */
     ASYNC_FETCH_JOBS("v1/async-fetch/jobs"),
 
-    DIS_POLICIES("v1/dis_policies");
+    DIS_POLICIES("v1/dis_policies"),
+
+    SERVICES_CLUSTERS("v1/services/clusters");
 
     private String stringCode;
 

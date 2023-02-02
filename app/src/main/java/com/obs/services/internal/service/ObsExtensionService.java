@@ -22,6 +22,7 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
+import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.HttpMethodEnum;
@@ -53,7 +54,7 @@ public abstract class ObsExtensionService extends ObsFileService {
         result.setBucketName(bucketName);
         result.setHeaders(headers);
         result.setBody(createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument));
-        return build(performRequest(result, true, false, true));
+        return build(performRequest(result, true, false, true, false));
     }
 
     protected QueryExtensionPolicyResult queryExtensionPolicyImpl(String bucketName) throws ServiceException {
@@ -63,23 +64,13 @@ public abstract class ObsExtensionService extends ObsFileService {
         Map<String, String> metadata = new HashMap<>();
         Response response = performRestGet(bucketName, requestParams, metadata);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         QueryExtensionPolicyResult ret = (QueryExtensionPolicyResult) JSONChange
                 .jsonToObj(new QueryExtensionPolicyResult(), body);
 
         setHeadersAndStatus(ret, response);
         return ret;
-    }
-
-    private String readBodyFromResponse(Response response) {
-        String body;
-        try {
-            body = response.body().string();
-        } catch (IOException e) {
-            throw new ServiceException(e);
-        }
-        return body;
     }
 
     private Response performRestGet(String bucketName, Map<String, String> requestParams,
@@ -121,11 +112,11 @@ public abstract class ObsExtensionService extends ObsFileService {
         result.setParams(requestParams);
         result.setHeaders(headers);
         result.setBody(this.createRequestBody(Mimetypes.MIMETYPE_JSON, policyDocument));
-        Response response = performRequest(result, true, false, true);
+        Response response = performRequest(result, true, false, true, false);
 
         this.verifyResponseContentTypeForJson(response);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         CreateAsynchFetchJobsResult ret = (CreateAsynchFetchJobsResult) JSONChange
                 .jsonToObj(new CreateAsynchFetchJobsResult(), body);
@@ -142,7 +133,7 @@ public abstract class ObsExtensionService extends ObsFileService {
         metadata.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
         Response response = performRestGet(bucketName, requestParams, metadata);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         QueryAsynchFetchJobsResult ret = (QueryAsynchFetchJobsResult) JSONChange
                 .jsonToObj(new QueryAsynchFetchJobsResult(), body);
@@ -168,7 +159,7 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         this.verifyResponseContentTypeForJson(response);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         ReadAheadResult result = (ReadAheadResult) JSONChange.jsonToObj(new ReadAheadResult(), body);
 
@@ -186,7 +177,7 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         this.verifyResponseContentTypeForJson(response);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         ReadAheadResult result = (ReadAheadResult) JSONChange.jsonToObj(new ReadAheadResult(), body);
 
@@ -205,7 +196,7 @@ public abstract class ObsExtensionService extends ObsFileService {
 
         this.verifyResponseContentTypeForJson(response);
 
-        String body = readBodyFromResponse(response);
+        String body = RestUtils.readBodyFromResponse(response);
 
         ReadAheadQueryResult result = (ReadAheadQueryResult) JSONChange.jsonToObj(new ReadAheadQueryResult(), body);
 

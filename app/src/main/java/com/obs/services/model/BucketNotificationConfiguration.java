@@ -25,10 +25,6 @@ public class BucketNotificationConfiguration extends HeaderResponse {
     private List<TopicConfiguration> topicConfigurations;
     private List<FunctionGraphConfiguration> functionGraphConfigurations;
 
-    public BucketNotificationConfiguration() {
-
-    }
-
     /**
      * Add event notification configuration.
      * 

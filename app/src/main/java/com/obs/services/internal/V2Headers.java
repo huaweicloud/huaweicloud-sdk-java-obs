@@ -16,10 +16,6 @@ package com.obs.services.internal;
 
 public class V2Headers implements IHeaders {
 
-    public V2Headers() {
-
-    }
-
     private static V2Headers instance = new V2Headers();
 
     public static IHeaders getInstance() {

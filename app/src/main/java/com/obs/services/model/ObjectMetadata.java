@@ -57,10 +57,6 @@ public class ObjectMetadata extends HeaderResponse {
 
     private Map<String, Object> userMetadata;
 
-    public ObjectMetadata() {
-
-    }
-
     /**
      * Identify whether an object is appendable.
      * 

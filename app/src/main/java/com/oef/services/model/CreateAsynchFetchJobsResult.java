@@ -44,8 +44,8 @@ public class CreateAsynchFetchJobsResult extends HeaderResponse {
      *            once (the retry logic may be triggered).
      */
     public CreateAsynchFetchJobsResult(String id, int wait) {
-        this.setId(id);
-        this.setWait(wait);
+        this.id = id;
+        this.wait = wait;
     }
 
     /**

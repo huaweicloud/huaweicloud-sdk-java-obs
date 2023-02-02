@@ -76,12 +76,14 @@ public class DownloadResumableClient {
         }
         try {
             return downloadCheckPoint(downloadFileRequest);
-        } catch (ObsException e) {
-            throw e;
         } catch (ServiceException e) {
             throw ServiceUtils.changeFromServiceException(e);
         } catch (Exception e) {
-            throw new ObsException(e.getMessage(), e);
+            if (e instanceof ObsException) {
+                throw (ObsException) e;
+            } else {
+                throw new ObsException(e.getMessage(), e);
+            }
         }
     }
 
@@ -301,12 +303,8 @@ public class DownloadResumableClient {
         }
 
         for (Future<PartResultDown> future : futures) {
-            try {
-                PartResultDown tr = future.get();
-                taskResults.add(tr);
-            } catch (ExecutionException e) {
-                throw e;
-            }
+            PartResultDown tr = future.get();
+            taskResults.add(tr);
         }
 
         downloadResult.setPartResults(taskResults);

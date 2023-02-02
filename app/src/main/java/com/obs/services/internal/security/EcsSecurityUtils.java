@@ -17,6 +17,8 @@ package com.obs.services.internal.security;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import com.obs.services.internal.Constants;
+import com.obs.services.internal.utils.PropertyManager;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,7 +33,8 @@ public class EcsSecurityUtils {
     /**
      * Default endpoint for the ECS Instance Metadata Service.
      */
-    private static final String ECS_METADATA_SERIVCE_URL = "http://169.254.169.254";
+    private static final String ECS_METADATA_SERVICE_URL = PropertyManager.getInstance(Constants.PROPERTY_NAME_OBS)
+            .getFormattedString("ecs.metadata.service.url");
 
     private static final String EC2_METADATA_SERVICE_OVERRIDE_URL = "ecsMetadataServiceOverrideEndpoint";
 
@@ -57,7 +60,7 @@ public class EcsSecurityUtils {
      */
     public static String getEndpointForECSMetadataService() {
         String overridUrl = System.getProperty(EC2_METADATA_SERVICE_OVERRIDE_URL);
-        return overridUrl != null ? overridUrl : ECS_METADATA_SERIVCE_URL;
+        return overridUrl != null ? overridUrl : ECS_METADATA_SERVICE_URL;
     }
 
     /**

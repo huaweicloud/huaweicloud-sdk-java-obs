@@ -22,16 +22,6 @@ public abstract class DefaultXmlHandler extends DefaultHandler {
     private StringBuilder currText = null;
 
     @Override
-    public void startDocument() {
-        return;
-    }
-
-    @Override
-    public void endDocument() {
-        return;
-    }
-
-    @Override
     public void startElement(String uri, String name, String qualifiedName, Attributes attrs) {
         this.currText = new StringBuilder();
         this.startElement(name, attrs);

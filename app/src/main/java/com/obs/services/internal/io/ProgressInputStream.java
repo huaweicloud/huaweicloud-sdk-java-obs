@@ -52,12 +52,12 @@ public class ProgressInputStream extends FilterInputStream {
     }
 
     @Override
-    public void mark(int a) {
+    public synchronized void mark(int a) {
         abortWhileThreadIsInterrupted();
     }
 
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         throw new UnrecoverableIOException("UnRepeatable");
     }
 

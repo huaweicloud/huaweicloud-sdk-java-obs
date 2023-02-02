@@ -34,9 +34,12 @@ import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.CreateVirtualBucketRequest;
+import com.obs.services.model.CreateVirtualBucketResult;
 import com.obs.services.model.DeleteBucketCustomDomainRequest;
 import com.obs.services.model.GetBucketCustomDomainRequest;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.ListBucketAliasResult;
 import com.obs.services.model.ListBucketsRequest;
 import com.obs.services.model.ListBucketsResult;
 import com.obs.services.model.ObsBucket;
@@ -139,6 +142,35 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                 });
     }
 
+    public CreateVirtualBucketResult createVirtualBucket(CreateVirtualBucketRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "CreateVirtualBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketAlias(), "bucket alias is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName1(), "bucket name1 is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName2(), "bucket name2 is null");
+        ServiceUtils.assertParameterNotNull(request.getAgencyId(), "agency id is null");
+        ServiceUtils.assertParameterNotNull(request.getRegionId(), "region id is null");
+        ServiceUtils.assertParameterNotNull(request.getToken(), "token is null");
+        return this.doActionWithResult("createVirtualBucket", "All Buckets", new ActionCallbackWithResult<CreateVirtualBucketResult>() {
+            @Override
+            public CreateVirtualBucketResult action() throws ServiceException {
+                if (isCname()) {
+                    throw new ServiceException("createVirtualBucket is not allowed in customdomain mode");
+                }
+                return AbstractBucketClient.this.createVirtualBucketImpl(request);
+            }
+
+            @Override
+            void authTypeNegotiate(String bucketName) throws ServiceException {
+                AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getProviderCredentials()
+                        .getLocalAuthType().get(bucketName);
+                if (authTypeEnum == null) {
+                    authTypeEnum = AbstractBucketClient.this.getApiVersion("");
+                    AbstractBucketClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                }
+            }
+        });
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -165,6 +197,26 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                     throw new ServiceException("listBuckets is not allowed in customdomain mode");
                 }
                 return AbstractBucketClient.this.listAllBucketsImpl(request);
+            }
+
+            @Override
+            void authTypeNegotiate(String bucketName) throws ServiceException {
+                AuthTypeEnum authTypeEnum = AbstractBucketClient.this.getProviderCredentials()
+                        .getLocalAuthType().get(bucketName);
+                if (authTypeEnum == null) {
+                    authTypeEnum = AbstractBucketClient.this.getApiVersion("");
+                    AbstractBucketClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                }
+            }
+        });
+    }
+
+    @Override
+    public ListBucketAliasResult listAliasBuckets() throws ObsException {
+        return this.doActionWithResult("ListBucketAliasResult", "All Buckets", new ActionCallbackWithResult<ListBucketAliasResult>() {
+            @Override
+            public ListBucketAliasResult action() throws ServiceException {
+                return AbstractBucketClient.this.listAliasBucketsImpl();
             }
 
             @Override

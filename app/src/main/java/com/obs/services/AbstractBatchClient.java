@@ -91,7 +91,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
                     RestoreObjectRequest taskRequest = new RestoreObjectRequest(request.getBucketName(), kv.getKey(),
                             kv.getVersion(), request.getDays(), request.getRestoreTier());
                     taskRequest.setRequesterPays(request.isRequesterPays());
-                    RestoreObjectTask task = new RestoreObjectTask(this, request.getBucketName(), taskRequest, 
+                    RestoreObjectTask task = new RestoreObjectTask(this, request.getBucketName(), taskRequest,
                             callback, listener,
                             progreStatus, progressInterval);
                     executor.execute(task);
@@ -108,10 +108,12 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
             progreStatus.setTotalTaskNum(totalTasks);
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (ObsException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ObsException(e.getMessage(), e);
+            if (e instanceof ObsException) {
+                throw (ObsException) e;
+            } else {
+                throw new ObsException(e.getMessage(), e);
+            }
         }
         return progreStatus;
     }
@@ -216,20 +218,22 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
 
             int totalTasks = 0;
             if (request.getFolderPath() != null) {
-                totalTasks = uploadFolder(request, executor, progressStatus, listener, 
+                totalTasks = uploadFolder(request, executor, progressStatus, listener,
                         callback, prefix);
             } else if (request.getFilePaths() != null) {
-                totalTasks = uploadFileLists(request, executor, progressStatus, listener, 
+                totalTasks = uploadFileLists(request, executor, progressStatus, listener,
                         callback, prefix);
             }
 
             progressStatus.setTotalTaskNum(totalTasks);
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (ObsException e) {
-            throw e;
         } catch (Exception e) {
-            throw new ObsException(e.getMessage(), e);
+            if (e instanceof ObsException) {
+                throw (ObsException) e;
+            } else {
+                throw new ObsException(e.getMessage(), e);
+            }
         }
 
         return progressStatus;

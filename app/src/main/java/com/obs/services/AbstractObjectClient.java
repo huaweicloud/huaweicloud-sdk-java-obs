@@ -49,6 +49,8 @@ import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RestoreObjectResult;
 import com.obs.services.model.SetObjectAclRequest;
 import com.obs.services.model.SetObjectMetadataRequest;
+import com.obs.services.model.select.SelectObjectRequest;
+import com.obs.services.model.select.SelectObjectResult;
 
 public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
@@ -356,7 +358,26 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     public ObsObject getObject(final String bucketName, final String objectKey) throws ObsException {
         return this.getObject(bucketName, objectKey, null);
     }
-    
+
+    @Override
+    public SelectObjectResult selectObjectContent(final SelectObjectRequest selectRequest)
+        throws ObsException {
+        ServiceUtils.assertParameterNotNull(selectRequest, "SelectObjectRequest is null");
+        ServiceUtils.assertParameterNotNull2(selectRequest.getBucketName(), "bucket-name is null");
+        ServiceUtils.assertParameterNotNull2(selectRequest.getKey(), "object-key is null");
+        ServiceUtils.assertParameterNotNull2(selectRequest.getExpression(), "sql-expression is null");
+
+        return this.doActionWithResult(
+            "selectObjectContent",
+            selectRequest.getBucketName(),
+            new ActionCallbackWithResult<SelectObjectResult>() {
+                @Override
+                public SelectObjectResult action() throws ServiceException {
+                    return AbstractObjectClient.this.selectObjectContentImpl(selectRequest);
+                }
+            });
+    }
+
     /*
      * (non-Javadoc)
      * 
