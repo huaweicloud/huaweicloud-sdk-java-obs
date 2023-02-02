@@ -39,7 +39,7 @@ public class SetBucketFSStatusRequest extends BaseBucketRequest {
      */
     public SetBucketFSStatusRequest(String bucketName, FSStatusEnum status) {
         this.bucketName = bucketName;
-        this.setStatus(status);
+        this.status = status;
     }
 
     /**

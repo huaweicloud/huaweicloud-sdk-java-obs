@@ -66,7 +66,7 @@ public class HttpProxyConfiguration {
      *            Proxy port
      * @param proxyUname
      *            Proxy username
-     * @param userPaaswd
+     * @param userPasswd
      *            Proxy password
      * @param domain
      *            Proxy domain

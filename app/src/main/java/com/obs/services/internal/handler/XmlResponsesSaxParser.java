@@ -45,6 +45,7 @@ import com.obs.services.model.GroupGrantee;
 import com.obs.services.model.HistoricalObjectReplicationEnum;
 import com.obs.services.model.InitiateMultipartUploadResult;
 import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.ListBucketAliasResult;
 import com.obs.services.model.Multipart;
 import com.obs.services.model.MultipartUpload;
 import com.obs.services.model.ObsBucket;
@@ -655,6 +656,58 @@ public class XmlResponsesSaxParser {
                 contentSummary.setFileSize(Long.parseLong(elementText));
             } else if (name.equals("Inode")) {
                 contentSummary.setInode(Long.parseLong(elementText));
+            }
+        }
+    }
+
+    public static class ListBucketAliasHandler extends DefaultXmlHandler {
+        private Owner bucketAliasOwner;
+
+        private ListBucketAliasResult.BucketAlias bucketAlias;
+
+        private List<String> bucketList;
+
+        private final List<ListBucketAliasResult.BucketAlias> listBucketAlias = new ArrayList<>();
+
+        public Owner getBucketAliasOwner() {
+            return bucketAliasOwner;
+        }
+
+        public List<ListBucketAliasResult.BucketAlias> getListBucketAlias() {
+            return listBucketAlias;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals("Owner")) {
+                bucketAliasOwner = new Owner();
+            } else if (name.equals("BucketAlias")) {
+                bucketAlias = new ListBucketAliasResult.BucketAlias();
+            } else if (name.equals("BucketList")) {
+                bucketList = new ArrayList<>();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            switch (name) {
+                case "ID":
+                    bucketAliasOwner.setId(elementText);
+                    break;
+                case "Alias":
+                    bucketAlias.setAlias(elementText);
+                    break;
+                case "BucketList":
+                    bucketAlias.setBucketList(bucketList);
+                    break;
+                case "Bucket":
+                    bucketList.add(elementText);
+                    break;
+                case "BucketAlias":
+                    listBucketAlias.add(bucketAlias);
+                    break;
+                default:
+                    break;
             }
         }
     }

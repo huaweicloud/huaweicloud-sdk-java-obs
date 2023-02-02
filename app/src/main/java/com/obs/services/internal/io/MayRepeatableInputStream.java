@@ -80,7 +80,7 @@ public class MayRepeatableInputStream extends FilterInputStream {
     }
 
     @Override
-    public void mark(int a) {
+    public synchronized void mark(int a) {
         throwExceptionWhileInterrupted();
         try {
             if (fileChannel != null) {
@@ -94,7 +94,7 @@ public class MayRepeatableInputStream extends FilterInputStream {
     }
 
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         if (fileChannel != null) {
             fileChannel.position(markPos);
             if (in instanceof SdkBufferedInputStream) {

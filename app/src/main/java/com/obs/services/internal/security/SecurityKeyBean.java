@@ -26,10 +26,6 @@ public class SecurityKeyBean {
     @JsonProperty("expires_at")
     private String expiresDate;
 
-    public SecurityKeyBean(){
-
-    }
-
     public String getAccessKey() {
         return accessKey;
     }

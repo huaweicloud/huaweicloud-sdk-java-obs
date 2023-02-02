@@ -60,7 +60,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         this.prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), request.getAcl());
 
         NewTransResult newTransResult = transObjectRequestWithResult(result, request);
-        Response response = performRequest(newTransResult, true, false, false);
+        Response response = performRequest(newTransResult, true, false, false, false);
 
         this.verifyResponseContentType(response);
 
@@ -108,7 +108,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         transResult.setHeaders(headers);
         transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
 
-        Response response = performRequest(transResult, true, false, false);
+        Response response = performRequest(transResult, true, false, false, false);
 
         CompleteMultipartUploadResult ret;
         if (request.getCallback() == null) {
@@ -258,7 +258,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
 
         TransResult result = this.transCopyPartRequest(request);
         NewTransResult newTransResult = transObjectRequestWithResult(result, request);
-        Response response = this.performRequest(newTransResult, true, false, false);
+        Response response = this.performRequest(newTransResult, true, false, false, false);
         this.verifyResponseContentType(response);
 
         CopyPartResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),

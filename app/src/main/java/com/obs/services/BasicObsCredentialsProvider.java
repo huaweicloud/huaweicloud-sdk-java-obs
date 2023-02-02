@@ -22,7 +22,8 @@ public class BasicObsCredentialsProvider implements IObsCredentialsProvider {
     private volatile ISecurityKey securityKey;
 
     public BasicObsCredentialsProvider(ISecurityKey securityKey) {
-        setSecurityKey(securityKey);
+        checkISecurityKey(securityKey);
+        this.securityKey = securityKey;
     }
 
     public BasicObsCredentialsProvider(String accessKey, String secretKey) {
@@ -31,7 +32,7 @@ public class BasicObsCredentialsProvider implements IObsCredentialsProvider {
 
     public BasicObsCredentialsProvider(String accessKey, String secretKey, String securityToken) {
         checkSecurityKey(accessKey, secretKey);
-        setSecurityKey(new BasicSecurityKey(accessKey, secretKey, securityToken));
+        this.securityKey = new BasicSecurityKey(accessKey, secretKey, securityToken);
     }
 
     private static void checkSecurityKey(String accessKey, String secretKey) {
@@ -46,12 +47,15 @@ public class BasicObsCredentialsProvider implements IObsCredentialsProvider {
 
     @Override
     public void setSecurityKey(ISecurityKey securityKey) {
+        checkISecurityKey(securityKey);
+        this.securityKey = securityKey;
+    }
+
+    private void checkISecurityKey(ISecurityKey securityKey) {
         if (securityKey == null) {
             throw new IllegalArgumentException("securityKey should not be null.");
         }
         checkSecurityKey(securityKey.getAccessKey(), securityKey.getSecretKey());
-
-        this.securityKey = securityKey;
     }
 
     @Override

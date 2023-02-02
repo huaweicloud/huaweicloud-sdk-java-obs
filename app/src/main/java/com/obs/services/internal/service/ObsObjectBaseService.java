@@ -42,6 +42,7 @@ import com.obs.services.model.GetObjectAclRequest;
 import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.GetObjectRequest;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.PutObjectRequest;
@@ -53,8 +54,12 @@ import com.obs.services.model.fs.DropFileResult;
 import com.obs.services.model.fs.ObsFSAttribute;
 import com.obs.services.model.fs.ObsFSFile;
 import com.obs.services.model.fs.ReadFileResult;
+import com.obs.services.model.select.SelectObjectRequest;
+import com.obs.services.model.select.SelectObjectResult;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -193,6 +198,43 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         return obsObject;
     }
 
+    protected SelectObjectResult selectObjectContentImpl(SelectObjectRequest selectRequest)
+        throws ServiceException {
+        Map<String, String> httpHeaders = new HashMap<>();
+        httpHeaders.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        final String bucket = selectRequest.getBucketName();
+
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("select", null);
+        requestParams.put("select-type", "2");
+
+        String xml = selectRequest.convertToXml();
+
+        if (log.isDebugEnabled()) {
+            log.debug(
+                String.format(
+                    "selectObjectContentImpl: bucket: %s; object: %s; request XML: %n%s%n",
+                    bucket,
+                    selectRequest.getKey(),
+                    xml));
+        }
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.POST);
+        transResult.setBucketName(bucket);
+        transResult.setObjectKey(selectRequest.getKey());
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Request.Builder builder = setupConnection(transResult, false, false);
+
+        renameMetadataKeys(bucket, builder, httpHeaders);
+
+        Response response = performRequest(
+            builder.build(), requestParams, bucket, true, false);
+
+        ResponseBody responseBody = response.body();
+        return new SelectObjectResult(responseBody.byteStream());
+    }
+
     protected DeleteObjectsResult deleteObjectsImpl(DeleteObjectsRequest request) throws ServiceException {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(SpecialParamEnum.DELETE.getOriginalStringCode(), "");
@@ -210,7 +252,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         transResult.setParams(requestParams);
         transResult.setHeaders(headers);
         transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
-        Response response = performRequest(transResult, true, false, false);
+        Response response = performRequest(transResult, true, false, false, false);
         this.verifyResponseContentType(response);
 
         DeleteObjectsResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
@@ -246,7 +288,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         boolean isExtraAclPutRequired = !prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), acl);
         NewTransResult newTransResult = transObjectRequestWithResult(result, request);
 
-        Response response = performRequest(newTransResult, true, false, false);
+        Response response = performRequest(newTransResult, true, false, false, false);
 
         this.verifyResponseContentType(response);
 

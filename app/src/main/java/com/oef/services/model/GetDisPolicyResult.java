@@ -10,7 +10,7 @@ public class GetDisPolicyResult extends HeaderResponse {
     }
 
     public GetDisPolicyResult(DisPolicy policy) {
-        this.setPolicy(policy);
+        this.policy = policy;
     }
 
     public DisPolicy getPolicy() {

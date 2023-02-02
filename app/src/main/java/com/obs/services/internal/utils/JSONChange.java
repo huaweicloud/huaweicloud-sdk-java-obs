@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -50,6 +51,16 @@ public class JSONChange {
         }
     }
 
+    public static JsonNode readNodeFromJson(String jsonStr) throws ServiceException {
+        MyObjectMapper mapper = ObjectMapperUtil.getInstance();
+        try {
+            JsonNode node = mapper.readTree(jsonStr);
+            return node;
+        } catch (IOException e) {
+            throw new ServiceException(" read node failed", e);
+        }
+    }
+
     /*
      * 对象转换成json
      * 
@@ -68,9 +79,6 @@ public class JSONChange {
     
     private static class ObjectMapperUtil {
 
-        private ObjectMapperUtil() {
-        }
-
         private static class ObjectMapperUtilInstance {
             private static final MyObjectMapper MAPPER = new MyObjectMapper();
         }
@@ -87,9 +95,6 @@ public class JSONChange {
         public MyObjectMapper() {
             super();
             // 从JSON到java object
-            // 没有匹配的属性名称时不作失败处理
-            this.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
-
             // 反序列化
             // 禁止遇到空原始类型时抛出异常，用默认值代替。
             this.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);

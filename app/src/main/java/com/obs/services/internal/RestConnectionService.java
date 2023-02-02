@@ -27,10 +27,10 @@ import javax.net.ssl.TrustManagerFactory;
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.security.ProviderCredentials;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.HttpMethodEnum;
-
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -112,40 +112,30 @@ public class RestConnectionService {
         }
     }
 
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-                                              Map<String, String> requestParameters, RequestBody body)
-            throws ServiceException {
-        return this.setupConnection(method, bucketName, objectKey, requestParameters, body, false);
-    }
-
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-                                              Map<String, String> requestParameters, RequestBody body, boolean isOEF)
-            throws ServiceException {
-        return this.setupConnection(method, bucketName, objectKey, requestParameters, body, isOEF, false);
-    }
-
-    protected Request.Builder setupConnection(HttpMethodEnum method, String bucketName, String objectKey,
-                                              Map<String, String> requestParameters, RequestBody body, boolean isOEF,
-                                              boolean isListBuckets)
+    protected Request.Builder setupConnection(NewTransResult result, boolean isOEF, boolean isListBuckets)
             throws ServiceException {
 
         boolean pathStyle = this.isPathStyle();
         String endPoint = this.getEndpoint();
         boolean isCname = this.isCname();
-        String hostname = (isCname || isListBuckets) ? endPoint
-                : ServiceUtils.generateHostnameForBucket(RestUtils.encodeUrlString(bucketName), pathStyle, endPoint);
+        String hostname = (isCname || isListBuckets) ? endPoint : ServiceUtils.generateHostnameForBucket(RestUtils
+                .encodeUrlString(result.getBucketName()), pathStyle, endPoint);
         String resourceString = "/";
-        if (hostname.equals(endPoint) && !isCname && bucketName.length() > 0) {
-            resourceString += RestUtils.encodeUrlString(bucketName);
+        if (hostname.equals(endPoint) && !isCname && result.getBucketName() != null && !result.getBucketName().isEmpty()) {
+            resourceString += RestUtils.encodeUrlString(result.getBucketName());
         }
-        if (objectKey != null) {
-            resourceString += ((pathStyle && !isCname) ? "/" : "") + RestUtils.encodeUrlString(objectKey);
+        if (result.getObjectKey() != null) {
+            if (result.isEncodeUrl()) {
+                resourceString += ((pathStyle && !isCname) ? "/" : "") + RestUtils.encodeUrlString(result.getObjectKey());
+            } else {
+                resourceString += result.getObjectKey();
+            }
         }
 
         String url = addProtocol(hostname, resourceString);
-        url = addRequestParametersToUrlPath(url, requestParameters, isOEF);
+        url = addRequestParametersToUrlPath(url, result.getParams(), isOEF);
 
-        Request.Builder builder = createRequestBuilder(method, body, url);
+        Request.Builder builder = createRequestBuilder(result.getHttpMethod(), result.getBody(), url);
 
         return builder;
     }

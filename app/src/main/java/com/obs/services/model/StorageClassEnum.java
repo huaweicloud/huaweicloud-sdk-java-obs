@@ -34,7 +34,12 @@ public enum StorageClassEnum {
     /**
      * Archive
      */
-    COLD;
+    COLD,
+
+    /**
+     * Deep Archive
+     */
+    DEEP_ARCHIVE;
 
     public String getCode() {
         return this.name();
@@ -47,6 +52,8 @@ public enum StorageClassEnum {
             return WARM;
         } else if ("COLD".equals(code) || "GLACIER".equals(code)) {
             return COLD;
+        } else if ("DEEP_ARCHIVE".equals(code)) {
+            return DEEP_ARCHIVE;
         }
         return null;
     }

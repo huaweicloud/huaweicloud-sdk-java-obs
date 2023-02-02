@@ -188,7 +188,7 @@ public class LifecycleConfiguration extends HeaderResponse {
          *            expires since it becomes a noncurrent version
          */
         public NoncurrentVersionExpiration(Integer days) {
-            this.setDays(days);
+            this.days = days;
         }
 
         /**
@@ -484,7 +484,7 @@ public class LifecycleConfiguration extends HeaderResponse {
          */
         @Deprecated
         public NoncurrentVersionTransition(Integer days, String storageClass) {
-            this.setDays(days);
+            this.days = days;
             this.storageClass = StorageClassEnum.getValueFromCode(storageClass);
         }
 
@@ -500,7 +500,7 @@ public class LifecycleConfiguration extends HeaderResponse {
          *            transition
          */
         public NoncurrentVersionTransition(Integer days, StorageClassEnum storageClass) {
-            this.setDays(days);
+            this.days = days;
             this.storageClass = storageClass;
         }
 

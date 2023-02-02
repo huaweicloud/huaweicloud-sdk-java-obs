@@ -154,10 +154,22 @@ public enum SpecialParamEnum {
      */
     GETCONTENTSUMMARY("getcontentsummary"),
 
+    ACCESSLABEL("accesslabel"),
+
     /**
      * Set, obtain, or delete the direct reading policy for Archive objects in a bucket.
      */
     DIRECTCOLDACCESS("directcoldaccess"),
+
+    /**
+     * get alias bucket list
+     */
+    OBSBUCKETALIAS("obsbucketalias"),
+
+    /**
+     * alias bucket name
+     */
+    OBSALIAS("obsalias"),
 
     /**
      * Set, obtain, or delete the Custom Domain Name of a Bucket

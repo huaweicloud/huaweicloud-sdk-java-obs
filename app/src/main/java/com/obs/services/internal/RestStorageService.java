@@ -385,15 +385,14 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     protected Response performRequest(NewTransResult result) {
-        return performRequest(result, true, true, false);
+        return performRequest(result, true, true, false, false);
     }
 
     // todo 重构后仅保留这一个 performRequest，将其他的均合并至这里
     // todo 重构时需要评估下 needSignature, autoRelease, isOEF 这三个参数是否要合入到 transResult 里
-    protected Response performRequest(NewTransResult result, boolean needSignature,
-                                      boolean autoRelease, boolean isOEF) {
-        Request.Builder builder = setupConnection(result.getHttpMethod(), result.getBucketName(),
-                result.getObjectKey(), result.getParams(), result.getBody(), isOEF);
+    protected Response performRequest(NewTransResult result, boolean needSignature, boolean autoRelease, boolean isOEF,
+                                      boolean isNotNeedBucket) {
+        Request.Builder builder = setupConnection(result, isOEF, isNotNeedBucket);
         renameMetadataKeys(result.getBucketName(), builder, result.getHeaders(), result.isEncodeHeaders());
         if (result.getUserHeaders() != null) {
             result.getUserHeaders().forEach(builder::addHeader);
@@ -854,8 +853,12 @@ public abstract class RestStorageService extends RestConnectionService {
     protected Response performRestHead(String bucketName, String objectKey, Map<String, String> requestParameters,
                                        Map<String, String> requestHeaders, Map<String, String> userHeaders,
                                        boolean needEncode) throws ServiceException {
-        Request.Builder builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null);
-
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.HEAD);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, false, false);
         addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         if (userHeaders != null) {
             userHeaders.forEach(builder::addHeader);
@@ -874,8 +877,12 @@ public abstract class RestStorageService extends RestConnectionService {
                                                     Map<String, String> requestHeaders) throws ServiceException {
 
         // no bucket name required for listBuckets
-        Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
-                false, true);
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.GET);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, false, true);
 
         addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         return performRequest(builder.build(), requestParameters, bucketName, true, false);
@@ -891,9 +898,12 @@ public abstract class RestStorageService extends RestConnectionService {
     protected Response performRestGet(String bucketName, String objectKey, Map<String, String> requestParameters,
                                       Map<String, String> requestHeaders, Map<String, String> userHeaders,
                                       boolean isOEF, boolean needEncode) throws ServiceException {
-
-        Request.Builder builder = setupConnection(HttpMethodEnum.GET, bucketName, objectKey, requestParameters, null,
-                isOEF);
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.GET);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, isOEF, false);
 
         addRequestHeadersToConnection(bucketName, builder, requestHeaders);
         if (userHeaders != null) {
@@ -912,9 +922,12 @@ public abstract class RestStorageService extends RestConnectionService {
                                          Map<String, String> metadata, Map<String, String> userHeaders,
                                          boolean autoRelease, boolean isOEF)
             throws ServiceException {
-
-        Request.Builder builder = setupConnection(HttpMethodEnum.DELETE, bucketName, objectKey, requestParameters, null,
-                isOEF);
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.DELETE);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, isOEF, false);
 
         renameMetadataKeys(bucketName, builder, metadata);
         if (userHeaders != null) {
@@ -939,9 +952,12 @@ public abstract class RestStorageService extends RestConnectionService {
     protected Response performRestOptions(String bucketName, String objectKey, Map<String, String> metadata,
                                           Map<String, String> requestParameters, boolean autoRelease)
             throws ServiceException {
-
-        Request.Builder builder = setupConnection(HttpMethodEnum.OPTIONS, bucketName, objectKey, requestParameters,
-                null);
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.OPTIONS);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, false, false);
 
         addRequestHeadersToConnection(bucketName, builder, metadata);
 
@@ -956,15 +972,16 @@ public abstract class RestStorageService extends RestConnectionService {
     protected Response performRestForApiVersion(String bucketName, String objectKey,
                                                 Map<String, String> requestParameters,
                                                 Map<String, String> requestHeaders) throws ServiceException {
-
-        Request.Builder builder;
-
+        boolean isListBuckets = true;
         if (null != bucketName && !"".equals(bucketName.trim())) {
-            builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null, false,
-                    false);
-        } else {
-            builder = setupConnection(HttpMethodEnum.HEAD, bucketName, objectKey, requestParameters, null, false, true);
+            isListBuckets = false;
         }
+        NewTransResult transResult = new NewTransResult();
+        transResult.setHttpMethod(HttpMethodEnum.HEAD);
+        transResult.setBucketName(bucketName);
+        transResult.setObjectKey(objectKey);
+        transResult.setParams(requestParameters);
+        Request.Builder builder = setupConnection(transResult, false, isListBuckets);
 
         addRequestHeadersToConnection(bucketName, builder, requestHeaders);
 

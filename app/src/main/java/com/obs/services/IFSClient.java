@@ -46,6 +46,12 @@ import com.obs.services.model.fs.ContentSummaryFsResult;
 import com.obs.services.model.fs.ContentSummaryFsRequest;
 import com.obs.services.model.fs.ListContentSummaryFsResult;
 import com.obs.services.model.fs.ListContentSummaryFsRequest;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.DeleteAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.GetAccessLabelResult;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelRequest;
+import com.obs.services.model.fs.accesslabel.SetAccessLabelResult;
 
 /**
  * Gateway interface for OBS files
@@ -53,7 +59,7 @@ import com.obs.services.model.fs.ListContentSummaryFsRequest;
 public interface IFSClient {
     /**
      * Disable ObsClient and release connection resources.
-     * @throws IOException
+     * @throws IOException ioException
      */
     void close() throws IOException;
 
@@ -212,4 +218,37 @@ public interface IFSClient {
      *                     thrown when the interface fails to be called or access to OBS fails
      */
     ContentSummaryFsResult getContentSummaryFs(ContentSummaryFsRequest request) throws ObsException;
+
+    /**
+     * set access label for a folder
+     * s3 protocol is not supported
+     *
+     * @param request Request parameters for access label setting
+     * @return Response to the request for access label setting
+     * @throws ObsException ObsException OBS SDK self-defined exception,
+     *                      thrown when the interface fails to be called or access to OBS fails
+     */
+    SetAccessLabelResult setAccessLabelFs(SetAccessLabelRequest request) throws ObsException;
+
+    /**
+     * get access label of the folder
+     * s3 protocol is not supported
+     *
+     * @param request Request parameters for getting access label
+     * @return Response to the request for getting access label
+     * @throws ObsException ObsException OBS SDK self-defined exception,
+     *                      thrown when the interface fails to be called or access to OBS fails
+     */
+    GetAccessLabelResult getAccessLabelFs(GetAccessLabelRequest request) throws ObsException;
+
+    /**
+     * delete access label of the folder
+     * s3 protocol is not supported
+     *
+     * @param request Request parameters for deleting access label
+     * @return Response to the request for deleting access label
+     * @throws ObsException ObsException OBS SDK self-defined exception,
+     *                      thrown when the interface fails to be called or access to OBS fails
+     */
+    DeleteAccessLabelResult deleteAccessLabelFs(DeleteAccessLabelRequest request) throws ObsException;
 }

@@ -82,7 +82,7 @@ public class DeleteObjectsRequest extends GenericRequest {
         this.bucketName = bucketName;
         this.quiet = quiet;
         this.setKeyAndVersions(keyAndVersions);
-        this.setEncodingType(encodingType);
+        this.encodingType = encodingType;
     }
 
     /**

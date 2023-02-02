@@ -26,10 +26,6 @@ import com.obs.services.internal.service.InternalHeaderResponse;
  */
 public class HeaderResponse extends InternalHeaderResponse {
 
-    public HeaderResponse() {
-
-    }
-
     /**
      * Obtain response headers.
      * 

@@ -15,6 +15,7 @@ public class NewTransResult {
     private String objectKey;
     private HttpMethodEnum httpMethod;
     private boolean encodeHeaders = false;
+    private boolean encodeUrl = true;
 
     public NewTransResult() {
     }
@@ -95,5 +96,13 @@ public class NewTransResult {
 
     public boolean isEncodeHeaders() {
         return encodeHeaders;
+    }
+
+    public boolean isEncodeUrl() {
+        return encodeUrl;
+    }
+
+    public void setEncodeUrl(boolean encodeUrl) {
+        this.encodeUrl = encodeUrl;
     }
 }

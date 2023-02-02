@@ -71,8 +71,8 @@ public class CreateAsyncFetchJobsRequest {
      *            Bucket name
      */
     public CreateAsyncFetchJobsRequest(String url, String bucket) {
-        this.setUrl(url);
-        this.setBucketName(bucket);
+        this.url = url;
+        this.bucket = bucket;
     }
 
     /**

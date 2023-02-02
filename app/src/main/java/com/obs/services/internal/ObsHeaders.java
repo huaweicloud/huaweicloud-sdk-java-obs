@@ -16,10 +16,6 @@ package com.obs.services.internal;
 
 public class ObsHeaders extends V2Headers {
 
-    public ObsHeaders() {
-        super();
-    }
-
     private static ObsHeaders instance = new ObsHeaders();
 
     public static IHeaders getInstance() {

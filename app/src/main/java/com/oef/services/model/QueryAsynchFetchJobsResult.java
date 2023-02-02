@@ -65,12 +65,12 @@ public class QueryAsynchFetchJobsResult extends HeaderResponse {
      */
     public QueryAsynchFetchJobsResult(String requestId, String err, String code, String status, int wait,
             CreateAsyncFetchJobsRequest job) {
-        this.setRequestId(requestId);
-        this.setErr(err);
-        this.setCode(code);
-        this.setStatus(status);
-        this.setWait(wait);
-        this.setJob(job);
+        this.requestId = requestId;
+        this.err = err;
+        this.code = code;
+        this.status = status;
+        this.wait = wait;
+        this.job = job;
     }
 
     /**
