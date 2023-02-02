@@ -1,3 +1,16 @@
+Version 3.22.12
+New features:
+1. Java SDK支持深度归档
+2. Java SDK实现posix accesslable相关接口
+
+Third-party dependence:
+1. 使用 log4j2 2.18.0 替代 log4j2 2.17.1
+2. 使用 okhttp 4.10.0 替代 okhttp 4.9.3
+4. 使用 jackson-core 2.13.3 替代 jackson-core 2.13.0
+5. 使用 jackson-databind 2.13.4.1 替代 jackson-databind 2.13.0
+6. 使用 jackson-annotations 2.13.3 替代 jackson-annotations 2.13.0
+-----------------------------------------------------------------------------------
+
 Version 3.22.3
 Third-party dependence:
 1. 使用 log4j2 2.17.1 替代 log4j2 2.17.0

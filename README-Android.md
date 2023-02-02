@@ -1,13 +1,3 @@
-Version 3.22.3
-Third-party dependence:
-1. Replace log4j2 2.17.0 with log4j2 2.17.1
-2. Replace okhttp 4.9.1 with okhttp 4.9.3
-3. Replace okio 2.7.0 with okio 2.10.0
-4. Replace jackson-core 2.12.5 with jackson-core 2.13.0
-5. Replace jackson-databind 2.12.5 with jackson-databind 2.13.0
-6. Replace jackson-annotations 2.12.5 with jackson-annotations 2.13.0
------------------------------------------------------------------------------------
-
 Version 3.21.12
 Third-party dependence:
 1. Replace log4j2 2.16.0 with log4j2 2.17.0
@@ -16,19 +6,19 @@ Third-party dependence:
 Version 3.21.11
 New features:
 1. Allowed you to add any custom header field in a request.
+
 Third-party dependence:
-1. Replace jackson-core 2.11.1 with jackson-core 2.12.5
-2. Replace jackson-databind 2.11.1 with jackson-databind 2.12.5
-3. Replace jackson-annotations 2.11.1 with jackson-annotations 2.12.5
-4. Replace okhttp 4.8.0 with okhttp 4.9.1
-5. Replace log4j2 2.14.1 with log4j2 2.16.0
+1. Replace jackson-core 2.12.5 with jackson-core 2.11.1
+2. Replace jackson-databind 2.12.5 with jackson-databind 2.11.1
+3. Replace jackson-annotations 2.12.5 with jackson-annotations 2.11.1
+4. Replace okhttp 4.9.1 with okhttp 4.8.0
+5. Replace log4j2 2.16.0 with log4j2 2.14.1
 -----------------------------------------------------------------------------------
 
 Version 3.21.8
 
 1. Replace okhttp 3.14.9 with okhttp 4.8.0.
 2. Adding original headers to Response object
-
 -----------------------------------------------------------------------------------
 
 Version 3.21.4
