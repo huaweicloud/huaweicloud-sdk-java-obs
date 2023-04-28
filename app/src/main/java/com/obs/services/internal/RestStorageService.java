@@ -69,7 +69,6 @@ public abstract class RestStorageService extends RestConnectionService {
     static {
         NON_RETRIABLE_CLASSES.add(UnknownHostException.class);
         NON_RETRIABLE_CLASSES.add(SSLException.class);
-        NON_RETRIABLE_CLASSES.add(ConnectException.class);
     }
 
     private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<>();
@@ -561,16 +560,14 @@ public abstract class RestStorageService extends RestConnectionService {
         try {
             semaphore.acquire();
             return call.execute();
-        } catch (IOException e) {
-            if (e instanceof UnrecoverableIOException) {
-                if (retryController.getLastException() != null) {
-                    throw retryController.getLastException();
-                } else {
-                    throw e;
-                }
+        } catch (UnrecoverableIOException e) {
+            if (retryController.getLastException() != null) {
+                throw retryController.getLastException();
+            } else {
+                throw e;
             }
+        } catch (IOException e) {
             retryController.setLastException(e);
-
             retryOnIOException(e,
                     request,
                     retryController,

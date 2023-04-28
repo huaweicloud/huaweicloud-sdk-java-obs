@@ -1,3 +1,8 @@
+Version 3.23.3
+1. Allow you to query the progress of crr 
+2. Added interfaces of Object tagging(set, get, delete)
+-----------------------------------------------------------------------------------
+
 Version 3.22.12
 New features:
 1. Added the Deep Archive storage class in the Java SDK.

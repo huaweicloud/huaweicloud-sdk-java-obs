@@ -41,6 +41,7 @@ public class SelectObjectException extends ObsException {
      * 
      * @returns Error code
      */
+    @Override
     public String getErrorCode() {
         return super.getErrorCode();
     }
@@ -50,6 +51,7 @@ public class SelectObjectException extends ObsException {
      * 
      * @returns Error message
      */
+    @Override
     public String getErrorMessage() {
         return super.getErrorMessage();
     }

@@ -120,8 +120,6 @@ public class JSONChange {
             // 不包含空值属性
             this.setSerializationInclusion(Include.NON_EMPTY);
             this.setSerializationInclusion(Include.NON_NULL);
-            // this.configure(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME,
-            // true);
             // 是否缩放排列输出，默认false，
             this.configure(SerializationFeature.INDENT_OUTPUT, false);
         }

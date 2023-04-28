@@ -51,6 +51,8 @@ import com.obs.services.model.SetObjectAclRequest;
 import com.obs.services.model.SetObjectMetadataRequest;
 import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
+import com.obs.services.model.ObjectTagResult;
+import com.obs.services.model.ObjectTaggingRequest;
 
 public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
@@ -698,6 +700,68 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
                             throws ServiceException {
                         ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
                         return AbstractObjectClient.this.restoreObjectImpl(request);
+                    }
+                });
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.obs.services.IObsClient#getBucketTagging(java.lang.String)
+     */
+    @Override
+    public ObjectTagResult getObjectTagging(final ObjectTaggingRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "ObjectTaggingRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        return this.doActionWithResult("getObjectTagging", request.getBucketName(),
+                new ActionCallbackWithResult<ObjectTagResult>() {
+
+                    @Override
+                    public ObjectTagResult action() throws ServiceException {
+                        return AbstractObjectClient.this.getObjectTaggingImpl(request);
+                    }
+                });
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.obs.services.IObsClient#setObjectTagging(java.lang.String,
+     * com.obs.services.model.ObjectTagResult)
+     */
+    @Override
+    public HeaderResponse setObjectTagging(final ObjectTaggingRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "ObjectTaggingRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        return this.doActionWithResult("setObjectTagging", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+
+                        return AbstractObjectClient.this.setObjectTaggingImpl(request);
+                    }
+                });
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.obs.services.IObsClient#deleteObjectTagging(java.lang.String)
+     */
+    @Override
+    public HeaderResponse deleteObjectTagging(final ObjectTaggingRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "ObjectTaggingRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+
+        return this.doActionWithResult("deleteObjectTagging", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractObjectClient.this.deleteObjectTaggingImpl(request);
                     }
                 });
     }

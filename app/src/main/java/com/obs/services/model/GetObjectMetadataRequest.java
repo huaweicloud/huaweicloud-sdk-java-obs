@@ -83,6 +83,7 @@ public class GetObjectMetadataRequest extends BaseObjectRequest {
      * 
      * @return Object name
      */
+    @Override
     public String getObjectKey() {
         return objectKey;
     }
@@ -93,6 +94,7 @@ public class GetObjectMetadataRequest extends BaseObjectRequest {
      * @param objectKey
      *            Object name
      */
+    @Override
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }

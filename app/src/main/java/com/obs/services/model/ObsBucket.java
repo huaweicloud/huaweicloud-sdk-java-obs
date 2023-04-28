@@ -48,6 +48,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Bucket name
      */
+    @Override
     public String getBucketName() {
         return bucketName;
     }
@@ -59,6 +60,7 @@ public class ObsBucket extends S3Bucket {
      * @param bucketName
      *            Bucket name
      */
+    @Override
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
@@ -68,6 +70,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Owner of the bucket
      */
+    @Override
     public Owner getOwner() {
         return owner;
     }
@@ -78,6 +81,7 @@ public class ObsBucket extends S3Bucket {
      * @param bucketOwner
      *            Owner of the bucket
      */
+    @Override
     public void setOwner(Owner bucketOwner) {
         this.owner = bucketOwner;
     }
@@ -87,6 +91,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Creation time of the bucket
      */
+    @Override
     public Date getCreationDate() {
         return ServiceUtils.cloneDateIgnoreNull(this.creationDate);
     }
@@ -97,6 +102,7 @@ public class ObsBucket extends S3Bucket {
      * @param bucketCreationDate
      *            Creation time of the bucket
      */
+    @Override
     public void setCreationDate(Date bucketCreationDate) {
         this.creationDate = ServiceUtils.cloneDateIgnoreNull(bucketCreationDate);
     }
@@ -106,6 +112,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Bucket properties
      */
+    @Override
     @Deprecated
     public Map<String, Object> getMetadata() {
         if (this.metadata == null) {
@@ -120,6 +127,7 @@ public class ObsBucket extends S3Bucket {
      * @param metadata
      *            Bucket properties
      */
+    @Override
     @Deprecated
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
@@ -130,6 +138,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Bucket location
      */
+    @Override
     public String getLocation() {
         return location;
     }
@@ -141,6 +150,7 @@ public class ObsBucket extends S3Bucket {
      *            Bucket location. This parameter is mandatory unless the
      *            endpoint belongs to the default region.
      */
+    @Override
     public void setLocation(String location) {
         this.location = location;
     }
@@ -150,6 +160,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Bucket ACL
      */
+    @Override
     public AccessControlList getAcl() {
         return acl;
     }
@@ -160,6 +171,7 @@ public class ObsBucket extends S3Bucket {
      * @param acl
      *            Bucket ACL
      */
+    @Override
     public void setAcl(AccessControlList acl) {
         this.acl = acl;
     }
@@ -169,6 +181,7 @@ public class ObsBucket extends S3Bucket {
      * 
      * @return Bucket storage class
      */
+    @Override
     @Deprecated
     public String getStorageClass() {
         return this.storageClass != null ? this.storageClass.getCode() : null;
@@ -180,6 +193,7 @@ public class ObsBucket extends S3Bucket {
      * @param storageClass
      *            Bucket storage class
      */
+    @Override
     @Deprecated
     public void setStorageClass(String storageClass) {
         this.storageClass = StorageClassEnum.getValueFromCode(storageClass);
@@ -193,6 +207,7 @@ public class ObsBucket extends S3Bucket {
         this.bucketTypeEnum = bucketTypeEnum;
     }
 
+    @Override
     public StorageClassEnum getBucketStorageClass() {
         return storageClass;
     }
@@ -203,6 +218,7 @@ public class ObsBucket extends S3Bucket {
      * @param storageClass
      *            Bucket storage class
      */
+    @Override
     public void setBucketStorageClass(StorageClassEnum storageClass) {
         this.storageClass = storageClass;
     }

@@ -109,11 +109,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (Exception e) {
-            if (e instanceof ObsException) {
-                throw (ObsException) e;
-            } else {
-                throw new ObsException(e.getMessage(), e);
-            }
+            throw ServiceUtils.changeFromException(e);
         }
         return progreStatus;
     }
@@ -229,11 +225,7 @@ public abstract class AbstractBatchClient extends AbstractFileClient {
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (Exception e) {
-            if (e instanceof ObsException) {
-                throw (ObsException) e;
-            } else {
-                throw new ObsException(e.getMessage(), e);
-            }
+            throw ServiceUtils.changeFromException(e);
         }
 
         return progressStatus;

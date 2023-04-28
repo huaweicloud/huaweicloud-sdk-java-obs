@@ -121,6 +121,7 @@ public class HttpMethodReleaseInputStream extends InputStream implements InputSt
         inputStream.close();
     }
 
+    @Override
     public InputStream getWrappedInputStream() {
         return inputStream;
     }

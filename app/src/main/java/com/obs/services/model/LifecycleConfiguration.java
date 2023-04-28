@@ -17,7 +17,7 @@ package com.obs.services.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import com.obs.services.model.BucketTagInfo.TagSet;
 import com.obs.services.internal.utils.ObjectUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 
@@ -590,6 +590,8 @@ public class LifecycleConfiguration extends HeaderResponse {
     public class Rule {
         protected String id;
 
+        protected TagSet tagSet;
+
         protected String prefix;
 
         protected Boolean enabled;
@@ -619,6 +621,22 @@ public class LifecycleConfiguration extends HeaderResponse {
          */
         public Rule(String id, String prefix, Boolean enabled) {
             this.id = id;
+            this.prefix = prefix;
+            this.enabled = enabled;
+        }
+
+        /**
+         * @param id
+         *            Rule ID
+         * @param prefix
+         *            Object name prefix identifying one or more objects to
+         *            which the rule applies
+         * @param enabled
+         *            Identifier that specifies whether the rule is enabled
+         */
+        public Rule(String id, String prefix, TagSet tagset, Boolean enabled) {
+            this.id = id;
+            this.tagSet = tagset;
             this.prefix = prefix;
             this.enabled = enabled;
         }
@@ -688,6 +706,25 @@ public class LifecycleConfiguration extends HeaderResponse {
          */
         public void setId(String id) {
             this.id = id;
+        }
+
+        /**
+         * Obtain the rule tagSet.
+         *
+         * @return Rule tagSet
+         */
+        public TagSet getTagSet() {
+            return this.tagSet;
+        }
+
+        /**
+         * Set the rule tagSet.
+         *
+         * @param tagSet
+         *            Rule tagSet
+         */
+        public void setTagSet(TagSet tagSet) {
+            this.tagSet = tagSet;
         }
 
         /**

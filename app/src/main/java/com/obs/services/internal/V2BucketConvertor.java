@@ -40,6 +40,7 @@ import com.obs.services.model.Permission;
 import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
+import com.obs.services.model.ObjectTagResult;
 
 public abstract class V2BucketConvertor implements IConvertor {
     
@@ -213,6 +214,22 @@ public abstract class V2BucketConvertor implements IConvertor {
         try {
             OBSXMLBuilder builder = OBSXMLBuilder.create("Tagging").e("TagSet");
             for (BucketTagInfo.TagSet.Tag tag : bucketTagInfo.getTagSet().getTags()) {
+                if (tag != null) {
+                    builder.e("Tag").e("Key").t(ServiceUtils.toValid(tag.getKey())).up().e("Value")
+                            .t(ServiceUtils.toValid(tag.getValue()));
+                }
+            }
+            return builder.up().asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for Tagging", e);
+        }
+    }
+
+    @Override
+    public String transObjectTagInfo(ObjectTagResult objectTagResult) throws ServiceException {
+        try {
+            OBSXMLBuilder builder = OBSXMLBuilder.create("Tagging").e("TagSet");
+            for (BucketTagInfo.TagSet.Tag tag : objectTagResult.getTagSet().getTags()) {
                 if (tag != null) {
                     builder.e("Tag").e("Key").t(ServiceUtils.toValid(tag.getKey())).up().e("Value")
                             .t(ServiceUtils.toValid(tag.getValue()));

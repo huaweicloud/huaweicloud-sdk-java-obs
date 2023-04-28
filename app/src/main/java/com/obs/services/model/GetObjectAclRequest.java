@@ -71,6 +71,7 @@ public class GetObjectAclRequest extends BaseObjectRequest {
      * 
      * @return Object name
      */
+    @Override
     public String getObjectKey() {
         return objectKey;
     }
@@ -81,6 +82,7 @@ public class GetObjectAclRequest extends BaseObjectRequest {
      * @param objectKey
      *            Object name
      */
+    @Override
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }

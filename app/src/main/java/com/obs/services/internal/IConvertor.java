@@ -35,6 +35,7 @@ import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
+import com.obs.services.model.ObjectTagResult;
 
 public interface IConvertor {
 
@@ -68,6 +69,8 @@ public interface IConvertor {
             throws ServiceException;
 
     String transBucketTagInfo(BucketTagInfo bucketTagInfo) throws ServiceException;
+
+    String transObjectTagInfo(ObjectTagResult objectTagResult) throws ServiceException;
 
     String transBucketNotificationConfiguration(BucketNotificationConfiguration bucketNotificationConfiguration)
             throws ServiceException;

@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -81,11 +82,7 @@ public class UploadResumableClient {
         } catch (ServiceException e) {
             throw ServiceUtils.changeFromServiceException(e);
         } catch (Exception e) {
-            if (e instanceof ObsException) {
-                throw (ObsException) e;
-            } else {
-                throw new ObsException(e.getMessage(), e);
-            }
+            throw ServiceUtils.changeFromException(e);
         }
     }
 
@@ -302,6 +299,7 @@ public class UploadResumableClient {
                         long skipByte = input.skip(offset);
                         if (offset < skipByte) {
                             log.error(String.format(
+                                    Locale.ROOT,
                                     "The actual number of skipped bytes (%d) is less than expected (%d): ", skipByte,
                                     offset));
                         }
@@ -330,14 +328,18 @@ public class UploadResumableClient {
                     tr.setFailed(true);
                     tr.setException(e);
                     if (log.isErrorEnabled()) {
-                        log.error(String.format("Task %d:%s upload part %d failed: ", id, "upload" + id, partIndex + 1),
+                        log.error(String.format(
+                                Locale.ROOT,
+                                "Task %d:%s upload part %d failed: ", id, "upload" + id, partIndex + 1),
                                 e);
                     }
                 } catch (Exception e) {
                     tr.setFailed(true);
                     tr.setException(e);
                     if (log.isErrorEnabled()) {
-                        log.error(String.format("Task %d:%s upload part %d failed: ", id, "upload" + id, partIndex + 1),
+                        log.error(String.format(
+                                Locale.ROOT,
+                                "Task %d:%s upload part %d failed: ", id, "upload" + id, partIndex + 1),
                                 e);
                     }
                 } finally {
