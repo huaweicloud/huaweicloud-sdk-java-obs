@@ -29,18 +29,18 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -71,6 +71,14 @@ import okhttp3.Route;
 public class RestUtils {
 
     private static final ILogger log = LoggerBuilder.getLogger(RestUtils.class);
+    private static final Set<Character> SPECIAL_CHAR = new HashSet<>();
+
+    static {
+        SPECIAL_CHAR.add('_');
+        SPECIAL_CHAR.add('-');
+        SPECIAL_CHAR.add('~');
+        SPECIAL_CHAR.add('.');
+    }
 
     //CHECKSTYLE:OFF
     private static Pattern chinesePattern = Pattern.compile("[\u4e00-\u9fa5]");
@@ -118,8 +126,9 @@ public class RestUtils {
         } else {
             for (int i = 0; i < input.length(); i++) {
                 char ch = input.charAt(i);
-                if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_'
-                        || ch == '-' || ch == '~' || ch == '.') {
+                boolean isAlpha = (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+                boolean isNumber = (ch >= '0' && ch <= '9');
+                if (isAlpha || isNumber || SPECIAL_CHAR.contains(ch)) {
                     result.append(ch);
                 } else if (ch == '/') {
                     result.append("%2F");
@@ -164,7 +173,8 @@ public class RestUtils {
         return result.toString();
     }
 
-    private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm, String provider) throws Exception {
+    private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm, String provider,
+                                               SecureRandom secureRandom) throws Exception {
         SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("TLSv1.2", provider);
@@ -179,11 +189,12 @@ public class RestUtils {
                 }
             }
         }
-        sslContext.init(km, tm, SecureRandom.getInstanceStrong());
+        sslContext.init(km, tm, secureRandom);
         return sslContext;
     }
 
-    private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm) throws Exception {
+    private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm,
+                                               SecureRandom secureRandom) throws Exception {
         SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("TLSv1.2");
@@ -198,7 +209,7 @@ public class RestUtils {
                 }
             }
         }
-        sslContext.init(km, tm, SecureRandom.getInstanceStrong());
+        sslContext.init(km, tm, secureRandom);
         return sslContext;
     }
 
@@ -317,9 +328,9 @@ public class RestUtils {
 
     }
 
-    public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties, 
+    public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties,
             KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
-            Dispatcher httpDispatcher) {
+            Dispatcher httpDispatcher, SecureRandom secureRandom) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
         protocols.add(Protocol.HTTP_1_1);
@@ -330,9 +341,6 @@ public class RestUtils {
         }
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        // OkHttpClient.Builder builder = new
-        // OkHttpClient.Builder().addNetworkInterceptor(new
-        // RemoveDirtyConnIntercepter());
 
         initHttpDispatcher(obsProperties, httpDispatcher, builder);
 
@@ -390,7 +398,7 @@ public class RestUtils {
             SSLContext sslContext = null;
             if (ServiceUtils.isValid(provider)) {
                 try {
-                    sslContext = createSSLContext(km, tm, provider);
+                    sslContext = createSSLContext(km, tm, provider, secureRandom);
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
                         log.error("Exception happened in create ssl context with provider" + provider, e);
@@ -398,7 +406,7 @@ public class RestUtils {
                 }
             }
             if (sslContext == null) {
-                sslContext = createSSLContext(km, tm);
+                sslContext = createSSLContext(km, tm, secureRandom);
             }
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             builder.sslSocketFactory(new WrapperedSSLSocketFactory(sslSocketFactory, socketReadWriteBufferSize),

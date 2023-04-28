@@ -31,6 +31,7 @@ import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.internal.xml.OBSXMLBuilder;
+import com.obs.services.model.ActionEnum;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketTypeEnum;
@@ -59,6 +60,7 @@ import com.obs.services.model.fs.ListContentSummaryFsRequest;
 import com.obs.services.model.fs.ListContentSummaryRequest;
 import com.obs.services.model.fs.NewBucketRequest;
 import com.obs.services.model.fs.WriteFileRequest;
+import com.obs.services.model.fusion.RedundancyTypeEnum;
 import okhttp3.RequestBody;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -75,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Locale;
 
 public abstract class RequestConvertor extends AclHeaderConvertor {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
@@ -174,7 +177,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             key = key.trim();
             if ((CAN_USE_STANDARD_HTTP_HEADERS.get() == null || (CAN_USE_STANDARD_HTTP_HEADERS.get() != null
                     && !CAN_USE_STANDARD_HTTP_HEADERS.get()))
-                    && Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
+                    && Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase(Locale.ROOT))) {
                 continue;
             }
             headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
@@ -282,6 +285,21 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             for (Entry<String, String> kv : request.getExtensionHeaderMap().entrySet()) {
                 putHeader(headers, kv.getKey(), kv.getValue());
             }
+        }
+
+        String headerPrefix = this.getProviderCredentials().getLocalAuthType(request.getBucketName())
+                != AuthTypeEnum.OBS ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX;
+        if (request.getBucketRedundancy() == RedundancyTypeEnum.FUSION) {
+            putHeader(headers, headerPrefix + Constants.CommonHeaders.BUCKET_REDUNDANCY,
+                    String.valueOf(RedundancyTypeEnum.FUSION.getCode()));
+        }
+        if (request.getFusionAllowUpgrade() != ActionEnum.DEFAULT) {
+            putHeader(headers, headerPrefix + Constants.CommonHeaders.FUSION_ALLOW_UPGRADE,
+                    String.valueOf(request.getFusionAllowUpgrade().getCode()));
+        }
+        if (request.getFusionAllowAlternative() != ActionEnum.DEFAULT) {
+            putHeader(headers, headerPrefix + Constants.CommonHeaders.FUSION_ALLOW_ALTERNATIVE,
+                    String.valueOf(request.getFusionAllowAlternative().getCode()));
         }
 
         String contentType = Mimetypes.MIMETYPE_XML;
@@ -492,7 +510,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                     continue;
                 }
                 key = key.trim();
-                if (Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase())) {
+                if (Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key.toLowerCase(Locale.ROOT))) {
                     continue;
                 }
                 headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());

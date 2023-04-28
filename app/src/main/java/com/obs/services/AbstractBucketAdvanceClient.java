@@ -36,9 +36,12 @@ import com.obs.services.model.SetBucketReplicationRequest;
 import com.obs.services.model.SetBucketTaggingRequest;
 import com.obs.services.model.SetBucketWebsiteRequest;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.crr.GetCrrProgressRequest;
+import com.obs.services.model.crr.GetCrrProgressResult;
 import com.obs.services.model.fs.GetBucketFSStatusRequest;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.fs.SetBucketFSStatusRequest;
+import com.obs.services.model.AuthTypeEnum;
 
 public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
     /*
@@ -572,6 +575,28 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
                         return AbstractBucketAdvanceClient.this.getBucketReplicationConfigurationImpl(request);
                     }
                 });
+    }
+
+    @Override
+    public GetCrrProgressResult getCrrProgress(final GetCrrProgressRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetCrrProgressRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getRuleId(), "ruleId is null");
+        return this.doActionWithResult("getCrrProgress", request.getBucketName(),
+                new ActionCallbackWithResult<GetCrrProgressResult>() {
+            @Override
+            public GetCrrProgressResult action() throws ServiceException {
+                return AbstractBucketAdvanceClient.this.getCrrProgressImpl(request);
+            }
+                    void authTypeNegotiate(String bucketName) throws ServiceException {
+                        AuthTypeEnum authTypeEnum = AbstractBucketAdvanceClient.this.getProviderCredentials().getLocalAuthType().get(bucketName);
+                        if (authTypeEnum == null) {
+                            authTypeEnum = AbstractBucketAdvanceClient.this.getApiVersion(request.getBucketName());
+                            AbstractBucketAdvanceClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                        }
+
+                    }
+        });
     }
 
     /*

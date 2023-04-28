@@ -31,15 +31,16 @@ public class LoggerBuilder {
                 logManagerClass = Class.forName("org.apache.logging.log4j.LogManager");
                 loggerClass = Class.forName("org.apache.logging.log4j.Logger");
                 getLoggerClass = GetLoggerHolder.logManagerClass.getMethod("getLogger", String.class);
-            } catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+            } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | NoClassDefFoundError e) {
                 try {
                     loggerClass = Class.forName("org.apache.log4j.Logger");
                     getLoggerClass = GetLoggerHolder.loggerClass.getMethod("getLogger", String.class);
-                } catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
+                } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | NoClassDefFoundError ex) {
                     try {
                         loggerClass = Class.forName("java.util.logging.Logger");
                         getLoggerClass = GetLoggerHolder.loggerClass.getMethod("getLogger", String.class);
-                    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException exx) {
+                    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException |
+                             NoClassDefFoundError exx) {
                         ILOG.warning(exx.getMessage());
                     }
                 }

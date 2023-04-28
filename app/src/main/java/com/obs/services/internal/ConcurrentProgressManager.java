@@ -39,12 +39,14 @@ public class ConcurrentProgressManager extends ProgressManager {
         this.lastSwapTimeStamp = new AtomicLong(System.currentTimeMillis());
     }
 
+    @Override
     public void progressStart() {
         if (startFlag.compareAndSet(false, true)) {
             super.progressStart();
         }
     }
 
+    @Override
     public void progressEnd() {
         if (this.progressListener == null) {
             return;

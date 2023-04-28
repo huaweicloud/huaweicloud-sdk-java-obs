@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.fusion.FusionReplicateEnum;
+import com.obs.services.model.fusion.RedundancyTypeEnum;
 
 /**
  * Parameters in a bucket creation request
@@ -46,6 +48,12 @@ public class CreateBucketRequest extends GenericRequest {
     private Map<String, String> extensionHeaderMap;
 
     private BucketTypeEnum bucketType = BucketTypeEnum.OBJECT;
+
+    private RedundancyTypeEnum bucketRedundancy = RedundancyTypeEnum.CLASSIC;
+
+    private ActionEnum fusionAllowUpgrade = ActionEnum.DEFAULT;
+
+    private ActionEnum fusionAllowAlternative = ActionEnum.DEFAULT;
 
     public CreateBucketRequest() {
 
@@ -268,5 +276,29 @@ public class CreateBucketRequest extends GenericRequest {
 
     public void setBucketType(BucketTypeEnum bucketType) {
         this.bucketType = bucketType;
+    }
+
+    public RedundancyTypeEnum getBucketRedundancy() {
+        return bucketRedundancy;
+    }
+
+    public void setBucketRedundancy(RedundancyTypeEnum bucketRedundancy) {
+        this.bucketRedundancy = bucketRedundancy;
+    }
+
+    public ActionEnum getFusionAllowUpgrade() {
+        return fusionAllowUpgrade;
+    }
+
+    public void setFusionAllowUpgrade(ActionEnum fusionAllowUpgrade) {
+        this.fusionAllowUpgrade = fusionAllowUpgrade;
+    }
+
+    public ActionEnum getFusionAllowAlternative() {
+        return fusionAllowAlternative;
+    }
+
+    public void setFusionAllowAlternative(ActionEnum fusionAllowAlternative) {
+        this.fusionAllowAlternative = fusionAllowAlternative;
     }
 }

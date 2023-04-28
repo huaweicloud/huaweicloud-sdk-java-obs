@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import java.util.Locale;
+
 /**
  * Special operator, which indicates the sub-resource to be operated
  */
@@ -103,7 +105,15 @@ public enum SpecialParamEnum {
      * Set, obtain, or delete the cross-region replication configuration of a bucket.
      */
     REPLICATION("replication"),
-    
+
+    /**
+     * get the cross-region replication progress.
+     */
+    REPLICATION_PROGRESS("replication_progress"),
+    /**
+     * get the cross-region replication configuration rule id.
+     */
+    RULE_ID("ruleId"),
     /**
      * Perform an appendable upload.
      */
@@ -189,7 +199,7 @@ public enum SpecialParamEnum {
     }
     
     public String getStringCode() {
-        return this.stringCode.toLowerCase();
+        return this.stringCode.toLowerCase(Locale.ROOT);
     }
     
     public String getOriginalStringCode() {
@@ -202,7 +212,7 @@ public enum SpecialParamEnum {
         }
         
         for (SpecialParamEnum installMode : SpecialParamEnum.values()) {
-            if (installMode.getStringCode().equals(stringCode.toLowerCase())) {
+            if (installMode.getStringCode().equals(stringCode.toLowerCase(Locale.ROOT))) {
                 return installMode;
             }
         }

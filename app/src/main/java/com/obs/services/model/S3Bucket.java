@@ -40,6 +40,8 @@ public class S3Bucket extends HeaderResponse {
 
     protected String location;
 
+    protected String clustertype;
+
     protected StorageClassEnum storageClass;
 
     protected Map<String, Object> metadata = new HashMap<String, Object>();
@@ -123,10 +125,18 @@ public class S3Bucket extends HeaderResponse {
         this.storageClass = storageClass;
     }
 
+    public String getClustertype() {
+        return clustertype;
+    }
+
+    public void setClustertype(String clustertype) {
+        this.clustertype = clustertype;
+    }
+
     @Override
     public String toString() {
         return "ObsBucket [bucketName=" + bucketName + ", owner=" + owner + ", creationDate=" + creationDate
                 + ", location=" + location + ", storageClass=" + storageClass + ", metadata=" + metadata + ", acl="
-                + acl + "]";
+                + acl + ", clustertype= " + clustertype + "]";
     }
 }

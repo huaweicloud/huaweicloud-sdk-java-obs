@@ -75,6 +75,8 @@ import com.obs.services.model.SetBucketWebsiteRequest;
 import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.crr.GetCrrProgressRequest;
+import com.obs.services.model.crr.GetCrrProgressResult;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.http.HttpStatusCode;
 import com.oef.services.model.RequestParamEnum;
@@ -406,6 +408,25 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
                         XmlResponsesSaxParser.BucketReplicationConfigurationHandler.class, false)
                 .getReplicationConfiguration();
 
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected GetCrrProgressResult getCrrProgressImpl(GetCrrProgressRequest request) {
+        Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put(SpecialParamEnum.REPLICATION_PROGRESS.getOriginalStringCode(), "");
+        requestParameters.put(SpecialParamEnum.RULE_ID.getOriginalStringCode(), request.getRuleId());
+        NewTransResult newResult = new NewTransResult();
+        newResult.setHttpMethod(HttpMethodEnum.GET);
+        newResult.setBucketName(request.getBucketName());
+        newResult.setParams(requestParameters);
+        Response httpResponse = performRequest(newResult, true, false, false, false);
+
+        this.verifyResponseContentType(httpResponse);
+        GetCrrProgressResult result = getXmlResponseSaxParser()
+                .parse(new HttpMethodReleaseInputStream(httpResponse),
+                        XmlResponsesSaxParser.GetCrrProgressResultHandler.class, false)
+                .getReplicationConfiguration();
         setHeadersAndStatus(result, httpResponse);
         return result;
     }
@@ -832,13 +853,13 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
                     request.getRegionId(), azIds.get(0));
             createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName2(),
                     request.getRegionId(), azIds.get(1));
-        } else if (bucket1Id.isEmpty() && !bucket2Id.isEmpty()) {
+        } else if (bucket1Id.isEmpty()) {
             createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName1(),
-                    request.getRegionId(), azIds.get(0) == bucket2Id ? azIds.get(1) : azIds.get(0));
-        } else if (!bucket1Id.isEmpty() && bucket2Id.isEmpty()) {
+                    request.getRegionId(), bucket2Id.equals(azIds.get(0)) ? azIds.get(1) : azIds.get(0));
+        } else if (bucket2Id.isEmpty()) {
             createBucketWithClusterGroupId(locationClusterGroupIdHeader, request.getBucketName2(),
-                    request.getRegionId(), azIds.get(0) == bucket1Id ? azIds.get(1) : azIds.get(0));
-        } else if (bucket1Id == bucket2Id) {
+                    request.getRegionId(), bucket1Id.equals(azIds.get(0)) ? azIds.get(1) : azIds.get(0));
+        } else if (bucket1Id.equals(bucket2Id)) {
             throw new ObsException("the two bucket is in same az");
         }
     }

@@ -69,7 +69,7 @@ public class ObsConstraint {
 
     public static final String HTTP_STRICT_HOSTNAME_VERIFICATION = "httpclient.strict-hostname-verification";
 
-    public static final int HTTP_CONNECT_TIMEOUT_VALUE = 60000;
+    public static final int HTTP_CONNECT_TIMEOUT_VALUE = 20000;
 
     public static final int HTTP_MAX_CONNECT_VALUE = 1000;
 

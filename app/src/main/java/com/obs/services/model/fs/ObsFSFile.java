@@ -39,6 +39,7 @@ public class ObsFSFile extends ObsFSFolder {
      *             OBS SDK self-defined exception, thrown when the interface
      *             fails to be called or access to OBS fails
      */
+    @Override
     public ObsFSAttribute attribute() throws ObsException {
         return super.attribute();
     }
@@ -181,6 +182,7 @@ public class ObsFSFile extends ObsFSFolder {
      *             OBS SDK self-defined exception, thrown when the interface
      *             fails to be called or access to OBS fails
      */
+    @Override
     public RenameResult rename(String newName) throws ObsException {
         this.checkInternalClient();
         RenameRequest request = new RenameRequest(this.getBucketName(), this.getObjectKey(), newName);

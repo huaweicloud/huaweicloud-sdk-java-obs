@@ -115,6 +115,7 @@ public class GetObjectRequest extends GetObjectMetadataRequest {
      * 
      * @return SSE-C decryption headers
      */
+    @Override
     public SseCHeader getSseCHeader() {
         return sseCHeader;
     }
@@ -125,6 +126,7 @@ public class GetObjectRequest extends GetObjectMetadataRequest {
      * @param sseCHeader
      *            SSE-C decryption headers
      */
+    @Override
     public void setSseCHeader(SseCHeader sseCHeader) {
         this.sseCHeader = sseCHeader;
     }
@@ -173,6 +175,7 @@ public class GetObjectRequest extends GetObjectMetadataRequest {
      * 
      * @return Version ID of the object
      */
+    @Override
     public String getVersionId() {
         return versionId;
     }
@@ -184,6 +187,7 @@ public class GetObjectRequest extends GetObjectMetadataRequest {
      *            Version ID of the object
      * 
      */
+    @Override
     public void setVersionId(String versionId) {
         this.versionId = versionId;
     }

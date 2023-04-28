@@ -32,6 +32,10 @@
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
+			<source>${project.basedir}/app/src/test/resource/test_data.properties</source>
+			<outputDirectory>/source/src/test/resource</outputDirectory>
+		</file>
+		<file>
 			<source>${project.basedir}/assembly-android.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
@@ -40,19 +44,23 @@
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
-			<source>${project.basedir}/pom-android.xml</source>
+			<source>${project.basedir}/poms/pom-android.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
-			<source>${project.basedir}/pom-dependencies.xml</source>
+			<source>${project.basedir}/poms/pom-dependencies.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
-			<source>${project.basedir}/pom-java-optimization.xml</source>
+			<source>${project.basedir}/poms/pom-java-optimization.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
 			<source>${project.basedir}/pom-java.xml</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>${project.basedir}/poms/pom-for-ci.xml</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
@@ -67,12 +75,10 @@
 			<source>${project.basedir}/Help on License</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
-		
 		<file>
 			<source>${project.basedir}/README-Java.md</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
-		
 		<file>
 			<source>${project.basedir}/README-Android.md</source>
 			<outputDirectory>/</outputDirectory>
@@ -88,10 +94,6 @@
 			<outputDirectory>/samples_android</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/app/src/third_part</directory>
-			<outputDirectory>/third_part</outputDirectory>
-		</fileSet>
-		<fileSet>
 			<directory>${project.build.directory}/doc</directory>
 			<outputDirectory>/doc</outputDirectory>
 		</fileSet>
@@ -105,6 +107,10 @@
 				<exclude>build.gradle</exclude>
 				<exclude>proguard-rules.pro</exclude>
 			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/app/src/test/java/com</directory>
+			<outputDirectory>/source/src/test/java/com</outputDirectory>
 		</fileSet>
 	</fileSets>
 </assembly>

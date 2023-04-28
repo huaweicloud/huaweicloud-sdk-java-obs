@@ -48,6 +48,7 @@ import com.obs.services.model.RouteRule;
 import com.obs.services.model.RouteRuleCondition;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.BucketTagInfo;
 
 public class V2Convertor extends V2BucketConvertor {
 
@@ -58,7 +59,7 @@ public class V2Convertor extends V2BucketConvertor {
     }
 
     public static String getEncodedString(String value, String encodingType) {
-        if (encodingType != null && encodingType.toLowerCase().equals("url")) {
+        if (encodingType != null && encodingType.equalsIgnoreCase("url")) {
             try {
                 return URLEncoder.encode(value, "UTF-8");
             } catch (UnsupportedEncodingException exception) {
@@ -129,7 +130,17 @@ public class V2Convertor extends V2BucketConvertor {
                 if (ServiceUtils.isValid2(rule.getId())) {
                     b.elem("ID").t(rule.getId());
                 }
-                if (rule.getPrefix() != null) {
+                boolean needFilter = rule.getTagSet() != null;
+                if(needFilter) {
+                    OBSXMLBuilder filterBuilder = b.elem("Filter");
+                    OBSXMLBuilder andBuilder = filterBuilder.elem("And");
+                    if (rule.getPrefix() != null) {
+                        andBuilder.elem("Prefix").t(ServiceUtils.toValid(rule.getPrefix()));
+                    }
+                    if (rule.getTagSet() != null) {
+                        transTagSet(rule, andBuilder);
+                    }
+                } else if (rule.getPrefix() != null) {
                     b.elem("Prefix").t(ServiceUtils.toValid(rule.getPrefix()));
                 }
                 b.elem("Status").t(rule.getEnabled() ? "Enabled" : "Disabled");
@@ -184,6 +195,22 @@ public class V2Convertor extends V2BucketConvertor {
                     ServiceUtils.formatIso8601MidnightDate(rule.getExpiration().getDate()));
         } else if (rule.getExpiration().getDays() != null) {
             expirationBuilder.elem("Days").t(rule.getExpiration().getDays().toString());
+        }
+    }
+
+    private void transTagSet(Rule rule, OBSXMLBuilder b) {
+        if(rule.getTagSet() == null) {
+            return;
+        }
+        List<BucketTagInfo.TagSet.Tag> tags = rule.getTagSet().getTags();
+        for(BucketTagInfo.TagSet.Tag tag : tags) {
+            OBSXMLBuilder tagBuilder = b.elem("Tag");
+            tagBuilder.elem("Key").t(tag.getKey());
+            if (tag.getValue() != null) {
+                tagBuilder.elem("Value").t(tag.getValue());
+            } else {
+                tagBuilder.elem("Value");
+            }
         }
     }
 

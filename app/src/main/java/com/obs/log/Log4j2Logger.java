@@ -53,6 +53,7 @@ public class Log4j2Logger extends AbstractLog4jLogger implements ILogger {
         super(logger);
     }
 
+    @Override
     public boolean isInfoEnabled() {
         if (isInfoE == -1) {
             try {
@@ -65,6 +66,7 @@ public class Log4j2Logger extends AbstractLog4jLogger implements ILogger {
         return isInfoE == 1;
     }
 
+    @Override
     public boolean isWarnEnabled() {
         if (isWarnE == -1) {
             try {
@@ -77,6 +79,7 @@ public class Log4j2Logger extends AbstractLog4jLogger implements ILogger {
         return isWarnE == 1;
     }
 
+    @Override
     public boolean isErrorEnabled() {
         if (isErrorE == -1) {
             try {
@@ -89,6 +92,7 @@ public class Log4j2Logger extends AbstractLog4jLogger implements ILogger {
         return isErrorE == 1;
     }
 
+    @Override
     public boolean isDebugEnabled() {
         if (isDebugE == -1) {
             try {
@@ -101,6 +105,7 @@ public class Log4j2Logger extends AbstractLog4jLogger implements ILogger {
         return isDebugE == 1;
     }
 
+    @Override
     public boolean isTraceEnabled() {
         if (isTraceE == -1) {
             try {

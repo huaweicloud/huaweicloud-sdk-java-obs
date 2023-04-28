@@ -26,6 +26,8 @@ import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
 import com.obs.services.internal.RepeatableRequestEntity;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.handler.XmlResponsesSaxParser;
+import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -45,6 +47,9 @@ import com.obs.services.model.TruncateObjectRequest;
 import com.obs.services.model.TruncateObjectResult;
 
 import okhttp3.Response;
+import com.obs.services.model.ObjectTagResult;
+import com.obs.services.model.ObjectTaggingRequest;
+import com.obs.services.model.HeaderResponse;
 
 public abstract class ObsObjectService extends ObsMultipartObjectService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectService.class);
@@ -184,5 +189,55 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
             }
         }
         return ret;
+    }
+    protected ObjectTagResult getObjectTaggingImpl(ObjectTaggingRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.TAGGING.getOriginalStringCode(), "");
+        if(request.getObjectVersionId() != null && !request.getObjectVersionId().equals("")) {
+            requestParams.put(ObsRequestParams.VERSION_ID, request.getObjectVersionId());
+        }
+        Response httpResponse = this.performRestGet(request.getBucketName(), request.getObjectKey(), requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+
+        ObjectTagResult result = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.ObjectTagInfoHandler.class, false).getObjectTagInfo();
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+    protected HeaderResponse setObjectTaggingImpl(ObjectTaggingRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.TAGGING.getOriginalStringCode(), "");
+        if(request.getObjectVersionId() != null && !request.getObjectVersionId().equals("")) {
+            requestParams.put(ObsRequestParams.VERSION_ID, request.getObjectVersionId());
+        }
+        Map<String, String> headers = new HashMap<>();
+
+        String xml = this.getIConvertor(request.getBucketName()).transObjectTagInfo(request.getObjectTagInfo());
+
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+
+        NewTransResult result = transObjectRequest(request);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(result);
+        return build(response);
+    }
+    protected HeaderResponse deleteObjectTaggingImpl(ObjectTaggingRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.TAGGING.getOriginalStringCode(), "");
+        if(request.getObjectVersionId() != null && !request.getObjectVersionId() .equals("")) {
+            requestParams.put(ObsRequestParams.VERSION_ID, request.getObjectVersionId());
+        }
+        Response response = performRestDelete(request.getBucketName(), request.getObjectKey(), requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
+        return build(response);
     }
 }

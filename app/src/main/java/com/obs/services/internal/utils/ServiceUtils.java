@@ -179,7 +179,7 @@ public class ServiceUtils {
 
     private static String transRealKey(String headerPrefix, String metadataPrefix, String key, boolean needDecode)
             throws UnsupportedEncodingException {
-        if (key.toLowerCase().startsWith(metadataPrefix)) {
+        if (key.toLowerCase(Locale.ROOT).startsWith(metadataPrefix)) {
             key = key.substring(metadataPrefix.length());
             if (needDecode) {
                 key = URLDecoder.decode(key, Constants.DEFAULT_ENCODING);
@@ -208,7 +208,7 @@ public class ServiceUtils {
 
                 // Trim prefixes from keys.
                 key = key != null ? key : "";
-                if (key.toLowerCase().startsWith(headerPrefix)) {
+                if (key.toLowerCase(Locale.ROOT).startsWith(headerPrefix)) {
                     try {
                         key = transRealKey(headerPrefix, metadataPrefix, key, needDecode);
                         if (needDecode) {
@@ -220,7 +220,7 @@ public class ServiceUtils {
                         }
                     }
 
-                } else if (key.toLowerCase().startsWith(Constants.OBS_HEADER_PREFIX)) {
+                } else if (key.toLowerCase(Locale.ROOT).startsWith(Constants.OBS_HEADER_PREFIX)) {
                     try {
                         key = transRealKey(Constants.OBS_HEADER_PREFIX,
                                 Constants.OBS_HEADER_META_PREFIX, key, needDecode);
@@ -255,7 +255,7 @@ public class ServiceUtils {
         Map<String, Object> userMetadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Map.Entry<String, Object> entry : originalHeaders.entrySet()) {
             String key = entry.getKey();
-            if (key.toLowerCase().startsWith("x-obs-meta-") || key.toLowerCase().startsWith("x-amz-meta-")) {
+            if (key.toLowerCase(Locale.ROOT).startsWith("x-obs-meta-") || key.toLowerCase(Locale.ROOT).startsWith("x-amz-meta-")) {
                 Object originalValue = originalHeaders.get(key);
                 try {
                     if (originalValue instanceof ArrayList) {
@@ -521,6 +521,15 @@ public class ServiceUtils {
         SimpleDateFormat format = new SimpleDateFormat(Constants.EXPIRATION_DATE_FORMATTER);
         format.setTimeZone(Constants.GMT_TIMEZONE);
         return format;
+    }
+
+    public static ObsException changeFromException(Exception e) {
+        boolean isObsException = e instanceof ObsException;
+        if (!isObsException) {
+            return new ObsException(e.getMessage(), e);
+        } else {
+            return (ObsException) e;
+        }
     }
 
     public static ObsException changeFromServiceException(ServiceException se) {

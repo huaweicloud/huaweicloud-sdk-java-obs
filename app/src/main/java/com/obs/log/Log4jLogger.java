@@ -57,6 +57,7 @@ public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
         super(logger);
     }
 
+    @Override
     public boolean isInfoEnabled() {
         try {
             return this.logger != null && Log4jLoggerMethodHolder.infoLevel != null
@@ -67,6 +68,7 @@ public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isWarnEnabled() {
         try {
             return this.logger != null && Log4jLoggerMethodHolder.warnLevel != null
@@ -77,6 +79,7 @@ public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isErrorEnabled() {
         try {
             return this.logger != null && Log4jLoggerMethodHolder.errorLevel != null
@@ -87,6 +90,7 @@ public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isDebugEnabled() {
         try {
             return this.logger != null && Log4jLoggerMethodHolder.debugLevel != null
@@ -97,6 +101,7 @@ public class Log4jLogger extends AbstractLog4jLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isTraceEnabled() {
         try {
             return this.logger != null && Log4jLoggerMethodHolder.traceLevel != null

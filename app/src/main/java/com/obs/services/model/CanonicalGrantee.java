@@ -41,6 +41,7 @@ public class CanonicalGrantee implements GranteeInterface {
      * @param canonicalGrantId
      *            ID of the domain to which the grantee belongs
      */
+    @Override
     public void setIdentifier(String canonicalGrantId) {
         this.grantId = canonicalGrantId;
     }
@@ -50,6 +51,7 @@ public class CanonicalGrantee implements GranteeInterface {
      * 
      * @return ID of the domain to which the grantee belongs
      */
+    @Override
     public String getIdentifier() {
         return grantId;
     }

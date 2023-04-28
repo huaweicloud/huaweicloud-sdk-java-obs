@@ -95,6 +95,12 @@ public class Constants {
         public static final String X_AUTH_TOKEN = "X-Auth-Token";
 
         public static final String LOCATION_CLUSTERGROUP_ID = "location-clustergroup-id";
+
+        public static final String BUCKET_REDUNDANCY = "bucket-redundancy";
+
+        public static final String FUSION_ALLOW_UPGRADE = "fusion-allow-upgrade";
+
+        public static final String FUSION_ALLOW_ALTERNATIVE = "fusion-allow-alternative";
     }
 
     public static class ObsRequestParams {
@@ -207,7 +213,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.22.12";
+    public static final String OBS_SDK_VERSION = "3.23.3";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -281,7 +287,7 @@ public class Constants {
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
                     "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
-                    "mirrorbacktosource", "obsbucketalias", "obsalias",
+                    "mirrorbacktosource", "obsbucketalias", "obsalias", "replication_progress",
                     /**
                      * File System API
                      */

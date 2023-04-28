@@ -18,11 +18,14 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.security.BasicSecurityKey;
@@ -49,6 +52,17 @@ import com.obs.services.model.TemporarySignatureResponse;
 import com.obs.services.model.V4PostSignatureResponse;
 
 public class ObsService extends ObsExtensionService {
+    private static final Set<String> NON_CONTINUE_STRING_LIST = new HashSet<>();
+
+    static {
+        NON_CONTINUE_STRING_LIST.add("acl");
+        NON_CONTINUE_STRING_LIST.add("bucket");
+        NON_CONTINUE_STRING_LIST.add("key");
+        NON_CONTINUE_STRING_LIST.add("success_action_redirect");
+        NON_CONTINUE_STRING_LIST.add("redirect");
+        NON_CONTINUE_STRING_LIST.add("success_action_status");
+    }
+
     protected ObsService() {
 
     }
@@ -177,7 +191,7 @@ public class ObsService extends ObsExtensionService {
         
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             if (ServiceUtils.isValid(entry.getKey())) {
-                String key = entry.getKey().toLowerCase().trim();
+                String key = entry.getKey().toLowerCase(Locale.ROOT).trim();
                 key = formatHeaderKey(bucketName, requestMethod, key);
                 
                 if (null != key) {
@@ -274,7 +288,7 @@ public class ObsService extends ObsExtensionService {
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             if (ServiceUtils.isValid(entry.getKey())) {
-                String key = entry.getKey().toLowerCase().trim();
+                String key = entry.getKey().toLowerCase(Locale.ROOT).trim();
 
                 if (key.equals("bucket")) {
                     matchAnyBucket = false;
@@ -284,9 +298,8 @@ public class ObsService extends ObsExtensionService {
 
                 if (!Constants.ALLOWED_REQUEST_HTTP_HEADER_METADATA_NAMES.contains(key)
                         && !key.startsWith(this.getRestHeaderPrefix(request.getBucketName()))
-                        && !key.startsWith(Constants.OBS_HEADER_PREFIX) && !key.equals("acl")
-                        && !key.equals("bucket") && !key.equals("key") && !key.equals("success_action_redirect")
-                        && !key.equals("redirect") && !key.equals("success_action_status")) {
+                        && !key.startsWith(Constants.OBS_HEADER_PREFIX)
+                        && !NON_CONTINUE_STRING_LIST.contains(key)) {
                     continue;
                 }
                 String value = entry.getValue() == null ? "" : entry.getValue().toString();
@@ -466,7 +479,7 @@ public class ObsService extends ObsExtensionService {
         int index = 0;
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             if (ServiceUtils.isValid(entry.getKey())) {
-                String key = entry.getKey().toLowerCase().trim();
+                String key = entry.getKey().toLowerCase(Locale.ROOT).trim();
                 key = formatHeaderKey(bucketName, requestMethod, key);
                 
                 if (null != key) {
