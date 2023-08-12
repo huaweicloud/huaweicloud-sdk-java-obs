@@ -16,6 +16,8 @@ package com.oef.services.model;
 
 import com.obs.services.model.SpecialParamEnum;
 
+import java.util.Locale;
+
 public enum RequestParamEnum {
     /**
      * Obtain, set, or delete an asynchronous policy.
@@ -40,7 +42,7 @@ public enum RequestParamEnum {
     }
 
     public String getStringCode() {
-        return this.stringCode.toLowerCase();
+        return this.stringCode.toLowerCase(Locale.ROOT);
     }
 
     public String getOriginalStringCode() {
@@ -53,7 +55,7 @@ public enum RequestParamEnum {
         }
 
         for (SpecialParamEnum installMode : SpecialParamEnum.values()) {
-            if (installMode.getStringCode().equals(stringCode.toLowerCase())) {
+            if (installMode.getStringCode().equals(stringCode.toLowerCase(Locale.ROOT))) {
                 return installMode;
             }
         }

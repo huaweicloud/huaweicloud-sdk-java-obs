@@ -65,6 +65,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         ObsProperties obsProperties = ServiceUtils.changeFromObsConfiguration(config);
         credentials.setAuthType(config.getAuthType());
         credentials.setLocalAuthTypeCacheCapacity(config.getLocalAuthTypeCacheCapacity());
+        credentials.setSecureRandom(config.getSecureRandom());
         this.obsProperties = obsProperties;
         this.credentials = credentials;
         this.keyManagerFactory = config.getKeyManagerFactory();

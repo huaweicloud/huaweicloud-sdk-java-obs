@@ -121,8 +121,12 @@ import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
 import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.crr.GetCrrProgressRequest;
+import com.obs.services.model.crr.GetCrrProgressResult;
 import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
+import com.obs.services.model.ObjectTagResult;
+import com.obs.services.model.ObjectTaggingRequest;
 
 /**
  * Basic OBS interface
@@ -1326,8 +1330,43 @@ public interface IObsClient extends IObsBucketExtendClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketTagging(BaseBucketRequest request) throws ObsException;
-  
-    
+
+    /**
+     * Obtain object tags.
+     *
+     * @param request
+     *            Request parameters
+     * @return Object tag
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * @since 3.20.3
+     */
+    ObjectTagResult getObjectTagging(ObjectTaggingRequest request) throws ObsException;
+
+    /**
+     * Set object tags.
+     *
+     * @param request
+     *            Request parameters
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * @since 3.20.3
+     */
+    HeaderResponse setObjectTagging(ObjectTaggingRequest request) throws ObsException;
+
+    /**
+     * Delete object tags.
+     *
+     * @param request
+     *            Request parameters
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * @since 3.20.3
+     */
+    HeaderResponse deleteObjectTagging(ObjectTaggingRequest request) throws ObsException;
+
     /**
      * Obtain bucket encryption configuration.
      * 
@@ -1453,6 +1492,8 @@ public interface IObsClient extends IObsBucketExtendClient {
      * @since 3.20.3
      */
     ReplicationConfiguration getBucketReplication(BaseBucketRequest request) throws ObsException;
+
+    GetCrrProgressResult getCrrProgress(GetCrrProgressRequest request) throws ObsException;
 
     /**
      * Delete the bucket cross-region replication configuration.

@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Locale;
 
 public abstract class AbstractRequestConvertor extends RestStorageService {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
@@ -201,7 +202,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
 
     protected void putCleanedKeyAndValues(Map<String, Object> responseHeaders,
                                           String key, List<String> values, boolean needDecode) {
-        String cleanedKey = key.toLowerCase();
+        String cleanedKey = key.toLowerCase(Locale.ROOT);
         List<String> cleanedValues = new ArrayList<>(values.size());
         Object finalValues;
         if ((Constants.CommonHeaders.DATE.equalsIgnoreCase(key)
@@ -224,7 +225,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
             }
         } else {
             for (String prefix : Constants.NOT_NEED_HEADER_PREFIXES) {
-                if (key.toLowerCase().startsWith(prefix)) {
+                if (key.toLowerCase(Locale.ROOT).startsWith(prefix)) {
                     cleanedKey = cleanedKey.replace(prefix, "");
                     break;
                 }

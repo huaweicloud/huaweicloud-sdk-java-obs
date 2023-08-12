@@ -67,6 +67,7 @@ import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.VersioningStatusEnum;
 import com.obs.services.model.WebsiteConfiguration;
+import com.obs.services.model.crr.GetCrrProgressResult;
 import com.obs.services.model.fs.DirContentSummary;
 import com.obs.services.model.fs.DirSummary;
 import com.obs.services.model.fs.FolderContentSummary;
@@ -85,10 +86,12 @@ import java.lang.reflect.Constructor;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import com.obs.services.model.ObjectTagResult;
 
 public class XmlResponsesSaxParser {
 
@@ -717,6 +720,14 @@ public class XmlResponsesSaxParser {
 
         private ObsBucket currentBucket;
 
+        private boolean truncated;
+
+        private String marker;
+
+        private int maxKeys;
+
+        private String nextMarker;
+
         private final List<ObsBucket> buckets = new ArrayList<>();
 
         public List<ObsBucket> getBuckets() {
@@ -725,6 +736,22 @@ public class XmlResponsesSaxParser {
 
         public Owner getOwner() {
             return bucketsOwner;
+        }
+
+        public boolean isTruncated() {
+            return truncated;
+        }
+
+        public String getMarker() {
+            return marker;
+        }
+
+        public int getMaxKeys() {
+            return maxKeys;
+        }
+
+        public String getNextMarker() {
+            return nextMarker;
         }
 
         @Override
@@ -738,6 +765,15 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void endElement(String name, String elementText) {
+            if (name.equals("Marker")) {
+                marker = elementText;
+            } else if (name.equals("MaxKeys")) {
+                maxKeys = Integer.parseInt(elementText);
+            } else if (name.equals("IsTruncated")) {
+                truncated = Boolean.parseBoolean(elementText);
+            } else if (name.equals("NextMarker")) {
+                nextMarker = elementText;
+            }
             if (null != bucketsOwner) {
                 if (name.equals("ID")) {
                     bucketsOwner.setId(elementText);
@@ -775,6 +811,8 @@ public class XmlResponsesSaxParser {
                             currentBucket.setBucketType(BucketTypeEnum.OBJECT);
                         }
                         break;
+                    case "ClusterType":
+                        currentBucket.setClustertype(elementText);
                     default:
                         break;
                 }
@@ -2078,6 +2116,30 @@ public class XmlResponsesSaxParser {
 
     }
 
+    public static class ObjectTagInfoHandler extends DefaultXmlHandler {
+        private ObjectTagResult tagInfo = new ObjectTagResult();
+
+        private String currentKey;
+
+        private String currentValue;
+
+        public ObjectTagResult getObjectTagInfo() {
+            return tagInfo;
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if ("Key".equals(name)) {
+                currentKey = content;
+            } else if ("Value".equals(name)) {
+                currentValue = content;
+            } else if ("Tag".equals(name)) {
+                tagInfo.getTagSet().addTag(currentKey, currentValue);
+            }
+        }
+
+    }
+
     public static class BucketNotificationConfigurationHandler extends DefaultXmlHandler {
 
         private BucketNotificationConfiguration bucketNotificationConfiguration = new BucketNotificationConfiguration();
@@ -2220,6 +2282,20 @@ public class XmlResponsesSaxParser {
 
         public void endRule(String content) {
             config.addRule(latestRule);
+        }
+
+        public void endKey(String content) {
+            if(latestRule.getTagSet() == null) {
+                latestRule.setTagSet(new BucketTagInfo.TagSet());
+            }
+            latestRule.getTagSet().addTag(content,"");
+        }
+
+        public void endValue(String content) {
+            if(latestRule.getTagSet() != null && !latestRule.getTagSet().getTags().isEmpty()) {
+                int tagSetSize = latestRule.getTagSet().getTags().size();
+                latestRule.getTagSet().getTags().get(tagSetSize - 1).setValue(content);
+            }
         }
     }
 
@@ -2446,6 +2522,46 @@ public class XmlResponsesSaxParser {
             } else if ("HistoricalObjectReplication".equals(name)) {
                 currentRule
                         .setHistoricalObjectReplication(HistoricalObjectReplicationEnum.getValueFromCode(content));
+            }
+        }
+    }
+
+    public static class GetCrrProgressResultHandler extends DefaultXmlHandler {
+        private GetCrrProgressResult getCrrProgressResult = new GetCrrProgressResult();
+        SimpleDateFormat formatter = new SimpleDateFormat(Constants.EXPIRATION_DATE_FORMATTER);
+
+        public GetCrrProgressResult getReplicationConfiguration() {
+            return getCrrProgressResult;
+        }
+
+        @Override
+        public void startElement(String name) {
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            try {
+                if ("Time".equals(name)) {
+                    getCrrProgressResult.setTime(formatter.parse(content));
+                } else if ("ID".equals(name)) {
+                    getCrrProgressResult.setRuleId(content);
+                } else if ("Prefix".equals(name)) {
+                    getCrrProgressResult.setRulePrefix(content);
+                } else if ("Bucket".equals(name)) {
+                    getCrrProgressResult.setRuleTargetBucket(content);
+                } else if ("NewPendingCount".equals(name)) {
+                    getCrrProgressResult.setRuleNewPendingCount(Long.parseLong(content));
+                } else if ("NewPendingSize".equals(name)) {
+                    getCrrProgressResult.setRuleNewPendingSize(Long.parseLong(content));
+                } else if ("HistoricalProgress".equals(name)) {
+                    getCrrProgressResult.setRuleHistoricalProgress(content);
+                } else if ("HistoricalPendingCount".equals(name)) {
+                    getCrrProgressResult.setRuleHistoricalPendingCount(Long.parseLong(content));
+                } else if ("HistoricalPendingSize".equals(name)) {
+                    getCrrProgressResult.setRuleHistoricalPendingSize(Long.parseLong(content));
+                }
+            } catch (Exception e) {
+                log.error("Response xml is not well-format, exception message :", e);
             }
         }
     }

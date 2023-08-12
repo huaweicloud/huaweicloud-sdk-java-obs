@@ -21,6 +21,7 @@ import com.obs.services.IObsCredentialsProvider;
 import com.obs.services.internal.ObsConstraint;
 import com.obs.services.model.AuthTypeEnum;
 
+import java.security.SecureRandom;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public class ProviderCredentials {
     protected AuthTypeEnum authType;
 
     private LinkedHashMap<String, AuthTypeEnum> localAuthType;
+
+    private SecureRandom secureRandom;
 
     private IObsCredentialsProvider obsCredentialsProvider;
 
@@ -102,5 +105,13 @@ public class ProviderCredentials {
 
     public void setLocalAuthType(LinkedHashMap<String, AuthTypeEnum> localAuthType) {
         this.localAuthType = localAuthType;
+    }
+
+    public SecureRandom getSecureRandom() {
+        return secureRandom;
+    }
+
+    public void setSecureRandom(SecureRandom secureRandom) {
+        this.secureRandom = secureRandom;
     }
 }

@@ -23,6 +23,10 @@ public class ListBucketsRequest {
 
     private BucketTypeEnum bucketType;
 
+    private int maxKeys;
+
+    private String marker;
+
     public boolean isQueryLocation() {
         return queryLocation;
     }
@@ -48,5 +52,21 @@ public class ListBucketsRequest {
 
     public void setBucketType(BucketTypeEnum bucketType) {
         this.bucketType = bucketType;
+    }
+
+    public int getMaxKeys() {
+        return maxKeys;
+    }
+
+    public void setMaxKeys(int maxKeys) {
+        this.maxKeys = maxKeys;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public void setMarker(String marker) {
+        this.marker = marker;
     }
 }

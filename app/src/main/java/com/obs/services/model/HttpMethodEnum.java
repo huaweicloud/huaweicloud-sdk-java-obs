@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import java.util.Locale;
+
 /**
  * HTTP/HTTPS request method
  */
@@ -58,7 +60,7 @@ public enum HttpMethodEnum {
     }
 
     public String getOperationType() {
-        return this.operationType.toUpperCase();
+        return this.operationType.toUpperCase(Locale.ROOT);
     }
 
     public static HttpMethodEnum getValueFromStringCode(String operationType) {
@@ -67,7 +69,7 @@ public enum HttpMethodEnum {
         }
 
         for (HttpMethodEnum installMode : HttpMethodEnum.values()) {
-            if (installMode.getOperationType().equals(operationType.toUpperCase())) {
+            if (installMode.getOperationType().equals(operationType.toUpperCase(Locale.ROOT))) {
                 return installMode;
             }
         }

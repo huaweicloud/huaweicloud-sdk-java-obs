@@ -78,6 +78,7 @@ public class QueryAsynchFetchJobsResult extends HeaderResponse {
      * 
      * @return Unique ID of a request
      */
+    @Override
     public String getRequestId() {
         return requestId;
     }

@@ -1,3 +1,14 @@
+Version 3.23.3
+New features:
+1. Allow you to query the progress of crr 
+2. Added interfaces of Object tagging(set, get, delete)
+
+Third-party dependence:
+1. Replace powermock-module-junit4 2.0.9 with powermock-module-junit4 1.6.5
+2. Replace powermock-api-mockito2 2.0.9 with powermock-api-mockito 1.6.5
+3. Replace mockito-core 4.11.0 with mockito-core 1.10.19
+-----------------------------------------------------------------------------------
+
 Version 3.21.12
 Third-party dependence:
 1. Replace log4j2 2.16.0 with log4j2 2.17.0

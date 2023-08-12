@@ -324,6 +324,7 @@ public class SetObjectMetadataRequest extends BaseObjectRequest {
      * @param encodeHeaders
      *        Specifies whether to encode and decode header fields.
      */
+    @Override
     public void setIsEncodeHeaders(boolean encodeHeaders) {
         this.encodeHeaders = encodeHeaders;
     }
@@ -333,6 +334,7 @@ public class SetObjectMetadataRequest extends BaseObjectRequest {
      *
      * @return Specifies whether to encode and decode header fields.
      */
+    @Override
     public boolean isEncodeHeaders() {
         return encodeHeaders;
     }

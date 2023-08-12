@@ -77,8 +77,8 @@ public abstract class AbstractAuthentication {
                 if (paramNameValue.length > 1) {
                     value = URLDecoder.decode(paramNameValue[1], Constants.DEFAULT_ENCODING);
                 }
-                if (serviceResourceParameterNames.contains(name.toLowerCase())
-                        || name.toLowerCase().startsWith(headerPrefix)) {
+                if (serviceResourceParameterNames.contains(name.toLowerCase(Locale.ROOT))
+                        || name.toLowerCase(Locale.ROOT).startsWith(headerPrefix)) {
                     sortedResourceParams.put(name, value);
                 }
             }
@@ -135,9 +135,9 @@ public abstract class AbstractAuthentication {
     @SuppressWarnings("unchecked")
     private SortedMap<String, Object> transHeaders(Map<String, String> headersMap,
             String headerPrefix, String expires) {
-        String dateHeader = Constants.CommonHeaders.DATE.toLowerCase();
-        String contentTypeHeader = Constants.CommonHeaders.CONTENT_TYPE.toLowerCase();
-        String contentMd5Header = Constants.CommonHeaders.CONTENT_MD5.toLowerCase();
+        String dateHeader = Constants.CommonHeaders.DATE.toLowerCase(Locale.ROOT);
+        String contentTypeHeader = Constants.CommonHeaders.CONTENT_TYPE.toLowerCase(Locale.ROOT);
+        String contentMd5Header = Constants.CommonHeaders.CONTENT_MD5.toLowerCase(Locale.ROOT);
         
         SortedMap<String, Object> interestingHeaders = new TreeMap<String, Object>();
         if (null != headersMap) {

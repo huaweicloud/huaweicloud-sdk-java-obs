@@ -23,6 +23,8 @@ import com.obs.services.model.HttpProtocolTypeEnum;
 
 import okhttp3.Dispatcher;
 
+import java.security.SecureRandom;
+
 /**
  * Configuration parameters of ObsClient
  */
@@ -71,6 +73,8 @@ public class ObsConfiguration implements Cloneable {
     private AuthTypeEnum authType;
 
     private int localAuthTypeCacheCapacity;
+
+    private SecureRandom secureRandom;
 
     private String signatString;
     private String defaultBucketLocation;
@@ -128,6 +132,7 @@ public class ObsConfiguration implements Cloneable {
         this.httpProtocolType = HttpProtocolTypeEnum.HTTP1_1;
         this.xmlDocumentBuilderFactoryClass = ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY_CLASS;
         this.localAuthTypeCacheCapacity = ObsConstraint.DEFAULT_LOCAL_AUTH_TYPE_CACHE_CAPACITY;
+        this.secureRandom = new SecureRandom();
     }
 
     public String getDelimiter() {
@@ -888,5 +893,13 @@ public class ObsConfiguration implements Cloneable {
 
     public void setLocalAuthTypeCacheCapacity(int localAuthTypeCacheCapacity) {
         this.localAuthTypeCacheCapacity = localAuthTypeCacheCapacity;
+    }
+
+    public SecureRandom getSecureRandom() {
+        return secureRandom;
+    }
+
+    public void setSecureRandom(SecureRandom secureRandom) {
+        this.secureRandom = secureRandom;
     }
 }

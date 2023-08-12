@@ -24,10 +24,12 @@ public class BasicLogger implements ILogger {
         this.logger = logger;
     }
 
+    @Override
     public boolean isInfoEnabled() {
         return this.logger.isLoggable(LogConfigurator.INFO);
     }
 
+    @Override
     public void info(CharSequence msg) {
         if (msg != null) {
             this.logger.info(msg.toString());
@@ -35,6 +37,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void info(Object obj) {
         if (obj != null) {
             this.logger.info(obj.toString());
@@ -42,6 +45,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void info(Object obj, Throwable e) {
         if (obj != null) {
             this.logger.log(LogConfigurator.INFO, obj.toString(), e);
@@ -49,10 +53,12 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isWarnEnabled() {
         return this.logger.isLoggable(LogConfigurator.WARN);
     }
 
+    @Override
     public void warn(CharSequence msg) {
         if (msg != null) {
             this.logger.warning(msg.toString());
@@ -60,6 +66,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void warn(Object obj) {
         if (obj != null) {
             this.logger.warning(obj.toString());
@@ -67,6 +74,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void warn(Object obj, Throwable e) {
         if (obj != null) {
             this.logger.log(LogConfigurator.WARN, obj.toString(), e);
@@ -74,10 +82,12 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isErrorEnabled() {
         return this.logger.isLoggable(LogConfigurator.ERROR);
     }
 
+    @Override
     public void error(CharSequence msg) {
         if (msg != null) {
             this.logger.severe(msg.toString());
@@ -85,6 +95,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void error(Object obj) {
         if (obj != null) {
             this.logger.severe(obj.toString());
@@ -92,6 +103,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void error(Object obj, Throwable e) {
         if (obj != null) {
             this.logger.log(LogConfigurator.ERROR, obj.toString(), e);
@@ -99,10 +111,12 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isDebugEnabled() {
         return this.logger.isLoggable(LogConfigurator.DEBUG);
     }
 
+    @Override
     public void debug(CharSequence msg) {
         if (msg != null) {
             this.logger.log(LogConfigurator.DEBUG, msg.toString());
@@ -110,6 +124,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void debug(Object obj) {
         if (obj != null) {
             this.logger.log(LogConfigurator.DEBUG, obj.toString());
@@ -117,6 +132,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void debug(Object obj, Throwable e) {
         if (obj != null) {
             this.logger.log(LogConfigurator.DEBUG, obj.toString(), e);
@@ -124,10 +140,12 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public boolean isTraceEnabled() {
         return this.logger.isLoggable(LogConfigurator.TRACE);
     }
 
+    @Override
     public void trace(CharSequence msg) {
         if (msg != null) {
             this.logger.log(LogConfigurator.TRACE, msg.toString());
@@ -135,6 +153,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void trace(Object obj) {
         if (obj != null) {
             this.logger.log(LogConfigurator.TRACE, obj.toString());
@@ -142,6 +161,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void trace(Object obj, Throwable e) {
         if (obj != null) {
             this.logger.log(LogConfigurator.TRACE, obj.toString(), e);
@@ -149,6 +169,7 @@ public class BasicLogger implements ILogger {
         }
     }
 
+    @Override
     public void accessRecord(Object obj) {
         if (obj != null) {
             this.logger.log(LogConfigurator.INFO, obj.toString());

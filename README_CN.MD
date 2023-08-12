@@ -1,3 +1,14 @@
+Version 3.23.3
+New features:
+1. 支持crr进度查询 
+2. 新增对象标签接口(设置、获取、删除 对象标签)
+
+Third-party dependence:
+1. 使用 powermock-module-junit4 2.0.9 替代 powermock-module-junit4 1.6.5
+2. 使用 powermock-api-mockito2 2.0.9 替代 powermock-api-mockito 1.6.5
+3. 使用 mockito-core 4.11.0 替代 mockito-core 1.10.19
+-----------------------------------------------------------------------------------
+
 Version 3.22.12
 New features:
 1. Java SDK支持深度归档

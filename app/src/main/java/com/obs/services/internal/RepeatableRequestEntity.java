@@ -102,7 +102,7 @@ public class RepeatableRequestEntity extends RequestBody implements Closeable {
             inputStream.reset();
             bytesWritten = 0;
         }
-        // this.writeToNIO(sink);
+
         this.writeToBIO(sink);
         if (INTERFACE_LOG.isInfoEnabled()) {
             INTERFACE_LOG.info("write data end, cost " + (System.currentTimeMillis() - start) + " ms");

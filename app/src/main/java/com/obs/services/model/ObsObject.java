@@ -27,6 +27,7 @@ public class ObsObject extends S3Object {
      * 
      * @return Name of the bucket to which the object belongs
      */
+    @Override
     public String getBucketName() {
         return bucketName;
     }
@@ -37,6 +38,7 @@ public class ObsObject extends S3Object {
      * @param bucketName
      *            Name of the bucket to which the object belongs
      */
+    @Override
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
@@ -46,6 +48,7 @@ public class ObsObject extends S3Object {
      * 
      * @return Object name
      */
+    @Override
     public String getObjectKey() {
         return objectKey;
     }
@@ -56,6 +59,7 @@ public class ObsObject extends S3Object {
      * @param objectKey
      *            Object name
      */
+    @Override
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
     }
@@ -66,6 +70,7 @@ public class ObsObject extends S3Object {
      * 
      * @return Object properties
      */
+    @Override
     public ObjectMetadata getMetadata() {
         if (metadata == null) {
             this.metadata = new ObjectMetadata();
@@ -80,6 +85,7 @@ public class ObsObject extends S3Object {
      * @param metadata
      *            Object properties
      */
+    @Override
     public void setMetadata(ObjectMetadata metadata) {
         this.metadata = metadata;
     }
@@ -89,6 +95,7 @@ public class ObsObject extends S3Object {
      * 
      * @return Data stream of the object
      */
+    @Override
     public InputStream getObjectContent() {
         return objectContent;
     }
@@ -99,6 +106,7 @@ public class ObsObject extends S3Object {
      * @param objectContent
      *            Object data stream
      */
+    @Override
     public void setObjectContent(InputStream objectContent) {
         this.objectContent = objectContent;
     }
@@ -108,6 +116,7 @@ public class ObsObject extends S3Object {
      * 
      * @return Owner of the object
      */
+    @Override
     public Owner getOwner() {
         return owner;
     }
@@ -118,6 +127,7 @@ public class ObsObject extends S3Object {
      * @param owner
      *            Owner of the object
      */
+    @Override
     public void setOwner(Owner owner) {
         this.owner = owner;
     }

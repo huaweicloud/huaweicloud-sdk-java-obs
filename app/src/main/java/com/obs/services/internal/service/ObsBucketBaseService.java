@@ -103,20 +103,32 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
     protected ListBucketsResult listAllBucketsImpl(ListBucketsRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<>();
-        if (request != null && request.isQueryLocation()) {
-            this.putHeader(headers, this.getIHeaders("").locationHeader(), Constants.TRUE);
+        Map<String, String> params = new HashMap<>();
+
+        if (request != null) {
+            if (request.isQueryLocation()) {
+                this.putHeader(headers, this.getIHeaders("").locationHeader(), Constants.TRUE);
+            }
+            if (request.getBucketType() != null) {
+                this.putHeader(headers, this.getIHeaders("").bucketTypeHeader(), request.getBucketType().getCode());
+            }
+            if (request.getMaxKeys() > 0) {
+                params.put(Constants.ObsRequestParams.MAX_KEYS, String.valueOf(request.getMaxKeys()));
+            }
+            if (request.getMarker() != null) {
+                params.put(Constants.ObsRequestParams.MARKER, request.getMarker());
+            }
         }
-        if (request != null && request.getBucketType() != null) {
-            this.putHeader(headers, this.getIHeaders("").bucketTypeHeader(), request.getBucketType().getCode());
-        }
-        Response httpResponse = performRestGetForListBuckets("", null, null, headers);
+
+        Response httpResponse = performRestGetForListBuckets("", null, params, headers);
 
         this.verifyResponseContentType(httpResponse);
 
         XmlResponsesSaxParser.ListBucketsHandler handler = getXmlResponseSaxParser().parse(
                 new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.ListBucketsHandler.class, true);
 
-        ListBucketsResult result = new ListBucketsResult(handler.getBuckets(), handler.getOwner());
+        ListBucketsResult result = new ListBucketsResult(handler.getBuckets(), handler.getOwner(),
+                handler.isTruncated(), handler.getMarker(), handler.getMaxKeys(), handler.getNextMarker());
         setHeadersAndStatus(result, httpResponse);
 
         return result;

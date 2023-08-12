@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -79,11 +79,7 @@ public class DownloadResumableClient {
         } catch (ServiceException e) {
             throw ServiceUtils.changeFromServiceException(e);
         } catch (Exception e) {
-            if (e instanceof ObsException) {
-                throw (ObsException) e;
-            } else {
-                throw new ObsException(e.getMessage(), e);
-            }
+            throw ServiceUtils.changeFromException(e);
         }
     }
 
@@ -354,6 +350,7 @@ public class DownloadResumableClient {
             
             RandomAccessFile output = null;
             InputStream content = null;
+            InputStream progressContent = null;
             
             try {
                 if (log.isDebugEnabled()) {
@@ -371,14 +368,17 @@ public class DownloadResumableClient {
 
                 ObsObject object = obsClient.getObject(getObjectRequest);
                 content = object.getObjectContent();
-                if (this.progressManager != null) {
-                    content = new ProgressInputStream(content, this.progressManager, false);
-                }
-
                 byte[] buffer = new byte[ObsConstraint.DEFAULT_CHUNK_SIZE];
                 int bytesOffset;
-                while ((bytesOffset = content.read(buffer)) != -1) {
-                    output.write(buffer, 0, bytesOffset);
+                if (this.progressManager != null) {
+                    progressContent = new ProgressInputStream(content, this.progressManager, false);
+                    while ((bytesOffset = progressContent.read(buffer)) != -1) {
+                        output.write(buffer, 0, bytesOffset);
+                    }
+                } else {
+                    while ((bytesOffset = content.read(buffer)) != -1) {
+                        output.write(buffer, 0, bytesOffset);
+                    }
                 }
                 downloadCheckPoint.update(partIndex, true, downloadFileRequest.getTempDownloadFile());
             } catch (ObsException e) {
@@ -387,24 +387,42 @@ public class DownloadResumableClient {
                 }
                 signPartResultFailed(tr, e);
                 if (log.isErrorEnabled()) {
-                    log.error(String.format("Task %d:%s download part %d failed: ", id, name, partIndex), e);
+                    log.error(String.format(Locale.ROOT,"Task %d:%s download part %d failed: ", id, name, partIndex), e);
                 }
             } catch (Exception e) {
                 signPartResultFailed(tr, e);
                 if (log.isErrorEnabled()) {
-                    log.error(String.format("Task %d:%s download part %d failed: ", id, name, partIndex), e);
+                    log.error(String.format(Locale.ROOT,"Task %d:%s download part %d failed: ", id, name, partIndex), e);
                 }
             } finally {
                 // 结束一个子任务
                 finishOneTask(downloadFileRequest);
 
-                closeResource(output);
-                
-                closeResource(content);
-                
-                if (log.isDebugEnabled()) {
-                    log.debug("end task : " + downloadPart.toString());
+                try {
+                    if (null != output) {
+                        output.close();
+                    }
+                } catch (IOException e) {
+                    log.warn("output close failed.", e);
                 }
+
+                try {
+                    if (null != content) {
+                        content.close();
+                    }
+                } catch (IOException e) {
+                    log.warn("content close failed.", e);
+                }
+
+                try {
+                    if (null != progressContent) {
+                        progressContent.close();
+                    }
+                } catch (IOException e) {
+                    log.warn("progressContent close failed.", e);
+                }
+
+                log.debug("end task : " + downloadPart);
 
                 if (downloadFileRequest.isEnableCheckpoint()) {
                     downloadCheckPoint.updateTmpFile(downloadFileRequest.getTempDownloadFile());
@@ -412,18 +430,6 @@ public class DownloadResumableClient {
                 }
             }
             return tr;
-        }
-
-        private void closeResource(Closeable resource) {
-            if (null != resource) {
-                try {
-                    resource.close();
-                } catch (IOException e) {
-                    if (log.isWarnEnabled()) {
-                        log.warn("close failed.", e);
-                    }
-                }
-            }
         }
 
         private void finishOneTask(DownloadFileRequest downloadFileRequest) {

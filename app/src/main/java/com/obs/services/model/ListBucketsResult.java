@@ -26,20 +26,49 @@ public class ListBucketsResult extends HeaderResponse {
 
     private Owner owner;
 
-    public ListBucketsResult(List<ObsBucket> buckets, Owner owner) {
+    private boolean truncated;
+
+    private String marker;
+
+    private int maxKeys;
+
+    private String nextMarker;
+
+    public ListBucketsResult(List<ObsBucket> buckets, Owner owner, boolean truncated, String marker, int maxKeys,
+                             String nextMarker) {
         this.buckets = buckets;
         this.owner = owner;
+        this.truncated = truncated;
+        this.marker = marker;
+        this.maxKeys = maxKeys;
+        this.nextMarker = nextMarker;
     }
 
     public List<ObsBucket> getBuckets() {
         if (buckets == null) {
-            buckets = new ArrayList<ObsBucket>();
+            buckets = new ArrayList<>();
         }
         return buckets;
     }
 
     public Owner getOwner() {
         return owner;
+    }
+
+    public boolean isTruncated() {
+        return truncated;
+    }
+
+    public String getMarker() {
+        return marker;
+    }
+
+    public int getMaxKeys() {
+        return maxKeys;
+    }
+
+    public String getNextMarker() {
+        return nextMarker;
     }
 
     @Override

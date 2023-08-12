@@ -56,7 +56,7 @@ public class RestConnectionService {
     protected void initHttpClient(Dispatcher httpDispatcher) {
 
         OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(obsProperties, keyManagerFactory,
-                trustManagerFactory, httpDispatcher);
+                trustManagerFactory, httpDispatcher, credentials.getSecureRandom());
 
         if (this.obsProperties.getBoolProperty(ObsConstraint.PROXY_ISABLE, true)) {
             String proxyHostAddress = this.obsProperties.getStringProperty(ObsConstraint.PROXY_HOST, null);
@@ -96,8 +96,6 @@ public class RestConnectionService {
             Method dispatcherMethod = httpClient.getClass().getMethod("dispatcher");
             if (dispatcherMethod != null) {
                 Method m = dispatcherMethod.invoke(httpClient).getClass().getDeclaredMethod("executorService");
-                // fix findbugs: DP_DO_INSIDE_DO_PRIVILEGED
-                // m.setAccessible(true);
                 Object exeService = m.invoke(httpClient.dispatcher());
                 if (exeService instanceof ExecutorService) {
                     ExecutorService executorService = (ExecutorService) exeService;
