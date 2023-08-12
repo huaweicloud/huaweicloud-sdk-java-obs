@@ -6,6 +6,7 @@ New features:
 Third-party dependence:
 1. 使用 powermock-module-junit4 2.0.9 替代 powermock-module-junit4 1.6.5
 2. 使用 powermock-api-mockito2 2.0.9 替代 powermock-api-mockito 1.6.5
+3. 使用 mockito-core 4.11.0 替代 mockito-core 1.10.19
 -----------------------------------------------------------------------------------
 
 Version 3.22.12
