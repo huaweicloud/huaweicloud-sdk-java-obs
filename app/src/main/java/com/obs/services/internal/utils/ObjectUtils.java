@@ -26,4 +26,8 @@ public class ObjectUtils {
             return obj1.equals(obj2);
         }
     }
+
+    public static boolean isNotBlank(String str) {
+        return str != null && str.length() > 0;
+    }
 }

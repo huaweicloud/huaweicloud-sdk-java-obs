@@ -2470,6 +2470,34 @@ public class XmlResponsesSaxParser {
                 storageInfo.setSize(Long.parseLong(content));
             } else if (name.equals("ObjectNumber")) {
                 storageInfo.setObjectNumber(Long.parseLong(content));
+            } else if (name.equals("StandardSize")) {
+                storageInfo.setStandardSize(Long.parseLong(content));
+            } else if (name.equals("StandardObjectNumber")) {
+                storageInfo.setStandardObjectNumber(Long.parseLong(content));
+            } else if (name.equals("WarmSize")) {
+                storageInfo.setWarmSize(Long.parseLong(content));
+            } else if (name.equals("WarmObjectNumber")) {
+                storageInfo.setWarmObjectNumber(Long.parseLong(content));
+            } else if (name.equals("ColdSize")) {
+                storageInfo.setColdSize(Long.parseLong(content));
+            } else if (name.equals("ColdObjectNumber")) {
+                storageInfo.setColdObjectNumber(Long.parseLong(content));
+            } else if (name.equals("DeepArchiveSize")) {
+                storageInfo.setDeepArchiveSize(Long.parseLong(content));
+            } else if (name.equals("DeepArchiveObjectNumber")) {
+                storageInfo.setDeepArchiveObjectNumber(Long.parseLong(content));
+            } else if (name.equals("HighPerformanceSize")) {
+                storageInfo.setHighPerformanceSize(Long.parseLong(content));
+            } else if (name.equals("HighPerformanceObjectNumber")) {
+                storageInfo.setHighPerformanceObjectNumber(Long.parseLong(content));
+            } else if (name.equals("Standard_IASize")) {
+                storageInfo.setStandard_IASize(Long.parseLong(content));
+            } else if (name.equals("Standard_IAObjectNumber")) {
+                storageInfo.setStandard_IAObjectNumber(Long.parseLong(content));
+            } else if (name.equals("GlacierSize")) {
+                storageInfo.setGlacierSize(Long.parseLong(content));
+            } else if (name.equals("GlacierObjectNumber")) {
+                storageInfo.setGlacierObjectNumber(Long.parseLong(content));
             }
         }
     }
