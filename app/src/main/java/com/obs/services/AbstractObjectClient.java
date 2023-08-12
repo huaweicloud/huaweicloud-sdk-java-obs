@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.utils.ObjectUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
@@ -43,6 +44,8 @@ import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.OptionsInfoRequest;
 import com.obs.services.model.OptionsInfoResult;
+import com.obs.services.model.PutObjectInTwoBucketRequest;
+import com.obs.services.model.PutObjectInTwoBucketResult;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.RestoreObjectRequest;
@@ -316,6 +319,55 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
         request.setObjectKey(objectKey);
         request.setMetadata(metadata);
         return this.putObject(request);
+    }
+
+    @Override
+    public PutObjectInTwoBucketResult putObjectInTwoBucket(PutObjectInTwoBucketRequest request)
+            throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "PutObjectInTwoBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getMainBucketRequest(), "mainBucketRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBackupBucketRequest(), "backupBucketRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBackupBucketRequest().getBucketName(), "backupBucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getMainBucketRequest().getBucketName(), "mainBucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getBackupBucketRequest().getObjectKey(), "backupObjectKey is null");
+        ServiceUtils.assertParameterNotNull2(request.getMainBucketRequest().getObjectKey(), "mainObjectKey is null");
+        String path = request.getFilePath();
+        if (ObjectUtils.isNotBlank(path)) {
+            File file = new File(path);
+            if (file.exists()) {
+                PutObjectRequest mainBucketRequest = request.getMainBucketRequest();
+                mainBucketRequest.setFile(file);
+                request.setMainBucketRequest(mainBucketRequest);
+                PutObjectRequest backupBucketRequest = request.getBackupBucketRequest();
+                backupBucketRequest.setFile(file);
+                request.setBackupBucketRequest(backupBucketRequest);
+            }
+        }
+        return this.doActionWithResult("putObjectInTwoBucket", "All Buckets",
+                new ActionCallbackWithResult<PutObjectInTwoBucketResult>() {
+                    @Override
+                    public PutObjectInTwoBucketResult action() throws ServiceException {
+                        if (null != request.getMainBucketRequest().getInput()
+                                && null != request.getMainBucketRequest().getFile()) {
+                            throw new ServiceException("Both input and file are set, only one is allowed in main bucket request.");
+                        }
+                        if (null != request.getBackupBucketRequest().getInput()
+                                && null != request.getBackupBucketRequest().getFile()) {
+                            throw new ServiceException("Both input and file are set, only one is allowed in backup bucket request.");
+                        }
+                        return AbstractObjectClient.this.putObjectInTwoBucketImpl(request);
+                    }
+
+                    @Override
+                    void authTypeNegotiate(String bucketName) throws ServiceException {
+                        AuthTypeEnum authTypeEnum = AbstractObjectClient.this.getProviderCredentials()
+                                .getLocalAuthType().get(bucketName);
+                        if (authTypeEnum == null) {
+                            authTypeEnum = AbstractObjectClient.this.getApiVersion("");
+                            AbstractObjectClient.this.getProviderCredentials().setLocalAuthType(bucketName, authTypeEnum);
+                        }
+                    }
+                });
     }
     
     /*

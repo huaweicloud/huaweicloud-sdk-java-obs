@@ -79,6 +79,8 @@ import com.obs.services.model.ObsBucket;
 import com.obs.services.model.ObsObject;
 import com.obs.services.model.PostSignatureRequest;
 import com.obs.services.model.PostSignatureResponse;
+import com.obs.services.model.PutObjectInTwoBucketRequest;
+import com.obs.services.model.PutObjectInTwoBucketResult;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.PutObjectsRequest;
@@ -1651,6 +1653,8 @@ public interface IObsClient extends IObsBucketExtendClient {
      */
     PutObjectResult putObject(String bucketName, String objectKey, File file, ObjectMetadata metadata)
             throws ObsException;
+
+    PutObjectInTwoBucketResult putObjectInTwoBucket(final PutObjectInTwoBucketRequest request) throws ObsException;
 
     /**
      * Perform an appendable upload.
