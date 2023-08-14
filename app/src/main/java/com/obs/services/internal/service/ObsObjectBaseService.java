@@ -17,6 +17,7 @@ package com.obs.services.internal.service;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
@@ -45,7 +46,10 @@ import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.ObsObject;
+import com.obs.services.model.PutObjectInTwoBucketRequest;
+import com.obs.services.model.PutObjectInTwoBucketResult;
 import com.obs.services.model.PutObjectRequest;
+import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.SetObjectAclRequest;
 import com.obs.services.model.SetObjectMetadataRequest;
 import com.obs.services.model.SpecialParamEnum;
@@ -68,6 +72,10 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectBaseService.class);
@@ -135,6 +143,51 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
             }
         }
         return ret;
+    }
+
+    protected PutObjectInTwoBucketResult putObjectInTwoBucketImpl(PutObjectInTwoBucketRequest request) throws ObsException {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        PutObjectInTwoBucketResult putObjectInTwoBucketResult;
+        try {
+            Future<PutObjectInTwoBucketResult> futureMainBucket = executorService.submit(() -> {
+                PutObjectInTwoBucketResult result = new PutObjectInTwoBucketResult();
+                try {
+                    PutObjectResult putObjectResult = this.putObjectImpl(request.getMainBucketRequest());
+                    result.setMainBucketResult(putObjectResult);
+                } catch (ServiceException e) {
+                    result.setMainBucketException(ServiceUtils.changeFromServiceException(e));
+                } catch (Exception e) {
+                    result.setMainBucketException(ServiceUtils.changeFromException(e));
+                }
+                return result;
+            });
+
+            Future<PutObjectInTwoBucketResult> futureBackupBucket = executorService.submit(() -> {
+                PutObjectInTwoBucketResult result = new PutObjectInTwoBucketResult();
+                try {
+                    PutObjectResult putObjectResult = this.putObjectImpl(request.getBackupBucketRequest());
+                    result.setBackupBucketResult(putObjectResult);
+                } catch (ServiceException e) {
+                    result.setBackupBucketException(ServiceUtils.changeFromServiceException(e));
+                } catch (Exception e) {
+                    result.setBackupBucketException(ServiceUtils.changeFromException(e));
+                }
+                return result;
+            });
+
+            executorService.shutdown();
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+
+            putObjectInTwoBucketResult = futureMainBucket.get();
+            PutObjectInTwoBucketResult backupBucketResult = futureBackupBucket.get();
+            putObjectInTwoBucketResult.setBackupBucketResult(backupBucketResult.getBackupBucketResult());
+            putObjectInTwoBucketResult.setBackupBucketException(backupBucketResult.getBackupBucketException());
+        } catch (ServiceException e) {
+            throw ServiceUtils.changeFromServiceException(e);
+        } catch (Exception e) {
+            throw ServiceUtils.changeFromException(e);
+        }
+        return putObjectInTwoBucketResult;
     }
 
     protected ObsObject getObjectImpl(GetObjectRequest request) throws ServiceException {

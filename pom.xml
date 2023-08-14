@@ -4,7 +4,7 @@
 
     <groupId>com.huaweicloud</groupId>
     <artifactId>esdk-obs-java</artifactId>
-    <version>3.23.3</version>
+    <version>3.23.5</version>
     <packaging>jar</packaging>
 
     <name>OBS SDK for Java</name>

@@ -1,3 +1,8 @@
+Version 3.23.5
+New features:
+1. Allow you put Object in two Buckets by calling putObjectInTwoBucket
+2. Allow you query statistics on the capacity of standard, warm and cold objects in bucket
+-----------------------------------------------------------------------------------
 Version 3.23.3
 New features:
 1. Allow you to query the progress of crr 

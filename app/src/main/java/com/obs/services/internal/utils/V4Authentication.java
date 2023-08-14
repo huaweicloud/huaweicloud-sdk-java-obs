@@ -37,7 +37,8 @@ import java.util.Locale;
 
 public class V4Authentication {
 
-    public static final String CONTENT_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    public static final String CONTENT_SHA256 = PropertyManager.getInstance(Constants.PROPERTY_NAME_OBS)
+            .getFormattedString("content.sha256");
 
     private String ak;
 
