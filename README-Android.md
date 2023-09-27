@@ -1,3 +1,13 @@
+Version 3.23.9
+New features:
+1. Allow you set\get\list\delete bucket inventory configuration
+2. Added client side encryption feature
+3. Allow you config AbortIncompleteMultipartUpload in LifecycleConfiguration
+
+Third-party dependence:
+1. Replace okio 3.5.0 with okio 2.10.0
+2. Replace okhttp 4.11.0 with okhttp 4.10.0
+-----------------------------------------------------------------------------------
 Version 3.23.5
 New features:
 1. Allow you put Object in two Buckets by calling putObjectInTwoBucket

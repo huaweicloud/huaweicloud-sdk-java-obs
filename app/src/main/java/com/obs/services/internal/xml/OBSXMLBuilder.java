@@ -81,6 +81,10 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
     protected static Document parseDocumentImpl(InputSource inputSource, boolean enableExternalEntities,
             boolean isNamespaceAware) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = OBSXMLBuilder.findDocumentBuilderFactory();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setNamespaceAware(isNamespaceAware);
         enableOrDisableExternalEntityParsing(factory, enableExternalEntities);
         DocumentBuilder builder = factory.newDocumentBuilder();

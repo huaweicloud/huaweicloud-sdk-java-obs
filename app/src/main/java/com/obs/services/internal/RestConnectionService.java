@@ -36,6 +36,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+import static com.obs.services.internal.utils.ServiceUtils.getLoggableInfo;
+
 public class RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestConnectionService.class);
 
@@ -210,7 +212,7 @@ public class RestConnectionService {
                 if (ServiceUtils.isValid(value)) {
                     urlPathBuilder.append("=").append(RestUtils.encodeUrlString(value));
                     if (log.isDebugEnabled()) {
-                        log.debug("Added request parameter: " + key + "=" + value);
+                        log.debug("Added request parameter: " + key + "=" + getLoggableInfo(key,value));
                     }
                 } else {
                     if (log.isDebugEnabled()) {

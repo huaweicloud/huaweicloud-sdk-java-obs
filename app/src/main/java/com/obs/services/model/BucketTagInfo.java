@@ -146,6 +146,14 @@ public class BucketTagInfo extends HeaderResponse {
                 }
                 return true;
             }
+
+            @Override
+            public String toString() {
+                return "Tag [" +
+                        "key='" + key + '\'' +
+                        ", value='" + value + '\'' +
+                        ']';
+            }
         }
 
         /**
@@ -208,6 +216,11 @@ public class BucketTagInfo extends HeaderResponse {
                 }
             }
             return null;
+        }
+
+        @Override
+        public String toString() {
+            return "TagSet [" + tags + "]";
         }
     }
 

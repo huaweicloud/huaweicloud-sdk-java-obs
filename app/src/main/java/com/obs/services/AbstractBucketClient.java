@@ -53,6 +53,12 @@ import com.obs.services.model.SetBucketQuotaRequest;
 import com.obs.services.model.SetBucketRequestPaymentRequest;
 import com.obs.services.model.SetBucketStoragePolicyRequest;
 import com.obs.services.model.SetBucketVersioningRequest;
+import com.obs.services.model.inventory.SetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.DeleteInventoryConfigurationRequest;
+import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationResult;
+import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 
 public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClient {
     /*
@@ -916,5 +922,65 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                         return AbstractBucketClient.this.setBucketCustomDomainImpl(request);
                     }
                 });
+    }
+
+    @Override
+    public HeaderResponse setInventoryConfiguration(SetInventoryConfigurationRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "request is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getInventoryConfiguration(), "inventoryConfiguration is null");
+
+        return this.doActionWithResult("setInventoryConfiguration", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractBucketClient.this.setInventoryConfigurationImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public GetInventoryConfigurationResult getInventoryConfiguration(GetInventoryConfigurationRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "request is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getConfigurationId(), "configurationId is null");
+
+        return this.doActionWithResult("getInventoryConfiguration", request.getBucketName(),
+                new ActionCallbackWithResult<GetInventoryConfigurationResult>() {
+                    @Override
+                    public GetInventoryConfigurationResult action() throws ServiceException {
+                        return AbstractBucketClient.this.getInventoryConfigurationImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public ListInventoryConfigurationResult listInventoryConfiguration(ListInventoryConfigurationRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "request is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+
+        return this.doActionWithResult("listInventoryConfiguration", request.getBucketName(),
+                new ActionCallbackWithResult<ListInventoryConfigurationResult>() {
+                    @Override
+                    public ListInventoryConfigurationResult action() throws ServiceException {
+                        return AbstractBucketClient.this.listInventoryConfigurationImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public HeaderResponse deleteInventoryConfiguration(DeleteInventoryConfigurationRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "request is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull2(request.getConfigurationId(), "configurationId is null");
+
+        return this.doActionWithResult("deleteInventoryConfiguration", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractBucketClient.this.deleteInventoryConfigurationImpl(request);
+                    }
+                });
+
     }
 }
