@@ -72,6 +72,7 @@ import com.obs.services.model.fs.DirContentSummary;
 import com.obs.services.model.fs.DirSummary;
 import com.obs.services.model.fs.FolderContentSummary;
 import com.obs.services.model.fs.ListContentSummaryFsResult;
+import com.obs.services.model.inventory.InventoryConfiguration;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -2140,6 +2141,57 @@ public class XmlResponsesSaxParser {
 
     }
 
+    public static class InventoryConfigurationsHandler extends DefaultXmlHandler {
+        private ArrayList<InventoryConfiguration> inventoryConfigurations = new ArrayList<>();
+
+        private InventoryConfiguration inventoryConfiguration = new InventoryConfiguration();
+
+        private String prefix;
+
+        public ArrayList<InventoryConfiguration> getInventoryConfigurations() {
+            return inventoryConfigurations;
+        }
+        @Override
+        public void startElement(String name) {}
+        @Override
+        public void endElement(String name, String content) {
+            if("Id".equals(name)) {
+                inventoryConfiguration.setConfigurationId(content);
+            }
+            if("IsEnabled".equals(name)) {
+                inventoryConfiguration.setEnabled(Boolean.valueOf(content));
+            }
+            if("Prefix".equals(name)) {
+                prefix = content;
+            }
+            if("Filter".equals(name)) {
+                inventoryConfiguration.setObjectPrefix(prefix);
+            }
+            if("Format".equals(name)) {
+                inventoryConfiguration.setInventoryFormat(content);
+            }
+            if("Bucket".equals(name)) {
+                inventoryConfiguration.setDestinationBucket(content);
+            }
+            if("Destination".equals(name)) {
+                inventoryConfiguration.setInventoryPrefix(prefix);
+            }
+            if("Frequency".equals(name)) {
+                inventoryConfiguration.setFrequency(content);
+            }
+            if("IncludedObjectVersions".equals(name)) {
+                inventoryConfiguration.setIncludedObjectVersions(content);
+            }
+            if("Field".equals(name)) {
+                inventoryConfiguration.getOptionalFields().add(content);
+            }
+            if("InventoryConfiguration".equals(name)) {
+                inventoryConfigurations.add(inventoryConfiguration);
+                inventoryConfiguration = new InventoryConfiguration();
+            }
+        }
+    }
+
     public static class BucketNotificationConfigurationHandler extends DefaultXmlHandler {
 
         private BucketNotificationConfiguration bucketNotificationConfiguration = new BucketNotificationConfiguration();
@@ -2247,7 +2299,12 @@ public class XmlResponsesSaxParser {
             latestRule.getNoncurrentVersionTransitions()
                     .add(((LifecycleConfiguration.NoncurrentVersionTransition) latestTimeEvent));
         }
-
+        public void startAbortIncompleteMultipartUpload() {
+            latestRule.setAbortIncompleteMultipartUpload(config.new AbortIncompleteMultipartUpload());
+        }
+        public void endDaysAfterInitiation(String content) {
+            latestRule.getAbortIncompleteMultipartUpload().setDaysAfterInitiation(Integer.parseInt(content));
+        }
         public void endStorageClass(String content) {
             LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content));
         }

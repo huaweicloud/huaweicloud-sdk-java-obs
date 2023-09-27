@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -57,6 +58,13 @@ import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.fs.SetBucketFSStatusRequest;
 
+import com.obs.services.model.inventory.InventoryConfiguration;
+import com.obs.services.model.inventory.SetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.DeleteInventoryConfigurationRequest;
+import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationResult;
+import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 import okhttp3.Response;
 
 public abstract class ObsBucketBaseService extends RequestConvertor {
@@ -432,5 +440,72 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 XmlResponsesSaxParser.BucketVersioningHandler.class, false).getVersioningStatus();
         setHeadersAndStatus(ret, response);
         return ret;
+    }
+
+    protected HeaderResponse setInventoryConfigurationImpl(SetInventoryConfigurationRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.INVENTORY.getOriginalStringCode(), "");
+        requestParams.put(SpecialParamEnum.ID.getOriginalStringCode(), request.getInventoryConfiguration().getConfigurationId());
+        String xml = this.getIConvertor(request.getBucketName()).transBucketInventoryConfiguration(request.getInventoryConfiguration());
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        NewTransResult result = transRequest(request);
+        result.setParams(requestParams);
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_TEXT_PLAIN);
+        result.setHeaders(headers);
+        result.setBody(createRequestBody(Mimetypes.MIMETYPE_TEXT_PLAIN, xml));
+        Response response = performRequest(result);
+        return build(response);
+    }
+
+    protected GetInventoryConfigurationResult getInventoryConfigurationImpl(GetInventoryConfigurationRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.INVENTORY.getOriginalStringCode(), "");
+        requestParams.put(SpecialParamEnum.ID.getOriginalStringCode(), request.getConfigurationId());
+
+        NewTransResult newTransResult = transRequest(request);
+        newTransResult.setParams(requestParams);
+        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+        this.verifyResponseContentType(httpResponse);
+
+        GetInventoryConfigurationResult result = new GetInventoryConfigurationResult();
+        List<InventoryConfiguration> configurations = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.InventoryConfigurationsHandler.class, false).getInventoryConfigurations();
+        if(configurations == null || configurations.isEmpty()) {
+            log.warn("No configuration got, config id is :" + request.getConfigurationId());
+        } else {
+            result.setInventoryConfiguration(configurations.get(0));
+        }
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected ListInventoryConfigurationResult listInventoryConfigurationImpl(ListInventoryConfigurationRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.INVENTORY.getOriginalStringCode(), "");
+
+        NewTransResult newTransResult = transRequest(request);
+        newTransResult.setParams(requestParams);
+        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+        this.verifyResponseContentType(httpResponse);
+
+        ListInventoryConfigurationResult result = new ListInventoryConfigurationResult();
+        List<InventoryConfiguration> configurations = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.InventoryConfigurationsHandler.class, false).getInventoryConfigurations();
+        result.setInventoryConfigurations(configurations);
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected HeaderResponse deleteInventoryConfigurationImpl(DeleteInventoryConfigurationRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.INVENTORY.getOriginalStringCode(), "");
+        requestParams.put(SpecialParamEnum.ID.getOriginalStringCode(), request.getConfigurationId());
+
+        NewTransResult newTransResult = transRequest(request);
+        newTransResult.setParams(requestParams);
+        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+
+        return build(httpResponse);
     }
 }

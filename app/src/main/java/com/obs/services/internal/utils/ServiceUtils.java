@@ -48,7 +48,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -235,11 +237,11 @@ public class ServiceUtils {
                 } else if (Constants.ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES
                         .contains(key.toLowerCase(Locale.getDefault()))) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Leaving HTTP header item unchanged: " + key + "=" + value);
+                        log.debug("Leaving HTTP header item unchanged: " + key + "=" + getLoggableInfo(key, value));
                     }
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("Ignoring metadata item: " + key + "=" + value);
+                        log.debug("Ignoring metadata item: " + key + "=" + getLoggableInfo(key, value));
                     }
                     continue;
                 }
@@ -443,7 +445,7 @@ public class ServiceUtils {
 
         String[] fragments = bucketName.split("\\.");
         for (String fragment : fragments) {
-            if (Pattern.matches("^-.*", fragment) || Pattern.matches(".*-$", fragment)
+            if (Pattern.matches("^-.*", fragment) || Pattern.matches("^.{0,62}-$", fragment)
                     || Pattern.matches("^$", fragment)) {
                 return false;
             }
@@ -535,10 +537,10 @@ public class ServiceUtils {
     public static ObsException changeFromServiceException(ServiceException se) {
         ObsException exception;
         if (se.getResponseCode() < 0) {
-            exception = new ObsException("OBS servcie Error Message. " + se.getMessage(), se.getCause());
+            exception = new ObsException("OBS service Error Message. " + se.getMessage(), se.getCause());
         } else {
             exception = new ObsException(
-                    (se.getMessage() != null ? "Error message:" + se.getMessage() : "") + "OBS servcie Error Message.",
+                    (se.getMessage() != null ? "Error message:" + se.getMessage() : "") + "OBS service Error Message.",
                     se.getXmlMessage(), se.getCause());
             exception.setErrorCode(se.getErrorCode());
             exception.setErrorMessage(se.getErrorMessage() == null ? se.getMessage() : se.getErrorMessage());
@@ -731,5 +733,42 @@ public class ServiceUtils {
         }
 
         return true;
+    }
+    //所有可以打印的Metadata和ResponseHeader
+    public static final HashSet<String> LoggableResponseHeader = new HashSet<>(Arrays.asList(
+            "content-type","content-length","content-language","expires","origin",
+            "cache-control","content-disposition","content-encoding","access-control-request-method",
+            "access-control-request-headers","x-default-storage-class","location","date",
+            "range","host","if-modified-since","if-unmodified-since","if-match","if-none-match",
+            "last-modified", "content-range", "accept-encoding"
+            ));
+    public static final HashSet<String> LoggableObsMetadata = new HashSet<>(Arrays.asList("Origin",
+            "Access-Control-Request-Headers","x-obs-server-side-encryption-customer-algorithm","x-obs-expiration",
+            "x-obs-website-redirect-location","x-obs-version-id","Access-Control-Allow-Origin",
+            "Access-Control-Allow-Headers","Access-Control-Max-Age","Access-Control-Allow-Methods",
+            "Access-Control-Expose-Headers","x-obs-server-side-encryption","x-obs-server-side-data-encryption",
+            "x-obs-server-side-encryption-customer-algorithm", "x-obs-storage-class","x-obs-restore",
+            "x-obs-object-type","x-obs-next-append-position","x-obs-uploadId","x-obs-object-lock-mode",
+            "x-obs-object-lock-retain-until-date"));
+    
+    public static final HashSet<String> LoggableAmzMetadata = new HashSet<>(Arrays.asList(
+            "x-amz-server-side-encryption-customer-algorithm","x-amz-expiration",
+            "x-amz-website-redirect-location","x-amz-version-id","x-amz-server-side-encryption",
+            "x-amz-server-side-data-encryption", "x-amz-server-side-encryption-customer-algorithm",
+            "x-amz-storage-class","x-amz-restore","x-amz-object-type","x-amz-next-append-position",
+            "x-amz-uploadId","x-amz-object-lock-mode","x-amz-object-lock-retain-until-date"));
+    
+    public static final String LoggableInfo = "******";
+    public static boolean isInfoLoggable(String infoKey) {
+        return LoggableObsMetadata.contains(infoKey)
+                || LoggableResponseHeader.contains(infoKey)
+                || LoggableAmzMetadata.contains(infoKey);
+    }
+    public static String getLoggableInfo(String infoKey,String infoVal) {
+        if(isInfoLoggable(infoKey)) {
+            return infoVal;
+        }else {
+            return LoggableInfo;
+        }
     }
 }

@@ -49,10 +49,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import static com.obs.services.internal.utils.ServiceUtils.getLoggableInfo;
+import static com.obs.services.internal.utils.ServiceUtils.isInfoLoggable;
 
 public abstract class RestStorageService extends RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
@@ -109,7 +113,7 @@ public abstract class RestStorageService extends RestConnectionService {
         for (Map.Entry<String, String> entry : userHeaderMap.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
-                log.debug("Added request header to connection: " + entry.getKey() + "=" + entry.getValue());
+                log.debug("Added request header to connection: " + entry.getKey() + "=" + getLoggableInfo(entry.getKey(),entry.getValue()));
             }
         }
     }
@@ -424,7 +428,18 @@ public abstract class RestStorageService extends RestConnectionService {
 
         log.debug("Performing " + requestInfo.getRequest().method()
                 + " request for '" + requestInfo.getRequest().url());
-        log.debug("Headers: " + requestInfo.getRequest().headers());
+
+        Map<String,List<String>> requestHeaders = requestInfo.getRequest().headers().toMultimap();
+        //遍历requestHeaders并打印所有可以打印的元素
+        for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+            String key = entry.getKey();
+            if(isInfoLoggable(key)) {
+                List<String> values = entry.getValue();
+                for (String value : values) {
+                    log.debug("Headers: " + key + " = " + value);
+                }
+            }
+        }
 
         RetryController retryController = new RetryController(new RetryCounter(
                 obsProperties.getIntProperty(ObsConstraint.HTTP_RETRY_MAX,
@@ -702,7 +717,18 @@ public abstract class RestStorageService extends RestConnectionService {
             builder.header(CommonHeaders.USER_AGENT, Constants.USER_AGENT_VALUE);
             request = builder.build();
         }
-        log.debug("Request Headers: " + request.headers().toString().replace("\n", "|"));
+
+        Map<String,List<String>> requestHeaders = request.headers().toMultimap();
+        //遍历requestHeaders并打印所有可以打印的元素
+        for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+            String key = entry.getKey();
+            if(isInfoLoggable(key)) {
+                List<String> values = entry.getValue();
+                for (String value : values) {
+                    log.debug("Request Headers: " + key + " = " + value);
+                }
+            }
+        }
         return request;
     }
 
@@ -784,6 +810,9 @@ public abstract class RestStorageService extends RestConnectionService {
             providerCredentials = this.getProviderCredentials();
         } else {
             providerCredentials.setAuthType(this.getProviderCredentials().getLocalAuthType(bucketName));
+            LinkedHashMap<String, AuthTypeEnum> localAuthType = new LinkedHashMap<>();
+            localAuthType.put(bucketName, providerCredentials.getAuthType());
+            providerCredentials.setLocalAuthType(localAuthType);
         }
         if (isProviderCredentialsInValid(providerCredentials)) {
             if (log.isInfoEnabled()) {
@@ -1025,7 +1054,8 @@ public abstract class RestStorageService extends RestConnectionService {
         for (Map.Entry<String, String> entry : convertedMetadata.entrySet()) {
             builder.addHeader(entry.getKey(), entry.getValue());
             if (log.isDebugEnabled()) {
-                log.debug("Added metadata to connection: " + entry.getKey() + "=" + entry.getValue());
+                log.debug("Added metadata to connection: " + entry.getKey() + "=" +
+                        getLoggableInfo(entry.getKey(), entry.getValue()));
             }
         }
     }
@@ -1055,7 +1085,7 @@ public abstract class RestStorageService extends RestConnectionService {
                 }
                 builder.addHeader(key, value);
                 if (log.isDebugEnabled()) {
-                    log.debug("Added request header to connection: " + key + "=" + value);
+                    log.debug("Added request header to connection: " + key + "=" + getLoggableInfo(key, value));
                 }
             }
         }

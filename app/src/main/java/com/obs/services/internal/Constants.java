@@ -213,7 +213,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.23.3";
+    public static final String OBS_SDK_VERSION = "3.23.9";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -262,6 +262,8 @@ public class Constants {
 
     public static final String POSIX = "POSIX";
 
+    public static final String CONTENT_SHA256 = "content-sha256";
+
     public static final long MAX_PART_SIZE = 5 * 1024 * 1024 * 1024L;
 
     public static final long MIN_PART_SIZE = 100 * 1024L;
@@ -287,7 +289,7 @@ public class Constants {
                     "storagepolicy", "storageclass", "requestpayment", "versions", "versioning", "versionid", "uploads",
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
                     "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
-                    "mirrorbacktosource", "obsbucketalias", "obsalias", "replication_progress",
+                    "mirrorbacktosource", "obsbucketalias", "obsalias", "replication_progress", "inventory",
                     /**
                      * File System API
                      */

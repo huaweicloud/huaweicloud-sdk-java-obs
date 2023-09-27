@@ -184,7 +184,11 @@ public enum SpecialParamEnum {
     /**
      * Set, obtain, or delete the Custom Domain Name of a Bucket
      */
-    CUSTOMDOMAIN("customdomain");
+    CUSTOMDOMAIN("customdomain"),
+
+    ID("id"),
+
+    INVENTORY("inventory");
     
     /**
      * Specify the corresponding code in the database and the external code.

@@ -63,7 +63,8 @@ public class LimitedTimeSecurityKey extends BasicSecurityKey {
     public static Date getUtcTime() {
         Calendar calendar = Calendar.getInstance();
         int offset = calendar.get(Calendar.ZONE_OFFSET);
-        calendar.add(Calendar.MILLISECOND, -offset);
+        int dstOffset = calendar.get(Calendar.DST_OFFSET);
+        calendar.add(Calendar.MILLISECOND, -(offset + dstOffset));
         return calendar.getTime();
     }
 

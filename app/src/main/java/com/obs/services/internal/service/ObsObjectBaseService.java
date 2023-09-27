@@ -29,10 +29,12 @@ import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.internal.io.ProgressInputStream;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.CopyObjectRequest;
 import com.obs.services.model.CopyObjectResult;
 import com.obs.services.model.DeleteObjectRequest;
@@ -68,10 +70,12 @@ import okhttp3.ResponseBody;
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -92,7 +96,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         boolean doesObjectExist = false;
         try {
             Response response = performRestHead(request.getBucketName(), request.getObjectKey(), params, headers,
-                    new HashMap<>(), request.isEncodeHeaders());
+                    request.getUserHeaders(), request.isEncodeHeaders());
             if (200 == response.code()) {
                 doesObjectExist = true;
             }
@@ -114,9 +118,18 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         try {
             result = this.transPutObjectRequest(request);
             isExtraAclPutRequired = !prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), acl);
+            if (request.getCallback() != null) {
+                ServiceUtils.assertParameterNotNull(request.getCallback().getCallbackUrl(),
+                        "callbackUrl is null");
+                ServiceUtils.assertParameterNotNull(request.getCallback().getCallbackBody(),
+                        "callbackBody is null");
+                result.getHeaders().put((this.getProviderCredentials().getLocalAuthType(request.getBucketName()) != AuthTypeEnum.OBS
+                                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + CommonHeaders.CALLBACK,
+                        ServiceUtils.toBase64(JSONChange.objToJson(request.getCallback()).getBytes(StandardCharsets.UTF_8)));
+            }
             // todo prepareRESTHeaderAcl 也会操作头域，下次重构可以将其合并
             newTransResult = transObjectRequestWithResult(result, request);
-            response = performRequest(newTransResult);
+            response = performRequest(newTransResult, true, false, false, false);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
                 if (result.getBody() instanceof Closeable) {
@@ -131,7 +144,13 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 StorageClassEnum.getValueFromCode(response.header(this.getIHeaders(request.getBucketName())
                         .storageClassHeader())), this.getObjectUrl(request.getBucketName(), request.getObjectKey(),
                 request.getIsIgnorePort()));
-
+        if(request.getCallback() != null) {
+            try {
+                ret.setCallbackResponseBody(Objects.requireNonNull(response.body()).byteStream());
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            }
+        }
         setHeadersAndStatus(ret, response);
         if (isExtraAclPutRequired && acl != null) {
             try {
@@ -444,7 +463,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 + RestUtils.uriEncode(objectKey, false);
     }
 
-    private ObsFSAttribute getObsFSAttributeFromResponse(String bucketName, Response response, boolean needDecode) {
+    protected ObsFSAttribute getObsFSAttributeFromResponse(String bucketName, Response response, boolean needDecode) {
         Date lastModifiedDate = null;
         String lastModified = response.header(CommonHeaders.LAST_MODIFIED);
         if (lastModified != null) {

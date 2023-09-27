@@ -584,6 +584,22 @@ public class LifecycleConfiguration extends HeaderResponse {
 
     }
 
+    public class AbortIncompleteMultipartUpload {
+        public AbortIncompleteMultipartUpload() {
+            //default invalid value
+            daysAfterInitiation = -1;
+        }
+
+        public int getDaysAfterInitiation() {
+            return daysAfterInitiation;
+        }
+
+        public void setDaysAfterInitiation(int daysAfterInitiation) {
+            this.daysAfterInitiation = daysAfterInitiation;
+        }
+
+        protected int daysAfterInitiation;
+    }
     /**
      * Bucket lifecycle rule
      */
@@ -604,6 +620,19 @@ public class LifecycleConfiguration extends HeaderResponse {
 
         protected List<NoncurrentVersionTransition> noncurrentVersionTransitions;
 
+        public AbortIncompleteMultipartUpload getAbortIncompleteMultipartUpload() {
+            if(abortIncompleteMultipartUpload == null) {
+                abortIncompleteMultipartUpload = new AbortIncompleteMultipartUpload();
+            }
+            return abortIncompleteMultipartUpload;
+        }
+
+        public void setAbortIncompleteMultipartUpload(
+                AbortIncompleteMultipartUpload abortIncompleteMultipartUpload) {
+            this.abortIncompleteMultipartUpload = abortIncompleteMultipartUpload;
+        }
+
+        protected AbortIncompleteMultipartUpload abortIncompleteMultipartUpload;
         /**
          * No-argument constructor
          */
@@ -914,6 +943,7 @@ public class LifecycleConfiguration extends HeaderResponse {
         public String toString() {
             return "Rule [id=" + id + ", prefix=" + prefix + ", enabled=" + enabled + ", expiration=" + expiration
                     + ", noncurrentVersionExpiration=" + noncurrentVersionExpiration + ", transitions=" + transitions
+                    + ", tagSet=" + tagSet
                     + ", noncurrentVersionTransitions=" + noncurrentVersionTransitions + "]";
         }
 
