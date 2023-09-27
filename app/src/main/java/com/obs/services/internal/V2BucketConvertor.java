@@ -41,6 +41,7 @@ import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
 import com.obs.services.model.ObjectTagResult;
+import com.obs.services.model.inventory.InventoryConfiguration;
 
 public abstract class V2BucketConvertor implements IConvertor {
     
@@ -320,6 +321,39 @@ public abstract class V2BucketConvertor implements IConvertor {
             return builder.up().asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for Tagging", e);
+        }
+    }
+
+    @Override
+    public String transBucketInventoryConfiguration(InventoryConfiguration inventoryConfiguration) throws ServiceException {
+        try {
+            OBSXMLBuilder builder = OBSXMLBuilder.create("InventoryConfiguration");
+
+            builder.e("Id").t(inventoryConfiguration.getConfigurationId());
+            builder.e("IsEnabled").t(inventoryConfiguration.getEnabled().toString());
+
+            if(!inventoryConfiguration.getObjectPrefix().equals("")) {
+                OBSXMLBuilder filter = builder.e("Filter");
+                filter.e("Prefix").t(inventoryConfiguration.getObjectPrefix());
+            }
+            OBSXMLBuilder destination = builder.e("Destination");
+            destination.e("Format").t(inventoryConfiguration.getInventoryFormat());
+            destination.e("Bucket").t(inventoryConfiguration.getDestinationBucket());
+            if(!inventoryConfiguration.getInventoryPrefix().equals("")) {
+                destination.e("Prefix").t(inventoryConfiguration.getInventoryPrefix());
+            }
+            OBSXMLBuilder schedule = builder.e("Schedule");
+            schedule.e("Frequency").t(inventoryConfiguration.getFrequency());
+            builder.e("IncludedObjectVersions").t(inventoryConfiguration.getIncludedObjectVersions());
+            if(!inventoryConfiguration.getOptionalFields().isEmpty()) {
+                OBSXMLBuilder optionalFields = builder.e("OptionalFields");
+                for(String optionalField:inventoryConfiguration.getOptionalFields()) {
+                    optionalFields.e("Field").t(optionalField);
+                }
+            }
+            return builder.up().asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for InventoryConfiguration", e);
         }
     }
 }

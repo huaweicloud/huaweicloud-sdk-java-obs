@@ -163,6 +163,11 @@ public class V2Convertor extends V2BucketConvertor {
                     noncurrentVersionBuilder.elem("NoncurrentDays").t(
                             rule.getNoncurrentVersionExpiration().getDays().toString());
                 }
+                if (rule.getAbortIncompleteMultipartUpload().getDaysAfterInitiation() > 0) {
+                    OBSXMLBuilder abortIncompleteMultipartUpload = b.elem("AbortIncompleteMultipartUpload");
+                    abortIncompleteMultipartUpload.elem("DaysAfterInitiation")
+                            .t(String.valueOf(rule.getAbortIncompleteMultipartUpload().getDaysAfterInitiation()));
+                }
             }
             return builder.asString();
         } catch (ParserConfigurationException e) {

@@ -125,6 +125,12 @@ import com.obs.services.model.UploadProgressStatus;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.crr.GetCrrProgressRequest;
 import com.obs.services.model.crr.GetCrrProgressResult;
+import com.obs.services.model.inventory.SetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationRequest;
+import com.obs.services.model.inventory.DeleteInventoryConfigurationRequest;
+import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
+import com.obs.services.model.inventory.GetInventoryConfigurationResult;
+import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
 import com.obs.services.model.ObjectTagResult;
@@ -2292,6 +2298,14 @@ public interface IObsClient extends IObsBucketExtendClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketDirectColdAccess(BaseBucketRequest request) throws ObsException;
+
+    HeaderResponse setInventoryConfiguration(SetInventoryConfigurationRequest request) throws ObsException;
+
+    GetInventoryConfigurationResult getInventoryConfiguration(GetInventoryConfigurationRequest request) throws ObsException;
+
+    ListInventoryConfigurationResult listInventoryConfiguration(ListInventoryConfigurationRequest request) throws ObsException;
+
+    HeaderResponse deleteInventoryConfiguration(DeleteInventoryConfigurationRequest request) throws ObsException;
 
     /**
      * Close ObsClient and release connection resources.

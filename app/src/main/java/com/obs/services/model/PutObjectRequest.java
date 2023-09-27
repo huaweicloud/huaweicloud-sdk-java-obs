@@ -39,6 +39,8 @@ public class PutObjectRequest extends PutObjectBasicRequest {
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
+    private Callback callback;
+
     public PutObjectRequest() {
     }
 
@@ -274,6 +276,13 @@ public class PutObjectRequest extends PutObjectBasicRequest {
         this.progressInterval = progressInterval;
     }
 
+    public Callback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
     @Override
     public String toString() {
         return "PutObjectRequest [file=" + file + ", input=" + input + ", metadata=" + metadata

@@ -36,6 +36,7 @@ import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
 import com.obs.services.model.ObjectTagResult;
+import com.obs.services.model.inventory.InventoryConfiguration;
 
 public interface IConvertor {
 
@@ -88,5 +89,7 @@ public interface IConvertor {
     AccessControlList transCannedAcl(String cannedAcl);
 
     String transBucketDirectColdAccess(BucketDirectColdAccess access) throws ServiceException;
+
+    String transBucketInventoryConfiguration(InventoryConfiguration inventoryConfiguration) throws ServiceException;
 
 }

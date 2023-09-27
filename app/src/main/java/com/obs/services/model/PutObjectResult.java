@@ -14,6 +14,7 @@
 
 package com.obs.services.model;
 
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -32,6 +33,8 @@ public class PutObjectResult extends HeaderResponse {
     private StorageClassEnum storageClass;
 
     private String objectUrl;
+
+    private InputStream callbackResponseBody;
 
     public PutObjectResult(String bucketName, String objectKey, String etag, String versionId,
             StorageClassEnum storageClass, String objectUrl) {
@@ -110,6 +113,14 @@ public class PutObjectResult extends HeaderResponse {
         return objectUrl;
     }
 
+
+    public InputStream getCallbackResponseBody() {
+        return callbackResponseBody;
+    }
+
+    public void setCallbackResponseBody(InputStream callbackResponseBody) {
+        this.callbackResponseBody = callbackResponseBody;
+    }
     @Override
     public String toString() {
         return "PutObjectResult [bucketName=" + bucketName + ", objectKey=" + objectKey + ", etag=" + etag
