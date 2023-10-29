@@ -22,6 +22,7 @@ import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpProtocolTypeEnum;
 
 import okhttp3.Dispatcher;
+import okhttp3.Dns;
 
 import java.security.SecureRandom;
 
@@ -96,6 +97,8 @@ public class ObsConfiguration implements Cloneable {
     private HttpProtocolTypeEnum httpProtocolType;
 
     private Dispatcher httpDispatcher;
+
+    private Dns customizedDnsImpl;
     
     private String xmlDocumentBuilderFactoryClass;
 
@@ -878,6 +881,26 @@ public class ObsConfiguration implements Cloneable {
         this.httpDispatcher = httpDispatcher;
     }
 
+
+    /**
+     * Obtain the customized Dns.
+     *
+     * @return customizedDnsImpl
+     *
+     */
+    public Dns getCustomizedDnsImpl() {
+        return customizedDnsImpl;
+    }
+
+    /**
+     * set the customized Dns.
+     *
+     * @param customizedDnsImpl
+     *            Customized Dns
+     */
+    public void setCustomizedDnsImpl(Dns customizedDnsImpl) {
+        this.customizedDnsImpl = customizedDnsImpl;
+    }
     public String getXmlDocumentBuilderFactoryClass() {
         return xmlDocumentBuilderFactoryClass;
     }

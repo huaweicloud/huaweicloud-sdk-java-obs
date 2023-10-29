@@ -3,54 +3,69 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
  * this file except in compliance with the License.  You may obtain a copy of the
  * License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations under the License.
  */
-
 package com.obs.services.internal.xml;
 
-import com.jamesmurty.utils.BaseXMLBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.namespace.NamespaceContext;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-public class OBSXMLBuilder extends BaseXMLBuilder {
-
+public class OBSXMLBuilder {
     private static final String DEFAULT_PACKAGE = "com.sun.org.apache.xerces.internal";
 
-    private static String xmlDocumentBuilderFactoryClass = 
+    private static String xmlDocumentBuilderFactoryClass =
             "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
-    
+
+    private Document xmlDocument;
+    private Node xmlNode;
+
     public static void setXmlDocumentBuilderFactoryClass(String className) {
-        if (null != className 
-                && !className.trim().equals("")) {
+        if (null != className && !className.trim().equals("")) {
             xmlDocumentBuilderFactoryClass = className;
         }
     }
-    
+
     protected OBSXMLBuilder(Document xmlDocument) {
-        super(xmlDocument);
+        this.xmlDocument = xmlDocument;
+        this.xmlNode = xmlDocument.getDocumentElement();
     }
 
     protected OBSXMLBuilder(Node myNode, Node parentNode) {
-        super(myNode, parentNode);
+        this.xmlNode = myNode;
+        if (myNode instanceof Document) {
+            this.xmlDocument = (Document) myNode;
+        } else {
+            this.xmlDocument = myNode.getOwnerDocument();
+        }
+
+        if (parentNode != null) {
+            parentNode.appendChild(myNode);
+        }
     }
 
     private static DocumentBuilderFactory findDocumentBuilderFactory() {
@@ -61,14 +76,18 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
         return newInstance(DocumentBuilderFactory.class, xmlDocumentBuilderFactoryClass, null, true, false);
     }
 
-    protected static Document createDocumentImpl(String name, String namespaceURI, boolean enableExternalEntities,
-            boolean isNamespaceAware) throws ParserConfigurationException, FactoryConfigurationError {
+    protected static Document createDocumentImpl(
+            String name, String namespaceURI, boolean isNamespaceAware)
+            throws ParserConfigurationException, FactoryConfigurationError {
         DocumentBuilderFactory factory = OBSXMLBuilder.findDocumentBuilderFactory();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setNamespaceAware(isNamespaceAware);
-        enableOrDisableExternalEntityParsing(factory, enableExternalEntities);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.newDocument();
-        Element rootElement = null;
+        Element rootElement;
         if (namespaceURI != null && namespaceURI.length() > 0) {
             rootElement = document.createElementNS(namespaceURI, name);
         } else {
@@ -78,36 +97,37 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
         return document;
     }
 
-    protected static Document parseDocumentImpl(InputSource inputSource, boolean enableExternalEntities,
-            boolean isNamespaceAware) throws ParserConfigurationException, SAXException, IOException {
+    protected static Document parseDocumentImpl(
+            InputSource inputSource, boolean isNamespaceAware)
+            throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = OBSXMLBuilder.findDocumentBuilderFactory();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setNamespaceAware(isNamespaceAware);
-        enableOrDisableExternalEntityParsing(factory, enableExternalEntities);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(inputSource);
         return document;
     }
 
     private static ClassLoader getContextClassLoader() throws SecurityException {
-        return (ClassLoader) AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            public Object run() {
-                ClassLoader cl = null;
-                cl = Thread.currentThread().getContextClassLoader();
+        return (ClassLoader)
+                AccessController.doPrivileged(
+                        (PrivilegedAction<Object>)
+                                () -> {
+                                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-                if (cl == null) {
-                    cl = ClassLoader.getSystemClassLoader();
-                }
-                return cl;
-            }
-        });
+                                    if (cl == null) {
+                                        cl = ClassLoader.getSystemClassLoader();
+                                    }
+                                    return cl;
+                                });
     }
 
-    private static Class<?> getProviderClass(String className, ClassLoader cl, boolean doFallback,
-            boolean useBSClsLoader) throws ClassNotFoundException {
+    private static Class<?> getProviderClass(
+            String className, ClassLoader cl, boolean doFallback, boolean useBSClsLoader)
+            throws ClassNotFoundException {
         try {
             if (cl == null) {
                 if (useBSClsLoader) {
@@ -130,8 +150,9 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
         }
     }
 
-    private static <T> T newInstance(Class<T> type, String className, ClassLoader cl, boolean doFallback,
-            boolean useBSClsLoader) throws FactoryConfigurationError {
+    private static <T> T newInstance(
+            Class<T> type, String className, ClassLoader cl, boolean doFallback, boolean useBSClsLoader)
+            throws FactoryConfigurationError {
         if (System.getSecurityManager() != null) {
             if (className != null && className.startsWith(DEFAULT_PACKAGE)) {
                 cl = null;
@@ -154,224 +175,103 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
     }
 
     public static OBSXMLBuilder create(String name) throws ParserConfigurationException, FactoryConfigurationError {
-        return new OBSXMLBuilder(createDocumentImpl(name, null, false, true));
+        return new OBSXMLBuilder(createDocumentImpl(name, null, true));
     }
 
-    public static OBSXMLBuilder parse(InputSource inputSource, boolean enableExternalEntities, boolean isNamespaceAware)
+    public static OBSXMLBuilder parse(InputSource inputSource, boolean isNamespaceAware)
             throws ParserConfigurationException, SAXException, IOException {
-        return new OBSXMLBuilder(parseDocumentImpl(inputSource, enableExternalEntities, isNamespaceAware));
+        return new OBSXMLBuilder(parseDocumentImpl(inputSource, isNamespaceAware));
     }
 
     public static OBSXMLBuilder parse(InputSource inputSource)
             throws ParserConfigurationException, SAXException, IOException {
-        return OBSXMLBuilder.parse(inputSource, false, true);
+        return OBSXMLBuilder.parse(inputSource, true);
     }
 
-    @Override
-    public OBSXMLBuilder stripWhitespaceOnlyTextNodes() throws XPathExpressionException {
-        super.stripWhitespaceOnlyTextNodesImpl();
+    public OBSXMLBuilder importXMLBuilder(OBSXMLBuilder builder) {
+        Node importedNode = this.getDocument().importNode(builder.getDocument().getDocumentElement(), true);
+        this.xmlNode.appendChild(importedNode);
         return this;
     }
 
-    @Override
-    public OBSXMLBuilder importXMLBuilder(BaseXMLBuilder builder) {
-        super.importXMLBuilderImpl(builder);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder root() {
-        return new OBSXMLBuilder(getDocument());
-    }
-
-    @Override
-    public OBSXMLBuilder xpathFind(String xpath, NamespaceContext nsContext) throws XPathExpressionException {
-        Node foundNode = super.xpathFindImpl(xpath, nsContext);
-        return new OBSXMLBuilder(foundNode, null);
-    }
-
-    @Override
-    public OBSXMLBuilder xpathFind(String xpath) throws XPathExpressionException {
-        return xpathFind(xpath, null);
-    }
-
-    @Override
     public OBSXMLBuilder element(String name) {
-        String namespaceURI = super.lookupNamespaceURIImpl(name);
+        String namespaceURI = lookupNamespaceURI(name);
         return element(name, namespaceURI);
     }
 
-    @Override
     public OBSXMLBuilder elem(String name) {
         return element(name);
     }
 
-    @Override
     public OBSXMLBuilder e(String name) {
         return element(name);
     }
 
-    @Override
     public OBSXMLBuilder element(String name, String namespaceURI) {
-        Element elem = super.elementImpl(name, namespaceURI);
+        Element elem = elementImpl(name, namespaceURI);
         return new OBSXMLBuilder(elem, this.getElement());
     }
 
-    @Override
-    public OBSXMLBuilder elementBefore(String name) {
-        Element newElement = super.elementBeforeImpl(name);
-        return new OBSXMLBuilder(newElement, null);
+    public Element elementImpl(String name, String namespaceURI) {
+        return namespaceURI == null
+                ? this.getDocument().createElement(name)
+                : this.getDocument().createElementNS(namespaceURI, name);
     }
 
-    @Override
-    public OBSXMLBuilder elementBefore(String name, String namespaceURI) {
-        Element newElement = super.elementBeforeImpl(name, namespaceURI);
-        return new OBSXMLBuilder(newElement, null);
-    }
-
-    @Override
     public OBSXMLBuilder attribute(String name, String value) {
-        super.attributeImpl(name, value);
+        attributeImpl(name, value);
         return this;
     }
 
-    @Override
+    public void textImpl(String value, boolean replaceText) {
+        if (value == null) {
+            throw new IllegalArgumentException("Illegal null text value");
+        } else {
+            if (replaceText) {
+                this.xmlNode.setTextContent(value);
+            } else {
+                this.xmlNode.appendChild(this.getDocument().createTextNode(value));
+            }
+        }
+    }
+
+    public void attributeImpl(String name, String value) {
+        if (!(this.xmlNode instanceof Element)) {
+            throw new RuntimeException("Cannot add an attribute to non-Element underlying node: " + this.xmlNode);
+        } else {
+            ((Element) this.xmlNode).setAttribute(name, value);
+        }
+    }
+
     public OBSXMLBuilder attr(String name, String value) {
         return attribute(name, value);
     }
 
-    @Override
-    public OBSXMLBuilder a(String name, String value) {
-        return attribute(name, value);
-    }
-
-    @Override
     public OBSXMLBuilder text(String value, boolean replaceText) {
-        super.textImpl(value, replaceText);
+        textImpl(value, replaceText);
         return this;
     }
 
-    @Override
     public OBSXMLBuilder text(String value) {
         return this.text(value, false);
     }
 
-    @Override
     public OBSXMLBuilder t(String value) {
         return text(value);
     }
 
-    @Override
-    public OBSXMLBuilder cdata(String data) {
-        super.cdataImpl(data);
-        return this;
+    protected Node upImpl(int steps) {
+        Node currNode = this.xmlNode;
+
+        for (int stepCount = 0; currNode.getParentNode() != null && stepCount < steps; ++stepCount) {
+            currNode = currNode.getParentNode();
+        }
+
+        return currNode;
     }
 
-    @Override
-    public OBSXMLBuilder data(String data) {
-        return cdata(data);
-    }
-
-    @Override
-    public OBSXMLBuilder d(String data) {
-        return cdata(data);
-    }
-
-    @Override
-    public OBSXMLBuilder cdata(byte[] data) {
-        super.cdataImpl(data);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder data(byte[] data) {
-        return cdata(data);
-    }
-
-    @Override
-    public OBSXMLBuilder d(byte[] data) {
-        return cdata(data);
-    }
-
-    @Override
-    public OBSXMLBuilder comment(String comment) {
-        super.commentImpl(comment);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder cmnt(String comment) {
-        return comment(comment);
-    }
-
-    @Override
-    public OBSXMLBuilder c(String comment) {
-        return comment(comment);
-    }
-
-    @Override
-    public OBSXMLBuilder instruction(String target, String data) {
-        super.instructionImpl(target, data);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder inst(String target, String data) {
-        return instruction(target, data);
-    }
-
-    @Override
-    public OBSXMLBuilder i(String target, String data) {
-        return instruction(target, data);
-    }
-
-    @Override
-    public OBSXMLBuilder insertInstruction(String target, String data) {
-        super.insertInstructionImpl(target, data);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder reference(String name) {
-        super.referenceImpl(name);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder ref(String name) {
-        return reference(name);
-    }
-
-    @Override
-    public OBSXMLBuilder r(String name) {
-        return reference(name);
-    }
-
-    @Override
-    public OBSXMLBuilder namespace(String prefix, String namespaceURI) {
-        super.namespaceImpl(prefix, namespaceURI);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder ns(String prefix, String namespaceURI) {
-        return attribute(prefix, namespaceURI);
-    }
-
-    @Override
-    public OBSXMLBuilder namespace(String namespaceURI) {
-        this.namespace(null, namespaceURI);
-        return this;
-    }
-
-    @Override
-    public OBSXMLBuilder ns(String namespaceURI) {
-        return namespace(namespaceURI);
-    }
-
-    @Override
     public OBSXMLBuilder up(int steps) {
-        Node currNode = super.upImpl(steps);
+        Node currNode = upImpl(steps);
         if (currNode instanceof Document) {
             return new OBSXMLBuilder((Document) currNode);
         } else {
@@ -379,24 +279,44 @@ public class OBSXMLBuilder extends BaseXMLBuilder {
         }
     }
 
-    @Override
     public OBSXMLBuilder up() {
         return up(1);
     }
 
-    @Override
-    public OBSXMLBuilder document() {
-        return new OBSXMLBuilder(getDocument(), null);
+    public Element getElement() {
+        return this.xmlNode instanceof Element ? (Element) this.xmlNode : null;
     }
 
-    @Override
+    protected String lookupNamespaceURI(String name) {
+        String prefix = this.getPrefixFromQualifiedName(name);
+        return this.xmlNode.lookupNamespaceURI(prefix);
+    }
+
+    protected String getPrefixFromQualifiedName(String qualifiedName) {
+        int colonPos = qualifiedName.indexOf(58);
+        return colonPos > 0 ? qualifiedName.substring(0, colonPos) : null;
+    }
+
+    public Document getDocument() {
+        return this.xmlDocument;
+    }
+
+    public String asString() throws TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(this.getDocument()), new StreamResult(writer));
+        return writer.getBuffer().toString().replaceAll("|\r", "");
+    }
+
     public int hashCode() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public boolean equals(Object obj) {
         return obj == this;
     }
-
 }
