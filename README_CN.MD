@@ -1,3 +1,10 @@
+Version 3.23.9.1
+New features:
+1. 支持设置自定义dns解析器
+
+Third-party dependence:
+1. 移除 java-xmlbuilder, 使用默认的javax.xml库
+-----------------------------------------------------------------------------------
 Version 3.23.9
 New features:
 1. 新增配置桶清单接口

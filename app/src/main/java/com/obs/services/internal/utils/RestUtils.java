@@ -14,6 +14,37 @@
 
 package com.obs.services.internal.utils;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.exception.ObsException;
+import com.obs.services.internal.Constants;
+import com.obs.services.internal.Constants.CommonHeaders;
+import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.ObsProperties;
+import com.obs.services.internal.ServiceException;
+import com.obs.services.internal.ext.ExtObsConstraint;
+import com.obs.services.model.HttpProtocolTypeEnum;
+import okhttp3.Authenticator;
+import okhttp3.ConnectionPool;
+import okhttp3.Credentials;
+import okhttp3.Dispatcher;
+import okhttp3.Dns;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
+import org.jetbrains.annotations.NotNull;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -35,38 +66,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.exception.ObsException;
-import com.obs.services.internal.Constants;
-import com.obs.services.internal.Constants.CommonHeaders;
-import com.obs.services.internal.ObsConstraint;
-import com.obs.services.internal.ObsProperties;
-import com.obs.services.internal.ServiceException;
-import com.obs.services.internal.ext.ExtObsConstraint;
-import com.obs.services.model.HttpProtocolTypeEnum;
-
-import okhttp3.Authenticator;
-import okhttp3.ConnectionPool;
-import okhttp3.Credentials;
-import okhttp3.Dispatcher;
-import okhttp3.Dns;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.Route;
 
 public class RestUtils {
 
@@ -330,7 +329,7 @@ public class RestUtils {
 
     public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties,
             KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
-            Dispatcher httpDispatcher, SecureRandom secureRandom) {
+            Dispatcher httpDispatcher, Dns customizedDnsImpl, SecureRandom secureRandom) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
         protocols.add(Protocol.HTTP_1_1);
@@ -351,6 +350,8 @@ public class RestUtils {
                         ObsConstraint.DEFAULT_IDLE_CONNECTION_TIME),
                 TimeUnit.MILLISECONDS);
 
+        Dns dns = customizedDnsImpl == null ? new DefaultObsDns() : customizedDnsImpl;
+
         builder.protocols(protocols).followRedirects(false).followSslRedirects(false)
                 .retryOnConnectionFailure(
                         obsProperties.getBoolProperty(ExtObsConstraint.IS_RETRY_ON_CONNECTION_FAILURE_IN_OKHTTP, false))
@@ -364,11 +365,7 @@ public class RestUtils {
                 .connectionPool(pool)
                 .hostnameVerifier((hostname, session) -> !obsProperties.getBoolProperty(ObsConstraint.HTTP_STRICT_HOSTNAME_VERIFICATION, false)
                         || HttpsURLConnection.getDefaultHostnameVerifier().verify(obsProperties.getStringProperty(ObsConstraint.END_POINT, ""), session))
-                .dns(hostname -> {
-                    List<InetAddress> adds = Dns.SYSTEM.lookup(hostname);
-                    log.info("internet host address:" + adds);
-                    return adds;
-                });
+                .dns(dns);
 
         int socketReadBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_READ_BUFFER_SIZE, -1);
         int socketWriteBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_WRITE_BUFFER_SIZE, -1);
@@ -478,5 +475,23 @@ public class RestUtils {
             throw new ServiceException(e);
         }
         return body;
+    }
+    public static class DefaultObsDns implements Dns {
+        public DefaultObsDns() {
+            log.info("use Default Dns");
+        }
+
+        /**
+         * @param hostname
+         * @return
+         * @throws UnknownHostException
+         */
+        @NotNull
+        @Override
+        public List<InetAddress> lookup(@NotNull String hostname) throws UnknownHostException {
+            List<InetAddress> adds = Dns.SYSTEM.lookup(hostname);
+            log.info("internet host address:" + adds);
+            return adds;
+        }
     }
 }

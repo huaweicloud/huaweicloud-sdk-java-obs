@@ -1,12 +1,15 @@
 package com.obs.test;
 
+import static org.junit.Assert.assertTrue;
+
 import com.obs.services.ObsClient;
 import com.obs.services.ObsConfiguration;
+import com.obs.services.crypto.CryptoObsClient;
+import com.obs.services.crypto.CtrRSACipherGenerator;
 import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketTypeEnum;
 import com.obs.services.model.CreateBucketRequest;
-import com.obs.services.model.DeleteObjectsRequest;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ListMultipartUploadsRequest;
 import com.obs.services.model.ListVersionsRequest;
@@ -15,6 +18,8 @@ import com.obs.services.model.MultipartUpload;
 import com.obs.services.model.MultipartUploadListing;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.test.tools.PropertiesTools;
+
+import okhttp3.Dns;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -30,12 +35,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
 public class TestTools {
-
     private static final File file = new File("app/src/test/resource/test_data.properties");
 
     public static File getPropertiesFile() {
@@ -92,6 +100,63 @@ public class TestTools {
             return new ObsClient(ak, sk, config);
 
         } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    public static ObsClient getPipelineEnvironmentWithCustomisedDns(Dns customizedDns) {
+        try {
+            String endPoint = PropertiesTools.getInstance(file).getProperties("environment.endpoint");
+            String ak = PropertiesTools.getInstance(file).getProperties("environment.ak");
+            String sk = PropertiesTools.getInstance(file).getProperties("environment.sk");
+            String authType = PropertiesTools.getInstance(file).getProperties("environment.authType");
+            ObsConfiguration config = new ObsConfiguration();
+            config.setSocketTimeout(30000);
+            config.setConnectionTimeout(10000);
+            config.setEndPoint(endPoint);
+            config.setAuthTypeNegotiation(false);
+            config.setCustomizedDnsImpl(customizedDns);
+            if (authType.equals("v2")) {
+                config.setAuthType(AuthTypeEnum.V2);
+            } else {
+                config.setAuthType(AuthTypeEnum.OBS);
+            }
+            return new ObsClient(ak, sk, config);
+
+        } catch (IllegalArgumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static CryptoObsClient getPipelineCryptoEnvironment() {
+        try {
+            String endPoint = PropertiesTools.getInstance(file).getProperties("environment.endpoint");
+            String ak = PropertiesTools.getInstance(file).getProperties("environment.ak");
+            String sk = PropertiesTools.getInstance(file).getProperties("environment.sk");
+            String authType = PropertiesTools.getInstance(file).getProperties("environment.authType");
+            String privateKeyPath = PropertiesTools.getInstance(file).getProperties("rsa.privateKeyPath");
+            String publicKeyPath = PropertiesTools.getInstance(file).getProperties("rsa.publicKeyPath");
+            ObsConfiguration config = new ObsConfiguration();
+            config.setSocketTimeout(30000);
+            config.setConnectionTimeout(10000);
+            config.setEndPoint(endPoint);
+            config.setAuthTypeNegotiation(false);
+            if (authType.equals("v2")) {
+                config.setAuthType(AuthTypeEnum.V2);
+            } else {
+                config.setAuthType(AuthTypeEnum.OBS);
+            }
+            PrivateKey privateKeyObj = CtrRSACipherGenerator.importPKCS8PrivateKey(privateKeyPath);
+            PublicKey publicKeyObj = CtrRSACipherGenerator.importPublicKey(publicKeyPath);
+            CtrRSACipherGenerator ctrRSACipherGenerator =
+                    new CtrRSACipherGenerator(
+                            "test_master_key", true, config.getSecureRandom(), privateKeyObj, publicKeyObj);
+            return new CryptoObsClient(ak, sk, config, ctrRSACipherGenerator);
+
+        } catch (IllegalArgumentException | IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
 
@@ -198,7 +263,8 @@ public class TestTools {
             config.setSocketTimeout(30000);
             config.setConnectionTimeout(10000);
             config.setEndPoint(endPoint);
-            config.setHttpProxy(PropertiesTools.getInstance(file).getProperties("environment.me.proxyaddr"),
+            config.setHttpProxy(
+                    PropertiesTools.getInstance(file).getProperties("environment.me.proxyaddr"),
                     Integer.parseInt(PropertiesTools.getInstance(file).getProperties("environment.me.proxyport")),
                     PropertiesTools.getInstance(file).getProperties("environment.me.username"),
                     PropertiesTools.getInstance(file).getProperties("environment.me.password"));
@@ -260,12 +326,12 @@ public class TestTools {
             if (result.getVersions().length == 0) {
                 break;
             }
-            DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(bucketName);
-            deleteRequest.setEncodingType("url");
-            for (VersionOrDeleteMarker v : result.getVersions()) {
-                deleteRequest.addKeyAndVersion(v.getKey(), v.getVersionId());
+            // 文件桶使用批删会有问题，所以此处改成遍历单个删除，兼容对象桶和文件桶（但是一次列举最大为一千个，超过一千个在文件桶来说也会有问题）
+            List<VersionOrDeleteMarker> versionOrDeleteMarkerLists = Arrays.asList(result.getVersions());
+            Collections.reverse(versionOrDeleteMarkerLists);
+            for (VersionOrDeleteMarker v : versionOrDeleteMarkerLists) {
+                obsClient.deleteObject(bucketName, v.getKey());
             }
-            obsClient.deleteObjects(deleteRequest);
 
             request.setKeyMarker(result.getNextKeyMarker());
             request.setVersionIdMarker(result.getNextVersionIdMarker());
@@ -284,7 +350,8 @@ public class TestTools {
         return obsClient.deleteBucket(bucketName);
     }
 
-    public static HeaderResponse createBucket(ObsClient obsClient, String bucketName, String location, boolean isPosix) {
+    public static HeaderResponse createBucket(
+            ObsClient obsClient, String bucketName, String location, boolean isPosix) {
         CreateBucketRequest request = new CreateBucketRequest();
         request.setBucketName(bucketName);
         request.setBucketType(BucketTypeEnum.OBJECT);
@@ -295,7 +362,7 @@ public class TestTools {
         return obsClient.createBucket(request);
     }
 
-    public static void genTestFile(String filePath, int fileSize) throws IOException {
+    public static void genTestFile(String filePath, int fileSizeKb) throws IOException {
         File testFile = new File(filePath);
         if (!testFile.exists()) {
             assertTrue(testFile.createNewFile());
@@ -305,7 +372,7 @@ public class TestTools {
             stringBuilder.append("TestOBS!");
         }
         FileOutputStream outputStream = new FileOutputStream(filePath);
-        for (int i = 0; i < fileSize; i++) {
+        for (int i = 0; i < fileSizeKb; i++) {
             outputStream.write(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
         }
         outputStream.close();
@@ -316,14 +383,12 @@ public class TestTools {
         Configuration config = context.getConfiguration();
         LoggerConfig LoggerConfig = config.getLoggerConfig("com.obs.services.internal.RestStorageService");
         if (!LoggerConfig.getName().equals("com.obs.services.internal.RestStorageService")) {
-            LoggerConfig = new LoggerConfig("com.obs.services.internal.RestStorageService",
-                    Level.DEBUG, true);
+            LoggerConfig = new LoggerConfig("com.obs.services.internal.RestStorageService", Level.DEBUG, true);
         }
         config.addLogger("com.obs.services.internal.RestStorageService", LoggerConfig);
 
         PatternLayout layout = PatternLayout.createDefaultLayout(config);
-        Appender appender = WriterAppender.createAppender(layout, null, writer, "StringWriter",
-                false, true);
+        Appender appender = WriterAppender.createAppender(layout, null, writer, "StringWriter", false, true);
         config.addAppender(appender);
         LoggerConfig.addAppender(appender, Level.DEBUG, null);
         appender.start();
