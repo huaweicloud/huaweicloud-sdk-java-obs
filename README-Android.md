@@ -1,3 +1,10 @@
+Version 3.23.9.1
+New features:
+1. Allow you set custom dns resolver
+
+Third-party dependence:
+1. Remove java-xmlbuilder, use default javax.xml lib
+-----------------------------------------------------------------------------------
 Version 3.23.9
 New features:
 1. Allow you set\get\list\delete bucket inventory configuration
