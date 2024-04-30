@@ -515,6 +515,13 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                 }
                 headers.put(key, entry.getValue() == null ? "" : entry.getValue().toString());
             }
+
+            Object contentType = objectMetadata.getContentType() == null
+                    ? objectMetadata.getValue(CommonHeaders.CONTENT_TYPE) : objectMetadata.getContentType();
+            if (contentType == null) {
+                contentType = Mimetypes.getInstance().getMimetype(request.getObjectKey());
+            }
+            headers.put(CommonHeaders.CONTENT_TYPE, contentType.toString().trim());
         }
 
         setBaseHeaderFromMetadata(request.getBucketName(), headers, objectMetadata);

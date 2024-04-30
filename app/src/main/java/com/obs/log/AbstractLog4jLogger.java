@@ -15,9 +15,12 @@
 
 package com.obs.log;
 
-import java.util.logging.Logger;
-
 import com.obs.services.internal.utils.AccessLoggerUtils;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.Logger;
 
 public abstract class AbstractLog4jLogger {
     private static final Logger ILOG = Logger.getLogger(AbstractLog4jLogger.class.getName());
@@ -55,6 +58,7 @@ public abstract class AbstractLog4jLogger {
             try {
                 LoggerMethodHolder.info.invoke(this.logger, obj, e);
                 AccessLoggerUtils.appendLog(obj, "info");
+                appendLogForThrowable(e,"info");
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
@@ -88,6 +92,7 @@ public abstract class AbstractLog4jLogger {
             try {
                 LoggerMethodHolder.warn.invoke(this.logger, obj, e);
                 AccessLoggerUtils.appendLog(obj, "warn");
+                appendLogForThrowable(e,"warn");
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
@@ -121,6 +126,7 @@ public abstract class AbstractLog4jLogger {
             try {
                 LoggerMethodHolder.error.invoke(this.logger, obj, e);
                 AccessLoggerUtils.appendLog(obj, "error");
+                appendLogForThrowable(e,"error");
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
@@ -154,6 +160,7 @@ public abstract class AbstractLog4jLogger {
             try {
                 LoggerMethodHolder.debug.invoke(this.logger, obj, e);
                 AccessLoggerUtils.appendLog(obj, "debug");
+                appendLogForThrowable(e,"debug");
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
@@ -187,6 +194,7 @@ public abstract class AbstractLog4jLogger {
             try {
                 LoggerMethodHolder.trace.invoke(this.logger, obj, e);
                 AccessLoggerUtils.appendLog(obj, "trace");
+                appendLogForThrowable(e,"trace");
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
@@ -200,6 +208,17 @@ public abstract class AbstractLog4jLogger {
             } catch (Exception ex) {
                 ILOG.warning(ex.getMessage());
             }
+        }
+    }
+
+    protected void appendLogForThrowable(Throwable e, String level) {
+        AccessLoggerUtils.appendLog("Throwable Message:" + e.getMessage(), level);
+        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+            AccessLoggerUtils.appendLog("Throwable printStackTrace:" + sw, level);
+        } catch (IOException ex)
+        {
+            AccessLoggerUtils.appendLog("Throwable printStackTrace failed:" + ex.getMessage(), level);
         }
     }
 }

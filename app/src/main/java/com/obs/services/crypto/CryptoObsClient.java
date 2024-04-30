@@ -58,6 +58,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Objects;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -257,7 +258,8 @@ public class CryptoObsClient extends ObsClient {
                 | NoSuchAlgorithmException
                 | InvalidKeyException
                 | IllegalBlockSizeException
-                | BadPaddingException e) {
+                | BadPaddingException
+                | NoSuchProviderException e) {
             throw new ServiceException(e);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
@@ -373,7 +375,8 @@ public class CryptoObsClient extends ObsClient {
                                 | UnsupportedEncodingException
                                 | NoSuchAlgorithmException
                                 | BadPaddingException
-                                | InvalidKeyException e) {
+                                | InvalidKeyException
+                                | NoSuchProviderException e) {
                             throw new ServiceException(e);
                         }
                     }
@@ -389,7 +392,8 @@ public class CryptoObsClient extends ObsClient {
                         | InvalidAlgorithmParameterException
                         | NoSuchPaddingException
                         | NoSuchAlgorithmException
-                        | InvalidKeyException e) {
+                        | InvalidKeyException
+                        | NoSuchProviderException e) {
                     throw new ServiceException(e);
                 }
             } else {

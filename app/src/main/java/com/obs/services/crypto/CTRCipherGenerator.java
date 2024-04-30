@@ -27,6 +27,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -51,6 +52,16 @@ public class CTRCipherGenerator {
     protected static final String AES_ALGORITHM = "AES/CTR/NoPadding";
 
     static int sha256BufferLen = 65536;
+
+    private static String AesCipherProvider = "";
+
+    public static String getAesCipherProvider() {
+        return AesCipherProvider;
+    }
+
+    public static void setAesCipherProvider(String aesCipherProvider) {
+        AesCipherProvider = aesCipherProvider;
+    }
 
     public SecureRandom getSecureRandom() {
         return secureRandom;
@@ -87,6 +98,7 @@ public class CTRCipherGenerator {
     public byte[] getRandomCryptoKeyBytes() {
         return getRandomBytes(CRYPTO_KEY_BYTES_LEN);
     }
+
     public byte[] getRandomBytes(int randomBytesLen) {
         byte[] randomBytes;
         randomBytes = new byte[randomBytesLen];
@@ -130,10 +142,10 @@ public class CTRCipherGenerator {
     public CipherInputStream getAES256DecryptedStream(
             InputStream ciphertextInput, byte[] object_CryptoIvBytes, byte[] object_CryptoKeyBytes)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                    InvalidKeyException {
+                    InvalidKeyException, NoSuchProviderException {
         SecretKeySpec keySpec = new SecretKeySpec(object_CryptoKeyBytes, "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(object_CryptoIvBytes);
-        Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+        Cipher cipher = getAesCipher();
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
         return new CipherInputStream(ciphertextInput, cipher);
     }
@@ -141,12 +153,11 @@ public class CTRCipherGenerator {
     public CipherInputStream getAES256EncryptedStream(
             InputStream plaintextInput, byte[] object_CryptoIvBytes, byte[] object_CryptoKeyBytes)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-                    InvalidKeyException {
+                    InvalidKeyException, NoSuchProviderException {
         SecretKeySpec keySpec = new SecretKeySpec(object_CryptoKeyBytes, "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(object_CryptoIvBytes);
-        Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+        Cipher cipher = getAesCipher();
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-
         return new CipherInputStream(plaintextInput, cipher);
     }
 
@@ -161,10 +172,10 @@ public class CTRCipherGenerator {
     public static byte[] getAESEncryptedBytes(
             byte[] plainText, int plainTextOffset, int plainTextLength, byte[] aesKeyBytes, byte[] aesIvBytes)
             throws IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException,
-                    InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+                    InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
         SecretKeySpec keySpec = new SecretKeySpec(aesKeyBytes, "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(aesIvBytes);
-        Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+        Cipher cipher = getAesCipher();
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
         return cipher.doFinal(plainText, plainTextOffset, plainTextLength);
     }
@@ -225,6 +236,13 @@ public class CTRCipherGenerator {
         return fileSha256Digest.digest();
     }
 
+    public static Cipher getAesCipher()
+            throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+        return AesCipherProvider.equals("")
+                ? Cipher.getInstance(AES_ALGORITHM)
+                : Cipher.getInstance(AES_ALGORITHM, AesCipherProvider);
+    }
+
     public SHA256Info computeSHA256HashAES(
             InputStream plainTextStream,
             byte[] object_CryptoIvBytes,
@@ -235,7 +253,7 @@ public class CTRCipherGenerator {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(object_CryptoKeyBytes, "AES");
             IvParameterSpec ivSpec = new IvParameterSpec(object_CryptoIvBytes);
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+            Cipher cipher = getAesCipher();
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
             bis = new BufferedInputStream(plainTextStream);
             MessageDigest plainTextSha256 = MessageDigest.getInstance("SHA-256");

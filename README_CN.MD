@@ -1,3 +1,23 @@
+Version 3.24.3
+Resolved issues:
+1. 优化某些堆栈的日志打印
+2. 增加client close时的日志打印
+3. 修复域名校验不正确的问题
+4. 客户端加密功能的安全整改
+5. 优化重试逻辑
+6. 修复拷贝对象时的元数据设置不生效的问题
+7. 优化临时url的路径编码逻辑
+8. 优化解析、生成时间字符串的性能
+9. 优化xml生成逻辑
+10. 修复部分空指针问题
+
+Third-party dependence:
+1. 使用 okhttp 4.12.0 替代 okhttp 4.11.0 
+2. 使用 okio 3.6.0 替代 okio 3.5.0 
+3. 使用 jackson-core 2.15.2 替代 jackson-core 2.13.3 
+4. 使用 jackson-databind 2.15.2 替代 jackson-databind 2.13.4.1 
+5. 使用 jackson-annotations 2.15.2 替代 jackson-annotations 2.13.3
+-----------------------------------------------------------------------------------
 Version 3.23.9.1
 New features:
 1. 支持设置自定义dns解析器

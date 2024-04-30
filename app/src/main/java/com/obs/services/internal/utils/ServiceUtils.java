@@ -47,6 +47,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -71,6 +74,7 @@ public class ServiceUtils {
 
     private static Pattern pattern = Pattern
             .compile("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
+    private static DateTimeFormatter rfc822DateTimeFormatter = DateTimeFormatter.ofPattern(RFC_822_TIME_PARSER_STRING, Locale.US).withZone(ZoneId.of("GMT"));
 
     public static boolean isValid(String s) {
         return s != null && !s.equals("");
@@ -147,17 +151,26 @@ public class ServiceUtils {
         iso8601TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
         return iso8601TimeParser.format(date);
     }
-
     public static Date parseRfc822Date(String dateString) throws ParseException {
-        SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
-        rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return rfc822TimeParser.parse(dateString);
+        try {
+            return Date.from(ZonedDateTime.parse(dateString, rfc822DateTimeFormatter).toInstant());
+        } catch (Exception e) {
+            log.warn("parseRfc822Date with DateTimeFormatter failed, using SimpleDateFormat instead, error detail :", e);
+            SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
+            rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+            return rfc822TimeParser.parse(dateString);
+        }
     }
 
     public static String formatRfc822Date(Date date) {
-        SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
-        rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
-        return rfc822TimeParser.format(date);
+        try {
+            return rfc822DateTimeFormatter.format(date.toInstant());
+        } catch (Exception e) {
+            log.warn("formatRfc822Date with DateTimeFormatter failed, using SimpleDateFormat instead, error detail :", e);
+            SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
+            rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
+            return rfc822TimeParser.format(date);
+        }
     }
 
     public static String signWithHmacSha1(String sk, String canonicalString) throws ServiceException {
