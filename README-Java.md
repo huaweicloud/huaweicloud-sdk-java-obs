@@ -1,3 +1,23 @@
+Version 3.24.3
+Resolved issues:
+1. Optimized log info of some exception stack
+2. Added log when client closed
+3. Fixed the issue of hostname verifying
+4. Optimized Security of client encryption
+5. Optimized the retry logic
+6. Fixed issue of setObjectMetadata not working while copyObject
+7. Optimized object key coding of temporary url
+8. Optimized performance of parsing and generating time string
+9. Optimized logic of xml generating
+10. Fixed several issues of null pointer
+
+Third-party dependence:
+1. Replace okhttp 4.12.0 with okhttp 4.11.0
+2. Replace okio 3.6.0 with okio 3.5.0
+3. Replace jackson-core 2.15.2 with jackson-core 2.13.3
+4. Replace jackson-databind 2.15.2 with jackson-databind 2.13.4.1
+5. Replace jackson-annotations 2.15.2 with jackson-annotations 2.13.3
+-----------------------------------------------------------------------------------
 Version 3.23.9.1
 New features:
 1. Allow you set custom dns resolver

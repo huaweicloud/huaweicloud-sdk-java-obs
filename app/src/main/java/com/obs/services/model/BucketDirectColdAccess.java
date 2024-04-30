@@ -59,7 +59,11 @@ public class BucketDirectColdAccess extends HeaderResponse {
 
     @Override
     public String toString() {
-        return "BucketDirectColdAccess [Status=" + status.getCode() + "]";
+        String statusStr = "null";
+        if (status != null) {
+            statusStr = status.getCode();
+        }
+        return "BucketDirectColdAccess [Status=" + statusStr + "]";
     }
 
 }

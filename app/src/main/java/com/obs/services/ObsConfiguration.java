@@ -14,6 +14,7 @@
 
 package com.obs.services;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -99,6 +100,8 @@ public class ObsConfiguration implements Cloneable {
     private Dispatcher httpDispatcher;
 
     private Dns customizedDnsImpl;
+
+    private HostnameVerifier hostnameVerifier;
     
     private String xmlDocumentBuilderFactoryClass;
 
@@ -901,6 +904,17 @@ public class ObsConfiguration implements Cloneable {
     public void setCustomizedDnsImpl(Dns customizedDnsImpl) {
         this.customizedDnsImpl = customizedDnsImpl;
     }
+
+    public HostnameVerifier getHostnameVerifier()
+    {
+        return hostnameVerifier;
+    }
+
+    public void setHostnameVerifier(HostnameVerifier hostnameVerifier)
+    {
+        this.hostnameVerifier = hostnameVerifier;
+    }
+
     public String getXmlDocumentBuilderFactoryClass() {
         return xmlDocumentBuilderFactoryClass;
     }

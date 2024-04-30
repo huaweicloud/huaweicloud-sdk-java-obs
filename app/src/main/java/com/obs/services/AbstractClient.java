@@ -68,7 +68,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         if (this.isAuthTypeNegotiation()) {
             this.getProviderCredentials().setIsAuthTypeNegotiation(true);
         }
-        this.initHttpClient(config.getHttpDispatcher(), config.getCustomizedDnsImpl());
+        this.initHttpClient(config.getHttpDispatcher(), config.getCustomizedDnsImpl(), config.getHostnameVerifier());
         OBSXMLBuilder.setXmlDocumentBuilderFactoryClass(config.getXmlDocumentBuilderFactoryClass());
         reqBean.setRespTime(new Date());
         reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);
@@ -435,7 +435,11 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
      */
     @Override
     public void close() throws IOException {
+        ILOG.warn("client closing");
+        AccessLoggerUtils.printLog();
         this.shutdown();
+        ILOG.warn("client closed");
+        AccessLoggerUtils.printLog();
     }
     
     public String base64Md5(InputStream is, long length, long offset) throws NoSuchAlgorithmException, IOException {

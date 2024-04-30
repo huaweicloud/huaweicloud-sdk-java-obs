@@ -72,7 +72,10 @@ public class AccessLoggerUtils {
         }
         if (isLog) {
             StringBuilder sb = new StringBuilder(getFormat().format(new Date()));
-            sb.append("|").append(AccessLoggerUtils.getLogPrefix()).append(log.toString()).append("\n");
+            sb.append("|").append(Thread.currentThread().getName())
+                    .append("|").append(level)
+                    .append("|").append(AccessLoggerUtils.getLogPrefix())
+                    .append(log.toString()).append("\n");
             getLog().append(sb.toString());
         }
     }

@@ -38,12 +38,10 @@ import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,7 +59,7 @@ import static com.obs.services.internal.utils.ServiceUtils.isInfoLoggable;
 public abstract class RestStorageService extends RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
 
-    private static final Set<Class<? extends IOException>> NON_RETRIABLE_CLASSES =
+    private static final Set<Class<? extends IOException>> NON_RETRIEVABLE_CLASSES =
             new HashSet<>();
 
     private static final String REQUEST_TIMEOUT_CODE = "RequestTimeout";
@@ -70,9 +68,16 @@ public abstract class RestStorageService extends RestConnectionService {
     // Connection{...}
     private static final String UNEXPECTED_END_OF_STREAM_EXCEPTION = "unexpected end of stream";
 
-    static {
-        NON_RETRIABLE_CLASSES.add(UnknownHostException.class);
-        NON_RETRIABLE_CLASSES.add(SSLException.class);
+    public static Set<Class<? extends IOException>> getNonRetrievableClasses(){
+        return NON_RETRIEVABLE_CLASSES;
+    }
+
+    public static void addNonRetrievableClass(Class<? extends IOException> nonRetrievableClass){
+        NON_RETRIEVABLE_CLASSES.add(nonRetrievableClass);
+    }
+
+    public static void removeNonRetrievableClass(Class<? extends IOException> nonRetrievableClass){
+        NON_RETRIEVABLE_CLASSES.remove(nonRetrievableClass);
     }
 
     private static ThreadLocal<HashMap<String, String>> userHeaders = new ThreadLocal<>();
@@ -165,10 +170,10 @@ public abstract class RestStorageService extends RestConnectionService {
         if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
             return false;
         }
-        if (NON_RETRIABLE_CLASSES.contains(exception.getClass())) {
+        if (NON_RETRIEVABLE_CLASSES.contains(exception.getClass())) {
             return false;
         } else {
-            for (final Class<? extends IOException> rejectException : NON_RETRIABLE_CLASSES) {
+            for (final Class<? extends IOException> rejectException : NON_RETRIEVABLE_CLASSES) {
                 if (rejectException.isInstance(exception)) {
                     return false;
                 }
@@ -449,9 +454,10 @@ public abstract class RestStorageService extends RestConnectionService {
                         ExtObsConstraint.DEFAULT_MAX_RETRY_ON_UNEXPECTED_END_EXCEPTION)),
                 false);
 
+        StringBuilder stringToSignToReturn = new StringBuilder("");
         do {
             if (!retryController.isWasRecentlyRedirected()) {
-                requestInfo.setRequest(addBaseHeaders(requestInfo.getRequest(), bucketName, doSignature));
+                requestInfo.setRequest(addBaseHeaders(requestInfo.getRequest(), bucketName, doSignature, stringToSignToReturn));
             } else {
                 retryController.setWasRecentlyRedirected(false);
             }
@@ -487,9 +493,9 @@ public abstract class RestStorageService extends RestConnectionService {
                 if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
                     requestInfo.setRequest(handleRedirectResponse(requestInfo.getRequest(),
                             requestParameters, bucketName, doSignature, isOEF,
-                            requestInfo.getReqBean(), requestInfo.getResponse(), retryController));
+                            requestInfo.getReqBean(), requestInfo.getResponse(), retryController, stringToSignToReturn));
                 } else if ((responseCode >= 400 && responseCode < 500) || responseCode == 304) {
-                    handleRequestErrorResponse(requestInfo.getResponse(), retryController);
+                    handleRequestErrorResponse(requestInfo.getResponse(), retryController, stringToSignToReturn);
                 } else if (responseCode >= 500) {
                     handleServerErrorResponse(requestInfo.getReqBean(),
                             requestInfo.getResponse(), retryController, responseCode);
@@ -501,8 +507,9 @@ public abstract class RestStorageService extends RestConnectionService {
         } while (true);
     }
 
-    private void handleRequestErrorResponse(Response response, RetryController retryController) {
-        ServiceException exception = createServiceException("Request Error.", response);
+    private void handleRequestErrorResponse(Response response, RetryController retryController,
+            StringBuilder stringToSignToReturn) {
+        ServiceException exception = createServiceException("Request Error.", response, stringToSignToReturn);
 
         if (!REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
             throw exception;
@@ -544,7 +551,8 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private Request handleRedirectResponse(Request request, Map<String, String> requestParameters, String bucketName,
                                            boolean doSignature, boolean isOEF, InterfaceLogBean reqBean,
-                                           Response response, RetryController retryController) {
+                                           Response response, RetryController retryController,
+            StringBuilder stringToSignToReturn) {
         int responseCode = response.code();
         String location = response.header(CommonHeaders.LOCATION);
         if (!ServiceUtils.isValid(location)) {
@@ -555,7 +563,7 @@ public abstract class RestStorageService extends RestConnectionService {
         }
 
         request = createRedirectRequest(request, requestParameters, bucketName, doSignature, isOEF,
-                responseCode, location);
+                responseCode, location, stringToSignToReturn);
 
         retryController.setWasRecentlyRedirected(true);
 
@@ -635,14 +643,42 @@ public abstract class RestStorageService extends RestConnectionService {
     private void doRetry(Response response, String message, RetryCounter retryCounter) {
         retryCounter.addErrorCount();
         if (retryCounter.getErrorCount() > retryCounter.getRetryMaxCount()) {
-            throw createServiceException(message, response);
+            throw createServiceException(message, response, null);
         }
         ServiceUtils.closeStream(response);
     }
 
-    private ServiceException createServiceException(String message, Response response) {
+    private ServiceException createServiceException(String message, Response response,
+            StringBuilder stringToSignToReturn) {
         String xmlMessage = readResponseMessage(response);
-        return new ServiceException(message, xmlMessage);
+        if(stringToSignToReturn != null){
+            String errorMessageForSignatureDoesNotMatch =
+                    createErrorMessageForSignatureDoesNotMatch(xmlMessage, message, stringToSignToReturn);
+            ServiceException serviceException = new ServiceException(errorMessageForSignatureDoesNotMatch, xmlMessage);
+            serviceException.setErrorMessage(serviceException.getErrorMessage()+"\n"+errorMessageForSignatureDoesNotMatch);
+            return serviceException;
+        } else {
+            return new ServiceException(message, xmlMessage);
+        }
+    }
+
+    private String createErrorMessageForSignatureDoesNotMatch(String xmlMessage, String message, StringBuilder stringToSignToReturn){
+        if (!xmlMessage.contains("<Code>SignatureDoesNotMatch</Code>")) {
+            return message;
+        }
+        int startStringToSign = xmlMessage.lastIndexOf("<StringToSign>") + "<StringToSign>".length();
+        if(startStringToSign < 0){
+            return message;
+        }
+        int endStringToSign = xmlMessage.lastIndexOf("</StringToSign>");
+
+        StringBuilder ErrorStringToSignMessage = new StringBuilder();
+        ErrorStringToSignMessage.append("your local StringToSign is (between\"---\"):\n---\n");
+        ErrorStringToSignMessage.append(stringToSignToReturn);
+        ErrorStringToSignMessage.append("\n---\nPlease compare it to Server's StringToSign (between\"---\"):\n---\n");
+        ErrorStringToSignMessage.append(xmlMessage, startStringToSign, endStringToSign);
+        ErrorStringToSignMessage.append("\n---\n");
+        return ErrorStringToSignMessage.toString();
     }
 
     private String readResponseMessage(Response response) {
@@ -658,13 +694,14 @@ public abstract class RestStorageService extends RestConnectionService {
     }
 
     private Request createRedirectRequest(Request request, Map<String, String> requestParameters, String bucketName,
-                                          boolean doSignature, boolean isOEF, int responseCode, String location) {
+                                          boolean doSignature, boolean isOEF, int responseCode, String location,
+            StringBuilder stringToSignToReturn) {
         if (!location.contains("?")) {
             location = addRequestParametersToUrlPath(location, requestParameters, isOEF);
         }
 
         if (doSignature && isLocationHostOnly(location)) {
-            request = authorizeHttpRequest(request, bucketName, location);
+            request = authorizeHttpRequest(request, bucketName, location, stringToSignToReturn);
         } else {
             Request.Builder builder = request.newBuilder();
 
@@ -703,13 +740,13 @@ public abstract class RestStorageService extends RestConnectionService {
             }
             throw createServiceException("Encountered too many 5xx errors (" + internalErrorCount
                             + "), aborting request.",
-                    response);
+                    response, null);
         }
     }
 
-    private Request addBaseHeaders(Request request, String bucketName, boolean doSignature) {
+    private Request addBaseHeaders(Request request, String bucketName, boolean doSignature, StringBuilder stringToSignToReturn) {
         if (doSignature) {
-            request = authorizeHttpRequest(request, bucketName, null);
+            request = authorizeHttpRequest(request, bucketName, null, stringToSignToReturn);
         } else {
             Request.Builder builder = request.newBuilder();
             builder.headers(request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build());
@@ -795,7 +832,7 @@ public abstract class RestStorageService extends RestConnectionService {
         }
     }
 
-    protected Request authorizeHttpRequest(Request request, String bucketName, String url) throws ServiceException {
+    protected Request authorizeHttpRequest(Request request, String bucketName, String url, StringBuilder stringToSignToReturn) throws ServiceException {
 
         Headers headers = request.headers().newBuilder().removeAll(CommonHeaders.AUTHORIZATION).build();
         Request.Builder builder = request.newBuilder();
@@ -866,6 +903,10 @@ public abstract class RestStorageService extends RestConnectionService {
             iauthentication = Constants.AUTHTICATION_MAP.get(providerCredentials.getLocalAuthType(bucketName))
                     .makeAuthorizationString(request.method(), convertHeadersToMap(builder.build().headers()), fullUrl,
                             Constants.ALLOWED_RESOURCE_PARAMTER_NAMES, securityKey);
+        }
+        if (stringToSignToReturn != null){
+            stringToSignToReturn.setLength(0);
+            stringToSignToReturn.append(iauthentication.getStringToSign());
         }
         log.debug("StringToSign ('|' is a newline): "
                 + iauthentication.getStringToSign().replace('\n', '|'));
@@ -1016,10 +1057,8 @@ public abstract class RestStorageService extends RestConnectionService {
 
     private void sleepBeforeRetry(int internalErrorCount) {
         long delayMs = 50L * (int) Math.pow(2, internalErrorCount);
-        if (log.isWarnEnabled()) {
-            log.warn("Encountered " + internalErrorCount + " Internal Server error(s), will retry in " + delayMs
-                    + "ms");
-        }
+        log.warn("Encountered " + internalErrorCount + " Internal Server error(s), will retry in " + delayMs
+                + "ms");
         try {
             Thread.sleep(delayMs);
         } catch (InterruptedException e) {

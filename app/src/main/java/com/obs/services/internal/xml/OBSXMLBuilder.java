@@ -13,6 +13,8 @@
  */
 package com.obs.services.internal.xml;
 
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,12 +43,22 @@ public class OBSXMLBuilder {
     private static String xmlDocumentBuilderFactoryClass =
             "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
 
+    private static String xmlTransformerFactoryClass =
+            "";
+
+    private static final ILogger log = LoggerBuilder.getLogger(OBSXMLBuilder.class);
+
     private Document xmlDocument;
     private Node xmlNode;
 
     public static void setXmlDocumentBuilderFactoryClass(String className) {
         if (null != className && !className.trim().equals("")) {
             xmlDocumentBuilderFactoryClass = className;
+        }
+    }
+    public static void setXmlTransformerFactoryClass(String className) {
+        if (null != className && !className.trim().equals("")) {
+            xmlTransformerFactoryClass = className;
         }
     }
 
@@ -76,14 +88,27 @@ public class OBSXMLBuilder {
         return newInstance(DocumentBuilderFactory.class, xmlDocumentBuilderFactoryClass, null, true, false);
     }
 
+    private static TransformerFactory findTransformerFactory() {
+        if (xmlTransformerFactoryClass == null || xmlTransformerFactoryClass.equals("")) {
+            return TransformerFactory.newInstance();
+        } else {
+            return TransformerFactory.newInstance(xmlTransformerFactoryClass, null);
+        }
+
+    }
+
     protected static Document createDocumentImpl(
             String name, String namespaceURI, boolean isNamespaceAware)
             throws ParserConfigurationException, FactoryConfigurationError {
         DocumentBuilderFactory factory = OBSXMLBuilder.findDocumentBuilderFactory();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        try {
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        } catch (Throwable e) {
+            log.debug("setFeature not supported, detail:", e);
+        }
         factory.setNamespaceAware(isNamespaceAware);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.newDocument();
@@ -302,9 +327,14 @@ public class OBSXMLBuilder {
     }
 
     public String asString() throws TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+        TransformerFactory tf = findTransformerFactory();
+        try {
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        } catch (Throwable e) {
+            log.debug("setAttribute not supported, detail:", e);
+        }
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         StringWriter writer = new StringWriter();
