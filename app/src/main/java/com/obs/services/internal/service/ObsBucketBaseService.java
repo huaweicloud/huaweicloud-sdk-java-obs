@@ -43,6 +43,7 @@ import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ListBucketsRequest;
 import com.obs.services.model.ListBucketsResult;
 import com.obs.services.model.ListObjectsRequest;
@@ -66,6 +67,7 @@ import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
 import com.obs.services.model.inventory.GetInventoryConfigurationResult;
 import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 import okhttp3.Response;
+import okhttp3.internal.http.HttpMethod;
 
 public abstract class ObsBucketBaseService extends RequestConvertor {
 
@@ -206,6 +208,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         Map<String, String> headers = transRequestPaymentHeaders(request, null,
                 this.getIHeaders(request.getBucketName()));
+        headers = headers == null ? new HashMap<>() : headers;
 
         String xml = this.getIConvertor(request.getBucketName()).transBucketFileInterface(request.getStatus());
         headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
@@ -214,6 +217,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
         NewTransResult result = transRequest(request);
         result.setParams(requestParams);
         result.setHeaders(headers);
+        result.setHttpMethod(HttpMethodEnum.PUT);
         result.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
         Response response = performRequest(result);
 

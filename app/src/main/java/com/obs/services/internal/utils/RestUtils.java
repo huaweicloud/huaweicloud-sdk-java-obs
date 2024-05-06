@@ -37,6 +37,7 @@ import okhttp3.Route;
 import org.jetbrains.annotations.NotNull;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -161,15 +162,8 @@ public class RestUtils {
     }
 
     public static String encodeUrlPath(String path, String delimiter) throws ServiceException {
-        StringBuilder result = new StringBuilder();
-        String[] tokens = path.split(delimiter);
-        for (int i = 0; i < tokens.length; i++) {
-            result.append(encodeUrlString(tokens[i]));
-            if (i < tokens.length - 1) {
-                result.append(delimiter);
-            }
-        }
-        return result.toString();
+        String allEncoded = encodeUrlString(path);
+        return allEncoded.replaceAll(encodeUrlString(delimiter),delimiter);
     }
 
     private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm, String provider,
@@ -215,18 +209,23 @@ public class RestUtils {
     private static class WrapperedSocketFactory extends SocketFactory {
 
         private SocketFactory delegate;
-        private int socketReadWriteBufferSize;
+        private int socketReadBufferSize;
+        private int socketWriteBufferSize;
 
-        WrapperedSocketFactory(SocketFactory delegate, int socketReadWriteBufferSize) {
+        WrapperedSocketFactory(SocketFactory delegate,
+                int socketReadBufferSize, int socketWriteBufferSize) {
             this.delegate = delegate;
-            this.socketReadWriteBufferSize = socketReadWriteBufferSize;
+            this.socketReadBufferSize = socketReadBufferSize;
+            this.socketWriteBufferSize = socketWriteBufferSize;
         }
 
         private Socket doWrap(Socket s) throws SocketException {
             if (s != null) {
-                if (socketReadWriteBufferSize > 0) {
-                    s.setReceiveBufferSize(socketReadWriteBufferSize);
-                    s.setReceiveBufferSize(socketReadWriteBufferSize);
+                if (socketReadBufferSize > 0) {
+                    s.setReceiveBufferSize(socketReadBufferSize);
+                }
+                if (socketWriteBufferSize > 0) {
+                    s.setSendBufferSize(socketWriteBufferSize);
                 }
                 s.setTcpNoDelay(true);
             }
@@ -265,18 +264,23 @@ public class RestUtils {
     private static class WrapperedSSLSocketFactory extends SSLSocketFactory {
 
         private SSLSocketFactory delegate;
-        private int socketReadWriteBufferSize;
+        private int socketReadBufferSize;
+        private int socketWriteBufferSize;
 
-        WrapperedSSLSocketFactory(SSLSocketFactory delegate, int socketReadWriteBufferSize) {
+        WrapperedSSLSocketFactory(SSLSocketFactory delegate,
+                int socketReadBufferSize, int socketWriteBufferSize) {
             this.delegate = delegate;
-            this.socketReadWriteBufferSize = socketReadWriteBufferSize;
+            this.socketReadBufferSize = socketReadBufferSize;
+            this.socketWriteBufferSize = socketWriteBufferSize;
         }
 
         private Socket doWrap(Socket s) throws SocketException {
             if (s != null) {
-                if (socketReadWriteBufferSize > 0) {
-                    s.setReceiveBufferSize(socketReadWriteBufferSize);
-                    s.setReceiveBufferSize(socketReadWriteBufferSize);
+                if (socketReadBufferSize > 0) {
+                    s.setReceiveBufferSize(socketReadBufferSize);
+                }
+                if (socketWriteBufferSize > 0) {
+                    s.setSendBufferSize(socketWriteBufferSize);
                 }
                 s.setTcpNoDelay(true);
             }
@@ -329,7 +333,7 @@ public class RestUtils {
 
     public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties,
             KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
-            Dispatcher httpDispatcher, Dns customizedDnsImpl, SecureRandom secureRandom) {
+            Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier userHostnameVerifier, SecureRandom secureRandom) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
         protocols.add(Protocol.HTTP_1_1);
@@ -351,6 +355,20 @@ public class RestUtils {
                 TimeUnit.MILLISECONDS);
 
         Dns dns = customizedDnsImpl == null ? new DefaultObsDns() : customizedDnsImpl;
+        HostnameVerifier hostnameVerifier = (s, sslSession) -> {
+            if(obsProperties.getBoolProperty(
+                    ObsConstraint.HTTP_STRICT_HOSTNAME_VERIFICATION, false)) {
+                if(userHostnameVerifier == null) {
+                    return HttpsURLConnection.getDefaultHostnameVerifier().verify
+                            (obsProperties.getStringProperty(ObsConstraint.END_POINT, ""), sslSession);
+                } else {
+                    return userHostnameVerifier.verify(s, sslSession);
+                }
+            } else {
+                // no hostnameVerify
+                return true;
+            }
+        };
 
         builder.protocols(protocols).followRedirects(false).followSslRedirects(false)
                 .retryOnConnectionFailure(
@@ -363,16 +381,13 @@ public class RestUtils {
                 .readTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_SOCKET_TIMEOUT,
                         ObsConstraint.HTTP_SOCKET_TIMEOUT_VALUE), TimeUnit.MILLISECONDS)
                 .connectionPool(pool)
-                .hostnameVerifier((hostname, session) -> !obsProperties.getBoolProperty(ObsConstraint.HTTP_STRICT_HOSTNAME_VERIFICATION, false)
-                        || HttpsURLConnection.getDefaultHostnameVerifier().verify(obsProperties.getStringProperty(ObsConstraint.END_POINT, ""), session))
+                .hostnameVerifier(hostnameVerifier)
                 .dns(dns);
 
         int socketReadBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_READ_BUFFER_SIZE, -1);
         int socketWriteBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_WRITE_BUFFER_SIZE, -1);
 
-        int socketReadWriteBufferSize = Math.max(socketReadBufferSize, socketWriteBufferSize);
-
-        builder.socketFactory(new WrapperedSocketFactory(SocketFactory.getDefault(), socketReadWriteBufferSize));
+        builder.socketFactory(new WrapperedSocketFactory(SocketFactory.getDefault(), socketReadBufferSize, socketWriteBufferSize));
 
         try {
             KeyManager[] km = null;
@@ -406,7 +421,7 @@ public class RestUtils {
                 sslContext = createSSLContext(km, tm, secureRandom);
             }
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-            builder.sslSocketFactory(new WrapperedSSLSocketFactory(sslSocketFactory, socketReadWriteBufferSize),
+            builder.sslSocketFactory(new WrapperedSSLSocketFactory(sslSocketFactory, socketReadBufferSize, socketWriteBufferSize),
                     trustManager);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
