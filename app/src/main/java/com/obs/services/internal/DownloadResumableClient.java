@@ -14,7 +14,23 @@
 
 package com.obs.services.internal;
 
-import java.io.Closeable;
+import com.obs.log.ILogger;
+import com.obs.log.LoggerBuilder;
+import com.obs.services.AbstractClient;
+import com.obs.services.exception.ObsException;
+import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.utils.CRC64;
+import com.obs.services.internal.utils.CRC64InputStream;
+import com.obs.services.internal.utils.SecureObjectInputStream;
+import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.DownloadFileRequest;
+import com.obs.services.model.DownloadFileResult;
+import com.obs.services.model.GetObjectMetadataRequest;
+import com.obs.services.model.GetObjectRequest;
+import com.obs.services.model.MonitorableProgressListener;
+import com.obs.services.model.ObjectMetadata;
+import com.obs.services.model.ObsObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,26 +46,15 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.obs.log.ILogger;
-import com.obs.log.LoggerBuilder;
-import com.obs.services.AbstractClient;
-import com.obs.services.exception.ObsException;
-import com.obs.services.internal.io.ProgressInputStream;
-import com.obs.services.internal.utils.SecureObjectInputStream;
-import com.obs.services.internal.utils.ServiceUtils;
-import com.obs.services.model.DownloadFileRequest;
-import com.obs.services.model.DownloadFileResult;
-import com.obs.services.model.GetObjectMetadataRequest;
-import com.obs.services.model.GetObjectRequest;
-import com.obs.services.model.MonitorableProgressListener;
-import com.obs.services.model.ObjectMetadata;
-import com.obs.services.model.ObsObject;
+import static com.obs.services.internal.Constants.CommonHeaders.HASH_CRC64ECMA;
+import static com.obs.services.internal.Constants.CommonHeaders.INVALID_CRC_64;
 
 public class DownloadResumableClient {
 
@@ -146,7 +151,6 @@ public class DownloadResumableClient {
         // 并发下载分片
         DownloadResult downloadResult = this.download(downloadCheckPoint, downloadFileRequest);
         checkDownloadResult(downloadFileRequest, downloadCheckPoint, downloadResult);
-
         // 重命名临时文件
         renameTo(downloadFileRequest.getTempDownloadFile(), downloadFileRequest.getDownloadFile());
 
@@ -154,8 +158,58 @@ public class DownloadResumableClient {
         if (downloadFileRequest.isEnableCheckpoint()) {
             ServiceUtils.deleteFileIgnoreException(downloadFileRequest.getCheckpointFile());
         }
+        tryGetCombinedCRC64(downloadFileRequest, downloadCheckPoint, downloadFileResult);
 
         return downloadFileResult;
+    }
+    private String tryGetRequestID(DownloadFileResult downloadFileResult) {
+        if (downloadFileResult == null) {
+            return "";
+        }
+        ObjectMetadata objectMetadata = downloadFileResult.getObjectMetadata();
+        if (objectMetadata == null) {
+            return "";
+        }
+        Map<String, Object> responseHeaders = objectMetadata.getResponseHeaders();
+        if (responseHeaders == null) {
+            return "";
+        }
+        return (String) responseHeaders.get("request-id");
+    }
+    private void tryGetCombinedCRC64(DownloadFileRequest downloadFileRequest, DownloadCheckPoint downloadCheckPoint,
+            DownloadFileResult downloadFileResult) throws ServiceException {
+
+        if (downloadFileRequest.isNeedCalculateCRC64() && downloadCheckPoint.isAllCompleted) {
+            try {
+                CRC64 crc64Combined = new CRC64(downloadCheckPoint.downloadParts.get(0).crc64);
+                for (int i = 1; i < downloadCheckPoint.downloadParts.size(); ++i) {
+                    DownloadPart downloadPartI = downloadCheckPoint.downloadParts.get(i);
+                    crc64Combined.combineWithAnotherCRC64
+                            (downloadPartI.crc64, downloadPartI.end - downloadPartI.offset + 1L);
+                }
+                downloadFileResult.setCombinedCRC64(crc64Combined);
+                String sdkCalculatedCRC64 = crc64Combined.toString();
+                String serverReturnedCRC64 = (String) downloadFileResult.
+                        getObjectMetadata().getResponseHeaders().get(HASH_CRC64ECMA);
+                if (!sdkCalculatedCRC64.equals(serverReturnedCRC64)) {
+                    String errorInfo = "downloadedObject: " + downloadFileRequest.getObjectKey()
+                            + " 's CRC64 and server returned CRC64 don't match! "
+                            + "Please deleted downloadedFile and try again. "
+                            + "sdk calculated downloadFile CRC64 is " + sdkCalculatedCRC64
+                            + " server returned CRC64 is " + serverReturnedCRC64
+                            + " server requestID is " + tryGetRequestID(downloadFileResult);
+                    ServiceException serviceException = new ServiceException(errorInfo);
+                    serviceException.setErrorCode(INVALID_CRC_64);
+                    throw serviceException;
+                }
+            } catch (ServiceException serviceException) {
+                log.error("tryGetCombinedCRC64 for downloadFile failed, exception:", serviceException);
+                throw serviceException;
+            } catch (Throwable t) {
+                log.error("tryGetCombinedCRC64 for downloadFile failed, throwable:", t);
+                throw ServiceUtils.changeFromThrowable(t);
+            }
+        }
     }
 
     private void checkDownloadResult(DownloadFileRequest downloadFileRequest, DownloadCheckPoint downloadCheckPoint,
@@ -275,6 +329,18 @@ public class DownloadResumableClient {
                             ? downloadFileRequest.getProgressInterval() : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
         }
 
+        if (downloadFileRequest.getTaskNum() == 1) {
+            for (Task task : unfinishedTasks) {
+                task.setProgressManager(progressManager);
+                taskResults.add(task.call());
+            }
+            downloadResult.setPartResults(taskResults);
+            if (progressManager != null) {
+                progressManager.progressEnd();
+            }
+            return downloadResult;
+        }
+
         ExecutorService service = Executors.newFixedThreadPool(downloadFileRequest.getTaskNum());
         for (Task task : unfinishedTasks) {
             task.setProgressManager(progressManager);
@@ -368,6 +434,9 @@ public class DownloadResumableClient {
 
                 ObsObject object = obsClient.getObject(getObjectRequest);
                 content = object.getObjectContent();
+                if (downloadFileRequest.isNeedCalculateCRC64()) {
+                    content = new CRC64InputStream(content);
+                }
                 byte[] buffer = new byte[ObsConstraint.DEFAULT_CHUNK_SIZE];
                 int bytesOffset;
                 if (this.progressManager != null) {
@@ -380,7 +449,11 @@ public class DownloadResumableClient {
                         output.write(buffer, 0, bytesOffset);
                     }
                 }
-                downloadCheckPoint.update(partIndex, true, downloadFileRequest.getTempDownloadFile());
+                CRC64 partCrc64 = null;
+                if (downloadFileRequest.isNeedCalculateCRC64()) {
+                    partCrc64 = ((CRC64InputStream) content).getCrc64();
+                }
+                downloadCheckPoint.update(partIndex, true, downloadFileRequest.getTempDownloadFile(), partCrc64);
             } catch (ObsException e) {
                 if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
                     downloadCheckPoint.isAbort = true;
@@ -560,6 +633,7 @@ public class DownloadResumableClient {
         public TmpFileStatus tmpFileStatus;
         ArrayList<DownloadPart> downloadParts;
         public transient volatile boolean isAbort = false;
+        public transient volatile boolean isAllCompleted = true;
 
         @Override
         public int hashCode() {
@@ -668,10 +742,12 @@ public class DownloadResumableClient {
          * @param tmpFilePath
          * @throws IOException
          */
-        public synchronized void update(int index, boolean completed, String tmpFilePath) throws IOException {
+        public synchronized void update(int index, boolean completed, String tmpFilePath, CRC64 crc64) throws IOException {
             downloadParts.get(index).isCompleted = completed;
             File tmpfile = new File(tmpFilePath);
             this.tmpFileStatus.lastModified = new Date(tmpfile.lastModified());
+            isAllCompleted = (isAllCompleted && completed);
+            downloadParts.get(index).crc64 = crc64;
         }
 
         /**
@@ -794,6 +870,7 @@ public class DownloadResumableClient {
         public long offset; // 分片起始位置
         public long end; // 分片片结束位置
         public boolean isCompleted; // 该分片下载是否完成
+        public CRC64 crc64; // 分片的crc64，用于合并后进行crc64校验
 
         @Override
         public int hashCode() {
@@ -803,6 +880,7 @@ public class DownloadResumableClient {
             result = prime * result + (isCompleted ? 0 : 8);
             result = prime * result + (int) (end ^ (end >>> 32));
             result = prime * result + (int) (offset ^ (offset >>> 32));
+            result = prime * result + ((crc64 == null) ? 0 : crc64.hashCode());
             return result;
         }
 
@@ -947,6 +1025,5 @@ public class DownloadResumableClient {
         public void setPartResults(List<PartResultDown> partResults) {
             this.partResults = partResults;
         }
-
     }
 }

@@ -14,10 +14,14 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.utils.CRC64;
+
 /**
  * Response to a file download request
  */
 public class DownloadFileResult {
+    private CRC64 crc64Combined;
+
     /**
      * Obtain object properties.
      * 
@@ -39,9 +43,17 @@ public class DownloadFileResult {
 
     private ObjectMetadata objectMetadata;
 
+
+    public CRC64 getCombinedCRC64() {
+        return crc64Combined;
+    }
+    public void setCombinedCRC64(CRC64 crc64Combined) {
+        this.crc64Combined = crc64Combined;
+    }
+
     @Override
     public String toString() {
-        return "DownloadFileResult [objectMetadata=" + objectMetadata + "]";
+        return "DownloadFileResult [objectMetadata=" + objectMetadata + ". crc64Combined=" + crc64Combined + "]";
     }
 
 }

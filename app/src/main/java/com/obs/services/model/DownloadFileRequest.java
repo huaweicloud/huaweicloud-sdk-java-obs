@@ -51,6 +51,8 @@ public class DownloadFileRequest extends BaseObjectRequest {
 
     private long ttl;
 
+    private boolean needCalculateCRC64 = false;
+
     /**
      * Constructor
      * 
@@ -517,6 +519,23 @@ public class DownloadFileRequest extends BaseObjectRequest {
             ttl = 60 * 60 * 24L;
         }
         this.ttl = ttl;
+    }
+
+
+    /**
+     * @return
+     * Whether you need sdk to calculate CRC64 value and compare it with CRC64 returned by server
+     */
+    public boolean isNeedCalculateCRC64() {
+        return needCalculateCRC64;
+    }
+
+    /**
+     * @param needCalculateCRC64
+     * Whether you need sdk to calculate CRC64 value and compare it with CRC64 returned by server
+     */
+    public void setNeedCalculateCRC64(boolean needCalculateCRC64) {
+        this.needCalculateCRC64 = needCalculateCRC64;
     }
 
 

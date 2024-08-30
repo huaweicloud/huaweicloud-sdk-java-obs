@@ -34,6 +34,7 @@ import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.HttpMethodEnum;
 import okhttp3.Dispatcher;
 import okhttp3.Dns;
+import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -57,10 +58,12 @@ public class RestConnectionService {
 
     protected volatile ProviderCredentials credentials;
 
-    protected void initHttpClient(Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier hostnameVerifier) {
+    protected void initHttpClient(Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier hostnameVerifier,
+            EventListener.Factory eventListenerFactory) {
 
         OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(obsProperties, keyManagerFactory,
-                trustManagerFactory, httpDispatcher, customizedDnsImpl, hostnameVerifier, credentials.getSecureRandom());
+                trustManagerFactory, httpDispatcher, customizedDnsImpl, eventListenerFactory, hostnameVerifier,
+                credentials.getSecureRandom());
 
         if (this.obsProperties.getBoolProperty(ObsConstraint.PROXY_ISABLE, true)) {
             String proxyHostAddress = this.obsProperties.getStringProperty(ObsConstraint.PROXY_HOST, null);

@@ -45,6 +45,12 @@ public class UploadFileRequest extends PutObjectBasicRequest {
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
 
+    private boolean needAbortUploadFileAfterCancel = false;
+
+    private boolean needCalculateCRC64 = false;
+
+    private boolean needStreamCalculateCRC64 = false;
+
     /**
      * Constructor
      * 
@@ -428,6 +434,44 @@ public class UploadFileRequest extends PutObjectBasicRequest {
         this.callback = callback;
     }
 
+    public boolean isNeedAbortUploadFileAfterCancel() {
+        return needAbortUploadFileAfterCancel;
+    }
+
+    public void setNeedAbortUploadFileAfterCancel(boolean needAbortUploadFileAfterCancel) {
+        this.needAbortUploadFileAfterCancel = needAbortUploadFileAfterCancel;
+    }
+
+    /**
+     * @return Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public boolean isNeedCalculateCRC64() {
+        return needCalculateCRC64;
+    }
+
+    /**
+     * @param needCalculateCRC64
+     *      Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public void setNeedCalculateCRC64(boolean needCalculateCRC64) {
+        this.needCalculateCRC64 = needCalculateCRC64;
+    }
+
+
+    /**
+     * @return Whether you need sdk to calculate CRC64 value by stream, priority is lower than needCalculateCRC64
+     */
+    public boolean isNeedStreamCalculateCRC64() {
+        return needStreamCalculateCRC64;
+    }
+
+    /**
+     * @param needStreamCalculateCRC64
+     *      Whether you need sdk to calculate CRC64 value by stream, priority is lower than needCalculateCRC64
+     */
+    public void setNeedStreamCalculateCRC64(boolean needStreamCalculateCRC64) {
+        this.needStreamCalculateCRC64 = needStreamCalculateCRC64;
+    }
     @Override
     public String toString() {
         return "UploadFileRequest [bucketName=" + bucketName + ", objectKey=" + objectKey + ", partSize=" + partSize

@@ -60,6 +60,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         this.prepareRESTHeaderAcl(request.getBucketName(), result.getHeaders(), request.getAcl());
 
         NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+        newTransResult.setCancelHandler(request.getCancelHandler());
         Response response = performRequest(newTransResult, true, false, false, false);
 
         this.verifyResponseContentType(response);
@@ -107,6 +108,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         transResult.setParams(requestParams);
         transResult.setHeaders(headers);
         transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        transResult.setCancelHandler(request.getCancelHandler());
 
         Response response = performRequest(transResult, true, false, false, false);
 
@@ -240,6 +242,7 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         try {
             result = this.transUploadPartRequest(request);
             NewTransResult newTransResult = transObjectRequestWithResult(result, request);
+            newTransResult.setCancelHandler(request.getCancelHandler());
             response = performRequest(newTransResult);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
@@ -248,9 +251,14 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
             }
         }
         UploadPartResult ret = new UploadPartResult();
-        ret.setEtag(response.header(CommonHeaders.ETAG));
         ret.setPartNumber(request.getPartNumber());
-        setHeadersAndStatus(ret, response);
+        if (result != null) {
+            ret.setClientCalculatedCRC64(result.getCalculatedCrc64());
+        }
+        if (response != null) {
+            ret.setEtag(response.header(CommonHeaders.ETAG));
+            setHeadersAndStatus(ret, response);
+        }
         return ret;
     }
 

@@ -41,6 +41,8 @@ public class PutObjectRequest extends PutObjectBasicRequest {
 
     private Callback callback;
 
+    private boolean needCalculateCRC64 = false;
+
     public PutObjectRequest() {
     }
 
@@ -282,6 +284,21 @@ public class PutObjectRequest extends PutObjectBasicRequest {
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    /**
+     * @return Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public boolean isNeedCalculateCRC64() {
+        return needCalculateCRC64;
+    }
+
+    /**
+     * @param needCalculateCRC64
+     *      Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public void setNeedCalculateCRC64(boolean needCalculateCRC64) {
+        this.needCalculateCRC64 = needCalculateCRC64;
     }
     @Override
     public String toString() {

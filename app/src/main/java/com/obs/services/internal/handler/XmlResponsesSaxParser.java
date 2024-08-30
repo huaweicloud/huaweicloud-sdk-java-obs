@@ -982,6 +982,8 @@ public class XmlResponsesSaxParser {
     public static class CopyObjectResultHandler extends DefaultXmlHandler {
         private String etag;
 
+        private String crc64;
+
         private Date lastModified;
 
         public Date getLastModified() {
@@ -990,6 +992,10 @@ public class XmlResponsesSaxParser {
 
         public String getETag() {
             return etag;
+        }
+
+        public String getCRC64() {
+            return crc64;
         }
 
         @Override
@@ -1004,6 +1010,8 @@ public class XmlResponsesSaxParser {
                 }
             } else if (name.equals("ETag")) {
                 etag = elementText;
+            } else if (name.equals("CRC64")) {
+                crc64 = elementText;
             }
         }
     }
@@ -1646,12 +1654,14 @@ public class XmlResponsesSaxParser {
 
         private String etag;
 
+        private String crc64;
+
         public CopyPartResultHandler(XMLReader xr) {
             super(xr);
         }
 
         public CopyPartResult getCopyPartResult(int partNumber) {
-            CopyPartResult result = new CopyPartResult(partNumber, etag, lastModified);
+            CopyPartResult result = new CopyPartResult(partNumber, etag, lastModified, crc64);
             return result;
         }
 
@@ -1665,6 +1675,9 @@ public class XmlResponsesSaxParser {
 
         public void endETag(String content) {
             this.etag = content;
+        }
+        public void endCRC64(String content) {
+            this.crc64 = content;
         }
 
     }

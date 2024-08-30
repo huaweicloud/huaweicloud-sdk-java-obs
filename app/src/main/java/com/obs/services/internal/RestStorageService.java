@@ -25,6 +25,7 @@ import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.internal.security.ProviderCredentialThreadContext;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.CallCancelHandler;
 import com.obs.services.internal.utils.IAuthentication;
 import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
@@ -55,6 +56,8 @@ import java.util.Set;
 
 import static com.obs.services.internal.utils.ServiceUtils.getLoggableInfo;
 import static com.obs.services.internal.utils.ServiceUtils.isInfoLoggable;
+import static com.obs.services.internal.utils.ServiceUtils.tokenMasked;
+import static com.obs.services.internal.utils.ServiceUtils.messageMasked;
 
 public abstract class RestStorageService extends RestConnectionService {
     private static final ILogger log = LoggerBuilder.getLogger(RestStorageService.class);
@@ -378,7 +381,7 @@ public abstract class RestStorageService extends RestConnectionService {
                                       boolean doSignature, boolean isOEF, boolean needEncode) throws ServiceException {
         RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
         try {
-            tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo, needEncode);
+            tryRequest(requestParameters, bucketName, doSignature, isOEF, requestInfo, needEncode, null);
         } catch (Throwable t) {
             throw this.handleThrowable(bucketName, requestInfo.getRequest(),
                     requestInfo.getResponse(), requestInfo.getCall(), t, needEncode);
@@ -409,7 +412,7 @@ public abstract class RestStorageService extends RestConnectionService {
         RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
         try {
             tryRequest(result.getParams(), result.getBucketName(), needSignature,
-                    isOEF, requestInfo, result.isEncodeHeaders());
+                    isOEF, requestInfo, result.isEncodeHeaders(), result.getCancelHandler());
         } catch (Throwable t) {
             throw this.handleThrowable(result.getBucketName(), requestInfo.getRequest(),
                     requestInfo.getResponse(), requestInfo.getCall(), t, result.isEncodeHeaders());
@@ -421,14 +424,15 @@ public abstract class RestStorageService extends RestConnectionService {
             log.info(requestInfo.getReqBean());
         }
         Response response = requestInfo.getResponse();
-        if (autoRelease) {
+        if (autoRelease && response != null) {
             response.close();
         }
         return response;
     }
 
     private void tryRequest(Map<String, String> requestParameters, String bucketName, boolean doSignature,
-                            boolean isOEF, RequestInfo requestInfo, boolean needEncode) throws Exception {
+                            boolean isOEF, RequestInfo requestInfo, boolean needEncode,
+            CallCancelHandler cancelHandler) throws Exception {
         requestInfo.setRequest(initRequest(bucketName, requestInfo.getRequest(), needEncode));
 
         log.debug("Performing " + requestInfo.getRequest().method()
@@ -462,9 +466,16 @@ public abstract class RestStorageService extends RestConnectionService {
                 retryController.setWasRecentlyRedirected(false);
             }
 
-            requestInfo.setCall(httpClient.newCall(requestInfo.getRequest()));
-            requestInfo.setResponse(executeRequest(requestInfo.getCall(),
+            Call okhttpCall = httpClient.newCall(requestInfo.getRequest());
+            requestInfo.setCall(okhttpCall);
+            if (cancelHandler != null) {
+                cancelHandler.setCall(okhttpCall);
+            }
+            requestInfo.setResponse(executeRequest(okhttpCall,
                     requestInfo.getRequest(), retryController));
+            if (cancelHandler != null) {
+                cancelHandler.removeFinishedCall(okhttpCall);
+            }
             if (null == requestInfo.getResponse()) {
                 continue;
             }
@@ -582,6 +593,10 @@ public abstract class RestStorageService extends RestConnectionService {
 
         try {
             semaphore.acquire();
+            if (log.isDebugEnabled()) {
+                long acquireTime = System.currentTimeMillis();
+                log.debug("semaphore.acquire cost " + (acquireTime - start) + " ms, acquire time:" + acquireTime);
+            }
             return call.execute();
         } catch (UnrecoverableIOException e) {
             if (retryController.getLastException() != null) {
@@ -666,13 +681,15 @@ public abstract class RestStorageService extends RestConnectionService {
         if (!xmlMessage.contains("<Code>SignatureDoesNotMatch</Code>")) {
             return message;
         }
-        int startStringToSign = xmlMessage.lastIndexOf("<StringToSign>") + "<StringToSign>".length();
+        int startStringToSign = xmlMessage.lastIndexOf("<StringToSign>");
         if(startStringToSign < 0){
             return message;
         }
+        startStringToSign += "<StringToSign>".length();
         int endStringToSign = xmlMessage.lastIndexOf("</StringToSign>");
 
         StringBuilder ErrorStringToSignMessage = new StringBuilder();
+        tokenMasked(stringToSignToReturn);
         ErrorStringToSignMessage.append("your local StringToSign is (between\"---\"):\n---\n");
         ErrorStringToSignMessage.append(stringToSignToReturn);
         ErrorStringToSignMessage.append("\n---\nPlease compare it to Server's StringToSign (between\"---\"):\n---\n");
@@ -685,7 +702,7 @@ public abstract class RestStorageService extends RestConnectionService {
         String xmlMessage = null;
         try {
             if (response.body() != null) {
-                xmlMessage = response.body().string();
+                xmlMessage = messageMasked(response.body().string());
             }
         } catch (IOException e) {
             log.warn("read response body failed.", e);
@@ -909,7 +926,7 @@ public abstract class RestStorageService extends RestConnectionService {
             stringToSignToReturn.append(iauthentication.getStringToSign());
         }
         log.debug("StringToSign ('|' is a newline): "
-                + iauthentication.getStringToSign().replace('\n', '|'));
+                + messageMasked(iauthentication.getStringToSign().replace('\n', '|')));
 
         String authorizationString = iauthentication.getAuthorization();
         builder.header(CommonHeaders.AUTHORIZATION, authorizationString);

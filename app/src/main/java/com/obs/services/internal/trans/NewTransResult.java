@@ -1,5 +1,6 @@
 package com.obs.services.internal.trans;
 
+import com.obs.services.internal.utils.CallCancelHandler;
 import com.obs.services.model.HttpMethodEnum;
 import okhttp3.RequestBody;
 
@@ -16,6 +17,8 @@ public class NewTransResult {
     private HttpMethodEnum httpMethod;
     private boolean encodeHeaders = false;
     private boolean encodeUrl = true;
+
+    protected CallCancelHandler cancelHandler;
 
     public NewTransResult() {
     }
@@ -104,5 +107,12 @@ public class NewTransResult {
 
     public void setEncodeUrl(boolean encodeUrl) {
         this.encodeUrl = encodeUrl;
+    }
+    public CallCancelHandler getCancelHandler() {
+        return cancelHandler;
+    }
+
+    public void setCancelHandler(CallCancelHandler cancelHandler) {
+        this.cancelHandler = cancelHandler;
     }
 }
