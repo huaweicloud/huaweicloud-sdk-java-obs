@@ -27,11 +27,13 @@ public class CopyPartResult extends HeaderResponse {
     private String etag;
 
     private Date lastModified;
+    private String crc64;
 
-    public CopyPartResult(int partNumber, String etag, Date lastModified) {
+    public CopyPartResult(int partNumber, String etag, Date lastModified, String crc64) {
         this.partNumber = partNumber;
         this.etag = etag;
         this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
+        this.crc64 = crc64;
     }
 
     /**
@@ -53,6 +55,15 @@ public class CopyPartResult extends HeaderResponse {
     }
 
     /**
+     * Obtain the crc64 of the copied part.
+     *
+     * @return crc64 of the copied part
+     */
+    public String getCrc64() {
+        return crc64;
+    }
+
+    /**
      * Obtain the last modification time of the to-be-copied part.
      * 
      * @return Last modification time of the to-be-copied part
@@ -63,7 +74,8 @@ public class CopyPartResult extends HeaderResponse {
 
     @Override
     public String toString() {
-        return "CopyPartResult [partNumber=" + partNumber + ", etag=" + etag + ", lastModified=" + lastModified + "]";
+        return "CopyPartResult [partNumber=" + partNumber + ", etag=" + etag + ", lastModified=" + lastModified
+                + ", crc64=" + crc64 + "]";
     }
 
 }

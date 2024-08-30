@@ -69,7 +69,6 @@ import okhttp3.ResponseBody;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Date;
@@ -94,9 +93,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
             params.put(ObsRequestParams.VERSION_ID, request.getVersionId());
         }
         boolean doesObjectExist = false;
-        try {
-            Response response = performRestHead(request.getBucketName(), request.getObjectKey(), params, headers,
-                    request.getUserHeaders(), request.isEncodeHeaders());
+        try (Response response = performRestHead(request.getBucketName(), request.getObjectKey(), params, headers,
+                request.getUserHeaders(), request.isEncodeHeaders())) {
             if (200 == response.code()) {
                 doesObjectExist = true;
             }
@@ -251,22 +249,20 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         // pmd error message: CloseResource - Ensure that resources like this
         // InputStream object are closed after use
         // 该接口是下载对象，需要将流返回给客户（调用方），我们不能关闭这个流
-        InputStream input = response.body().byteStream(); // NOPMD
+        obsObject.setObjectContent(response.body().byteStream()); // NOPMD
         if (getRequest.getProgressListener() != null) {
             ProgressManager progressManager = new SimpleProgressManager(objMetadata.getContentLength(), 0,
                     getRequest.getProgressListener(),
                     getRequest.getProgressInterval() > 0
                             ? getRequest.getProgressInterval() : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
-            input = new ProgressInputStream(input, progressManager);
+            obsObject.setObjectContent(new ProgressInputStream(obsObject.getObjectContent(), progressManager));
         }
 
         int readBufferSize = obsProperties.getIntProperty(ObsConstraint.READ_BUFFER_SIZE,
                 ObsConstraint.DEFAULT_READ_BUFFER_STREAM);
         if (readBufferSize > 0) {
-            input = new BufferedInputStream(input, readBufferSize);
+            obsObject.setObjectContent(new BufferedInputStream(obsObject.getObjectContent(), readBufferSize));
         }
-
-        obsObject.setObjectContent(input);
         return obsObject;
     }
 
@@ -370,7 +366,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 response.header(this.getIHeaders(request.getBucketName()).versionIdHeader()),
                 response.header(this.getIHeaders(request.getBucketName()).copySourceVersionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(
-                        this.getIHeaders(request.getBucketName()).storageClassHeader())));
+                        this.getIHeaders(request.getBucketName()).storageClassHeader())), handler.getCRC64());
 
         setHeadersAndStatus(copyRet, response);
         if (isExtraAclPutRequired && acl != null) {

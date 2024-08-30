@@ -12,7 +12,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
- package com.obs.services.model;
+package com.obs.services.model;
 
 /**
  * Request for setting tags for a object

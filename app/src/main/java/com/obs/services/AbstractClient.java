@@ -68,7 +68,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         if (this.isAuthTypeNegotiation()) {
             this.getProviderCredentials().setIsAuthTypeNegotiation(true);
         }
-        this.initHttpClient(config.getHttpDispatcher(), config.getCustomizedDnsImpl(), config.getHostnameVerifier());
+        this.initHttpClient(config.getHttpDispatcher(), config.getCustomizedDnsImpl(), config.getHostnameVerifier(),
+                config.getEventListenerFactory());
         OBSXMLBuilder.setXmlDocumentBuilderFactoryClass(config.getXmlDocumentBuilderFactoryClass());
         reqBean.setRespTime(new Date());
         reqBean.setResultCode(Constants.RESULTCODE_SUCCESS);

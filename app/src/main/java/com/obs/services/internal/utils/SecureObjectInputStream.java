@@ -33,7 +33,16 @@ public final class SecureObjectInputStream extends ObjectInputStream {
                     "com.obs.services.internal.UploadResumableClient$UploadPart",
                     "com.obs.services.internal.DownloadResumableClient$DownloadCheckPoint",
                     "com.obs.services.internal.DownloadResumableClient$DownloadPart",
-                    "com.obs.services.internal.DownloadResumableClient$ObjectStatus"));
+                    "com.obs.services.internal.DownloadResumableClient$ObjectStatus",
+                    "com.obs.services.internal.utils.CRC64",
+                    "java.util.concurrent.ConcurrentHashMap",
+                    "[Ljava.util.concurrent.ConcurrentHashMap$Segment;",
+                    "java.util.concurrent.ConcurrentHashMap$Segment",
+                    "java.util.concurrent.locks.ReentrantLock",
+                    "java.util.concurrent.locks.ReentrantLock$NonfairSync",
+                    "java.util.concurrent.locks.ReentrantLock$Sync",
+                    "java.util.concurrent.locks.AbstractQueuedSynchronizer",
+                    "java.util.concurrent.locks.AbstractOwnableSynchronizer"));
 
     public SecureObjectInputStream() throws IOException, SecurityException {
         super();

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.ProgressManager;
 
 /**
  * Parameters in a part upload request
@@ -50,6 +51,8 @@ public class UploadPartRequest extends AbstractMultipartRequest {
     private ProgressListener progressListener;
 
     private long progressInterval = ObsConstraint.DEFAULT_PROGRESS_INTERVAL;
+    private boolean needCalculateCRC64 = false;
+    private ProgressManager progressManager;
 
     public UploadPartRequest() {
     }
@@ -369,6 +372,36 @@ public class UploadPartRequest extends AbstractMultipartRequest {
         this.progressInterval = progressInterval;
     }
 
+    /**
+     * @return Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public boolean isNeedCalculateCRC64() {
+        return needCalculateCRC64;
+    }
+
+    /**
+     * @param needCalculateCRC64
+     *      Whether you need sdk to calculate CRC64 value and add it to header
+     */
+    public void setNeedCalculateCRC64(boolean needCalculateCRC64) {
+        this.needCalculateCRC64 = needCalculateCRC64;
+    }
+
+    /**
+     * @return progressManager
+     *      get progressManager which receives progress, progressManager priority is higher than ProgressListener
+     */
+    public ProgressManager getProgressManager() {
+        return progressManager;
+    }
+
+    /**
+     * @param progressManager
+     *      set progressManager to receive progress, progressManager priority is higher than ProgressListener
+     */
+    public void setProgressManager(ProgressManager progressManager) {
+        this.progressManager = progressManager;
+    }
     @Override
     public String toString() {
         return "UploadPartRequest [uploadId=" + this.getUploadId() + ", bucketName=" + this.getBucketName()

@@ -16,6 +16,7 @@ package com.obs.services.internal.service;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
 import com.obs.services.internal.Constants.ObsRequestParams;
@@ -27,6 +28,7 @@ import com.obs.services.internal.RepeatableRequestEntity;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.SimpleProgressManager;
 import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.utils.CRC64;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
@@ -74,10 +76,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Locale;
 
 public abstract class RequestConvertor extends AclHeaderConvertor {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
@@ -322,6 +324,41 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         return ret;
     }
 
+    protected CRC64 tryAddCrc64ForPutObjectRequest(PutObjectRequest request,
+            IHeaders iheaders, Map<String, String> headers) {
+        HashMap<String, String> userHeaders = request.getUserHeaders();
+        String crc64HeaderKey = iheaders.headerPrefix() + CommonHeaders.HASH_CRC64ECMA;
+        String crc64UserHeaderValue;
+        if (userHeaders != null && null != (crc64UserHeaderValue = userHeaders.get(crc64HeaderKey))) {
+            log.warn("userHeader contains " + crc64HeaderKey
+                    + ", value is " + crc64UserHeaderValue + ", sdk crc64 calculation skipped.");
+        } else if (!request.isNeedCalculateCRC64()) {
+            log.debug("Request not set 'needCalculateCRC64'");
+        } else if (request.getFile() != null) {
+            try {
+                CRC64 crc64 = CRC64.fromFile(request.getFile());
+                if (request instanceof AppendObjectRequest &&
+                        ((AppendObjectRequest) request).getCrc64BeforeAppend() != null) {
+                    AppendObjectRequest appendObjectRequest = (AppendObjectRequest) request;
+                    String crc64BeforeAppend = appendObjectRequest.getCrc64BeforeAppend();
+                    long crc64BeforeAppendValue = CRC64.fromString(crc64BeforeAppend);
+                    crc64.setValue(CRC64.combine(crc64BeforeAppendValue, crc64.getValue(), request.getFile().length()));
+                }
+                long crc64InLong = crc64.getValue();
+                String crc64InUnsignedString = crc64.toString();
+                headers.put(crc64HeaderKey, crc64InUnsignedString);
+                log.info("crc64InLong:" + crc64InLong + ", crc64InUnsignedString:" + crc64InUnsignedString);
+                return crc64;
+            } catch (IOException | NumberFormatException e) {
+                throw new ObsException("Failed to calculate crc64, Error :", e);
+            }
+        } else {
+            log.error("sdk crc64 calculation is valid only when "
+                    + "PutObjectRequest.getFile() is not null.");
+        }
+        return null;
+    }
+
     protected TransResult transPutObjectRequest(PutObjectRequest request) throws ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         IHeaders iheaders = this.getIHeaders(request.getBucketName());
@@ -357,6 +394,8 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
 
         long contentLengthValue = contentLength == null ? -1L : Long.parseLong(contentLength.toString());
 
+        CRC64 crc64 = tryAddCrc64ForPutObjectRequest(request, iheaders, headers);
+
         if (request.getFile() != null) {
             if (Mimetypes.MIMETYPE_OCTET_STREAM.equals(contentType)) {
                 contentType = Mimetypes.getInstance().getMimetype(request.getFile());
@@ -366,7 +405,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             try {
                 request.setInput(new FileInputStream(request.getFile()));
             } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("File doesnot exist");
+                throw new IllegalArgumentException("File does not exist");
             }
 
             contentLengthValue = getContentLengthFromFile(request, contentLengthValue, fileSize);
@@ -390,7 +429,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
                 : new RepeatableRequestEntity(request.getInput(), contentTypeStr, contentLengthValue,
                 this.obsProperties);
 
-        return new TransResult(headers, body);
+        TransResult transResult = new TransResult(headers, body);
+        transResult.setCalculatedCrc64(crc64);
+        return transResult;
     }
 
     private long getContentLengthFromFile(PutObjectRequest request, long contentLengthValue, long fileSize) {
@@ -896,6 +937,32 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         return new TransResult(headers, params, null);
     }
 
+    protected CRC64 tryAddCrc64ForUploadPartRequest(UploadPartRequest request, IHeaders iheaders, Map<String, String> headers) {
+        HashMap<String, String> userHeaders = request.getUserHeaders();
+        String crc64HeaderKey = iheaders.headerPrefix() + CommonHeaders.HASH_CRC64ECMA;
+        String crc64UserHeaderValue;
+        if (userHeaders != null && null != (crc64UserHeaderValue = userHeaders.get(crc64HeaderKey))) {
+            log.warn("userHeader contains " + crc64HeaderKey + ", value is " + crc64UserHeaderValue
+                    + ", sdk crc64 calculation skipped.");
+        } else if (!request.isNeedCalculateCRC64()) {
+            log.debug("UploadPartRequest not set 'needCalculateCRC64'");
+        } else if (request.getFile() != null) {
+            try (FileInputStream fileInputStream = new FileInputStream(request.getFile())) {
+                CRC64 crc64 = CRC64.fromInputStream(fileInputStream, request.getOffset(), request.getPartSize());
+                long crc64InLong = crc64.getValue();
+                String crc64InUnsignedString = crc64.toString();
+                headers.put(crc64HeaderKey, crc64InUnsignedString);
+                log.info("crc64InLong:" + crc64InLong + ", crc64InUnsignedString:" + crc64InUnsignedString);
+                return crc64;
+            } catch (IOException e) {
+                throw new ServiceException("Failed to calculate crc64, Error :", e);
+            }
+        } else {
+            log.error("sdk crc64 calculation is valid only when "
+                    + "PutObjectRequest.getFile() is not null.");
+        }
+        return null;
+    }
     protected TransResult transUploadPartRequest(UploadPartRequest request) throws ServiceException {
         Map<String, String> params = new HashMap<String, String>();
         params.put(ObsRequestParams.PART_NUMBER, String.valueOf(request.getPartNumber()));
@@ -912,6 +979,7 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         this.transSseCHeaders(request.getSseCHeader(), headers, iheaders);
 
         long contentLength = -1L;
+        CRC64 crc64 = tryAddCrc64ForUploadPartRequest(request, iheaders, headers);
         if (null != request.getFile()) {
             long fileSize = request.getFile().length();
             long offset = (request.getOffset() >= 0 && request.getOffset() < fileSize) ? request.getOffset() : 0;
@@ -939,8 +1007,11 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
             }
         }
 
-        if (request.getInput() != null && request.getProgressListener() != null) {
-            ProgressManager progressManager = new SimpleProgressManager(contentLength, 0, request.getProgressListener(),
+        if (request.getInput() != null && request.getProgressManager() != null) {
+            request.setInput(new ProgressInputStream(request.getInput(), request.getProgressManager()));
+        } else if (request.getInput() != null && request.getProgressListener() != null) {
+            ProgressManager progressManager =
+                    new SimpleProgressManager(contentLength, 0, request.getProgressListener(),
                     request.getProgressInterval() > 0 ? request.getProgressInterval()
                             : ObsConstraint.DEFAULT_PROGRESS_INTERVAL);
             request.setInput(new ProgressInputStream(request.getInput(), progressManager));
@@ -954,7 +1025,9 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
         RequestBody body = request.getInput() == null ? null
                 : new RepeatableRequestEntity(request.getInput(), contentType, contentLength, this.obsProperties);
-        return new TransResult(headers, params, body);
+        TransResult transResult = new TransResult(headers, params, body);
+        transResult.setCalculatedCrc64(crc64);
+        return transResult;
     }
 
     protected void transSseKmsHeaders(SseKmsHeader kmsHeader, Map<String, String> headers, IHeaders iheaders,

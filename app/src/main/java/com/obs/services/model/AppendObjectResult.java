@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.utils.CRC64;
+
 /**
  * Response to an appendable upload request
  *
@@ -31,6 +33,8 @@ public class AppendObjectResult extends HeaderResponse {
     private StorageClassEnum storageClass;
 
     private String objectUrl;
+
+    private CRC64 clientCalculatedCRC64;
 
     public AppendObjectResult(String bucketName, String objectKey, String etag, long nextPosition,
             StorageClassEnum storageClass, String objectUrl) {
@@ -96,10 +100,19 @@ public class AppendObjectResult extends HeaderResponse {
         return objectUrl;
     }
 
+    public CRC64 getClientCalculatedCRC64() {
+        return clientCalculatedCRC64;
+    }
+
+    public void setClientCalculatedCRC64(CRC64 clientCalculatedCRC64) {
+        this.clientCalculatedCRC64 = clientCalculatedCRC64;
+    }
+
     @Override
     public String toString() {
         return "AppendObjectResult [bucketName=" + bucketName + ", objectKey=" + objectKey + ", etag=" + etag
-                + ", nextPosition=" + nextPosition + ", storageClass=" + storageClass + ", objectUrl=" + objectUrl
+                + ", nextPosition=" + nextPosition + ", storageClass=" + storageClass + ", objectUrl=" + objectUrl +
+                ", clientCalculatedCRC64=" + clientCalculatedCRC64
                 + "]";
     }
 

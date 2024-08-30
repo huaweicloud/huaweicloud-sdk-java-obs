@@ -42,7 +42,7 @@ public class AccessLoggerUtils {
         }
 
         return new StringBuilder().append(stacktrace.getClassName()).append("|").append(stacktrace.getMethodName())
-                .append("|").append(stacktrace.getLineNumber()).append("|").toString();
+                .append("|line:").append(stacktrace.getLineNumber()).append("|").toString();
     }
 
     private static StringBuilder getLog() {

@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.utils.CRC64InputStream;
+
 import java.io.InputStream;
 
 @Deprecated
@@ -37,6 +39,8 @@ public class S3Object {
     protected ObjectMetadata metadata;
 
     protected InputStream objectContent;
+
+    protected CRC64InputStream objectContentWithCRC64;
 
     public String getBucketName() {
         return bucketName;
@@ -67,6 +71,12 @@ public class S3Object {
 
     public InputStream getObjectContent() {
         return objectContent;
+    }
+    public CRC64InputStream getObjectContentWithCRC64() {
+        if (objectContentWithCRC64 == null) {
+            objectContentWithCRC64 = new CRC64InputStream(objectContent);
+        }
+        return objectContentWithCRC64;
     }
 
     public void setObjectContent(InputStream objectContent) {

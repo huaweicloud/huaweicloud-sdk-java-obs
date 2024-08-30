@@ -31,7 +31,7 @@ public class ProgressInputStream extends FilterInputStream {
     private boolean endFlag;
 
     public ProgressInputStream(InputStream in, ProgressManager progressManager) {
-        this(in, progressManager, true);
+        this(in, progressManager, progressManager.isEndFlag());
     }
 
     public ProgressInputStream(InputStream in, ProgressManager progressManager, boolean endFlag) {

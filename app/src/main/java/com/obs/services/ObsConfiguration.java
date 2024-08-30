@@ -24,6 +24,7 @@ import com.obs.services.model.HttpProtocolTypeEnum;
 
 import okhttp3.Dispatcher;
 import okhttp3.Dns;
+import okhttp3.EventListener;
 
 import java.security.SecureRandom;
 
@@ -104,6 +105,7 @@ public class ObsConfiguration implements Cloneable {
     private HostnameVerifier hostnameVerifier;
     
     private String xmlDocumentBuilderFactoryClass;
+    private EventListener.Factory eventListenerFactory;
 
     /**
      * Constructor
@@ -939,4 +941,15 @@ public class ObsConfiguration implements Cloneable {
     public void setSecureRandom(SecureRandom secureRandom) {
         this.secureRandom = secureRandom;
     }
+
+    public EventListener.Factory getEventListenerFactory()
+    {
+        return eventListenerFactory;
+    }
+
+    public void setEventListenerFactory(EventListener.Factory eventListenerFactory)
+    {
+        this.eventListenerFactory = eventListenerFactory;
+    }
+
 }

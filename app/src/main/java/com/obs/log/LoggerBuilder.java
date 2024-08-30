@@ -39,8 +39,8 @@ public class LoggerBuilder {
                     try {
                         loggerClass = Class.forName("java.util.logging.Logger");
                         getLoggerClass = GetLoggerHolder.loggerClass.getMethod("getLogger", String.class);
-                    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException |
-                             NoClassDefFoundError exx) {
+                    } catch (NoSuchMethodException | SecurityException | ClassNotFoundException
+                            | NoClassDefFoundError exx) {
                         ILOG.warning(exx.getMessage());
                     }
                 }

@@ -1,3 +1,21 @@
+Version 3.24.8
+Resolved issues:
+1. PutObject、Getobject、GetObjectMetadata、UploadPart、AppendObject、CopyObject、CopyPart、CompeleMultiUploadPart now supports crc64 checksum.
+2. UploadFile can be cancelled and aborted now.
+3. Allow you set okhttp's EventListenerFactory to profile each stage of a http request，not set by default.
+4. Fixed the issue that client encryption is available only in obs protocal and add some check logic when encryption algrithm is null.
+5. Optimised the logic of set progress listener when using uploadFile.
+6. Optimised some log info format.
+7. Added some logic to compatible with Android 7.0 when using DateTimeFormatter. 
+
+Third-party dependence:
+1. Replace okio 3.8.0 with okio 3.6.0 
+2. Replace log4j-core 2.20.0 with log4j-core 2.18.0 
+3. Replace jackson-core 2.15.4 with jackson-core 2.15.2 
+4. Replace jackson-databind 2.15.4 with jackson-databind 2.15.2 
+5. Replace jackson-annotations 2.15.4 with jackson-annotations 2.15.2
+6. Replace log4j-api 2.20.0 with log4j-api 2.18.0 
+-----------------------------------------------------------------------------------
 Version 3.24.3
 Resolved issues:
 1. Optimized log info of some exception stack
