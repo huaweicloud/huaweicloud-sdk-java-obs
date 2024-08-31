@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.utils.CallCancelHandler;
+
 import java.util.HashMap;
 
 /**
@@ -111,4 +113,13 @@ public class GenericRequest {
     public String toString() {
         return "GenericRequest [isRequesterPays=" + isRequesterPays + "]";
     }
+    public CallCancelHandler getCancelHandler() {
+        return cancelHandler;
+    }
+
+    public void setCancelHandler(CallCancelHandler cancelHandler) {
+        this.cancelHandler = cancelHandler;
+    }
+
+    protected CallCancelHandler cancelHandler;
 }

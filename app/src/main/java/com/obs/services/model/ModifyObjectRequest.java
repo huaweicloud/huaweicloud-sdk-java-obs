@@ -112,4 +112,22 @@ public class ModifyObjectRequest extends AppendObjectRequest {
         this.input = input;
         this.position = position;
     }
+
+    /**
+     * @return Whether you need sdk to calculate CRC64 value and check it by adding to header
+     */
+    @Override
+    public boolean isNeedCalculateCRC64() {
+        // not supported in this API
+        return false;
+    }
+
+    /**
+     * @param needCalculateCRC64 Whether you need sdk to calculate CRC64 value and check it by adding to header
+     */
+    @Override
+    public void setNeedCalculateCRC64(boolean needCalculateCRC64) throws IllegalArgumentException {
+        // not supported in this API
+        throw new IllegalArgumentException("not supported in this API");
+    }
 }

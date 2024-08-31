@@ -14,6 +14,8 @@
 
 package com.obs.services.model;
 
+import com.obs.services.internal.utils.CRC64;
+
 /**
  * Response to a part upload request
  */
@@ -21,6 +23,8 @@ public class UploadPartResult extends HeaderResponse {
     private int partNumber;
 
     private String etag;
+
+    private CRC64 clientCalculatedCRC64;
 
     /**
      * Obtain the part number.
@@ -48,8 +52,17 @@ public class UploadPartResult extends HeaderResponse {
         this.etag = objEtag;
     }
 
+
+    public CRC64 getClientCalculatedCRC64() {
+        return clientCalculatedCRC64;
+    }
+
+    public void setClientCalculatedCRC64(CRC64 clientCalculatedCRC64) {
+        this.clientCalculatedCRC64 = clientCalculatedCRC64;
+    }
     @Override
     public String toString() {
-        return "UploadPartResult [partNumber=" + partNumber + ", etag=" + etag + "]";
+        return "UploadPartResult [partNumber=" + partNumber + ", etag=" + etag +
+                ", clientCalculatedCRC64=" + clientCalculatedCRC64 + "]";
     }
 }

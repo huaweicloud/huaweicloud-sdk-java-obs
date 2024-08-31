@@ -60,7 +60,9 @@ public class Constants {
 
         public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
-        public static final String HASH_CRC64ECMA = "hash-crc64ecma";
+        public static final String HASH_CRC64ECMA = "checksum-crc64ecma";
+
+        public static final String INVALID_CRC_64 = "InvalidCRC64";
 
         public static final String CONTENT_ENCODING = "Content-Encoding";
 
@@ -213,7 +215,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.24.3";
+    public static final String OBS_SDK_VERSION = "3.24.8";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 

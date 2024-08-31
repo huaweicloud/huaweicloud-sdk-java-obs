@@ -31,6 +31,7 @@ public abstract class ProgressManager {
         }
     }
 
+    private boolean endFlag = true;
     protected final long totalBytes;
     protected long  startCheckpoint;
     protected long  lastCheckpoint;
@@ -78,4 +79,12 @@ public abstract class ProgressManager {
     public abstract void progressEnd();
 
     protected abstract void doProgressChanged(int bytes);
+
+    public boolean isEndFlag() {
+        return endFlag;
+    }
+
+    public void setEndFlag(boolean endFlag) {
+        this.endFlag = endFlag;
+    }
 }

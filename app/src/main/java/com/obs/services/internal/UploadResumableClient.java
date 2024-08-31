@@ -14,30 +14,12 @@
 
 package com.obs.services.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.AbstractClient;
 import com.obs.services.exception.ObsException;
-import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.utils.CRC64;
+import com.obs.services.internal.utils.CRC64InputStream;
 import com.obs.services.internal.utils.SecureObjectInputStream;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbortMultipartUploadRequest;
@@ -50,6 +32,30 @@ import com.obs.services.model.PartEtag;
 import com.obs.services.model.UploadFileRequest;
 import com.obs.services.model.UploadPartRequest;
 import com.obs.services.model.UploadPartResult;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import static com.obs.services.internal.Constants.CommonHeaders.HASH_CRC64ECMA;
+import static com.obs.services.internal.Constants.CommonHeaders.INVALID_CRC_64;
 
 public class UploadResumableClient {
 
@@ -104,6 +110,33 @@ public class UploadResumableClient {
         return this.obsClient.abortMultipartUpload(request);
     }
 
+    private void abortUploadFileTaskIfCanceledAndAborted(UploadCheckPoint uploadCheckPoint, UploadFileRequest uploadFileRequest) {
+        if (uploadFileRequest.getCancelHandler() != null
+                && uploadFileRequest.getCancelHandler().isCancelled()
+                && uploadFileRequest.isNeedAbortUploadFileAfterCancel()) {
+            log.error("aborted uploadFileRequest after canceled");
+            this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
+            ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
+        }
+    }
+
+    private CRC64 tryGetCombinedCRC64(UploadCheckPoint uploadCheckPoint) {
+        if (!uploadCheckPoint.partCRC64s.isEmpty()) {
+            try {
+                CRC64 crc64Combined = new CRC64(uploadCheckPoint.partCRC64s.get(1));
+                for (int i = 2; i <= uploadCheckPoint.partCRC64s.size(); ++i) {
+                    crc64Combined.combineWithAnotherCRC64(
+                            uploadCheckPoint.partCRC64s.get(i),
+                            uploadCheckPoint.uploadParts.get(i - 1).size);
+                }
+                return crc64Combined;
+            } catch (Throwable t) {
+                log.error("tryGetCombinedCRC64 for uploadFile failed, throwable:", t);
+                throw ServiceUtils.changeFromThrowable(t);
+            }
+        }
+        return null;
+    }
     private CompleteMultipartUploadResult uploadFileCheckPoint(UploadFileRequest uploadFileRequest) throws Exception {
         UploadCheckPoint uploadCheckPoint = new UploadCheckPoint();
         if (uploadFileRequest.isEnableCheckpoint()) {
@@ -126,11 +159,18 @@ public class UploadResumableClient {
                     if (uploadCheckPoint.isDeleteUploadRecordFile) {
                         ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
                     }
+                } else {
+                    abortUploadFileTaskIfCanceledAndAborted(uploadCheckPoint, uploadFileRequest);
                 }
                 throw partResult.getException();
             }
         }
 
+        if (uploadFileRequest.getCancelHandler() != null && uploadFileRequest.getCancelHandler().isCancelled()) {
+            log.warn("uploadFileRequest is canceled");
+            abortUploadFileTaskIfCanceledAndAborted(uploadCheckPoint, uploadFileRequest);
+            throw new ObsException("uploadFileRequest is canceled, no completeMultipartUploadRequest is sent");
+        }
         // 合并多段
         CompleteMultipartUploadRequest completeMultipartUploadRequest = new CompleteMultipartUploadRequest(
                 uploadFileRequest.getBucketName(), uploadFileRequest.getObjectKey(), uploadCheckPoint.uploadID,
@@ -140,7 +180,15 @@ public class UploadResumableClient {
         completeMultipartUploadRequest.setIsIgnorePort(uploadFileRequest.getIsIgnorePort());
         completeMultipartUploadRequest.setCallback(uploadFileRequest.getCallback());
         completeMultipartUploadRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
+        completeMultipartUploadRequest.setCancelHandler(uploadFileRequest.getCancelHandler());
 
+        CRC64 crc64Combined = tryGetCombinedCRC64(uploadCheckPoint);
+        if (crc64Combined != null) {
+            completeMultipartUploadRequest.setUserHeaders(new HashMap<>(uploadFileRequest.getUserHeaders()));
+            completeMultipartUploadRequest.addUserHeaders(
+                    obsClient.getRestHeaderPrefix(uploadFileRequest.getBucketName()) + HASH_CRC64ECMA,
+                    crc64Combined.toString());
+        }
         try {
             CompleteMultipartUploadResult result = this.obsClient
                     .completeMultipartUpload(completeMultipartUploadRequest);
@@ -155,6 +203,8 @@ public class UploadResumableClient {
                 if (e.getResponseCode() >= 300 && e.getResponseCode() < 500 && e.getResponseCode() != 408) {
                     this.abortMultipartUploadSilent(uploadCheckPoint.uploadID, uploadFileRequest);
                     ServiceUtils.deleteFileIgnoreException(uploadFileRequest.getCheckpointFile());
+                } else {
+                    abortUploadFileTaskIfCanceledAndAborted(uploadCheckPoint, uploadFileRequest);
                 }
             }
             throw e;
@@ -278,8 +328,24 @@ public class UploadResumableClient {
             PartResult tr = null;
             UploadPart uploadPart = uploadCheckPoint.uploadParts.get(partIndex);
             tr = new PartResult(partIndex + 1, uploadPart.offset, uploadPart.size);
+            boolean uploadFileCanceled = (uploadFileRequest.getCancelHandler() != null && uploadFileRequest.getCancelHandler().isCancelled());
+
+            if (uploadFileCanceled) {
+                String errorInfo = String.format(
+                        Locale.ROOT,
+                        "Task %d:%s upload part %d canceled.", id, "upload" + id, partIndex + 1);
+                log.warn(errorInfo);
+                ObsException e = new ObsException(errorInfo);
+                tr.setException(e);
+                tr.setFailed(true);
+                return tr;
+            }
             if (!uploadCheckPoint.isAbort) {
-                InputStream input = null;
+                CRC64InputStream crc64InputStream = null;
+                String failedInfoSuffix = String.format(
+                        Locale.ROOT,
+                        ", task %d:%s upload part %d failed.",
+                        id, "upload" + id, partIndex + 1);
                 try {
                     UploadPartRequest uploadPartRequest = new UploadPartRequest();
                     uploadPartRequest.setBucketName(uploadFileRequest.getBucketName());
@@ -289,28 +355,28 @@ public class UploadResumableClient {
                     uploadPartRequest.setPartNumber(uploadPart.partNumber);
                     uploadPartRequest.setRequesterPays(uploadFileRequest.isRequesterPays());
                     uploadPartRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
-
-                    if (this.progressManager == null) {
-                        uploadPartRequest.setFile(new File(uploadFileRequest.getUploadFile()));
-                        uploadPartRequest.setOffset(uploadPart.offset);
-                    } else {
-                        input = new FileInputStream(uploadFileRequest.getUploadFile());
-                        long offset = uploadPart.offset;
-                        long skipByte = input.skip(offset);
-                        if (offset < skipByte) {
-                            log.error(String.format(
-                                    Locale.ROOT,
-                                    "The actual number of skipped bytes (%d) is less than expected (%d): ", skipByte,
-                                    offset));
-                        }
+                    uploadPartRequest.setCancelHandler(uploadFileRequest.getCancelHandler());
+                    uploadPartRequest.setNeedCalculateCRC64(uploadFileRequest.isNeedCalculateCRC64());
+                    uploadPartRequest.setFile(new File(uploadFileRequest.getUploadFile()));
+                    uploadPartRequest.setOffset(uploadPart.offset);
+                    if (uploadFileRequest.isNeedStreamCalculateCRC64() && !uploadFileRequest.isNeedCalculateCRC64()) {
+                        uploadPartRequest.setInput(new FileInputStream(uploadFileRequest.getUploadFile()));
+                        long skipByte = uploadPartRequest.getInput().skip(uploadPart.offset);
+                        crc64InputStream = new CRC64InputStream(uploadPartRequest.getInput());
+                        uploadPartRequest.setInput(crc64InputStream);
+                        log.info("CRC64InputStream Skip " + skipByte + " bytes; offset : " + uploadPart.offset);
+                    }
+                    if (this.progressManager != null) {
                         // TODO no md5
-                        uploadPartRequest.setInput(new ProgressInputStream(input, this.progressManager, false));
+                        this.progressManager.setEndFlag(false);
+                        uploadPartRequest.setProgressManager(this.progressManager);
                     }
 
                     UploadPartResult result = obsClient.uploadPart(uploadPartRequest);
-
+                    tryCRC64StreamCheck(crc64InputStream, result, failedInfoSuffix);
                     PartEtag partEtag = new PartEtag(result.getEtag(), result.getPartNumber());
-                    uploadCheckPoint.update(partIndex, partEtag, true);
+                    CRC64 partCRC64 = result.getClientCalculatedCRC64();
+                    uploadCheckPoint.update(partIndex, partEtag, true, partCRC64);
                     tr.setFailed(false);
 
                     if (uploadFileRequest.isEnableCheckpoint()) {
@@ -343,8 +409,8 @@ public class UploadResumableClient {
                                 e);
                     }
                 } finally {
-                    if (null != input) {
-                        input.close();
+                    if (null != crc64InputStream) {
+                        crc64InputStream.close();
                     }
                 }
             } else {
@@ -352,7 +418,49 @@ public class UploadResumableClient {
             }
             return tr;
         }
+        private String tryGetRequestID(UploadPartResult uploadPartResult) {
 
+            if (uploadPartResult == null) {
+                return "";
+            }
+            Map<String, Object> responseHeaders = uploadPartResult.getResponseHeaders();
+            if (responseHeaders == null) {
+                return "";
+            }
+            return (String) responseHeaders.get("request-id");
+        }
+        public void tryCRC64StreamCheck(CRC64InputStream crc64InputStream, UploadPartResult result, String failedInfoSuffix) {
+            if (uploadFileRequest.isNeedStreamCalculateCRC64() && !uploadFileRequest.isNeedCalculateCRC64()) {
+                String errorInfo = null;
+                if (crc64InputStream != null) {
+                    result.setClientCalculatedCRC64(crc64InputStream.getCrc64());
+                    String sdkCalculatedCRC64 = result.getClientCalculatedCRC64().toString();
+                    String serverCRC64 = (String) result.getResponseHeaders().get(HASH_CRC64ECMA);
+                    if (serverCRC64 == null) {
+                        errorInfo =
+                                "UploadPartResult.getResponseHeaders() doesn't contains " + HASH_CRC64ECMA
+                                        + ", crc64 check failed" + failedInfoSuffix
+                                        + " server requestID is " + tryGetRequestID(result);
+
+                    } else if (!sdkCalculatedCRC64.equals(serverCRC64)) {
+                        errorInfo = "UploadPart CRC64 mismatch! "
+                                + "sdk calculated downloadFile CRC64 is " + sdkCalculatedCRC64
+                                + " server returned CRC64 is " + serverCRC64
+                                + " server requestID is " + tryGetRequestID(result)
+                                + failedInfoSuffix;
+                    }
+                } else {
+                    errorInfo = "Crc64InputStream is null, crc64 not set"
+                            + " server requestID is " + tryGetRequestID(result) + failedInfoSuffix;
+                }
+                if (errorInfo != null) {
+                    log.error(errorInfo);
+                    ObsException obsException = new ObsException(errorInfo);
+                    obsException.setErrorCode(INVALID_CRC_64);
+                    throw obsException;
+                }
+            }
+        }
         public void setProgressManager(ProgressManager progressManager) {
             this.progressManager = progressManager;
         }
@@ -368,6 +476,7 @@ public class UploadResumableClient {
         uploadCheckPoint.uploadParts = splitUploadFile(uploadCheckPoint.uploadFileStatus.size,
                 uploadFileRequest.getPartSize());
         uploadCheckPoint.partEtags = new ArrayList<PartEtag>();
+        uploadCheckPoint.partCRC64s = new ConcurrentHashMap<>();
 
         InitiateMultipartUploadRequest initiateUploadRequest = new InitiateMultipartUploadRequest(
                 uploadFileRequest.getBucketName(), uploadFileRequest.getObjectKey());
@@ -382,6 +491,7 @@ public class UploadResumableClient {
         initiateUploadRequest.setEncodingType(uploadFileRequest.getEncodingType());
         initiateUploadRequest.setIsEncodeHeaders(uploadFileRequest.isEncodeHeaders());
         initiateUploadRequest.setUserHeaders(uploadFileRequest.getUserHeaders());
+        initiateUploadRequest.setCancelHandler(uploadFileRequest.getCancelHandler());
 
         InitiateMultipartUploadResult initiateUploadResult = this.obsClient
                 .initiateMultipartUpload(initiateUploadRequest);
@@ -519,9 +629,12 @@ public class UploadResumableClient {
          * @param partETag
          * @param completed
          */
-        public synchronized void update(int partIndex, PartEtag partETag, boolean completed) {
+        public synchronized void update(int partIndex, PartEtag partETag, boolean completed, CRC64 partCRC64) {
             partEtags.add(partETag);
             uploadParts.get(partIndex).isCompleted = completed;
+            if (partCRC64 != null) {
+                partCRC64s.put(partETag.getPartNumber(), partCRC64);
+            }
         }
 
         /**
@@ -561,6 +674,7 @@ public class UploadResumableClient {
             result = prime * result + ((objectKey == null) ? 0 : objectKey.hashCode());
             result = prime * result + ((bucketName == null) ? 0 : bucketName.hashCode());
             result = prime * result + ((partEtags == null) ? 0 : partEtags.hashCode());
+            result = prime * result + ((partCRC64s == null) ? 0 : partCRC64s.hashCode());
             result = prime * result + ((uploadFile == null) ? 0 : uploadFile.hashCode());
             result = prime * result + ((uploadFileStatus == null) ? 0 : uploadFileStatus.hashCode());
             result = prime * result + ((uploadID == null) ? 0 : uploadID.hashCode());
@@ -590,6 +704,7 @@ public class UploadResumableClient {
             this.uploadID = tmp.uploadID;
             this.uploadParts = tmp.uploadParts;
             this.partEtags = tmp.partEtags;
+            this.partCRC64s = tmp.partCRC64s;
         }
 
         public int md5;
@@ -600,6 +715,7 @@ public class UploadResumableClient {
         public String uploadID;
         public ArrayList<UploadPart> uploadParts;
         public ArrayList<PartEtag> partEtags;
+        public ConcurrentHashMap<Integer, CRC64> partCRC64s;
         public transient volatile boolean isAbort = false;
         public transient volatile boolean isDeleteUploadRecordFile = true;
     }

@@ -339,16 +339,20 @@ public class CryptoObsClient extends ObsClient {
         // 该接口是下载对象，需要将流返回给客户（调用方），我们不能关闭这个流
 
         if (ctrCipherGenerator != null) {
+            String headerMetaPrefix =
+                    this.getProviderCredentials() != null &&
+                            this.getProviderCredentials().getLocalAuthType(request.getBucketName()) != AuthTypeEnum.OBS
+                    ? Constants.V2_HEADER_META_PREFIX : Constants.OBS_HEADER_META_PREFIX;
             String encryptedAlgorithm =
                     (String)
                             objMetadata
                                     .getOriginalHeaders()
-                                    .get(Constants.OBS_HEADER_META_PREFIX + ENCRYPTED_ALGORITHM_META_NAME);
+                                    .get(headerMetaPrefix + ENCRYPTED_ALGORITHM_META_NAME);
             String encryptedStart =
                     (String)
                             objMetadata
                                     .getOriginalHeaders()
-                                    .get(Constants.OBS_HEADER_META_PREFIX + ENCRYPTED_START_META_NAME);
+                                    .get(headerMetaPrefix + ENCRYPTED_START_META_NAME);
 
             if (isValidEncryptedAlgorithm(encryptedAlgorithm)) {
                 byte[] cryptoKeyBytes = ctrCipherGenerator.getCryptoKeyBytes();
@@ -365,7 +369,7 @@ public class CryptoObsClient extends ObsClient {
                                             objMetadata
                                                     .getOriginalHeaders()
                                                     .get(
-                                                            Constants.OBS_HEADER_META_PREFIX
+                                                            headerMetaPrefix
                                                                     + ENCRYPTED_AES_KEY_META_NAME);
                             // 解密rsa加密后的主密钥
                             cryptoKeyBytes =
@@ -425,8 +429,8 @@ public class CryptoObsClient extends ObsClient {
     }
 
     public boolean isValidEncryptedAlgorithm(String encryptedAlgorithm) {
-        return encryptedAlgorithm.equals(CtrRSACipherGenerator.ENCRYPTED_ALGORITHM)
-                || encryptedAlgorithm.equals(CTRCipherGenerator.ENCRYPTED_ALGORITHM);
+        return encryptedAlgorithm != null && (encryptedAlgorithm.equals(CtrRSACipherGenerator.ENCRYPTED_ALGORITHM)
+                || encryptedAlgorithm.equals(CTRCipherGenerator.ENCRYPTED_ALGORITHM));
     }
 
     protected byte[] getOrGenerateCryptoIvBytes() {

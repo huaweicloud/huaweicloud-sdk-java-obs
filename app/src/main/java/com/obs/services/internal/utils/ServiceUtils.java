@@ -74,7 +74,16 @@ public class ServiceUtils {
 
     private static Pattern pattern = Pattern
             .compile("^((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)$");
-    private static DateTimeFormatter rfc822DateTimeFormatter = DateTimeFormatter.ofPattern(RFC_822_TIME_PARSER_STRING, Locale.US).withZone(ZoneId.of("GMT"));
+    private static DateTimeFormatter rfc822DateTimeFormatter = null;
+
+    static {
+        try {
+            Class.forName("java.time.format.DateTimeFormatter");
+            rfc822DateTimeFormatter = DateTimeFormatter.ofPattern(RFC_822_TIME_PARSER_STRING, Locale.US).withZone(ZoneId.of("GMT"));
+        } catch (Throwable e) {
+            log.error("failed to load java.time.format.DateTimeFormatter", e);
+        }
+    }
 
     public static boolean isValid(String s) {
         return s != null && !s.equals("");
@@ -154,7 +163,7 @@ public class ServiceUtils {
     public static Date parseRfc822Date(String dateString) throws ParseException {
         try {
             return Date.from(ZonedDateTime.parse(dateString, rfc822DateTimeFormatter).toInstant());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("parseRfc822Date with DateTimeFormatter failed, using SimpleDateFormat instead, error detail :", e);
             SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
             rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
@@ -165,7 +174,7 @@ public class ServiceUtils {
     public static String formatRfc822Date(Date date) {
         try {
             return rfc822DateTimeFormatter.format(date.toInstant());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("formatRfc822Date with DateTimeFormatter failed, using SimpleDateFormat instead, error detail :", e);
             SimpleDateFormat rfc822TimeParser = new SimpleDateFormat(RFC_822_TIME_PARSER_STRING, Locale.US);
             rfc822TimeParser.setTimeZone(Constants.GMT_TIMEZONE);
@@ -294,7 +303,7 @@ public class ServiceUtils {
     }
 
     public static void cleanListMetadata(Map<String, Object> originalHeaders, boolean decodeHeaders,
-                                   Map<String, Object> userMetadata, String key)
+            Map<String, Object> userMetadata, String key)
             throws UnsupportedEncodingException {
         List<String> cleanedValue = new ArrayList<>();
         for (Object v : (List<?>) originalHeaders.get(key)) {
@@ -547,14 +556,22 @@ public class ServiceUtils {
         }
     }
 
+    public static ObsException changeFromThrowable(Throwable t) {
+        boolean isObsException = t instanceof ObsException;
+        if (!isObsException) {
+            return new ObsException(t.getMessage(), t);
+        } else {
+            return (ObsException) t;
+        }
+    }
     public static ObsException changeFromServiceException(ServiceException se) {
         ObsException exception;
         if (se.getResponseCode() < 0) {
-            exception = new ObsException("OBS service Error Message. " + se.getMessage(), se.getCause());
+            exception = new ObsException("OBS service Error Message. " + se.getMessage(), se);
         } else {
             exception = new ObsException(
                     (se.getMessage() != null ? "Error message:" + se.getMessage() : "") + "OBS service Error Message.",
-                    se.getXmlMessage(), se.getCause());
+                    se.getXmlMessage(), se);
             exception.setErrorCode(se.getErrorCode());
             exception.setErrorMessage(se.getErrorMessage() == null ? se.getMessage() : se.getErrorMessage());
             exception.setErrorRequestId(se.getErrorRequestId());
@@ -782,6 +799,45 @@ public class ServiceUtils {
             return infoVal;
         }else {
             return LoggableInfo;
+        }
+    }
+
+    public static void tokenMasked(StringBuilder info) {
+        int indexOfToken;
+        if (info != null && (indexOfToken = info.indexOf("security-token:")) != -1) {
+            int start = indexOfToken + "security-token:".length();
+            int end = info.indexOf("\n", start);
+            if(end == -1) {
+                end = info.indexOf("|", start);
+            }
+            if(end == -1) {
+                end = info.length();
+            }
+            if(start < end) {
+                info.replace(start, end, LoggableInfo);
+            }
+        }
+    }
+    public static void bytesMasked(StringBuilder info) {
+        int startStringToSign = info.lastIndexOf("<StringToSignBytes>");
+        if (startStringToSign > 0) {
+            int endStringToSign = info.lastIndexOf("</StringToSignBytes>");
+            if (endStringToSign > 0) {
+                startStringToSign += "<StringToSignBytes>".length();
+                if(startStringToSign < endStringToSign) {
+                    info.replace(startStringToSign, endStringToSign, LoggableInfo);
+                }
+            }
+        }
+    }
+    public static String messageMasked(String info) {
+        if (info == null || !info.contains("security-token:")) {
+            return info;
+        } else {
+            StringBuilder stringBuilder = new StringBuilder(info);
+            tokenMasked(stringBuilder);
+            bytesMasked(stringBuilder);
+            return stringBuilder.toString();
         }
     }
 }

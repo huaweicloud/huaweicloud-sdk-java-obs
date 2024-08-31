@@ -1,3 +1,21 @@
+Version 3.24.8
+Resolved issues:
+1. PutObject、Getobject、GetObjectMetadata、UploadPart、AppendObject、CopyObject、CopyPart、CompeleMultiUploadPart支持crc64校验
+2. 断点续传上传支持暂停、取消
+3. 支持设置okhttp的EventListenerFactory，用于统计http请求各阶段耗时，默认关闭
+4. 修复客户端加密只能在obs协议下使用的问题，增加加密算法为null时的判断
+5. 优化断点续传上传时的进度条设置逻辑
+6. 优化部分日志打印格式
+7. 使用DateTimeFormatter时兼容Android 7.0
+
+Third-party dependence:
+1. 使用 okio 3.8.0 替代 okio 3.6.0 
+2. 使用 log4j-core 2.20.0 替代 log4j-core 2.18.0 
+3. 使用 jackson-core 2.15.4 替代 jackson-core 2.15.2 
+4. 使用 jackson-databind 2.15.4 替代 jackson-databind 2.15.2 
+5. 使用 jackson-annotations 2.15.4 替代 jackson-annotations 2.15.2
+6. 使用 log4j-api 2.20.0 替代 log4j-api 2.18.0 
+-----------------------------------------------------------------------------------
 Version 3.24.3
 Resolved issues:
 1. 优化某些堆栈的日志打印

@@ -29,12 +29,12 @@ import okhttp3.ConnectionPool;
 import okhttp3.Credentials;
 import okhttp3.Dispatcher;
 import okhttp3.Dns;
+import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
-import org.jetbrains.annotations.NotNull;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
@@ -333,7 +333,8 @@ public class RestUtils {
 
     public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties,
             KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
-            Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier userHostnameVerifier, SecureRandom secureRandom) {
+            Dispatcher httpDispatcher, Dns customizedDnsImpl, EventListener.Factory eventListenerFactory,
+            HostnameVerifier userHostnameVerifier, SecureRandom secureRandom) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
         protocols.add(Protocol.HTTP_1_1);
@@ -383,6 +384,10 @@ public class RestUtils {
                 .connectionPool(pool)
                 .hostnameVerifier(hostnameVerifier)
                 .dns(dns);
+
+        if (eventListenerFactory != null) {
+            builder.eventListenerFactory(eventListenerFactory);
+        }
 
         int socketReadBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_READ_BUFFER_SIZE, -1);
         int socketWriteBufferSize = obsProperties.getIntProperty(ObsConstraint.SOCKET_WRITE_BUFFER_SIZE, -1);
@@ -501,9 +506,8 @@ public class RestUtils {
          * @return
          * @throws UnknownHostException
          */
-        @NotNull
         @Override
-        public List<InetAddress> lookup(@NotNull String hostname) throws UnknownHostException {
+        public List<InetAddress> lookup(String hostname) throws UnknownHostException {
             List<InetAddress> adds = Dns.SYSTEM.lookup(hostname);
             log.info("internet host address:" + adds);
             return adds;

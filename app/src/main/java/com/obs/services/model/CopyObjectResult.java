@@ -24,6 +24,8 @@ import com.obs.services.internal.utils.ServiceUtils;
 public class CopyObjectResult extends HeaderResponse {
     private String etag;
 
+    private String crc64;
+
     private Date lastModified;
 
     private String versionId;
@@ -33,12 +35,13 @@ public class CopyObjectResult extends HeaderResponse {
     private StorageClassEnum storageClass;
 
     public CopyObjectResult(String etag, Date lastModified, String versionId, String copySourceVersionId,
-            StorageClassEnum storageClass) {
+            StorageClassEnum storageClass, String crc64) {
         this.etag = etag;
         this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
         this.versionId = versionId;
         this.copySourceVersionId = copySourceVersionId;
         this.storageClass = storageClass;
+        this.crc64 = crc64;
     }
 
     /**
@@ -84,6 +87,15 @@ public class CopyObjectResult extends HeaderResponse {
      */
     public StorageClassEnum getObjectStorageClass() {
         return storageClass;
+    }
+
+    /**
+     * Obtain the crc64 of the destination object.
+     *
+     * @return crc64 value of the destination object
+     */
+    public String getCRC64() {
+        return crc64;
     }
 
     @Override

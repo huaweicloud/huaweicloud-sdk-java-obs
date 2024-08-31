@@ -337,9 +337,14 @@ public class OBSXMLBuilder {
         }
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(this.getDocument()), new StreamResult(writer));
-        return writer.getBuffer().toString().replaceAll("|\r", "");
+        try (StringWriter writer = new StringWriter()) {
+            transformer.transform(new DOMSource(this.getDocument()), new StreamResult(writer));
+            return writer.getBuffer().toString().replaceAll("|\r", "");
+        } catch (IOException e) {
+            log.error("Transformer.transform failed, detail:", e);
+            throw new TransformerException(e);
+        }
+
     }
 
     public int hashCode() throws UnsupportedOperationException {

@@ -24,6 +24,8 @@ public class AppendObjectRequest extends PutObjectRequest {
 
     protected long position;
 
+    protected String crc64BeforeAppend;
+
     {
         this.httpMethod = HttpMethodEnum.POST;
     }
@@ -54,4 +56,11 @@ public class AppendObjectRequest extends PutObjectRequest {
         this.position = position;
     }
 
+    public String getCrc64BeforeAppend() {
+        return crc64BeforeAppend;
+    }
+
+    public void setCrc64BeforeAppend(String crc64BeforeAppend) {
+        this.crc64BeforeAppend = crc64BeforeAppend;
+    }
 }

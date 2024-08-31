@@ -153,6 +153,7 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 }
             }
         }
+        ret.setClientCalculatedCRC64(result.getCalculatedCrc64());
         return ret;
     }
     

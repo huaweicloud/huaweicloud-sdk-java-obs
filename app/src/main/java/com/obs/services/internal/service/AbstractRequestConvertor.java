@@ -23,6 +23,7 @@ import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.RestStorageService;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.CRC64;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AuthTypeEnum;
@@ -48,9 +49,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Locale;
 
 public abstract class AbstractRequestConvertor extends RestStorageService {
     private static final ILogger log = LoggerBuilder.getLogger("com.obs.services.ObsClient");
@@ -64,6 +65,7 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         private Map<String, String> userHeaders = new HashMap<>();
 
         private RequestBody body;
+        private CRC64 calculatedCrc64;
 
         TransResult(Map<String, String> headers) {
             this(headers, null, null);
@@ -112,6 +114,15 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
         public RequestBody getBody() {
             return body;
         }
+
+        public CRC64 getCalculatedCrc64() {
+            return calculatedCrc64;
+        }
+
+        public void setCalculatedCrc64(CRC64 calculatedCrc64) {
+            this.calculatedCrc64 = calculatedCrc64;
+        }
+
     }
 
     /**
