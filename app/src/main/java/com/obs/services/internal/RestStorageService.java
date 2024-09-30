@@ -25,6 +25,7 @@ import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.internal.security.ProviderCredentialThreadContext;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.LocalTimeUtil;
 import com.obs.services.internal.utils.CallCancelHandler;
 import com.obs.services.internal.utils.IAuthentication;
 import com.obs.services.internal.utils.JSONChange;
@@ -54,6 +55,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import static com.obs.services.internal.Constants.ERROR_CODE_HEADER_AMZ;
+import static com.obs.services.internal.Constants.ERROR_CODE_HEADER_OBS;
 import static com.obs.services.internal.utils.ServiceUtils.getLoggableInfo;
 import static com.obs.services.internal.utils.ServiceUtils.isInfoLoggable;
 import static com.obs.services.internal.utils.ServiceUtils.tokenMasked;
@@ -522,26 +525,53 @@ public abstract class RestStorageService extends RestConnectionService {
             StringBuilder stringToSignToReturn) {
         ServiceException exception = createServiceException("Request Error.", response, stringToSignToReturn);
 
-        if (!REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
+        if (LocalTimeUtil.isRequestTimeTooSkewed(exception, response)) {
+            if (this.getLocalTimeUtil() == null) {
+                log.warn("getTimeDiffBetweenServerAndLocal is skipped "
+                        + "cause localTimeUtil is null.");
+                throw exception;
+            } else if (this.getLocalTimeUtil().isEnableAutoRetryForSkewedTime()) {
+                LocalTimeUtil.getTimeDiffBetweenServerAndLocal(response);
+            } else {
+                log.warn("getTimeDiffBetweenServerAndLocal is skipped "
+                        + "cause LocalTimeUtil.isEnableAutoRetryForSkewedTime() is false");
+                throw exception;
+            }
+        } else if (!REQUEST_TIMEOUT_CODE.equals(exception.getErrorCode())) {
             throw exception;
+        }
+        String errorCode = exception.getErrorCode();
+
+        if (errorCode == null) {
+            errorCode = getErrorCodeFromHeader(response);
+            exception.setErrorCode(errorCode);
         }
 
         retryController.getErrorRetryCounter().addErrorCount();
         if (retryController.getErrorRetryCounter().getErrorCount()
                 < retryController.getErrorRetryCounter().getRetryMaxCount()) {
             if (log.isWarnEnabled()) {
-                log.warn("Retrying connection that failed with RequestTimeout error"
+                log.warn("Retrying connection that failed with " + errorCode + " error"
                         + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount()
                         + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
         } else {
             if (log.isErrorEnabled()) {
-                log.error("Exceeded maximum number of retries for RequestTimeout errors: "
+                log.error("Exceeded maximum number of retries for " + errorCode + " errors: "
                         + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
 
             throw exception;
         }
+    }
+
+    public String getErrorCodeFromHeader(Response response) {
+        if (response != null && response.headers() != null) {
+            Headers headers = response.headers();
+            String errorCodeOBS = headers.get(ERROR_CODE_HEADER_OBS);
+            return errorCodeOBS == null ? headers.get(ERROR_CODE_HEADER_AMZ) : errorCodeOBS;
+        }
+        return null;
     }
 
     private void handleServerErrorResponse(InterfaceLogBean reqBean, Response response, RetryController retryController,
@@ -612,7 +642,7 @@ public abstract class RestStorageService extends RestConnectionService {
                     call);
 
             if (log.isWarnEnabled()) {
-                log.warn("Retrying connection that failed with error"
+                log.warn("Retrying connection that failed with " + e.getClass()
                         + ", attempt number " + retryController.getErrorRetryCounter().getErrorCount()
                         + " of " + retryController.getErrorRetryCounter().getRetryMaxCount());
             }
@@ -666,7 +696,7 @@ public abstract class RestStorageService extends RestConnectionService {
     private ServiceException createServiceException(String message, Response response,
             StringBuilder stringToSignToReturn) {
         String xmlMessage = readResponseMessage(response);
-        if(stringToSignToReturn != null){
+        if (stringToSignToReturn != null) {
             String errorMessageForSignatureDoesNotMatch =
                     createErrorMessageForSignatureDoesNotMatch(xmlMessage, message, stringToSignToReturn);
             ServiceException serviceException = new ServiceException(errorMessageForSignatureDoesNotMatch, xmlMessage);
@@ -879,7 +909,7 @@ public abstract class RestStorageService extends RestConnectionService {
 
         Date now = parseDate(bucketName, request, isV4);
 
-        builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(now));
+        builder.header(CommonHeaders.DATE, ServiceUtils.formatRfc822Date(LocalTimeUtil.dateWithTimeDiff(now)));
 
         BasicSecurityKey securityKey = providerCredentials.getSecurityKey();
         String securityToken = securityKey.getSecurityToken();

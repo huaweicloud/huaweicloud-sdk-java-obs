@@ -215,7 +215,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.24.8";
+    public static final String OBS_SDK_VERSION = "3.24.9";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -269,6 +269,9 @@ public class Constants {
     public static final long MAX_PART_SIZE = 5 * 1024 * 1024 * 1024L;
 
     public static final long MIN_PART_SIZE = 100 * 1024L;
+    public static final String REQUEST_TIME_TOO_SKEWED_CODE = "RequestTimeTooSkewed";
+    public static final String ERROR_CODE_HEADER_OBS = "x-obs-error-code";
+    public static final String ERROR_CODE_HEADER_AMZ = "x-amz-error-code";
 
     public static final List<String> ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(
             Arrays.asList("content-type", "content-md5", "content-length", "content-language", "expires", "origin",

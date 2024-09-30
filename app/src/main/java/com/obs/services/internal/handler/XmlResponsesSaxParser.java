@@ -2321,6 +2321,16 @@ public class XmlResponsesSaxParser {
         public void endStorageClass(String content) {
             LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content));
         }
+        public void endExpiredObjectDeleteMarker(String content) {
+            boolean expiredObjectDeleteMarker = false;
+            if (content.equals("true")) {
+                expiredObjectDeleteMarker = true;
+            }
+            if (latestTimeEvent instanceof LifecycleConfiguration.Expiration) {
+                ((LifecycleConfiguration.Expiration) latestTimeEvent)
+                        .setExpiredObjectDeleteMarker(expiredObjectDeleteMarker);
+            }
+        }
 
         public void endDate(String content) throws ParseException {
             LifecycleConfiguration.setDate(latestTimeEvent, ServiceUtils.parseIso8601Date(content));

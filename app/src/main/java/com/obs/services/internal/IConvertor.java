@@ -14,8 +14,6 @@
 
 package com.obs.services.internal;
 
-import java.util.List;
-
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketDirectColdAccess;
@@ -29,7 +27,6 @@ import com.obs.services.model.EventTypeEnum;
 import com.obs.services.model.GroupGranteeEnum;
 import com.obs.services.model.KeyAndVersion;
 import com.obs.services.model.LifecycleConfiguration;
-import com.obs.services.model.PartEtag;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.StorageClassEnum;
@@ -39,8 +36,6 @@ import com.obs.services.model.ObjectTagResult;
 import com.obs.services.model.inventory.InventoryConfiguration;
 
 public interface IConvertor {
-
-    String transCompleteMultipartUpload(List<PartEtag> parts) throws ServiceException;
 
     String transBucketLoction(String location) throws ServiceException;
 
