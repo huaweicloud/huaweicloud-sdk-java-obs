@@ -33,6 +33,7 @@ import com.obs.services.internal.service.ObsExtensionService;
 import com.obs.services.internal.task.BlockRejectedExecutionHandler;
 import com.obs.services.internal.task.DefaultTaskProgressStatus;
 import com.obs.services.internal.utils.AbstractAuthentication;
+import com.obs.services.internal.utils.LocalTimeUtil;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.internal.utils.V2Authentication;
@@ -175,7 +176,7 @@ public class ObsService extends ObsExtensionService {
             TemporarySignatureRequest tempRequest = (TemporarySignatureRequest) request;
             long secondsSinceEpoch = tempRequest.getExpires() <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS
                     : tempRequest.getExpires();
-            secondsSinceEpoch += System.currentTimeMillis() / 1000;
+            secondsSinceEpoch += LocalTimeUtil.currentTimeMillisWithTimeDiff() / 1000;
             expiresOrPolicy = String.valueOf(secondsSinceEpoch);
         } else if (request instanceof PolicyTempSignatureRequest) {
             PolicyTempSignatureRequest policyRequest = (PolicyTempSignatureRequest) request;
@@ -322,7 +323,7 @@ public class ObsService extends ObsExtensionService {
         Date expiryDate = request.getExpiryDate() == null ? new Date(requestDate.getTime()
                 + (request.getExpires() <= 0 ? ObsConstraint.DEFAULT_EXPIRE_SECONEDS : request.getExpires()) * 1000)
                 : request.getExpiryDate();
-
+        expiryDate = LocalTimeUtil.dateWithTimeDiff(expiryDate);
         String expiration = expirationDateFormat.format(expiryDate);
         return expiration;
     }
@@ -396,6 +397,7 @@ public class ObsService extends ObsExtensionService {
         if (requestDate == null) {
             requestDate = new Date();
         }
+        requestDate = LocalTimeUtil.dateWithTimeDiff(requestDate);
         String shortDate = ServiceUtils.getShortDateFormat().format(requestDate);
         String longDate = ServiceUtils.getLongDateFormat().format(requestDate);
         

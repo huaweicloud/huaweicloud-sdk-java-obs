@@ -65,6 +65,7 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
         this.credentials = credentials;
         this.keyManagerFactory = config.getKeyManagerFactory();
         this.trustManagerFactory = config.getTrustManagerFactory();
+        this.localTimeUtil = config.getLocalTimeUtil();
         if (this.isAuthTypeNegotiation()) {
             this.getProviderCredentials().setIsAuthTypeNegotiation(true);
         }
@@ -183,6 +184,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
                 ILOG.error(reqBean);
             }
             throw new ObsException(e.getMessage(), e);
+        } finally {
+            AccessLoggerUtils.printLog();
         }
     }
 
@@ -229,6 +232,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
                 ILOG.error(reqBean);
             }
             throw new ObsException(e.getMessage(), e);
+        } finally {
+            AccessLoggerUtils.printLog();
         }
     }
 
@@ -262,6 +267,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             return this.createTemporarySignatureResponse(request);
         } catch (Exception e) {
             throw new ObsException(e.getMessage(), e);
+        } finally {
+            AccessLoggerUtils.printLog();
         }
     }
 
@@ -295,6 +302,8 @@ public abstract class AbstractClient extends ObsService implements Closeable, IO
             return this.createTemporarySignatureResponse(request);
         } catch (Exception e) {
             throw new ObsException(e.getMessage(), e);
+        } finally {
+            AccessLoggerUtils.printLog();
         }
     }
 

@@ -1,3 +1,11 @@
+Version 3.24.9
+Resolved issues:
+1. Fixed the issue that can't auto add ContentType webp
+2. Optimized logic of building xml when using CompleteMultiPart
+3. Optimized logic of parsing xml 
+4. Added auto retry logic when request failed with wrong date
+5. Added Element ExpiredObjectDeleteMarker in LifeCycleConfiguration
+-----------------------------------------------------------------------------------
 Version 3.24.8
 Resolved issues:
 1. PutObject、Getobject、GetObjectMetadata、UploadPart、AppendObject、CopyObject、CopyPart、CompeleMultiUploadPart now supports crc64 checksum.

@@ -31,6 +31,7 @@ import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.CompleteMultipartUploadXMLBuilder;
 import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.CompleteMultipartUploadRequest;
@@ -94,7 +95,8 @@ public abstract class ObsMultipartObjectService extends ObsObjectBaseService {
         Map<String, String> headers = new HashMap<>();
 
         transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
-        String xml = this.getIConvertor(request.getBucketName()).transCompleteMultipartUpload(request.getPartEtag());
+        CompleteMultipartUploadXMLBuilder completeMultipartUploadXMLBuilder = new CompleteMultipartUploadXMLBuilder();
+        String xml = completeMultipartUploadXMLBuilder.buildXML(request);
         headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
         headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);

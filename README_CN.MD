@@ -1,3 +1,11 @@
+Version 3.24.9
+Resolved issues:
+1. 修复无法自动添加webp格式的ContentType的问题
+2. 优化合并段的xml构建逻辑
+3. 优化xml解析逻辑
+4. 增加时间不正确导致请求失败时的自动重试
+5. 生命周期规则新增ExpiredObjectDeleteMarker属性
+-----------------------------------------------------------------------------------
 Version 3.24.8
 Resolved issues:
 1. PutObject、Getobject、GetObjectMetadata、UploadPart、AppendObject、CopyObject、CopyPart、CompeleMultiUploadPart支持crc64校验
