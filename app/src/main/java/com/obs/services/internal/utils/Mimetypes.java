@@ -437,6 +437,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("wbmp", "image/vnd.wap.wbmp");
         extensionToMimetypeMap.put("xbm", "image/x-xbitmap");
         extensionToMimetypeMap.put("xpm", "image/x-xpixmap");
+        extensionToMimetypeMap.put("webp", "image/webp");
     }
 
     private static void addAudioMimetype(Map<String, String> extensionToMimetypeMap) {

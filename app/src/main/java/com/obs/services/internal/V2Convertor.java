@@ -16,8 +16,6 @@ package com.obs.services.internal;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +37,6 @@ import com.obs.services.model.LifecycleConfiguration.NoncurrentVersionTransition
 import com.obs.services.model.LifecycleConfiguration.Rule;
 import com.obs.services.model.LifecycleConfiguration.Transition;
 import com.obs.services.model.Owner;
-import com.obs.services.model.PartEtag;
 import com.obs.services.model.Permission;
 import com.obs.services.model.Redirect;
 import com.obs.services.model.ReplicationConfiguration;
@@ -67,36 +64,6 @@ public class V2Convertor extends V2BucketConvertor {
             }
         }
         return value;
-    }
-
-    @Override
-    public String transCompleteMultipartUpload(List<PartEtag> parts) throws ServiceException {
-        try {
-            OBSXMLBuilder builder = OBSXMLBuilder.create("CompleteMultipartUpload");
-            Collections.sort(parts, new Comparator<PartEtag>() {
-                @Override
-                public int compare(PartEtag o1, PartEtag o2) {
-                    if (o1 == o2) {
-                        return 0;
-                    }
-                    if (o1 == null) {
-                        return -1;
-                    }
-                    if (o2 == null) {
-                        return 1;
-                    }
-                    return o1.getPartNumber().compareTo(o2.getPartNumber());
-                }
-
-            });
-            for (PartEtag part : parts) {
-                builder.e("Part").e("PartNumber").t(part.getPartNumber() == null ? "" : part.getPartNumber().toString())
-                        .up().e("ETag").t(ServiceUtils.toValid(part.getEtag()));
-            }
-            return builder.asString();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
     }
 
     @Override
@@ -200,6 +167,9 @@ public class V2Convertor extends V2BucketConvertor {
                     ServiceUtils.formatIso8601MidnightDate(rule.getExpiration().getDate()));
         } else if (rule.getExpiration().getDays() != null) {
             expirationBuilder.elem("Days").t(rule.getExpiration().getDays().toString());
+        } else if (rule.getExpiration().getExpiredObjectDeleteMarker() != null) {
+            expirationBuilder.elem("ExpiredObjectDeleteMarker")
+                    .t(rule.getExpiration().getExpiredObjectDeleteMarker().toString());
         }
     }
 

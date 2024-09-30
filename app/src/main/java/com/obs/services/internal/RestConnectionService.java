@@ -29,6 +29,7 @@ import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.security.ProviderCredentials;
 import com.obs.services.internal.trans.NewTransResult;
+import com.obs.services.internal.utils.LocalTimeUtil;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.HttpMethodEnum;
@@ -57,6 +58,8 @@ public class RestConnectionService {
     protected AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
     protected volatile ProviderCredentials credentials;
+
+    protected LocalTimeUtil localTimeUtil;
 
     protected void initHttpClient(Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier hostnameVerifier,
             EventListener.Factory eventListenerFactory) {
@@ -256,4 +259,13 @@ public class RestConnectionService {
     protected boolean getHttpsOnly() {
         return this.obsProperties.getBoolProperty(ObsConstraint.HTTPS_ONLY, true);
     }
+
+    public LocalTimeUtil getLocalTimeUtil() {
+        return localTimeUtil;
+    }
+
+    public void setLocalTimeUtil(LocalTimeUtil localTimeUtil) {
+        this.localTimeUtil = localTimeUtil;
+    }
+
 }

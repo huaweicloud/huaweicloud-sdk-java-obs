@@ -80,6 +80,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static com.obs.services.internal.Constants.OBS_HEADER_PREFIX;
+import static com.obs.services.internal.Constants.V2_HEADER_PREFIX;
+
 public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectBaseService.class);
 
@@ -122,7 +125,7 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 ServiceUtils.assertParameterNotNull(request.getCallback().getCallbackBody(),
                         "callbackBody is null");
                 result.getHeaders().put((this.getProviderCredentials().getLocalAuthType(request.getBucketName()) != AuthTypeEnum.OBS
-                                ? Constants.V2_HEADER_PREFIX : Constants.OBS_HEADER_PREFIX) + CommonHeaders.CALLBACK,
+                                ? V2_HEADER_PREFIX : OBS_HEADER_PREFIX) + CommonHeaders.CALLBACK,
                         ServiceUtils.toBase64(JSONChange.objToJson(request.getCallback()).getBytes(StandardCharsets.UTF_8)));
             }
             // todo prepareRESTHeaderAcl 也会操作头域，下次重构可以将其合并
@@ -480,7 +483,11 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         objMetadata.setContentLanguage(response.header(CommonHeaders.CONTENT_LANGUAGE));
         objMetadata.setCacheControl(response.header(CommonHeaders.CACHE_CONTROL));
         objMetadata.setExpires(response.header(CommonHeaders.EXPIRES));
-        objMetadata.setCrc64(response.header(CommonHeaders.HASH_CRC64ECMA));
+        String crc64 = response.header(OBS_HEADER_PREFIX + CommonHeaders.HASH_CRC64ECMA);
+        if (crc64 == null || crc64.isEmpty()) {
+            crc64 = response.header(V2_HEADER_PREFIX + CommonHeaders.HASH_CRC64ECMA);
+        }
+        objMetadata.setCrc64(crc64);
 
         String contentLength = response.header(CommonHeaders.CONTENT_LENGTH);
         if (contentLength != null) {

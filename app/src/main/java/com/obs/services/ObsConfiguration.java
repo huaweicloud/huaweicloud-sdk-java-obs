@@ -19,6 +19,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.obs.services.internal.ObsConstraint;
+import com.obs.services.internal.utils.LocalTimeUtil;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.HttpProtocolTypeEnum;
 
@@ -106,6 +107,7 @@ public class ObsConfiguration implements Cloneable {
     
     private String xmlDocumentBuilderFactoryClass;
     private EventListener.Factory eventListenerFactory;
+    private LocalTimeUtil localTimeUtil;
 
     /**
      * Constructor
@@ -141,6 +143,7 @@ public class ObsConfiguration implements Cloneable {
         this.xmlDocumentBuilderFactoryClass = ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY_CLASS;
         this.localAuthTypeCacheCapacity = ObsConstraint.DEFAULT_LOCAL_AUTH_TYPE_CACHE_CAPACITY;
         this.secureRandom = new SecureRandom();
+        this.localTimeUtil = new LocalTimeUtil();
     }
 
     public String getDelimiter() {
@@ -942,14 +945,21 @@ public class ObsConfiguration implements Cloneable {
         this.secureRandom = secureRandom;
     }
 
-    public EventListener.Factory getEventListenerFactory()
-    {
+    public EventListener.Factory getEventListenerFactory() {
         return eventListenerFactory;
     }
 
-    public void setEventListenerFactory(EventListener.Factory eventListenerFactory)
-    {
+    public void setEventListenerFactory(EventListener.Factory eventListenerFactory) {
         this.eventListenerFactory = eventListenerFactory;
     }
+
+    public LocalTimeUtil getLocalTimeUtil() {
+        return localTimeUtil;
+    }
+
+    public void setLocalTimeUtil(LocalTimeUtil localTimeUtil) {
+        this.localTimeUtil = localTimeUtil;
+    }
+
 
 }

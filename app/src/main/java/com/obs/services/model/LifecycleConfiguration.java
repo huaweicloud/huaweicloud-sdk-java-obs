@@ -226,6 +226,7 @@ public class LifecycleConfiguration extends HeaderResponse {
      */
     public class Expiration extends TimeEvent {
 
+        protected Boolean expiredObjectDeleteMarker;
         public Expiration() {
         }
 
@@ -292,9 +293,18 @@ public class LifecycleConfiguration extends HeaderResponse {
             this.days = null;
         }
 
+        public Boolean getExpiredObjectDeleteMarker() {
+            return expiredObjectDeleteMarker;
+        }
+
+        public void setExpiredObjectDeleteMarker (Boolean expiredObjectDeleteMarker) {
+            this.expiredObjectDeleteMarker = expiredObjectDeleteMarker;
+        }
+
         @Override
         public String toString() {
-            return "Expiration [days=" + days + ", date=" + date + "]";
+            return "Expiration [days=" + days + ", date=" + date
+                    + ", expiredObjectDeleteMarker=" + expiredObjectDeleteMarker + "]";
         }
 
     }

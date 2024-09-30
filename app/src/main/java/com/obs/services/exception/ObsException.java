@@ -14,7 +14,6 @@
 
 package com.obs.services.exception;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +43,10 @@ public class ObsException extends RuntimeException {
 
     private String errorIndicator = null;
 
+    private String obsExceptionString = null;
+
+    private boolean calledToSting = false;
+
     public ObsException(String message) {
         this(message, null, null);
     }
@@ -65,32 +68,46 @@ public class ObsException extends RuntimeException {
 
     @Override
     public String toString() {
-        StringBuilder myString = new StringBuilder(super.toString());
+        if (obsExceptionString != null) {
+            return obsExceptionString;
+        }
+        try {
+            calledToSting = true;
+            StringBuilder myString = new StringBuilder(super.toString());
 
-        if (responseCode != -1) {
-            myString.append(" -- ResponseCode: ")
-                    .append(responseCode)
-                    .append(", ResponseStatus: ")
-                    .append(responseStatus);
-        }
-        if (isParsedFromXmlMessage()) {
-            myString.append(", XML Error Message: ").append(xmlMessage);
-        } else if (errorRequestId != null) {
-            myString.append(", RequestId: ").append(errorRequestId).append(", HostId: ").append(errorHostId);
-        }
-        // 遍历Map的entry,打印所有报错相关头域
-        Map<String, String> headers = getResponseHeaders();
-        if (headers != null) {
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                if (header.getKey().toLowerCase(Locale.ROOT).contains("error")) {
-                    myString.append(", ErrorHeaderKey: ")
-                            .append(header.getKey())
-                            .append(", ErrorHeaderValue: ")
-                            .append(header.getValue());
-                }
+            if (responseCode != -1) {
+                myString.append(" -- ResponseCode: ")
+                        .append(responseCode)
+                        .append(", ResponseStatus: ")
+                        .append(responseStatus);
             }
+            if (isParsedFromXmlMessage()) {
+                myString.append(", XML Error Message: ").append(xmlMessage);
+            } else if (errorRequestId != null) {
+                myString.append(", RequestId: ").append(errorRequestId).append(", HostId: ").append(errorHostId);
+            }
+            // 遍历Map的entry,打印所有报错相关头域
+            Map<String, String> headers = getResponseHeaders();
+            if (headers != null) {
+                myString.append("headers{");
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    myString.append(header.getKey())
+                            .append(":")
+                            .append(header.getValue())
+                            .append(",");
+                }
+                myString.append("}");
+            }
+            obsExceptionString = myString.toString();
+            return obsExceptionString;
+        } finally {
+            calledToSting = false;
         }
-        return myString.toString();
+    }
+
+    @Override
+    public String getMessage() {
+        return calledToSting ? super.getMessage() : this.toString();
     }
 
     private boolean isParsedFromXmlMessage() {

@@ -14,6 +14,7 @@
 
 package com.obs.services;
 
+import com.obs.services.exception.ObsException;
 import com.obs.services.internal.security.BasicSecurityKey;
 import com.obs.services.model.ISecurityKey;
 
@@ -37,11 +38,11 @@ public class BasicObsCredentialsProvider implements IObsCredentialsProvider {
 
     private static void checkSecurityKey(String accessKey, String secretKey) {
         if (accessKey == null) {
-            throw new IllegalArgumentException("accessKey should not be null.");
+            throw new ObsException("accessKey should not be null.");
         }
 
         if (secretKey == null) {
-            throw new IllegalArgumentException("secretKey should not be null.");
+            throw new ObsException("secretKey should not be null.");
         }
     }
 

@@ -488,17 +488,22 @@ public class ServiceUtils {
         }
     }
 
+    private static ThreadLocal<XMLReader> xmlReaderThreadLocal = new ThreadLocal<>();
     public static XMLReader loadXMLReader() throws ServiceException {
         Exception ex;
         try {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            try {
-                reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-                reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            } catch (Exception e) {
-                log.warn("Enable protection for XML External Entity Injection Failed");
+            XMLReader reader = xmlReaderThreadLocal.get();
+            if (reader == null) {
+                reader = XMLReaderFactory.createXMLReader();
+                try {
+                    reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                    reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                } catch (Exception e) {
+                    log.warn("Enable protection for XML External Entity Injection Failed");
+                }
+                xmlReaderThreadLocal.set(reader);
             }
             return reader;
         } catch (Exception e) {
