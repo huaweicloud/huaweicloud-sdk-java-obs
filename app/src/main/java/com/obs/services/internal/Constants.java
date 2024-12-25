@@ -14,6 +14,10 @@
 
 package com.obs.services.internal;
 
+import static com.obs.services.model.SpecialParamEnum.BUCKET_PUBLIC_STATUS;
+import static com.obs.services.model.SpecialParamEnum.POLICY_STATUS;
+import static com.obs.services.model.SpecialParamEnum.PUBLIC_ACCESS_BLOCK;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -61,6 +65,8 @@ public class Constants {
         public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
         public static final String HASH_CRC64ECMA = "checksum-crc64ecma";
+
+        public static final String HASH_CRC32C = "checksum-crc32c";
 
         public static final String INVALID_CRC_64 = "InvalidCRC64";
 
@@ -215,7 +221,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.24.9";
+    public static final String OBS_SDK_VERSION = "3.24.12";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -295,6 +301,9 @@ public class Constants {
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
                     "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
                     "mirrorbacktosource", "obsbucketalias", "obsalias", "replication_progress", "inventory",
+                    PUBLIC_ACCESS_BLOCK.getStringCode(),
+                    POLICY_STATUS.getStringCode(),
+                    BUCKET_PUBLIC_STATUS.getStringCode(),
                     /**
                      * File System API
                      */
@@ -303,6 +312,6 @@ public class Constants {
                     "response-cache-control", "response-content-disposition", "response-content-encoding",
                     "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
                     "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
-                    "getcontentsummary", "select", "select-type"));
+                    "x-obs-trash", "getcontentsummary", "select", "select-type"));
 
 }

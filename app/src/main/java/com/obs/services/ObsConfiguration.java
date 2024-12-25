@@ -16,6 +16,7 @@ package com.obs.services;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.obs.services.internal.ObsConstraint;
@@ -109,6 +110,8 @@ public class ObsConfiguration implements Cloneable {
     private EventListener.Factory eventListenerFactory;
     private LocalTimeUtil localTimeUtil;
 
+    private SSLContext sslContext;
+
     /**
      * Constructor
      */
@@ -144,6 +147,7 @@ public class ObsConfiguration implements Cloneable {
         this.localAuthTypeCacheCapacity = ObsConstraint.DEFAULT_LOCAL_AUTH_TYPE_CACHE_CAPACITY;
         this.secureRandom = new SecureRandom();
         this.localTimeUtil = new LocalTimeUtil();
+        this.sslContext = null;
     }
 
     public String getDelimiter() {
@@ -959,6 +963,14 @@ public class ObsConfiguration implements Cloneable {
 
     public void setLocalTimeUtil(LocalTimeUtil localTimeUtil) {
         this.localTimeUtil = localTimeUtil;
+    }
+
+    public SSLContext getSslContext() {
+        return sslContext;
+    }
+
+    public void setSslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
     }
 
 

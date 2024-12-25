@@ -168,40 +168,14 @@ public class RestUtils {
 
     private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm, String provider,
                                                SecureRandom secureRandom) throws Exception {
-        SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("TLSv1.2", provider);
-        } catch (Exception e) {
-            try {
-                sslContext = SSLContext.getInstance("TLSv1.1", provider);
-            } catch (Exception ex) {
-                try {
-                    sslContext = SSLContext.getInstance("TLSv1.0", provider);
-                } catch (Exception exx) {
-                    sslContext = SSLContext.getInstance("TLS", provider);
-                }
-            }
-        }
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2", provider);
         sslContext.init(km, tm, secureRandom);
         return sslContext;
     }
 
     private static SSLContext createSSLContext(KeyManager[] km, TrustManager[] tm,
                                                SecureRandom secureRandom) throws Exception {
-        SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("TLSv1.2");
-        } catch (Exception e) {
-            try {
-                sslContext = SSLContext.getInstance("TLSv1.1");
-            } catch (Exception ex) {
-                try {
-                    sslContext = SSLContext.getInstance("TLSv1.0");
-                } catch (Exception exx) {
-                    sslContext = SSLContext.getInstance("TLS");
-                }
-            }
-        }
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         sslContext.init(km, tm, secureRandom);
         return sslContext;
     }
@@ -334,7 +308,7 @@ public class RestUtils {
     public static OkHttpClient.Builder initHttpClientBuilder(ObsProperties obsProperties,
             KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory,
             Dispatcher httpDispatcher, Dns customizedDnsImpl, EventListener.Factory eventListenerFactory,
-            HostnameVerifier userHostnameVerifier, SecureRandom secureRandom) {
+            HostnameVerifier userHostnameVerifier, SecureRandom secureRandom, SSLContext customSSLContext) {
 
         List<Protocol> protocols = new ArrayList<Protocol>(2);
         protocols.add(Protocol.HTTP_1_1);
@@ -418,16 +392,29 @@ public class RestUtils {
                     sslContext = createSSLContext(km, tm, provider, secureRandom);
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
-                        log.error("Exception happened in create ssl context with provider" + provider, e);
+                        log.error("Exception happened in create ssl context with provider:" + provider, e);
                     }
                 }
             }
             if (sslContext == null) {
-                sslContext = createSSLContext(km, tm, secureRandom);
+                try {
+                    sslContext = createSSLContext(km, tm, secureRandom);
+                } catch (Exception e) {
+                    log.error("Exception happened in create ssl context", e);
+                    sslContext = customSSLContext;
+                    log.info("Failed to create ssl context, use customSSLContext now.");
+                }
             }
-            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-            builder.sslSocketFactory(new WrapperedSSLSocketFactory(sslSocketFactory, socketReadBufferSize, socketWriteBufferSize),
+            if (sslContext != null) {
+                SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                builder.sslSocketFactory(new WrapperedSSLSocketFactory(sslSocketFactory,
+                        socketReadBufferSize,
+                        socketWriteBufferSize),
                     trustManager);
+            } else {
+                log.error("Failed to create ssl context, customSSLContext is null! sslSocketFactory not set in "
+                    + "OkHttpClient.Builder!");
+            }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Exception happened in HttpClient.configSSL,and e = " + e);

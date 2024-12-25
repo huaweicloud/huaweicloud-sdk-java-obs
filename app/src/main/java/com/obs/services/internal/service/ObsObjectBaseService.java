@@ -369,7 +369,8 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
                 response.header(this.getIHeaders(request.getBucketName()).versionIdHeader()),
                 response.header(this.getIHeaders(request.getBucketName()).copySourceVersionIdHeader()),
                 StorageClassEnum.getValueFromCode(response.header(
-                        this.getIHeaders(request.getBucketName()).storageClassHeader())), handler.getCRC64());
+                        this.getIHeaders(request.getBucketName()).storageClassHeader())), handler.getCRC64(),
+            handler.getCRC32());
 
         setHeadersAndStatus(copyRet, response);
         if (isExtraAclPutRequired && acl != null) {

@@ -33,6 +33,7 @@ import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketTagInfo;
 import com.obs.services.model.BucketVersioningConfiguration;
+import com.obs.services.model.CreateBucketRequest;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.LifecycleConfiguration;
 import com.obs.services.model.ListBucketsRequest;
@@ -138,6 +139,26 @@ public abstract class SecretFlexibleBucketObsClient extends ObsClient {
         this.setContextProviderCredentials(bucket.getBucketName(), accessKey, secretKey, securityToken);
         try {
             return super.createBucket(bucket);
+        } finally {
+            this.clearContextProviderCredentials();
+        }
+    }
+
+
+    public ObsBucket createBucket(CreateBucketRequest createBucketRequest, String accessKey, String secretKey) throws ObsException {
+        this.setContextProviderCredentials(createBucketRequest.getBucketName(), accessKey, secretKey);
+        try {
+            return super.createBucket(createBucketRequest);
+        } finally {
+            this.clearContextProviderCredentials();
+        }
+    }
+
+    public ObsBucket createBucket(CreateBucketRequest createBucketRequest, String accessKey, String secretKey, String securityToken)
+        throws ObsException {
+        this.setContextProviderCredentials(createBucketRequest.getBucketName(), accessKey, secretKey, securityToken);
+        try {
+            return super.createBucket(createBucketRequest);
         } finally {
             this.clearContextProviderCredentials();
         }

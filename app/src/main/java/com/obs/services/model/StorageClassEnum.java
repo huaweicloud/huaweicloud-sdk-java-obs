@@ -39,7 +39,12 @@ public enum StorageClassEnum {
     /**
      * Deep Archive
      */
-    DEEP_ARCHIVE;
+    DEEP_ARCHIVE,
+
+    /**
+     * INTELLIGENT TIERING
+     */
+    INTELLIGENT_TIERING;
 
     public String getCode() {
         return this.name();
@@ -54,6 +59,8 @@ public enum StorageClassEnum {
             return COLD;
         } else if ("DEEP_ARCHIVE".equals(code)) {
             return DEEP_ARCHIVE;
+        } else if ("INTELLIGENT_TIERING".equals(code)) {
+            return INTELLIGENT_TIERING;
         }
         return null;
     }

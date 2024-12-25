@@ -24,6 +24,14 @@ import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
+import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusResult;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockResult;
+import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPublicStatusResult;
+import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketDirectColdAccess;
@@ -135,6 +143,10 @@ import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
 import com.obs.services.model.ObjectTagResult;
 import com.obs.services.model.ObjectTaggingRequest;
+import com.obs.services.model.trash.DeleteBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashResult;
+import com.obs.services.model.trash.SetBucketTrashRequest;
 
 /**
  * Basic OBS interface
@@ -2299,6 +2311,12 @@ public interface IObsClient extends IObsBucketExtendClient {
      */
     HeaderResponse deleteBucketDirectColdAccess(BaseBucketRequest request) throws ObsException;
 
+    HeaderResponse setBucketTrash(SetBucketTrashRequest setBucketTrashRequest) throws ObsException;
+
+    GetBucketTrashResult getBucketTrash(GetBucketTrashRequest getBucketTrashRequest) throws ObsException;
+
+    HeaderResponse deleteBucketTrash(DeleteBucketTrashRequest deleteBucketTrashRequest) throws ObsException;
+
     HeaderResponse setInventoryConfiguration(SetInventoryConfigurationRequest request) throws ObsException;
 
     GetInventoryConfigurationResult getInventoryConfiguration(GetInventoryConfigurationRequest request) throws ObsException;
@@ -2306,6 +2324,16 @@ public interface IObsClient extends IObsBucketExtendClient {
     ListInventoryConfigurationResult listInventoryConfiguration(ListInventoryConfigurationRequest request) throws ObsException;
 
     HeaderResponse deleteInventoryConfiguration(DeleteInventoryConfigurationRequest request) throws ObsException;
+
+    HeaderResponse putBucketPublicAccessBlock(PutBucketPublicAccessBlockRequest request) throws ObsException;
+
+    GetBucketPublicAccessBlockResult getBucketPublicAccessBlock(GetBucketPublicAccessBlockRequest request) throws ObsException;
+
+    HeaderResponse deleteBucketPublicAccessBlock(DeleteBucketPublicAccessBlockRequest request) throws ObsException;
+
+    GetBucketPolicyPublicStatusResult getBucketPolicyPublicStatus(GetBucketPolicyPublicStatusRequest request) throws ObsException;
+
+    GetBucketPublicStatusResult getBucketPublicStatus(GetBucketPublicStatusRequest request) throws ObsException;
 
     /**
      * Close ObsClient and release connection resources.

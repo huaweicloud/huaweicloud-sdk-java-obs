@@ -18,6 +18,14 @@ package com.obs.services;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusResult;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockResult;
+import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPublicStatusResult;
+import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
@@ -42,6 +50,10 @@ import com.obs.services.model.fs.GetBucketFSStatusRequest;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.fs.SetBucketFSStatusRequest;
 import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.trash.DeleteBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashResult;
+import com.obs.services.model.trash.SetBucketTrashRequest;
 
 public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
     /*
@@ -790,6 +802,44 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
         return this.deleteBucketDirectColdAccess(new BaseBucketRequest(bucketName));
     }
 
+    @Override
+    public HeaderResponse setBucketTrash(SetBucketTrashRequest setBucketTrashRequest) throws ObsException{
+        ServiceUtils.assertParameterNotNull(setBucketTrashRequest, "SetBucketTrashRequest is null");
+        ServiceUtils.assertParameterNotNull(setBucketTrashRequest.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("setBucketTrash", setBucketTrashRequest.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.setBucketTrashImpl(setBucketTrashRequest);
+                }
+            });
+    }
+
+    @Override
+    public GetBucketTrashResult getBucketTrash(GetBucketTrashRequest getBucketTrashRequest) throws ObsException{
+        ServiceUtils.assertParameterNotNull(getBucketTrashRequest, "GetBucketTrashRequest is null");
+        ServiceUtils.assertParameterNotNull(getBucketTrashRequest.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketTrash", getBucketTrashRequest.getBucketName(),
+            new ActionCallbackWithResult<GetBucketTrashResult>() {
+                @Override
+                public GetBucketTrashResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketTrashImpl(getBucketTrashRequest);
+                }
+            });
+    }
+
+    @Override
+    public HeaderResponse deleteBucketTrash(DeleteBucketTrashRequest deleteBucketTrashRequest) throws ObsException{
+        ServiceUtils.assertParameterNotNull(deleteBucketTrashRequest, "DeleteBucketTrashRequest is null");
+        ServiceUtils.assertParameterNotNull(deleteBucketTrashRequest.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("deleteBucketTrash", deleteBucketTrashRequest.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.deleteBucketTrashImpl(deleteBucketTrashRequest);
+                }
+            });
+    }
     /*
      * (non-Javadoc)
      * 
@@ -806,5 +856,100 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
                         return AbstractBucketAdvanceClient.this.deleteBucketDirectColdAccessImpl(request);
                     }
                 });
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ObsException
+     */
+    @Override
+    public HeaderResponse putBucketPublicAccessBlock(PutBucketPublicAccessBlockRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "PutBucketPublicAccessBlockRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("putBucketPublicAccessBlock", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.putBucketPublicAccessBlockImpl(request);
+                }
+            });
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ObsException
+     */
+    @Override
+    public GetBucketPublicAccessBlockResult getBucketPublicAccessBlock(GetBucketPublicAccessBlockRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketPublicAccessBlockRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketPublicAccessBlock", request.getBucketName(),
+            new ActionCallbackWithResult<GetBucketPublicAccessBlockResult>() {
+                @Override
+                public GetBucketPublicAccessBlockResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketPublicAccessBlockImpl(request);
+                }
+            });
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ObsException
+     */
+    @Override
+    public HeaderResponse deleteBucketPublicAccessBlock(DeleteBucketPublicAccessBlockRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "DeleteBucketPublicAccessBlockRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("deleteBucketPublicAccessBlock", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.deleteBucketPublicAccessBlockImpl(request);
+                }
+            });
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ObsException
+     */
+    @Override
+    public GetBucketPolicyPublicStatusResult getBucketPolicyPublicStatus(GetBucketPolicyPublicStatusRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketPolicyPublicStatusRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketPolicyPublicStatus", request.getBucketName(),
+            new ActionCallbackWithResult<GetBucketPolicyPublicStatusResult>() {
+                @Override
+                public GetBucketPolicyPublicStatusResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketPolicyPublicStatusImpl(request);
+                }
+            });
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ObsException
+     */
+    @Override
+    public GetBucketPublicStatusResult getBucketPublicStatus(GetBucketPublicStatusRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketPublicStatusRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketPublicStatus", request.getBucketName(),
+            new ActionCallbackWithResult<GetBucketPublicStatusResult>() {
+                @Override
+                public GetBucketPublicStatusResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketPublicStatusImpl(request);
+                }
+            });
     }
 }

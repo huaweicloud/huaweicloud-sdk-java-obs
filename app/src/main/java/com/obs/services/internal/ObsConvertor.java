@@ -315,6 +315,9 @@ public class ObsConvertor extends V2Convertor {
                 case DEEP_ARCHIVE:
                     storageClassStr = "DEEP_ARCHIVE";
                     break;
+                case INTELLIGENT_TIERING:
+                    storageClassStr = "INTELLIGENT_TIERING";
+                    break;
                 default:
                     break;
             }

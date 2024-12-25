@@ -91,8 +91,8 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Obtain the validity period of the temporary authorization (in seconds).
-     * The devalue value is 5 minutes (value "300") and the maximum value is 7
-     * days ("604800").
+     * The default value is 5 minutes (value "300") and the maximum value is 20
+     * years ("630720000").
      * 
      * @return Validity period
      */
@@ -102,8 +102,8 @@ public class TemporarySignatureRequest extends AbstractTemporarySignatureRequest
 
     /**
      * Obtain the validity period of the temporary authorization (in seconds).
-     * The devalue value is 5 minutes (value "300") and the maximum value is 7
-     * days ("604800").
+     * The default value is 5 minutes (value "300") and the maximum value is 20
+     * years ("630720000").
      * 
      * @param expires
      *            Validity period

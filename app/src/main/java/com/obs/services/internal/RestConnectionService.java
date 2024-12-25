@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.obs.log.ILogger;
@@ -62,11 +63,11 @@ public class RestConnectionService {
     protected LocalTimeUtil localTimeUtil;
 
     protected void initHttpClient(Dispatcher httpDispatcher, Dns customizedDnsImpl, HostnameVerifier hostnameVerifier,
-            EventListener.Factory eventListenerFactory) {
+            EventListener.Factory eventListenerFactory, SSLContext sslContext) {
 
         OkHttpClient.Builder builder = RestUtils.initHttpClientBuilder(obsProperties, keyManagerFactory,
                 trustManagerFactory, httpDispatcher, customizedDnsImpl, eventListenerFactory, hostnameVerifier,
-                credentials.getSecureRandom());
+                credentials.getSecureRandom(), sslContext);
 
         if (this.obsProperties.getBoolProperty(ObsConstraint.PROXY_ISABLE, true)) {
             String proxyHostAddress = this.obsProperties.getStringProperty(ObsConstraint.PROXY_HOST, null);

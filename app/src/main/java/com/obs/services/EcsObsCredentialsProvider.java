@@ -83,6 +83,7 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
         do {
             try {
                 securityKey = getNewSecurityKey();
+                break; // no need to retry if getNewSecurityKey succeeded
             } catch (IOException | RuntimeException e) {
                 ILOG.warn("refresh new security key failed. times : " + times + "; maxRetryTimes is : " + maxRetryTimes
                         + "; ignoreException : " + ignoreException, e);

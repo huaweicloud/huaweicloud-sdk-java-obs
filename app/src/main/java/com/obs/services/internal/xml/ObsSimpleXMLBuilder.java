@@ -10,6 +10,9 @@ public class ObsSimpleXMLBuilder {
     public void append(String value) {
         xmlBuilder.append(value);
     }
+    public void append(int value) {
+        xmlBuilder.append(value);
+    }
 
     public void endElement(String tag) {
         xmlBuilder.append("</").append(tag).append(">");

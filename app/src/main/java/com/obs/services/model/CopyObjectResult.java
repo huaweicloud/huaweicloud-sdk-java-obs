@@ -26,6 +26,8 @@ public class CopyObjectResult extends HeaderResponse {
 
     private String crc64;
 
+    private String crc32c;
+
     private Date lastModified;
 
     private String versionId;
@@ -35,13 +37,14 @@ public class CopyObjectResult extends HeaderResponse {
     private StorageClassEnum storageClass;
 
     public CopyObjectResult(String etag, Date lastModified, String versionId, String copySourceVersionId,
-            StorageClassEnum storageClass, String crc64) {
+            StorageClassEnum storageClass, String crc64, String crc32c) {
         this.etag = etag;
         this.lastModified = ServiceUtils.cloneDateIgnoreNull(lastModified);
         this.versionId = versionId;
         this.copySourceVersionId = copySourceVersionId;
         this.storageClass = storageClass;
         this.crc64 = crc64;
+        this.crc32c = crc32c;
     }
 
     /**
@@ -98,10 +101,20 @@ public class CopyObjectResult extends HeaderResponse {
         return crc64;
     }
 
+    /**
+     * Obtain the crc32c of the destination object.
+     *
+     * @return crc32c value of the destination object
+     */
+    public String getCRC32C() {
+        return crc32c;
+    }
+
     @Override
     public String toString() {
         return "CopyObjectResult [etag=" + etag + ", lastModified=" + lastModified + ", versionId=" + versionId
-                + ", copySourceVersionId=" + copySourceVersionId + ", storageClass=" + storageClass + "]";
+            + ", copySourceVersionId=" + copySourceVersionId + ", storageClass=" + storageClass+
+            ", crc64=" + crc64 + ", crc32c=" + crc32c + "]";
     }
 
 }

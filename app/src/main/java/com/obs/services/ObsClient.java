@@ -290,4 +290,10 @@ public class ObsClient extends AbstractBatchClient {
         } while (clazz != null);
         return null;
     }
+
+    public void setProvider(IObsCredentialsProvider provider) {
+        ServiceUtils.assertParameterNotNull(provider, "ObsCredentialsProvider is null");
+        this.credentials.setObsCredentialsProvider(provider);
+    }
+
 }
