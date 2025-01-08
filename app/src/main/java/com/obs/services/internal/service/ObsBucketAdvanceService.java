@@ -29,9 +29,22 @@ import com.obs.services.internal.utils.JSONChange;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.internal.xml.BucketPublicAccessBlockXMLBuilder;
 import com.obs.services.internal.xml.OBSXMLBuilder;
+import com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.bpa.BucketPublicAccessBlock;
+import com.obs.services.model.bpa.BucketPublicStatus;
+import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPolicyPublicStatusResult;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockRequest;
+import com.obs.services.model.bpa.GetBucketPublicAccessBlockResult;
+import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
+import com.obs.services.model.bpa.GetBucketPublicStatusResult;
+import com.obs.services.model.bpa.BucketPolicyStatus;
+import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCustomDomainInfo;
@@ -79,12 +92,16 @@ import com.obs.services.model.crr.GetCrrProgressRequest;
 import com.obs.services.model.crr.GetCrrProgressResult;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
 import com.obs.services.model.http.HttpStatusCode;
+import com.obs.services.model.trash.BucketTrashConfiguration;
+import com.obs.services.model.trash.DeleteBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashRequest;
+import com.obs.services.model.trash.GetBucketTrashResult;
+import com.obs.services.model.trash.SetBucketTrashRequest;
 import com.oef.services.model.RequestParamEnum;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -927,6 +944,67 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         }
     }
 
+    protected HeaderResponse setBucketTrashImpl(SetBucketTrashRequest setBucketTrashRequest) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_TRASH.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(setBucketTrashRequest, headers,
+            this.getIHeaders(setBucketTrashRequest.getBucketName()));
+        BucketTrashConfigurationXMLBuilder xmlBuilder = new BucketTrashConfigurationXMLBuilder();
+        String xml = xmlBuilder.buildXML(setBucketTrashRequest.getTrashConfiguration());
+        if (log.isTraceEnabled()) {
+            log.trace("setBucketTrashRequest's xml is:");
+            log.trace(xml);
+        }
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        NewTransResult transResult = transRequest(setBucketTrashRequest);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(transResult, true, false, false, false);
+        return build(response);
+    }
+
+    protected GetBucketTrashResult getBucketTrashImpl(GetBucketTrashRequest getBucketTrashRequest){
+
+        Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put(SpecialParamEnum.OBS_TRASH.getOriginalStringCode(), "");
+
+        Response httpResponse = performRestGet(getBucketTrashRequest.getBucketName(), null, requestParameters,
+            transRequestPaymentHeaders(getBucketTrashRequest, null,
+                this.getIHeaders(getBucketTrashRequest.getBucketName())),
+            getBucketTrashRequest.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+
+        String reservedDaysString = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+            XmlResponsesSaxParser.BucketTrashConfigurationXMLHandler.class, false).getReservedDays();
+
+        GetBucketTrashResult getBucketTrashResult = new GetBucketTrashResult();
+        try {
+            int reservedDays = Integer.parseInt(reservedDaysString);
+            getBucketTrashResult.setTrashConfiguration(new BucketTrashConfiguration(reservedDays));
+        } catch (Throwable throwable) {
+            String errorMessage = "failed to parse reservedDays (" + reservedDaysString + ") to int";
+            log.warn(errorMessage);
+            throw new ObsException(errorMessage, throwable);
+        }
+        setHeadersAndStatus(getBucketTrashResult, httpResponse);
+        return getBucketTrashResult;
+    }
+
+    protected HeaderResponse deleteBucketTrashImpl(DeleteBucketTrashRequest deleteBucketTrashRequest) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_TRASH.getOriginalStringCode(), "");
+        Response response = performRestDelete(deleteBucketTrashRequest.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(deleteBucketTrashRequest, null,
+                this.getIHeaders(deleteBucketTrashRequest.getBucketName())),
+            deleteBucketTrashRequest.getUserHeaders());
+        return this.build(response);
+    }
+
     protected void setVirtualReplication(String agencyId, String sourceBucketName, String destBucketName) {
         ReplicationConfiguration replicationConfiguration = new ReplicationConfiguration();
         ReplicationConfiguration.Rule rule = new ReplicationConfiguration.Rule();
@@ -943,5 +1021,97 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         replicationConfiguration.setAgency(agencyId);
         SetBucketReplicationRequest request = new SetBucketReplicationRequest(sourceBucketName, replicationConfiguration);
         setBucketReplicationConfigurationImpl(request);
+    }
+
+    protected HeaderResponse putBucketPublicAccessBlockImpl(PutBucketPublicAccessBlockRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.PUBLIC_ACCESS_BLOCK.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        BucketPublicAccessBlockXMLBuilder xmlBuilder = new BucketPublicAccessBlockXMLBuilder();
+        String xml = xmlBuilder.buildXML(request.getBucketPublicAccessBlock());
+        if (log.isTraceEnabled()) {
+            log.trace("putBucketPublicAccessBlock's xml is:");
+            log.trace(xml);
+        }
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        NewTransResult transResult = transRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(transResult, true, false, false, false);
+        return build(response);
+    }
+
+    protected GetBucketPublicAccessBlockResult getBucketPublicAccessBlockImpl(GetBucketPublicAccessBlockRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.PUBLIC_ACCESS_BLOCK.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+
+        Response httpResponse = performRestGet(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+        BucketPublicAccessBlock bucketPublicAccessBlock =
+            getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+            XmlResponsesSaxParser.BucketPublicAccessBlockXMLHandler.class, false).getBucketPublicAccessBlock();
+        GetBucketPublicAccessBlockResult getBucketPublicAccessBlockResult = new GetBucketPublicAccessBlockResult();
+        setHeadersAndStatus(getBucketPublicAccessBlockResult, httpResponse);
+        getBucketPublicAccessBlockResult.setBucketPublicAccessBlock(bucketPublicAccessBlock);
+        return getBucketPublicAccessBlockResult;
+    }
+
+    protected HeaderResponse deleteBucketPublicAccessBlockImpl(DeleteBucketPublicAccessBlockRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.PUBLIC_ACCESS_BLOCK.getOriginalStringCode(), "");
+        Response response = performRestDelete(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+        return this.build(response);
+    }
+
+    protected GetBucketPolicyPublicStatusResult getBucketPolicyPublicStatusImpl(
+        GetBucketPolicyPublicStatusRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.POLICY_STATUS.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+
+        Response httpResponse = performRestGet(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+        BucketPolicyStatus bucketPolicyStatus =
+            getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketPolicyStatusHandler.class, false).getPolicyStatus();
+        GetBucketPolicyPublicStatusResult getBucketPublicAccessBlockResult = new GetBucketPolicyPublicStatusResult();
+        setHeadersAndStatus(getBucketPublicAccessBlockResult, httpResponse);
+        getBucketPublicAccessBlockResult.setPolicyStatus(bucketPolicyStatus);
+        return getBucketPublicAccessBlockResult;
+    }
+
+    protected GetBucketPublicStatusResult getBucketPublicStatusImpl(GetBucketPublicStatusRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.BUCKET_PUBLIC_STATUS.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+
+        Response httpResponse = performRestGet(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+        BucketPublicStatus bucketPolicyStatus =
+            getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketPublicStatusHandler.class, false).getPublicStatus();
+        GetBucketPublicStatusResult getBucketPublicAccessBlockResult = new GetBucketPublicStatusResult();
+        setHeadersAndStatus(getBucketPublicAccessBlockResult, httpResponse);
+        getBucketPublicAccessBlockResult.setBucketPublicStatus(bucketPolicyStatus);
+        return getBucketPublicAccessBlockResult;
     }
 }
