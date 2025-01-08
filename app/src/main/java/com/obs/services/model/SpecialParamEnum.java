@@ -188,7 +188,15 @@ public enum SpecialParamEnum {
 
     ID("id"),
 
-    INVENTORY("inventory");
+    OBS_TRASH("x-obs-trash"),
+
+    INVENTORY("inventory"),
+
+    PUBLIC_ACCESS_BLOCK("publicAccessBlock"),
+
+    POLICY_STATUS("policyStatus"),
+
+    BUCKET_PUBLIC_STATUS("bucketStatus");
     
     /**
      * Specify the corresponding code in the database and the external code.
