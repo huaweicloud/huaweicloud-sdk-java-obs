@@ -14,6 +14,15 @@
 
 package com.obs.services.internal.handler;
 
+import static com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder.RESERVED_DAYS;
+import static com.obs.services.model.bpa.BucketPolicyStatus.POLICY_STATUS;
+import static com.obs.services.model.bpa.BucketPublicAccessBlock.BLOCK_PUBLIC_ACLS;
+import static com.obs.services.model.bpa.BucketPublicAccessBlock.BLOCK_PUBLIC_POLICY;
+import static com.obs.services.model.bpa.BucketPublicAccessBlock.IGNORE_PUBLIC_ACLS;
+import static com.obs.services.model.bpa.BucketPublicAccessBlock.PUBLIC_ACCESS_BLOCK_CONFIGURATION;
+import static com.obs.services.model.bpa.BucketPublicAccessBlock.RESTRICT_PUBLIC_BUCKETS;
+import static com.obs.services.model.bpa.BucketPublicStatus.BUCKET_STATUS;
+
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.internal.Constants;
@@ -21,6 +30,9 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.bpa.BucketPolicyStatus;
+import com.obs.services.model.bpa.BucketPublicAccessBlock;
+import com.obs.services.model.bpa.BucketPublicStatus;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
 import com.obs.services.model.BucketCustomDomainInfo;
@@ -901,6 +913,21 @@ public class XmlResponsesSaxParser {
         }
     }
 
+    public static class BucketTrashConfigurationXMLHandler extends DefaultXmlHandler {
+        private String reservedDays;
+
+        public String getReservedDays() {
+            return reservedDays;
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (RESERVED_DAYS.equals(name)) {
+                reservedDays = elementText;
+            }
+        }
+    }
+
     public static class BucketCorsHandler extends DefaultXmlHandler {
 
         private final BucketCors configuration = new BucketCors();
@@ -984,6 +1011,8 @@ public class XmlResponsesSaxParser {
 
         private String crc64;
 
+        private String crc32c;
+
         private Date lastModified;
 
         public Date getLastModified() {
@@ -996,6 +1025,10 @@ public class XmlResponsesSaxParser {
 
         public String getCRC64() {
             return crc64;
+        }
+
+        public String getCRC32() {
+            return crc32c;
         }
 
         @Override
@@ -1012,6 +1045,8 @@ public class XmlResponsesSaxParser {
                 etag = elementText;
             } else if (name.equals("CRC64")) {
                 crc64 = elementText;
+            } else if (name.equals("CRC32C")) {
+                crc32c = elementText;
             }
         }
     }
@@ -1656,12 +1691,14 @@ public class XmlResponsesSaxParser {
 
         private String crc64;
 
+        private String crc32c;
+
         public CopyPartResultHandler(XMLReader xr) {
             super(xr);
         }
 
         public CopyPartResult getCopyPartResult(int partNumber) {
-            CopyPartResult result = new CopyPartResult(partNumber, etag, lastModified, crc64);
+            CopyPartResult result = new CopyPartResult(partNumber, etag, lastModified, crc64, crc32c);
             return result;
         }
 
@@ -1678,6 +1715,9 @@ public class XmlResponsesSaxParser {
         }
         public void endCRC64(String content) {
             this.crc64 = content;
+        }
+        public void endCRC32C(String content) {
+            this.crc32c = content;
         }
 
     }
@@ -2688,5 +2728,101 @@ public class XmlResponsesSaxParser {
             }
         }
 
+    }
+
+    public static class BucketPublicAccessBlockXMLHandler extends DefaultXmlHandler {
+        protected BucketPublicAccessBlock bucketPublicAccessBlock;
+
+        public BucketPublicAccessBlock getBucketPublicAccessBlock() {
+            return bucketPublicAccessBlock;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (PUBLIC_ACCESS_BLOCK_CONFIGURATION.equals(name)) {
+                bucketPublicAccessBlock = new BucketPublicAccessBlock();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if (bucketPublicAccessBlock != null) {
+                if (BLOCK_PUBLIC_ACLS.equals(name)) {
+                    bucketPublicAccessBlock.setBlockPublicACLs(parseAndLogBool(name, content));
+                }
+                if (IGNORE_PUBLIC_ACLS.equals(name)) {
+                    bucketPublicAccessBlock.setIgnorePublicACLs(parseAndLogBool(name, content));
+                }
+                if (BLOCK_PUBLIC_POLICY.equals(name)) {
+                    bucketPublicAccessBlock.setBlockPublicPolicy(parseAndLogBool(name, content));
+                }
+                if (RESTRICT_PUBLIC_BUCKETS.equals(name)) {
+                    bucketPublicAccessBlock.setRestrictPublicBuckets(parseAndLogBool(name, content));
+                }
+            } else {
+                log.error("bucketPublicAccessBlock is null, " +
+                    "parse xml in BucketPublicAccessBlockXMLHandler failed");
+            }
+        }
+
+    }
+    protected static Boolean parseAndLogBool(String name, String content) {
+        Boolean value = Boolean.parseBoolean(content);
+        if (log.isTraceEnabled()) {
+            log.trace(name + "'s content is:" + content + ", parse to Boolean is " + value);
+        }
+        return value;
+    }
+    public static class BucketPolicyStatusHandler extends DefaultXmlHandler {
+        protected BucketPolicyStatus bucketPolicyStatus;
+
+        public BucketPolicyStatus getPolicyStatus() {
+            return bucketPolicyStatus;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals(POLICY_STATUS)) {
+                bucketPolicyStatus = new BucketPolicyStatus();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if (bucketPolicyStatus != null) {
+                if (name.equals(BucketPolicyStatus.IS_PUBLIC)) {
+                    bucketPolicyStatus.setIsPublic(parseAndLogBool(name, content));
+                }
+            } else {
+                log.error("bucketPolicyStatus is null, " +
+                    "parse xml in BucketPolicyStatusHandler failed");
+            }
+        }
+    }
+    public static class BucketPublicStatusHandler extends DefaultXmlHandler {
+        protected BucketPublicStatus bucketPublicStatus;
+
+        public BucketPublicStatus getPublicStatus() {
+            return bucketPublicStatus;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals(BUCKET_STATUS)) {
+                bucketPublicStatus = new BucketPublicStatus();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if (bucketPublicStatus != null) {
+                if (name.equals(BucketPublicStatus.IS_PUBLIC)) {
+                    bucketPublicStatus.setIsPublic(parseAndLogBool(name, content));
+                }
+            } else {
+                log.error("bucketPublicStatus is null, " +
+                    "parse xml in BucketPublicStatusHandler failed");
+            }
+        }
     }
 }

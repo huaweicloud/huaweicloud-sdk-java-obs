@@ -1,3 +1,9 @@
+Version 3.24.12
+New features:
+1. Added bpa feature
+2. Added intelligent tiering feature
+3. Added posix trash feature
+-----------------------------------------------------------------------------------
 Version 3.24.9
 Resolved issues:
 1. Fixed the issue that can't auto add ContentType webp
