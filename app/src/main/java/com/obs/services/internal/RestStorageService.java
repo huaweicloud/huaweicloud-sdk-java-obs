@@ -412,6 +412,11 @@ public abstract class RestStorageService extends RestConnectionService {
             result.getUserHeaders().forEach(builder::addHeader);
         }
         Request request = builder.build();
+        if (result.hasCertificate()) {
+            ServiceUtils.checkParameterStartsWith(request.url().toString(),
+                    Constants.HTTPS_PREFIX,
+                    "Only '" + Constants.HTTPS_PREFIX + "' URLs are allowed for sending certificate details to ensure secure transmission.");
+        }
         RequestInfo requestInfo = new RequestInfo(request, new InterfaceLogBean("performRequest", "", ""));
         try {
             tryRequest(result.getParams(), result.getBucketName(), needSignature,

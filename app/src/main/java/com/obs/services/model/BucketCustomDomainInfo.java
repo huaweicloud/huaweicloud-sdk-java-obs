@@ -35,8 +35,8 @@ public class BucketCustomDomainInfo extends HeaderResponse {
         return domains;
     }
 
-    public Domains addDomain(String domainName, Date createTime) {
-        Domains domain = new Domains(domainName, createTime);
+    public Domains addDomain(String domainName, Date createTime, String certificateId) {
+        Domains domain = new Domains(domainName, createTime, certificateId);
         this.getDomains().add(domain);
         return domain;
     } 
@@ -49,11 +49,19 @@ public class BucketCustomDomainInfo extends HeaderResponse {
     public static class Domains {
         private String domainName;
         private Date createTime;
+        private String certificateId;
         
         public Domains(String domainName, Date createTime) {
             super();
             this.domainName = domainName;
             this.createTime = createTime;
+        }
+
+        public Domains(String domainName, Date createTime, String certificateId) {
+            super();
+            this.domainName = domainName;
+            this.createTime = createTime;
+            this.certificateId = certificateId;
         }
         
         public String getDomainName() {
@@ -72,9 +80,15 @@ public class BucketCustomDomainInfo extends HeaderResponse {
             this.createTime = createTime;
         }
 
+        public String getCertificateId() {
+            return certificateId;
+        }
+
         @Override
         public String toString() {
-            return "Domains [domainName=" + domainName + ", createTime=" + createTime + "]";
+            return "Domains [domainName=" + domainName + ", " +
+                    "createTime=" + createTime + ", " +
+                    "certificateId=" + certificateId + "]";
         }
     }
 }

@@ -17,6 +17,7 @@ public class NewTransResult {
     private HttpMethodEnum httpMethod;
     private boolean encodeHeaders = false;
     private boolean encodeUrl = true;
+    private boolean hasCertificate = false;
 
     protected CallCancelHandler cancelHandler;
 
@@ -110,6 +111,14 @@ public class NewTransResult {
     }
     public CallCancelHandler getCancelHandler() {
         return cancelHandler;
+    }
+
+    public boolean hasCertificate() {
+        return hasCertificate;
+    }
+
+    public void setHasCertificate(boolean hasCertificate) {
+        this.hasCertificate = hasCertificate;
     }
 
     public void setCancelHandler(CallCancelHandler cancelHandler) {

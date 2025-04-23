@@ -1,3 +1,11 @@
+Version 3.25.4
+New features:
+1. Added logic to set okhttp callTimeout
+2. Added DeleteData of crr configuration
+3. Added custom domain configuration
+Resolved issues:
+1. Optimised logic of verifying ContentType
+-----------------------------------------------------------------------------------
 Version 3.24.12
 New features:
 1. Added bpa feature

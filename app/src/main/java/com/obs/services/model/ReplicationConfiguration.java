@@ -73,8 +73,10 @@ public class ReplicationConfiguration extends HeaderResponse {
         }
 
         /**
+         * 获取历史对象复制规则状态
          * Obtain the replication status of historical objects.
          * 
+         * @return 规则状态
          * @return Rule status
          */
         public HistoricalObjectReplicationEnum getHistoricalObjectReplication() {
@@ -82,9 +84,11 @@ public class ReplicationConfiguration extends HeaderResponse {
         }
 
         /**
+         * 设置历史对象复制规则
          * Set historical object replication rule.
          * 
          * @param historicalObjectReplication
+         *            规则状态
          *            Rule status
          */
         public void setHistoricalObjectReplication(HistoricalObjectReplicationEnum historicalObjectReplication) {
@@ -141,6 +145,7 @@ public class ReplicationConfiguration extends HeaderResponse {
     public static class Destination {
         private String bucket;
         private StorageClassEnum storageClass;
+        private DeleteDataEnum deleteData;
 
         /**
          * Obtain the information about the destination bucket.
@@ -180,7 +185,19 @@ public class ReplicationConfiguration extends HeaderResponse {
         public void setObjectStorageClass(StorageClassEnum storageClass) {
             this.storageClass = storageClass;
         }
+        public DeleteDataEnum getDeleteData() {
+            return deleteData;
+        }
 
+        /**
+         * Set the delete data  of the object generated after the replication.
+         *
+         * @param deleteData
+         *  Delete data
+         */
+        public void setDeleteData(DeleteDataEnum deleteData) {
+            this.deleteData = deleteData;
+        }
         @Override
         public String toString() {
             return "Destination [bucket=" + bucket + ", storageClass=" + storageClass + "]";

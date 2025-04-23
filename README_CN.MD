@@ -1,3 +1,11 @@
+Version 3.25.4
+New features:
+1. 支持设置okhttp的callTimeout
+2. 支持crr配置中的DeleteData
+3. 支持自定义域名相关配置
+Resolved issues:
+1. 优化了校验ContentType的逻辑
+-----------------------------------------------------------------------------------
 Version 3.24.12
 New features:
 1. 支持bpa特性

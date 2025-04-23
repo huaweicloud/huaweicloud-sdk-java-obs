@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import com.obs.services.internal.utils.AbstractAuthentication;
+import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ObsAuthentication;
 import com.obs.services.internal.utils.V2Authentication;
 import com.obs.services.model.AuthTypeEnum;
@@ -142,6 +143,23 @@ public class Constants {
         public static final String READAHEAD = "readAhead";
         public static final String X_CACHE_CONTROL = "x-cache-control";
         public static final String TASKID = "taskID";
+
+    }
+
+    public static class ObsBucketReplicationRequestParams {
+        public static final String REPLICATION_CONFIGURATION = "ReplicationConfiguration";
+        public static final String RULE = "Rule";
+
+        public static final String ID = "ID";
+        public static final String HISTORICAL_OBJECT_REPLICATION = "HistoricalObjectReplication";
+        public static final String DESTINATION = "Destination";
+        public static final String STORAGE_CLASS = "StorageClass";
+        public static final String DELETE_DATA = "DeleteData";
+        public static final String STATUS = "Status";
+        public static final String BUCKET = "Bucket";
+        public static final String AGENCY = "Agency";
+        public static final String PREFIX = "Prefix";
+
     }
 
     public static final Map<AuthTypeEnum, IHeaders> HEADERS_MAP;
@@ -221,7 +239,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.24.12";
+    public static final String OBS_SDK_VERSION = "3.25.4";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -272,12 +290,23 @@ public class Constants {
 
     public static final String CONTENT_SHA256 = "content-sha256";
 
+    public static final String HTTPS_PREFIX = "https://";
+
     public static final long MAX_PART_SIZE = 5 * 1024 * 1024 * 1024L;
+
+    public static final int KB_CONVERSION_FACTOR = 1024;
 
     public static final long MIN_PART_SIZE = 100 * 1024L;
     public static final String REQUEST_TIME_TOO_SKEWED_CODE = "RequestTimeTooSkewed";
     public static final String ERROR_CODE_HEADER_OBS = "x-obs-error-code";
     public static final String ERROR_CODE_HEADER_AMZ = "x-amz-error-code";
+
+    public static final List<String> ALLOWED_RESPONSE_HTTP_CONTENT_TYPES_FOR_XML = Collections.unmodifiableList(
+        Arrays.asList(
+        Mimetypes.MIMETYPE_XML,
+        Mimetypes.MIMETYPE_TEXT_XML,
+        Mimetypes.MIMETYPE_XML_WITH_CHAR_SET_UTF8
+    ));
 
     public static final List<String> ALLOWED_RESPONSE_HTTP_HEADER_METADATA_NAMES = Collections.unmodifiableList(
             Arrays.asList("content-type", "content-md5", "content-length", "content-language", "expires", "origin",

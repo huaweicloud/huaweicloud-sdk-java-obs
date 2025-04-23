@@ -112,6 +112,8 @@ public class ObsConfiguration implements Cloneable {
 
     private SSLContext sslContext;
 
+    private int callTimeout;
+
     /**
      * Constructor
      */
@@ -148,6 +150,7 @@ public class ObsConfiguration implements Cloneable {
         this.secureRandom = new SecureRandom();
         this.localTimeUtil = new LocalTimeUtil();
         this.sslContext = null;
+        this.callTimeout = ObsConstraint.HTTP_CALL_TIMEOUT_VALUE;
     }
 
     public String getDelimiter() {
@@ -973,5 +976,12 @@ public class ObsConfiguration implements Cloneable {
         this.sslContext = sslContext;
     }
 
+    public int getCallTimeout() {
+        return callTimeout;
+    }
+
+    public void setCallTimeout(int callTimeout) {
+        this.callTimeout = callTimeout;
+    }
 
 }
