@@ -21,6 +21,7 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.Constants.CommonHeaders;
+import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.io.HttpMethodReleaseInputStream;
@@ -30,6 +31,7 @@ import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.internal.xml.BucketPublicAccessBlockXMLBuilder;
+import com.obs.services.internal.xml.CustomDomainCertificateConfigXMLBuilder;
 import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder;
 import com.obs.services.model.AccessControlList;
@@ -102,10 +104,12 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsBucketAdvanceService.class);
@@ -744,6 +748,17 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         NewTransResult result = transRequest(request);
         result.setParams(requestParams);
         result.setHeaders(headers);
+        if (Objects.nonNull(request.getCustomDomainCertificateConfig())) {
+            CustomDomainCertificateConfigXMLBuilder xmlBuilder = new CustomDomainCertificateConfigXMLBuilder();
+            String xml = xmlBuilder.buildXML(request.getCustomDomainCertificateConfig());
+            double sizeInKB = xml.getBytes(StandardCharsets.UTF_8).length / ObsConstraint.KB_PER_MB;
+            ServiceUtils.checkParameterSize("Certificate Request Body Size",
+                    sizeInKB,
+                    ObsConstraint.CUSTOM_DOMAIN_CERTIFICATE_MAX_XML_BODY_SIZE_BY_KB);
+            result.setBody(RequestBody.create(xml.getBytes(StandardCharsets.UTF_8)));
+            result.getUserHeaders().put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+            result.setHasCertificate(true);
+        }
         Response response = performRequest(result);
         return this.build(response);
     }

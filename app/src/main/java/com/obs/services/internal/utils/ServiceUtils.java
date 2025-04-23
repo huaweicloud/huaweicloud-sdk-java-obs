@@ -121,6 +121,42 @@ public class ServiceUtils {
         }
     }
 
+    public static void checkParameterStartsWith(String value, String prefix, String errorMessage) {
+        if (!value.startsWith(prefix)) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    public static void checkParameterLength(String parameterName, String value, int minLength, int maxLength) {
+        int length = value.length();
+        String errorMessage;
+
+        if (minLength > 0 && maxLength > 0) {
+            if (length < minLength || length > maxLength) {
+                if (minLength == maxLength) {
+                    errorMessage = parameterName + " length should be exactly " + minLength + " characters.";
+                    throw new IllegalArgumentException(errorMessage);
+                }
+                errorMessage = parameterName + " length should be between " + minLength + " and " + maxLength + " characters.";
+                throw new IllegalArgumentException(errorMessage);
+            }
+        } else {
+            errorMessage = parameterName + " check range is invalid, minLength :" + minLength + ", maxLength :" + maxLength + ".";
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    public static void checkParameterSize(String parameterName, double fileSizeInKB, long maxSizeKB) {
+        if (maxSizeKB > 0 && fileSizeInKB > maxSizeKB) {
+            String errorMessage = parameterName + " size should be less than or equal to " + maxSizeKB + " KB.";
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    public static long getSizeInKB(String value) {
+        return value.getBytes(StandardCharsets.UTF_8).length / Constants.KB_CONVERSION_FACTOR;
+    }
+
     public static Date parseIso8601Date(String dateString) throws ParseException {
         ParseException exception;
         SimpleDateFormat iso8601TimeParser = new SimpleDateFormat(ISO_8601_TIME_PARSER_STRING);
@@ -738,6 +774,7 @@ public class ServiceUtils {
             obsProperties.setProperty(ObsConstraint.OBS_XML_DOC_BUILDER_FACTORY,
                     config.getXmlDocumentBuilderFactoryClass());
         }
+        obsProperties.setProperty(ObsConstraint.HTTP_CALL_TIMEOUT, String.valueOf(config.getCallTimeout()));
     }
 
     public static Date cloneDateIgnoreNull(Date date) {
@@ -845,4 +882,5 @@ public class ServiceUtils {
             return stringBuilder.toString();
         }
     }
+
 }

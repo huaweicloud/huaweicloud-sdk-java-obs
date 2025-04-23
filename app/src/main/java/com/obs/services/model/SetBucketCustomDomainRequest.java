@@ -27,9 +27,19 @@ public class SetBucketCustomDomainRequest extends BaseBucketRequest {
 
     }
 
+    private CustomDomainCertificateConfig customDomainCertificateConfig;
+
     public SetBucketCustomDomainRequest(String bucketName, String domainName) {
         this.bucketName = bucketName;
         this.domainName = domainName;
+    }
+
+    public SetBucketCustomDomainRequest(String bucketName,
+                                        String domainName,
+                                        CustomDomainCertificateConfig customDomainCertificateConfig) {
+        this.bucketName = bucketName;
+        this.domainName = domainName;
+        this.customDomainCertificateConfig = customDomainCertificateConfig;
     }
 
     public String getDomainName() {
@@ -38,6 +48,14 @@ public class SetBucketCustomDomainRequest extends BaseBucketRequest {
 
     public void setDomainName(String domainName) {
         this.domainName = domainName;
+    }
+
+    public CustomDomainCertificateConfig getCustomDomainCertificateConfig() {
+        return customDomainCertificateConfig;
+    }
+
+    public void setCustomDomainCertificateConfig(CustomDomainCertificateConfig customDomainCertificateConfig) {
+        this.customDomainCertificateConfig = customDomainCertificateConfig;
     }
 
     @Override

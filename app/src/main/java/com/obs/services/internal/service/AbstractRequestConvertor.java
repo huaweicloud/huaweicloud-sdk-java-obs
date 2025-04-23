@@ -324,11 +324,13 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
     protected void verifyResponseContentType(Response response) throws ServiceException {
         if (this.obsProperties.getBoolProperty(ObsConstraint.VERIFY_RESPONSE_CONTENT_TYPE, true)) {
             String contentType = response.header(Constants.CommonHeaders.CONTENT_TYPE);
-            if (!Mimetypes.MIMETYPE_XML.equalsIgnoreCase(contentType)
-                    && !Mimetypes.MIMETYPE_TEXT_XML.equalsIgnoreCase(contentType)) {
-                throw new ServiceException(
-                        "Expected XML document response from OBS but received content type " + contentType);
+            for (String allowedResponseHttpContentType : Constants.ALLOWED_RESPONSE_HTTP_CONTENT_TYPES_FOR_XML) {
+                if (allowedResponseHttpContentType.equalsIgnoreCase(contentType)) {
+                    return;
+                }
             }
+            throw new ServiceException(
+                "Expected XML document response from OBS but received content type " + contentType);
         }
     }
 

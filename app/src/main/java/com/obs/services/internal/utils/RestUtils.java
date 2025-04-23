@@ -351,6 +351,8 @@ public class RestUtils {
                 .cache(null)
                 .connectTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_CONNECT_TIMEOUT,
                         ObsConstraint.HTTP_CONNECT_TIMEOUT_VALUE), TimeUnit.MILLISECONDS)
+                .callTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_CALL_TIMEOUT,
+                        ObsConstraint.HTTP_CALL_TIMEOUT_VALUE), TimeUnit.MILLISECONDS)
                 .writeTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_SOCKET_TIMEOUT,
                         ObsConstraint.HTTP_SOCKET_TIMEOUT_VALUE), TimeUnit.MILLISECONDS)
                 .readTimeout(obsProperties.getIntProperty(ObsConstraint.HTTP_SOCKET_TIMEOUT,
