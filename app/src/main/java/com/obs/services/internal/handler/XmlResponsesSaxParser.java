@@ -14,6 +14,9 @@
 
 package com.obs.services.internal.handler;
 
+import static com.obs.services.internal.ObsConstraint.CERTIFICATE_ID;
+import static com.obs.services.internal.ObsConstraint.ObsBucketXMLElements.CREATE_TIME;
+import static com.obs.services.internal.ObsConstraint.ObsBucketXMLElements.DOMAINS;
 import static com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder.RESERVED_DAYS;
 import static com.obs.services.model.bpa.BucketPolicyStatus.POLICY_STATUS;
 import static com.obs.services.model.bpa.BucketPublicAccessBlock.BLOCK_PUBLIC_ACLS;
@@ -33,6 +36,7 @@ import com.obs.services.model.AccessControlList;
 import com.obs.services.model.bpa.BucketPolicyStatus;
 import com.obs.services.model.bpa.BucketPublicAccessBlock;
 import com.obs.services.model.bpa.BucketPublicStatus;
+import com.obs.services.model.DeleteDataEnum;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCorsRule;
 import com.obs.services.model.BucketCustomDomainInfo;
@@ -1094,6 +1098,8 @@ public class XmlResponsesSaxParser {
 
         private Date createTime;
 
+        private String certificateId;
+
         public BucketCustomDomainInfo getBucketTagInfo() {
             return bucketCustomDomainInfo;
         }
@@ -1102,7 +1108,9 @@ public class XmlResponsesSaxParser {
         public void endElement(String name, String content) {
             if ("DomainName".equals(name)) {
                 domainName = content;
-            } else if ("CreateTime".equals(name)) {
+            } else if (CERTIFICATE_ID.equals(name)) {
+                certificateId = content;
+            } else if (CREATE_TIME.equals(name)) {
                 try {
                     createTime = ServiceUtils.parseIso8601Date(content);
                 } catch (ParseException e) {
@@ -1111,8 +1119,8 @@ public class XmlResponsesSaxParser {
                                 + content, e);
                     }
                 }
-            } else if ("Domains".equals(name)) {
-                bucketCustomDomainInfo.addDomain(domainName, createTime);
+            } else if (DOMAINS.equals(name)) {
+                bucketCustomDomainInfo.addDomain(domainName, createTime, certificateId);
             }
         }
 
@@ -2356,14 +2364,14 @@ public class XmlResponsesSaxParser {
             latestRule.setAbortIncompleteMultipartUpload(config.new AbortIncompleteMultipartUpload());
         }
         public void endDaysAfterInitiation(String content) {
-            latestRule.getAbortIncompleteMultipartUpload().setDaysAfterInitiation(Integer.parseInt(content));
+            latestRule.getAbortIncompleteMultipartUpload().setDaysAfterInitiation(Integer.parseInt(content.trim()));
         }
         public void endStorageClass(String content) {
-            LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content));
+            LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content.trim()));
         }
         public void endExpiredObjectDeleteMarker(String content) {
             boolean expiredObjectDeleteMarker = false;
-            if (content.equals("true")) {
+            if (content.trim().equals("true")) {
                 expiredObjectDeleteMarker = true;
             }
             if (latestTimeEvent instanceof LifecycleConfiguration.Expiration) {
@@ -2373,15 +2381,15 @@ public class XmlResponsesSaxParser {
         }
 
         public void endDate(String content) throws ParseException {
-            LifecycleConfiguration.setDate(latestTimeEvent, ServiceUtils.parseIso8601Date(content));
+            LifecycleConfiguration.setDate(latestTimeEvent, ServiceUtils.parseIso8601Date(content.trim()));
         }
 
         public void endNoncurrentDays(String content) {
-            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content));
+            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content.trim()));
         }
 
         public void endDays(String content) {
-            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content));
+            LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content.trim()));
         }
 
         public void startRule() {
@@ -2389,15 +2397,15 @@ public class XmlResponsesSaxParser {
         }
 
         public void endID(String content) {
-            latestRule.setId(content);
+            latestRule.setId(content.trim());
         }
 
         public void endPrefix(String content) {
-            latestRule.setPrefix(content);
+            latestRule.setPrefix(content.trim());
         }
 
         public void endStatus(String content) {
-            latestRule.setEnabled("Enabled".equals(content));
+            latestRule.setEnabled("Enabled".equals(content.trim()));
         }
 
         public void endRule(String content) {
@@ -2408,13 +2416,13 @@ public class XmlResponsesSaxParser {
             if(latestRule.getTagSet() == null) {
                 latestRule.setTagSet(new BucketTagInfo.TagSet());
             }
-            latestRule.getTagSet().addTag(content,"");
+            latestRule.getTagSet().addTag(content.trim(),"");
         }
 
         public void endValue(String content) {
             if(latestRule.getTagSet() != null && !latestRule.getTagSet().getTags().isEmpty()) {
                 int tagSetSize = latestRule.getTagSet().getTags().size();
-                latestRule.getTagSet().getTags().get(tagSetSize - 1).setValue(content);
+                latestRule.getTagSet().getTags().get(tagSetSize - 1).setValue(content.trim());
             }
         }
     }
@@ -2633,9 +2641,9 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void startElement(String name) {
-            if ("Rule".equals(name)) {
+            if (Constants.ObsBucketReplicationRequestParams.RULE.equals(name)) {
                 currentRule = new ReplicationConfiguration.Rule();
-            } else if ("Destination".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.DESTINATION.equals(name)) {
                 currentRule.setDestination(new ReplicationConfiguration.Destination());
             }
         }
@@ -2643,9 +2651,9 @@ public class XmlResponsesSaxParser {
         @Override
         public void endElement(String name, String content) {
             if (null != replicationConfiguration) {
-                if ("Agency".equals(name)) {
+                if (Constants.ObsBucketReplicationRequestParams.AGENCY.equals(name)) {
                     replicationConfiguration.setAgency(content);
-                } else if ("Rule".equals(name)) {
+                } else if (Constants.ObsBucketReplicationRequestParams.RULE.equals(name)) {
                     replicationConfiguration.getRules().add(currentRule);
                 }
             }
@@ -2657,19 +2665,22 @@ public class XmlResponsesSaxParser {
                 return;
             }
 
-            if ("ID".equals(name)) {
+            if (Constants.ObsBucketReplicationRequestParams.ID.equals(name)) {
                 currentRule.setId(content);
-            } else if ("Status".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.STATUS.equals(name)) {
                 currentRule.setStatus(RuleStatusEnum.getValueFromCode(content));
-            } else if ("Prefix".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.PREFIX.equals(name)) {
                 currentRule.setPrefix(content);
-            } else if ("Bucket".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.BUCKET.equals(name)) {
                 currentRule.getDestination().setBucket(content);
-            } else if ("StorageClass".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.STORAGE_CLASS.equals(name)) {
                 currentRule.getDestination().setObjectStorageClass(StorageClassEnum.getValueFromCode(content));
-            } else if ("HistoricalObjectReplication".equals(name)) {
+            } else if (Constants.ObsBucketReplicationRequestParams.HISTORICAL_OBJECT_REPLICATION.equals(name)) {
                 currentRule
                         .setHistoricalObjectReplication(HistoricalObjectReplicationEnum.getValueFromCode(content));
+            } else if (Constants.ObsBucketReplicationRequestParams.DELETE_DATA.equals(name)) {
+                currentRule
+                        .getDestination().setDeleteData(DeleteDataEnum.getValueFromCode(content));
             }
         }
     }

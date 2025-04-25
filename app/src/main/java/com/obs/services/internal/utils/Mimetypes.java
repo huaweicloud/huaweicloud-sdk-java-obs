@@ -22,6 +22,8 @@ import java.util.Map;
 public class Mimetypes {
     public static final String MIMETYPE_XML = "application/xml";
 
+    public static final String MIMETYPE_XML_WITH_CHAR_SET_UTF8 = "application/xml;charset=UTF-8";
+
     public static final String MIMETYPE_TEXT_XML = "text/xml";
 
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";

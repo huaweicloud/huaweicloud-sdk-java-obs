@@ -36,6 +36,7 @@ import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
 import com.obs.services.model.CreateVirtualBucketRequest;
 import com.obs.services.model.CreateVirtualBucketResult;
+import com.obs.services.model.CustomDomainCertificateConfig;
 import com.obs.services.model.DeleteBucketCustomDomainRequest;
 import com.obs.services.model.GetBucketCustomDomainRequest;
 import com.obs.services.model.HeaderResponse;
@@ -59,6 +60,7 @@ import com.obs.services.model.inventory.DeleteInventoryConfigurationRequest;
 import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
 import com.obs.services.model.inventory.GetInventoryConfigurationResult;
 import com.obs.services.model.inventory.ListInventoryConfigurationResult;
+
 
 public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClient {
     /*
@@ -908,12 +910,14 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
     public HeaderResponse setBucketCustomDomain(String bucketName, String domainName) throws ObsException {
         return setBucketCustomDomain(new SetBucketCustomDomainRequest(bucketName, domainName));
     }
-    
+
     @Override
     public HeaderResponse setBucketCustomDomain(SetBucketCustomDomainRequest request) throws ObsException {
-        ServiceUtils.assertParameterNotNull(request, "request is null");
-        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
-        ServiceUtils.assertParameterNotNull2(request.getDomainName(), "domainName is null");
+        ServiceUtils.assertParameterNotNull(request, "Request is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "Bucket name is null");
+        ServiceUtils.assertParameterNotNull2(request.getDomainName(), "Domain name is null");
+
+        CustomDomainCertificateConfig.checkCertificateConfig(request.getCustomDomainCertificateConfig());
 
         return this.doActionWithResult("setBucketCustomDomain", request.getBucketName(),
                 new ActionCallbackWithResult<HeaderResponse>() {

@@ -59,6 +59,11 @@ public class ObsConstraint {
     public static final String HTTP_CONNECT_TIMEOUT = "httpclient.connection-timeout-ms";
 
     /**
+     * 整个http请求的超时时间
+     */
+    public static final String HTTP_CALL_TIMEOUT = "httpclient.call-timeout-ms";
+
+    /**
      * SOCKET的超时时间
      */
     public static final String HTTP_SOCKET_TIMEOUT = "httpclient.socket-timeout-ms";
@@ -70,6 +75,8 @@ public class ObsConstraint {
     public static final String HTTP_STRICT_HOSTNAME_VERIFICATION = "httpclient.strict-hostname-verification";
 
     public static final int HTTP_CONNECT_TIMEOUT_VALUE = 20000;
+
+    public static final int HTTP_CALL_TIMEOUT_VALUE = 0;
 
     public static final int HTTP_MAX_CONNECT_VALUE = 1000;
 
@@ -84,6 +91,8 @@ public class ObsConstraint {
     public static final long DEFAULT_PROGRESS_INTERVAL = 100 * 1024L;
 
     public static final int DEFAULT_CHUNK_SIZE = 4096;
+
+    public static final double KB_PER_MB = 1024.0;
 
     public static final String DEFAULT_BUCKET_LOCATION_VALUE = "region";
 
@@ -165,4 +174,26 @@ public class ObsConstraint {
     
     public static final String OBS_XML_DOC_BUILDER_FACTORY_CLASS = 
             "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+
+    public static final String CUSTOM_DOMAIN_CERTIFICATE_CONFIG = "CustomDomainConfiguration";
+    public static final String CERTIFICATE_NAME = "Name";
+    public static final String CERTIFICATE_ID = "CertificateId";
+    public static final String CERTIFICATE = "Certificate";
+    public static final String CERTIFICATE_CHAIN = "CertificateChain";
+    public static final String CERTIFICATE_PRIVATE_KEY = "PrivateKey";
+    public static class ObsBucketXMLElements {
+        public static final String CREATE_TIME = "CreateTime";
+        public static final String DOMAINS = "Domains";
+    }
+
+    /**
+     * Constants for CustomDomainCertificateConfig validation
+     */
+    public static final int CUSTOM_DOMAIN_NAME_MIN_LENGTH = 3;
+    public static final int CUSTOM_DOMAIN_NAME_MAX_LENGTH = 63;
+    public static final int CUSTOM_DOMAIN_MAX_SIZE_KB = 40;
+    public static final int CUSTOM_DOMAIN_CERTIFICATE_ID_MIN_LENGTH = 16;
+    public static final int CUSTOM_DOMAIN_CERTIFICATE_ID_MAX_LENGTH = 16;
+    public static final int CUSTOM_DOMAIN_CERTIFICATE_MAX_XML_BODY_SIZE_BY_KB = 40;
+
 }

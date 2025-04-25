@@ -389,27 +389,32 @@ public class V2Convertor extends V2BucketConvertor {
     public String transReplicationConfiguration(ReplicationConfiguration replicationConfiguration)
             throws ServiceException {
         try {
-            OBSXMLBuilder builder = OBSXMLBuilder.create("ReplicationConfiguration").e("Agency")
+            OBSXMLBuilder builder = OBSXMLBuilder.create(Constants.ObsBucketReplicationRequestParams.REPLICATION_CONFIGURATION).e(Constants.ObsBucketReplicationRequestParams.AGENCY)
                     .t(ServiceUtils.toValid(replicationConfiguration.getAgency())).up();
             for (ReplicationConfiguration.Rule rule : replicationConfiguration.getRules()) {
-                builder = builder.e("Rule");
+                builder = builder.e(Constants.ObsBucketReplicationRequestParams.RULE);
                 if (rule.getId() != null) {
-                    builder.e("ID").t(rule.getId());
+                    builder.e(Constants.ObsBucketReplicationRequestParams.ID).t(rule.getId());
                 }
-                builder.e("Prefix").t(ServiceUtils.toValid(rule.getPrefix()));
+                builder.e(Constants.ObsBucketReplicationRequestParams.PREFIX).t(ServiceUtils.toValid(rule.getPrefix()));
                 if (rule.getStatus() != null) {
-                    builder.e("Status").t(rule.getStatus().getCode());
+                    builder.e(Constants.ObsBucketReplicationRequestParams.STATUS).t(rule.getStatus().getCode());
                 }
                 if (rule.getHistoricalObjectReplication() != null) {
-                    builder.e("HistoricalObjectReplication").t(rule.getHistoricalObjectReplication().getCode());
+                    builder.e(Constants.ObsBucketReplicationRequestParams.HISTORICAL_OBJECT_REPLICATION).t(rule.getHistoricalObjectReplication().getCode());
                 }
                 if (rule.getDestination() != null) {
                     String bucketName = ServiceUtils.toValid(rule.getDestination().getBucket());
-                    builder = builder.e("Destination").e("Bucket")
+                    builder = builder.e(Constants.ObsBucketReplicationRequestParams.DESTINATION).e(Constants.ObsBucketReplicationRequestParams.BUCKET)
                             .t(bucketName.startsWith("arn:aws:s3:::") ? bucketName : "arn:aws:s3:::" + bucketName).up();
                     if (rule.getDestination().getObjectStorageClass() != null) {
-                        builder.e("StorageClass")
+                        builder.e(Constants.ObsBucketReplicationRequestParams.STORAGE_CLASS)
                                 .t(this.transStorageClass(rule.getDestination().getObjectStorageClass()));
+                    }
+
+                    if (rule.getDestination().getDeleteData() != null) {
+                        builder.e(Constants.ObsBucketReplicationRequestParams.DELETE_DATA)
+                                .t(rule.getDestination().getDeleteData().getCode());
                     }
                     builder = builder.up();
                 }
