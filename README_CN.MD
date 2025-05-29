@@ -1,3 +1,7 @@
+Version 3.25.5
+New features:
+1. 支持IMDSv2
+-----------------------------------------------------------------------------------
 Version 3.25.4
 New features:
 1. 支持设置okhttp的callTimeout

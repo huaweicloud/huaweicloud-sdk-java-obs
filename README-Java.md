@@ -1,3 +1,7 @@
+Version 3.25.5
+New features:
+1. Added IMDSv2 logic
+-----------------------------------------------------------------------------------
 Version 3.25.4
 New features:
 1. Added logic to set okhttp callTimeout
