@@ -14,6 +14,8 @@
 
 package com.obs.services;
 
+import static com.obs.services.internal.security.EcsSecurityUtils.DEFAULT_METADATA_TOKEN_TTL_SECONDS;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,6 +39,8 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
 
     // default is -1, not retry
     private int maxRetryTimes = -1;
+
+    private int metadataTokenTTLSeconds = DEFAULT_METADATA_TOKEN_TTL_SECONDS;
 
     public EcsObsCredentialsProvider() {
         this.maxRetryTimes = 3;
@@ -100,7 +104,7 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
 
     private LimitedTimeSecurityKey getNewSecurityKey() throws IOException, IllegalArgumentException {
 
-        String content = EcsSecurityUtils.getSecurityKeyInfoWithDetail();
+        String content = EcsSecurityUtils.getSecurityKeyInfoWithDetail(metadataTokenTTLSeconds);
         SecurityKey securityInfo = (SecurityKey) JSONChange.jsonToObj(new SecurityKey(), content);
 
         if (securityInfo == null) {
@@ -128,4 +132,12 @@ public class EcsObsCredentialsProvider implements IObsCredentialsProvider {
         return new LimitedTimeSecurityKey(bean.getAccessKey(), bean.getSecretKey(), bean.getSecurityToken(),
                 expiryDate);
     }
+    public int getMetadataTokenTTLSeconds() {
+        return metadataTokenTTLSeconds;
+    }
+
+    public void setMetadataTokenTTLSeconds(int metadataTokenTTLSeconds) {
+        this.metadataTokenTTLSeconds = metadataTokenTTLSeconds;
+    }
+
 }
