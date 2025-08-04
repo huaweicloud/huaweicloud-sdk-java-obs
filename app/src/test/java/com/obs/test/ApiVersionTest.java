@@ -17,7 +17,10 @@ package com.obs.test;
 import static org.junit.Assert.assertEquals;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
+import com.obs.test.tools.PrepareTestBucket;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.obs.services.ObsClient;
@@ -25,6 +28,7 @@ import com.obs.services.internal.service.AbstractRequestConvertor;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.BucketTypeEnum;
 import com.obs.test.tools.BucketTools;
+import org.junit.rules.TestName;
 
 public class ApiVersionTest {
     
@@ -38,7 +42,12 @@ public class ApiVersionTest {
             super(accessKey, secretKey, endPoint);
         }
     }
-    
+
+    @Rule
+    public TestName testName = new TestName();
+
+    @Rule
+    public PrepareTestBucket prepareTestBucket = new PrepareTestBucket();
     @Test
     public void test_while_bucketname_is_null() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         String bucketName = "";
@@ -61,7 +70,7 @@ public class ApiVersionTest {
     
     @Test
     public void test_while_bucketname_not_null() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        String bucketName = "test-api-version";
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         
         ObsClient obsClient = TestTools.getRequestPaymentEnvironment_User1();
         

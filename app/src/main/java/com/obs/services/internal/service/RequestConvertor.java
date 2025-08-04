@@ -14,6 +14,8 @@
 
 package com.obs.services.internal.service;
 
+import static com.obs.services.internal.Constants.SYMLINK_HEADER;
+
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
 import com.obs.services.exception.ObsException;
@@ -28,6 +30,7 @@ import com.obs.services.internal.RepeatableRequestEntity;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.SimpleProgressManager;
 import com.obs.services.internal.io.ProgressInputStream;
+import com.obs.services.internal.trans.NewTransResult;
 import com.obs.services.internal.utils.CRC64;
 import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.RestUtils;
@@ -63,6 +66,8 @@ import com.obs.services.model.fs.ListContentSummaryRequest;
 import com.obs.services.model.fs.NewBucketRequest;
 import com.obs.services.model.fs.WriteFileRequest;
 import com.obs.services.model.fusion.RedundancyTypeEnum;
+import com.obs.services.model.symlink.PutSymlinkRequest;
+
 import okhttp3.RequestBody;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -79,6 +84,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class RequestConvertor extends AclHeaderConvertor {
@@ -1046,5 +1052,30 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         if (ServiceUtils.isValid(kmsHeader.getProjectId())) {
             putHeader(headers, iheaders.sseKmsProjectIdHeader(), kmsHeader.getProjectId());
         }
+    }
+    protected void prepareSymlinkTargetHeader(String bucketName, Map<String, String> headers, String symlinkTarget)
+        throws ServiceException {
+        headers.put(this.getIHeaders(bucketName).headerPrefix() + SYMLINK_HEADER, symlinkTarget);
+    }
+
+    protected NewTransResult transPutSymlinkRequest(PutSymlinkRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        // set query params
+        requestParams.put(SpecialParamEnum.SYM_LINK.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        String bucketName = request.getBucketName();
+        // set acl
+        prepareRESTHeaderAcl(bucketName, headers, request.getAcl());
+        // set symlink target header
+        prepareSymlinkTargetHeader(bucketName, headers, request.getSymlinkTarget());
+
+        // set object metaData
+        ObjectMetadata objectMetadata = Optional.ofNullable(request.getObjectMetadata()) .orElseGet(ObjectMetadata::new);
+        setBaseHeaderFromMetadata(bucketName, headers, objectMetadata);
+
+        NewTransResult result = transObjectRequest(request);
+        result.setParams(requestParams);
+        result.setHeaders(headers);
+        return result;
     }
 }

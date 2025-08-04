@@ -17,19 +17,27 @@ package com.obs.test;
 
 import static org.junit.Assert.assertEquals;
 
+import com.obs.services.exception.ObsException;
 import org.junit.Test;
 
 import com.obs.services.ObsClient;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.fs.NewFolderRequest;
 import com.obs.services.model.fs.ObsFSFolder;
+import org.junit.rules.TestName;
+
+import java.util.Locale;
 
 public class FileTest {
+    @org.junit.Rule
+    public TestName testName = new TestName();
+    @org.junit.Rule
+    public com.obs.test.tools.PrepareTestBucket prepareTestBucket = new com.obs.test.tools.PrepareTestBucket();
     @Test
     public void test_create_newfolder_1() {
         ObsClient obsClient = TestTools.getPipelineEnvironment();
-        
-        String bucketName = "test";
+
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         String objectKey = "%#123";
         NewFolderRequest request = new NewFolderRequest(bucketName, objectKey);
         
@@ -41,7 +49,12 @@ public class FileTest {
         
         ObjectMetadata metadata1 = obsClient.getObjectMetadata(bucketName, objectKey + "/");
         System.out.println(metadata1);
-        
-        ObjectMetadata metadata2 = obsClient.getObjectMetadata(bucketName, objectKey);
+
+        try
+        {
+            ObjectMetadata metadata2 = obsClient.getObjectMetadata(bucketName, objectKey);
+        }catch (ObsException e){
+            assertEquals(404,e.getResponseCode());
+        }
     }
 }

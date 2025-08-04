@@ -18,6 +18,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +35,6 @@ import com.obs.services.ObsClient;
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.InitiateMultipartUploadHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.ListPartsHandler;
-import com.obs.services.internal.utils.RestUtils;
 import com.obs.services.model.BucketTypeEnum;
 import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.InitiateMultipartUploadResult;
@@ -50,6 +54,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 public class SignedUrlTest {
     private static final Logger logger = LogManager.getLogger(SignedUrlTest.class);
 
@@ -61,6 +69,24 @@ public class SignedUrlTest {
     private static String bucketName;
 
     private static String objectKey;
+
+    public static X509TrustManager trustAllManager = new X509TrustManager() {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            // 客户端证书验证
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
+        {
+            // 服务端证书验证
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    };
 
     static ObsClient obsClient = null;
 
@@ -85,10 +111,9 @@ public class SignedUrlTest {
     }
 
     @Test
-    public void test_get_url() throws FileNotFoundException, IllegalArgumentException, IOException {
-        ObsClient obsClient = new ObsClient(PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.ak"), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.sk"), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.endpoint"));
+    public void test_get_url() throws IllegalArgumentException
+    {
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
 
         // URL有效期，3600秒
         long expireSeconds = 3600L;
@@ -104,20 +129,16 @@ public class SignedUrlTest {
     }
     
     @Test
-    public void test_create_bucket_url() throws FileNotFoundException, IllegalArgumentException, IOException {
-//        ObsClient obsClient = new ObsClient(PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.ak"), 
-//                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.sk"), 
-//                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.sdk.pipeline.endpoint"));
-        
-        ObsClient obsClient = new ObsClient(PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.ak"), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.sk"), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.endpoint"));
+    public void test_create_bucket_url()
+            throws IllegalArgumentException, IOException, NoSuchAlgorithmException, KeyManagementException
+    {
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
 
         // URL有效期，3600秒
         long expireSeconds = 3600L;
-
+        String bucketName = "test-create-bucket-001";
         TemporarySignatureRequest request = new TemporarySignatureRequest(HttpMethodEnum.PUT, expireSeconds);
-        request.setBucketName("test-create-bucket-001");
+        request.setBucketName(bucketName);
 
         TemporarySignatureResponse response = obsClient.createTemporarySignature(request);
 
@@ -129,22 +150,18 @@ public class SignedUrlTest {
                builder.header(entry.getKey(), entry.getValue());
         }
         // 使用PUT请求创建桶
-        String location = "cn-north-4";
+        String location = "cn-north-7";
         String createXml = "<CreateBucketConfiguration><Location>" + location + "</Location></CreateBucketConfiguration>";
         System.out.println("Create Body: " + createXml);
         
-        OkHttpClient.Builder clientBuiler = new OkHttpClient.Builder();
-        
-        RestUtils.initHttpProxy(clientBuiler, 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.proxyaddr"), 
-                Integer.parseInt(PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.proxyport")), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.username"), 
-                PropertiesTools.getInstance(TestTools.getPropertiesFile()).getProperties("environment.me.password"));
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         
         Request httpRequest = builder.url(response.getSignedUrl()).put(RequestBody.create(null, createXml.getBytes())).build();
-        
-        OkHttpClient httpClient = clientBuiler.followRedirects(false).retryOnConnectionFailure(false)
-                      .cache(null).build();
+
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+        sslContext.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
+        OkHttpClient httpClient = clientBuilder.followRedirects(false).retryOnConnectionFailure(false)
+                      .cache(null).sslSocketFactory(sslContext.getSocketFactory(), trustAllManager).build();
 
         Call c = httpClient.newCall(httpRequest);
         Response res = c.execute();
@@ -153,6 +170,7 @@ public class SignedUrlTest {
                System.out.println("\tContent:" + res.body().string() + "\n");
         }
         res.close();
+        obsClient.deleteBucket(bucketName);
     }
 
     @Test
@@ -181,7 +199,9 @@ public class SignedUrlTest {
     }
 
     @Test
-    public void test_temporary_signature_for_complete_multipartupload() throws IOException {
+    public void test_temporary_signature_for_complete_multipartupload()
+            throws IOException, NoSuchAlgorithmException, KeyManagementException
+    {
         InitiateMultipartUploadResult initResult = init_mulitpartupload(bucketName, objectKey);
 
         uploadPart(bucketName, objectKey, initResult.getUploadId(), 1);
@@ -213,8 +233,10 @@ public class SignedUrlTest {
         Response res = null;
         try {
             Request httpRequest = builder.url(response.getSignedUrl()).post(RequestBody.create(null, "")).build();
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
             OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false)
-                    .cache(null).build();
+                    .cache(null).sslSocketFactory(sslContext.getSocketFactory(), trustAllManager).build();
 
             Call c = httpClient.newCall(httpRequest);
             res = c.execute();
@@ -227,7 +249,16 @@ public class SignedUrlTest {
                     .getInitiateMultipartUploadResult();
             logger.info("\tContent:" + multipartUpload + "\n");
             return multipartUpload;
-        } finally {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (KeyManagementException e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally {
             if (null != res) {
                 res.close();
             }
@@ -261,8 +292,10 @@ public class SignedUrlTest {
             // 使用PUT请求上传段
             Request httpRequest = builder.url(response.getSignedUrl())
                     .put(RequestBody.create(null, new byte[6 * 1024 * 1024])).build();
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
             OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false)
-                    .cache(null).build();
+                    .cache(null).sslSocketFactory(sslContext.getSocketFactory(), trustAllManager).build();
 
             Call c = httpClient.newCall(httpRequest);
             res = c.execute();
@@ -271,7 +304,16 @@ public class SignedUrlTest {
                 System.out.println("\tContent:" + res.body().string() + "\n");
             }
             res.close();
-        } finally {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (KeyManagementException e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally {
             if (null != res) {
                 res.close();
             }
@@ -307,10 +349,12 @@ public class SignedUrlTest {
             for (Map.Entry<String, String> entry : response.getActualSignedRequestHeaders().entrySet()) {
                 builder.header(entry.getKey(), entry.getValue());
             }
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
 
             Request httpRequest = builder.url(response.getSignedUrl()).get().build();
             OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false)
-                    .cache(null).build();
+                    .cache(null).sslSocketFactory(sslContext.getSocketFactory(), trustAllManager).build();
 
             Call c = httpClient.newCall(httpRequest);
             res = c.execute();
@@ -330,14 +374,25 @@ public class SignedUrlTest {
 
             logger.info("\tContent:" + result + "\n");
             return result;
-        } finally {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (KeyManagementException e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally {
             if(null != res) {
                 res.close();
             }
         }
     }
     
-    private void completeMultipartupload(String bucketName, String objectKey, String uploadId, ListPartsResult result) throws IOException {
+    private void completeMultipartupload(String bucketName, String objectKey, String uploadId, ListPartsResult result)
+            throws IOException, NoSuchAlgorithmException, KeyManagementException
+    {
         // 创建ObsClient实例
         ObsClient obsClient = new ObsClient(ak, sk, endpint_ip);
         // URL有效期，3600秒
@@ -374,11 +429,14 @@ public class SignedUrlTest {
             sb.append("</Part>");
         }
         sb.append("</CompleteMultipartUpload>");
-        
+
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+        sslContext.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
+
         Request httpRequest = builder.url(response.getSignedUrl())
                 .post(RequestBody.create(MediaType.parse(contentType), sb.toString().getBytes("UTF-8"))).build();
         OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false)
-                .cache(null).build();
+                .cache(null).sslSocketFactory(sslContext.getSocketFactory(), trustAllManager).build();
 
         Call c = httpClient.newCall(httpRequest);
         Response res = c.execute();

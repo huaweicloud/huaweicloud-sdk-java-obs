@@ -1,14 +1,21 @@
 package com.obs.test.tools;
 
 import com.obs.services.ObsClient;
-import com.obs.services.model.*;
-
+import com.obs.services.model.AccessControlList;
+import com.obs.services.model.CanonicalGrantee;
+import com.obs.services.model.ListObjectsRequest;
+import com.obs.services.model.ListVersionsRequest;
+import com.obs.services.model.ListVersionsResult;
+import com.obs.services.model.ObjectListing;
+import com.obs.services.model.ObsObject;
+import com.obs.services.model.Permission;
+import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.test.UserInfo;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ObjectTools {
@@ -95,6 +102,7 @@ public class ObjectTools {
         if(null == obsObjects) {
             return;
         }
+        Collections.sort(obsObjects, (obsObject, t1) -> t1.getObjectKey().length() - obsObject.getObjectKey().length());
         for(ObsObject obsObject : obsObjects) {
             ObjectTools.deleteObject(obsClient, bucketName, obsObject.getObjectKey());
         }

@@ -1,6 +1,9 @@
 package com.obs.test.objects;
 
 import com.obs.services.ObsClient;
+import com.obs.services.model.BucketTypeEnum;
+import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
@@ -30,9 +33,14 @@ public class TruncateFileTest {
     public TestName testName = new TestName();
 
     @Test
-    public void truncate_file_test_001() {
-        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+    public void truncate_file_test_002() {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT)+"-pfs";
         ObsClient obsClient = TestTools.getPipelineEnvironment();
+        assert obsClient != null;
+        CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+        createBucketRequest.setBucketType(BucketTypeEnum.PFS);
+        HeaderResponse response = obsClient.createBucket(createBucketRequest);
+        assertEquals(200, response.getStatusCode());
         String objectKey = "truncate_file_test_001";
 
         PutObjectRequest putRequest = new PutObjectRequest();
@@ -52,6 +60,8 @@ public class TruncateFileTest {
         assertEquals(204, result.getStatusCode());
 
         ObjectMetadata metadata = obsClient.getObjectMetadata(bucketName, objectKey);
-        assertEquals(new Long(4), metadata.getContentLength());
+        assertEquals(Long.valueOf(4), metadata.getContentLength());
+        obsClient.deleteObject(bucketName,objectKey);
+        obsClient.deleteBucket(bucketName);
     }
 }

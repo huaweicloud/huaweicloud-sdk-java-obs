@@ -16,19 +16,26 @@ package com.obs.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.ListVersionsRequest;
+import com.obs.services.model.PutObjectResult;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.obs.services.ObsClient;
@@ -45,29 +52,56 @@ import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.SetObjectMetadataRequest;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
+import org.junit.rules.TestName;
 
 public class ObjectsTest {
-    private static String bucketName = "osm-bj4";
+    @Rule
+    public TestName testName = new TestName();
+    @Rule
+    public com.obs.test.tools.PrepareTestBucket prepareTestBucket = new com.obs.test.tools.PrepareTestBucket();
 
     @Test
-    public void test_set_object_metadata() {
+    public void test_set_object_metadata() throws IOException
+    {
         ObsClient obsClient = TestTools.getPipelineEnvironment();
-        SetObjectMetadataRequest request = new SetObjectMetadataRequest(bucketName, "1");
-        request.getMetadata().put("property1", "property-value1");
-        request.getMetadata().put("property2", "%#123");
-        ObjectMetadata metadata = obsClient.setObjectMetadata(request);
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
+        assert obsClient != null;
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("Hello OBS!".getBytes(StandardCharsets.UTF_8));
+        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey);
+        obsClient.putObject(request);
+        byteArrayInputStream.close();
 
-        System.out.println(metadata);
+        SetObjectMetadataRequest setObjectMetadataRequest = new SetObjectMetadataRequest(bucketName, objectKey);
+        setObjectMetadataRequest.getMetadata().put("property1", "property-value1");
+        setObjectMetadataRequest.getMetadata().put("property2", "%#123");
+        ObjectMetadata metadata = obsClient.setObjectMetadata(setObjectMetadataRequest);
+        Assert.assertEquals(200, metadata.getStatusCode());
 
-        System.out.println(metadata.getUserMetadata("property1"));
-        System.out.println(metadata.getMetadata().get("property1"));
+        GetObjectMetadataRequest getObjectMetadataRequest = new GetObjectMetadataRequest(bucketName,objectKey);
+        getObjectMetadataRequest.setIsEncodeHeaders(false);
+        ObjectMetadata metadataReturn = obsClient.getObjectMetadata(getObjectMetadataRequest);
+
+        Assert.assertEquals(200, metadataReturn.getStatusCode());
+        assertEquals("property-value1", metadataReturn.getAllMetadata().get("property1"));
+        assertEquals("%#123", metadataReturn.getAllMetadata().get("property2"));
     }
 
     @Test
     public void test_get_object_metadata_1() {
         ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
 
-        ObjectMetadata metadata = obsClient.getObjectMetadata(bucketName, "s3curl.txt");
+        String objectKey = "test_get_object_metadata_1_obj";
+        try
+        {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(objectKey.getBytes(StandardCharsets.UTF_8));
+            obsClient.putObject(bucketName,objectKey,inputStream);
+            inputStream.close();
+        }catch (IOException e){
+
+        }
+        ObjectMetadata metadata = obsClient.getObjectMetadata(bucketName, objectKey);
 
         System.out.println(metadata);
 
@@ -76,137 +110,213 @@ public class ObjectsTest {
     
     @Test
     public void test_get_object_metadata_2() {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+        ByteArrayInputStream byteArrayInputStream = null;
+        try (ObsClient obsClient = com.obs.test.TestTools.getPipelineEnvironment()){
+            assert obsClient != null;
+            String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+            String objectKey = "objectKey";
 
-        ObjectMetadata metadata = obsClient.getObjectMetadata(bucketName, "/DES1597308083694/第一次备份文件/10.70.3.41/F/F/产品处/02_产品开发/04 结项存档/2012年/银代/金如意D/1130/新光海航金如意D款两全保险（分红型）-67LOADING/新光海航金如意D款两全保险（分红型）精算报告.doc");
+            byteArrayInputStream = new ByteArrayInputStream("Hello OBS!".getBytes(StandardCharsets.UTF_8));
+            PutObjectResult result = obsClient.putObject(bucketName,objectKey,byteArrayInputStream);
+            assertEquals(200,result.getStatusCode());
 
-        System.out.println(metadata);
-
-        assertNotNull(metadata);
+            ObjectMetadata metadata = obsClient.getObjectMetadata(bucketName, objectKey);
+            assertNotNull(metadata);
+            System.out.println(metadata);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(byteArrayInputStream != null){
+                try
+                {
+                    byteArrayInputStream.close();
+                }catch (IOException ignored){
+                }
+            }
+        }
     }
 
     @Test
     public void test_download_object_metadata() {
-        ObsClient obsClient = TestTools.getInnerTempEnvironment();
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
 
-        ObsObject metadata = obsClient.getObject(bucketName,
-                "00d451d484662462a0ea6d7e507dd48c-87-tcmeitulongmixwithobsfunc002-long-1-1");
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bucketName.getBytes(StandardCharsets.UTF_8));
+            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, byteArrayInputStream);
+            obsClient.putObject(request);
+            byteArrayInputStream.close();
+            ObsObject metadata = obsClient.getObject(bucketName, objectKey);
 
-        System.out.println(metadata);
+            System.out.println(metadata);
 
-        assertNotNull(metadata);
+            assertNotNull(metadata);
+        }catch (IOException ignore){
+
+        }
     }
 
     @Test
     public void test_put_object_and_set_acl() {
-        ObsClient obsClient = TestTools.getInnerTempEnvironment();
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
 
-        ObsObject metadata = obsClient.getObject(bucketName,
-                "00d451d484662462a0ea6d7e507dd48c-87-tcmeitulongmixwithobsfunc002-long-1-1");
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bucketName.getBytes(StandardCharsets.UTF_8));
+            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, byteArrayInputStream);
+            obsClient.putObject(request);
+            byteArrayInputStream.close();
+            ObsObject metadata = obsClient.getObject(bucketName, objectKey);
 
-        System.out.println(metadata);
+            System.out.println(metadata);
 
-        assertNotNull(metadata);
+            assertNotNull(metadata);
+        }catch (IOException ignore){
+
+        }
     }
 
     @Test
     public void test_put_object_base() {
         ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
 
-        File file = new File("C:\\Users\\xxx\\Desktop\\现网问题\\123\\test.file.css");
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bucketName.getBytes(StandardCharsets.UTF_8));
+            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, byteArrayInputStream);
+            PutObjectResult result = obsClient.putObject(request);
+            assertEquals(200, result.getStatusCode());
+            byteArrayInputStream.close();
+        }catch (IOException ignore){
 
-        PutObjectRequest request = new PutObjectRequest(bucketName, "test.file.css", file);
-
-        obsClient.putObject(request);
-        
+        }
     }
     
     @Test
     public void test_put_object_metadata() {
         ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
+        String objectKeyNoMeta = bucketName+"-obj-no-metadata";
 
-        File file = new File("D:\\5MB");
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bucketName.getBytes(StandardCharsets.UTF_8));
+            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, byteArrayInputStream);
 
-        // Case-1
-        PutObjectRequest request = new PutObjectRequest(bucketName, "test.file.css", file);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentDisposition("mytest,file=test");
+            metadata.setCacheControl("no-cache-me");
+            metadata.setContentEncoding("test-encoding");
+            metadata.setContentType("test/type");
+            metadata.setContentLanguage("test-language-zh-CN");
+            metadata.setExpires("test-expires");
+            request.setMetadata(metadata);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentDisposition("mytest,file=test");
-        metadata.setCacheControl("no-cache-me");
-        metadata.setContentEncoding("test-encoding");
-        metadata.setContentType("test/type");
-        metadata.setContentLanguage("test-language-zh-CN");
-        metadata.setExpires("test-expires");
-        request.setMetadata(metadata);
-        
-        obsClient.putObject(request);
-        
-        ObjectMetadata metadata2 = obsClient.getObjectMetadata(bucketName, "test.file.css");
-        
-        System.out.println(metadata2);
-        assertEquals(metadata2.getContentEncoding(), "test-encoding");
-        assertEquals(metadata2.getContentType(), "test/type");
-        assertEquals(metadata2.getContentDisposition(), "mytest,file=test");
-        assertEquals(metadata2.getCacheControl(), "no-cache-me");
-        assertEquals(metadata2.getContentLanguage(), "test-language-zh-CN");
-        assertEquals(metadata2.getExpires(), "test-expires");
-        
-        
-        // Case-2
-        request = new PutObjectRequest(bucketName, "test.file.css", file);
+            obsClient.putObject(request);
+            byteArrayInputStream.close();
 
-        metadata = new ObjectMetadata();
-        request.setMetadata(metadata);
-        
-        obsClient.putObject(request);
-        
-        metadata2 = obsClient.getObjectMetadata(bucketName, "test.file.css");
-        System.out.println(metadata2);
-        assertEquals(metadata2.getContentEncoding(), null);
-        assertEquals(metadata2.getContentDisposition(), null);
-        assertEquals(metadata2.getCacheControl(), null);
-        assertEquals(metadata2.getExpires(), null);
-        assertEquals(metadata2.getContentLanguage(), null);
-        assertEquals(metadata2.getContentType(), "text/css");
+            ObjectMetadata metadata2 = obsClient.getObjectMetadata(bucketName, objectKey);
+
+            System.out.println(metadata2);
+            assertEquals(metadata2.getContentEncoding(), "test-encoding");
+            assertEquals(metadata2.getContentType(), "test/type");
+            assertEquals(metadata2.getContentDisposition(), "mytest,file=test");
+            assertEquals(metadata2.getCacheControl(), "no-cache-me");
+            assertEquals(metadata2.getContentLanguage(), "test-language-zh-CN");
+            assertEquals(metadata2.getExpires(), "test-expires");
+
+
+            // Case-2
+            byteArrayInputStream = new ByteArrayInputStream(bucketName.getBytes(StandardCharsets.UTF_8));
+            request = new PutObjectRequest(bucketName, objectKeyNoMeta, byteArrayInputStream);
+
+            metadata = new ObjectMetadata();
+            request.setMetadata(metadata);
+
+            obsClient.putObject(request);
+            byteArrayInputStream.close();
+
+            metadata2 = obsClient.getObjectMetadata(bucketName, objectKeyNoMeta);
+            System.out.println(metadata2);
+            assertEquals(metadata2.getContentEncoding(), null);
+            assertEquals(metadata2.getContentDisposition(), null);
+            assertEquals(metadata2.getCacheControl(), null);
+            assertEquals(metadata2.getExpires(), null);
+            assertEquals(metadata2.getContentLanguage(), null);
+            assertEquals(metadata2.getContentType(), "application/octet-stream");
+            PutObjectResult result = obsClient.putObject(request);
+            assertEquals(200, result.getStatusCode());
+        }catch (IOException ignore){
+
+        }
+
     }
 
     @Test
     public void test_get_object_base() throws IOException {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+        ObsClient obsClient = com.obs.test.TestTools.getPipelineEnvironment();
+        assert obsClient != null;
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = "objectKey";
 
-        ObsObject obsObject = obsClient.getObject(bucketName, "/202009070920312367/20200906122041.zip");
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("Hello OBS!".getBytes(StandardCharsets.UTF_8));
+        PutObjectResult result = obsClient.putObject(bucketName,objectKey,byteArrayInputStream);
+        assertEquals(200,result.getStatusCode());
+        byteArrayInputStream.close();
 
+        ObsObject obsObject = obsClient.getObject(bucketName, objectKey);
         // 读取对象内容
         System.out.println("Object content:");
         InputStream input = obsObject.getObjectContent();
 
-        int byteread = 0;
-
-        FileOutputStream fs = null;
+        int byteRead;
+        ByteArrayOutputStream bos = null;
         try {
-            fs = new FileOutputStream("C:\\Users\\xxxxxxxxxx\\Desktop\\abc.zip");
-
-            byte[] buffer = new byte[1204];
-            int length;
-            while ((byteread = input.read(buffer)) != -1) {
-                fs.write(buffer, 0, byteread);
+            byte[] buffer = new byte[1024];
+            bos = new ByteArrayOutputStream();
+            while ((byteRead=input.read(buffer)) != -1){
+                bos.write(buffer, 0, byteRead);
             }
-        } catch (FileNotFoundException e) {
+
+            System.out.println(bos);
+        }
+        catch (IOException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fs.close();
+        }
+        finally {
+            if(bos != null){
+                bos.close();
+            }
+            if(input != null){
+                input.close();
+            }
         }
     }
     
     @Test
     public void test_get_object_by_range() throws IOException {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        assert obsClient != null;
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        String objectKey = bucketName+"-obj";
+        ByteArrayInputStream byteArrayInputStream;
 
-        GetObjectRequest request = new GetObjectRequest("wjb-test-browserplus-cn-north-1", "obs_browser-plus.rar");
-        request.setRangeStart(10L);
-        request.setRangeEnd(1000L);
+        byteArrayInputStream = new ByteArrayInputStream("Hello OBS!".getBytes(StandardCharsets.UTF_8));
+        PutObjectResult putObjectResult = obsClient.putObject(bucketName, objectKey,byteArrayInputStream);
+        assertEquals(200 ,putObjectResult.getStatusCode());
+
+        GetObjectRequest request = new GetObjectRequest(bucketName, objectKey);
+        request.setRangeStart(0L);
+        request.setRangeEnd(5L);
         ObsObject obsObject = obsClient.getObject(request);
 
         // 读取对象内容
@@ -215,21 +325,24 @@ public class ObjectsTest {
 
         int byteread = 0;
 
-        FileOutputStream fs = null;
+        ByteArrayOutputStream outputStream = null;
         try {
-            fs = new FileOutputStream("C:\\Users\\xxxxxxxxxxx\\Desktop\\png\\abc.gif");
+            outputStream = new ByteArrayOutputStream();
 
             byte[] buffer = new byte[1204];
             int length;
             while ((byteread = input.read(buffer)) != -1) {
-                fs.write(buffer, 0, byteread);
+                outputStream.write(buffer, 0, byteread);
             }
-        } catch (FileNotFoundException e) {
+            System.out.println(outputStream);
+        }
+        catch (IOException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fs.close();
+        }
+        finally {
+            input.close();
+            outputStream.close();
+            byteArrayInputStream.close();
         }
     }
 
@@ -258,7 +371,8 @@ public class ObjectsTest {
 
     @Test
     public void test_temporarySignatureRequest_for_image() {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+        ObsClient obsClient = com.obs.test.TestTools.getPipelineEnvironment();
+        assert obsClient != null;
 
         long expireSeconds = 3600L;
 
@@ -278,11 +392,12 @@ public class ObjectsTest {
 
     @Test
     public void initiateMultipartUpload() {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
 
         String objectKey = "initiateMultipartUpload_test_";
-        for (int i = 0; i < 1000; i++) {
-            InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest("shenqing-test-sdk-obs-0000001",
+        for (int i = 0; i < 50; i++) {
+            InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName,
                     objectKey + "-" + i);
             InitiateMultipartUploadResult result = obsClient.initiateMultipartUpload(request);
             System.out.println(result.getObjectKey() + ";   " + result.getUploadId());
@@ -290,9 +405,12 @@ public class ObjectsTest {
     }
     
     @Test
-    public void test_list_version_base() throws IOException {
-        ObsClient obsClient = TestTools.getExternalEnvironment();
+    public void test_list_version_base()
+    {
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
 
-        ListVersionsResult result = obsClient.listVersions("test-version-002");
+        ListVersionsResult result = obsClient.listVersions(bucketName);
+        Assert.assertEquals(200, result.getStatusCode());
     }
 }

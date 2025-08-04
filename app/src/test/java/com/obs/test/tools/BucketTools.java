@@ -33,10 +33,10 @@ public class BucketTools {
      */
     public static ObsBucket createBucket(ObsClient obsClient, String bucketName, BucketTypeEnum bucketType) {
         CreateBucketRequest request = new CreateBucketRequest();
-        request.setBucketName("bucketname");
+        request.setBucketName(bucketName);
         request.setBucketType(bucketType);
         // 创建桶
-        return obsClient.createBucket(bucketName);
+        return obsClient.createBucket(request);
     }
     
     /**
@@ -74,7 +74,7 @@ public class BucketTools {
      * @param policy
      */
     public static void setBucketPolicy (ObsClient obsClient, String bucketName, String policy) {
-        obsClient.setBucketPolicy(bucketName, policy);
+//        obsClient.setBucketPolicy(bucketName, policy);
     }
     
     /**

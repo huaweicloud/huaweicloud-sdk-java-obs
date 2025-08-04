@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.obs.services.internal.IConvertor;
@@ -25,13 +26,18 @@ import com.obs.services.internal.V2Convertor;
 import com.obs.services.model.AbstractNotification.Filter;
 import com.obs.services.model.AbstractNotification.Filter.FilterRule;
 import com.obs.services.model.BucketNotificationConfiguration;
+import com.obs.services.model.DeleteDataEnum;
 import com.obs.services.model.EventTypeEnum;
 import com.obs.services.model.FunctionGraphConfiguration;
+import com.obs.services.model.HistoricalObjectReplicationEnum;
 import com.obs.services.model.ProtocolEnum;
 import com.obs.services.model.Redirect;
 import com.obs.services.model.RedirectAllRequest;
+import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RouteRule;
 import com.obs.services.model.RouteRuleCondition;
+import com.obs.services.model.RuleStatusEnum;
+import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.WebsiteConfiguration;
 
@@ -144,5 +150,93 @@ public class V2ConvertorTest {
         String assertStr = "<WebsiteConfiguration><IndexDocument><Suffix>suffix_test_transWebsiteConfiguration_without_redirectAllRequestsTo</Suffix></IndexDocument><ErrorDocument><Key>key_test_transWebsiteConfiguration_without_redirectAllRequestsTo</Key></ErrorDocument><RoutingRules><RoutingRule><Condition><KeyPrefixEquals>keyprefix_routeRule_1</KeyPrefixEquals><HttpErrorCodeReturnedEquals>405</HttpErrorCodeReturnedEquals></Condition><Redirect><HostName>www.routeRule_1.com</HostName><HttpRedirectCode>306</HttpRedirectCode><ReplaceKeyPrefixWith>replacekeyprefix_routeRule_1</ReplaceKeyPrefixWith><Protocol>http</Protocol></Redirect></RoutingRule><RoutingRule><Condition><KeyPrefixEquals>keyprefix_routeRule_2</KeyPrefixEquals><HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals></Condition><Redirect><HostName>www.routeRule_2.com</HostName><HttpRedirectCode>304</HttpRedirectCode><ReplaceKeyPrefixWith>replacekeyprefix_routeRule_2</ReplaceKeyPrefixWith><Protocol>https</Protocol></Redirect></RoutingRule></RoutingRules></WebsiteConfiguration>";
 
         assertEquals(assertStr, result);
+    }
+
+
+    /**
+     * Test method for transReplicationConfiguration.
+     * This test case verifies that a ReplicationConfiguration with DeleteDataEnum ENABLED
+     * is correctly converted into an XML string.
+     */
+    @Test
+    public void should_build_xml_correctly_for_bucket_replication_configuration_with_deleteData_enabled_in_v2_format() {
+        IConvertor obsConvertor = V2Convertor.getInstance();
+
+        ReplicationConfiguration config = new ReplicationConfiguration();
+        config.setAgency("replication_agency");
+
+        ReplicationConfiguration.Rule rule1 = new ReplicationConfiguration.Rule();
+        rule1.setId("rule1");
+        rule1.setPrefix("prefix1");
+        rule1.setStatus(RuleStatusEnum.ENABLED);
+        rule1.setHistoricalObjectReplication(HistoricalObjectReplicationEnum.DISABLED);
+        ReplicationConfiguration.Destination destination1 = new ReplicationConfiguration.Destination();
+        destination1.setBucket("destination_bucket1");
+        destination1.setDeleteData(DeleteDataEnum.ENABLED);
+        destination1.setObjectStorageClass(StorageClassEnum.STANDARD);
+        rule1.setDestination(destination1);
+        config.getRules().add(rule1);
+
+        String result = obsConvertor.transReplicationConfiguration(config);
+
+        System.out.println("Generated XML for transReplicationConfiguration: \n" + result);
+
+        String expectedXml = "<ReplicationConfiguration>"
+            + "<Agency>replication_agency</Agency>"
+            + "<Rule><ID>rule1</ID><Prefix>prefix1</Prefix>"
+            + "<Status>Enabled</Status>"
+            + "<HistoricalObjectReplication>Disabled</HistoricalObjectReplication>"
+            + "<Destination><Bucket>arn:aws:s3:::destination_bucket1</Bucket>"
+            + "<StorageClass>STANDARD</StorageClass>"
+            + "<DeleteData>Enabled</DeleteData></Destination>"
+            + "</Rule></ReplicationConfiguration>";
+        assertEquals(expectedXml, result);
+    }
+
+    /**
+     * Test method for transReplicationConfiguration.
+     * This test case verifies that a ReplicationConfiguration with DeleteDataEnum DISABLED
+     * is correctly converted into an XML string.
+     */
+    @Test
+    public void should_build_xml_correctly_for_bucket_replication_configuration_with_deleteData_disabled_in_v2_format() {
+        IConvertor obsConvertor = V2Convertor.getInstance();
+
+        ReplicationConfiguration config = new ReplicationConfiguration();
+        config.setAgency("replication_agency");
+
+        ReplicationConfiguration.Rule rule1 = new ReplicationConfiguration.Rule();
+        rule1.setId("rule1");
+        rule1.setPrefix("prefix1");
+        rule1.setStatus(RuleStatusEnum.ENABLED);
+        rule1.setHistoricalObjectReplication(HistoricalObjectReplicationEnum.ENABLED);
+        ReplicationConfiguration.Destination destination1 = new ReplicationConfiguration.Destination();
+        destination1.setBucket("destination_bucket1");
+        destination1.setDeleteData(DeleteDataEnum.DISABLED);
+        destination1.setObjectStorageClass(StorageClassEnum.STANDARD);
+        rule1.setDestination(destination1);
+        config.getRules().add(rule1);
+
+        String result = obsConvertor.transReplicationConfiguration(config);
+
+        System.out.println("Generated XML for transReplicationConfiguration: \n" + result);
+
+        String expectedXml = "<ReplicationConfiguration>"
+            + "<Agency>replication_agency</Agency>"
+            + "<Rule><ID>rule1</ID><Prefix>prefix1</Prefix>"
+            + "<Status>Enabled</Status>"
+            + "<HistoricalObjectReplication>Enabled</HistoricalObjectReplication>"
+            + "<Destination><Bucket>arn:aws:s3:::destination_bucket1</Bucket>"
+            + "<StorageClass>STANDARD</StorageClass>"
+            + "<DeleteData>Disabled</DeleteData></Destination>"
+            + "</Rule></ReplicationConfiguration>";
+        assertEquals(expectedXml, result);
+    }
+
+    @Test
+    public void should_transStorageClass_correctly_for_HIGH_PERFORMANCE_V2() {
+        V2Convertor v2Convertor = new V2Convertor();
+        Assert.assertEquals(v2Convertor.transStorageClass(StorageClassEnum.HIGH_PERFORMANCE),
+            StorageClassEnum.HIGH_PERFORMANCE.getCode());
     }
 }

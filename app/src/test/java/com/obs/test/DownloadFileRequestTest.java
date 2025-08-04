@@ -247,7 +247,6 @@ public class DownloadFileRequestTest extends BaseObjectTest {
                 if (null != e.getCause()
                         && e.getCause() instanceof InterruptedException) {
                     System.out.println("==========================   pause  ==========================");
-                } else {
                 }
             } 
         }

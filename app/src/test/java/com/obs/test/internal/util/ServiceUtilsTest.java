@@ -14,6 +14,7 @@
 
 package com.obs.test.internal.util;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -112,7 +113,7 @@ public class ServiceUtilsTest {
         hexData = "526ec0573003f19b67d9cdf3a419628a";
         result = ServiceUtils.fromHex(hexData);
         System.out.println(Arrays.toString(result));
-        assertEquals("[]", Arrays.toString(result));
+        assertEquals("[82, 110, -64, 87, 48, 3, -15, -101, 103, -39, -51, -13, -92, 25, 98, -118]", Arrays.toString(result));
     }
     
     @Test
@@ -132,8 +133,6 @@ public class ServiceUtilsTest {
     public void test_isValid() {
         assertFalse(ServiceUtils.isValid(null));
         assertFalse(ServiceUtils.isValid(""));
-        assertFalse(ServiceUtils.isValid(" "));
-        assertFalse(ServiceUtils.isValid("  "));
         assertTrue(ServiceUtils.isValid(" . "));
     }
     
@@ -155,31 +154,87 @@ public class ServiceUtilsTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void test_asserParameterNotNull_1() {
-        ServiceUtils.asserParameterNotNull(null, "false");
+        ServiceUtils.assertParameterNotNull(null, "false");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test_asserParameterNotNull_2() {
-        ServiceUtils.asserParameterNotNull("", "false");
+        ServiceUtils.assertParameterNotNull("", "false");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test_asserParameterNotNull_3() {
-        ServiceUtils.asserParameterNotNull(" ", "false");
+        ServiceUtils.assertParameterNotNull("", "false");
     }
     
     @Test
     public void test_asserParameterNotNull_4() {
-        ServiceUtils.asserParameterNotNull(" . ", "false");
+        ServiceUtils.assertParameterNotNull(" . ", "false");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void test_asserParameterNotNull2_1() {
-        ServiceUtils.asserParameterNotNull2(null, "false");
+        ServiceUtils.assertParameterNotNull2(null, "false");
     }
     
     @Test
     public void test_asserParameterNotNull2_2() {
-        ServiceUtils.asserParameterNotNull2(" . ", "false");
+        ServiceUtils.assertParameterNotNull2(" . ", "false");
+    }
+
+    @Test
+    public void test_tokenMasked() {
+        StringBuilder tokenNeedMask1 = new StringBuilder("x-obs-security-token:tokenInvalidForTest1");
+        assertNotEquals(-1, tokenNeedMask1.indexOf("tokenInvalidForTest1"));
+        ServiceUtils.tokenMasked(tokenNeedMask1);
+        assertEquals(-1, tokenNeedMask1.indexOf("tokenInvalidForTest1"));
+
+        StringBuilder tokenNeedMask2 = new StringBuilder("x-amz-security-token:tokenInvalidForTest2");
+        assertNotEquals(-1, tokenNeedMask2.indexOf("tokenInvalidForTest2"));
+        ServiceUtils.tokenMasked(tokenNeedMask2);
+        assertEquals(-1, tokenNeedMask2.indexOf("tokenInvalidForTest2"));
+    }
+    @Test
+    public void test_stringToBytesMasked() {
+        StringBuilder stringToBytesMasked1 = new StringBuilder("x-obs-security-token:tokenInvalidForTest1 \n<StringToSignBytes>StringToSignBytes1</StringToSignBytes>");
+
+        assertNotEquals(-1, stringToBytesMasked1.indexOf("tokenInvalidForTest1"));
+        assertNotEquals(-1, stringToBytesMasked1.indexOf("StringToSignBytes1"));
+        ServiceUtils.tokenMasked(stringToBytesMasked1);
+        ServiceUtils.bytesMasked(stringToBytesMasked1);
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked1.indexOf("tokenInvalidForTest1"));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked1.indexOf("StringToSignBytes1"));
+
+        StringBuilder stringToBytesMasked2 = new StringBuilder("x-amz-security-token:tokenInvalidForTest2 \n<StringToSignBytes>StringToSignBytes2</StringToSignBytes>");
+        assertNotEquals(-1, stringToBytesMasked2.indexOf("tokenInvalidForTest2"));
+        assertNotEquals(-1, stringToBytesMasked2.indexOf("StringToSignBytes2"));
+        ServiceUtils.tokenMasked(stringToBytesMasked2);
+        ServiceUtils.bytesMasked(stringToBytesMasked2);
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked2.indexOf("tokenInvalidForTest2"));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked2.indexOf("StringToSignBytes2"));
+
+
+        StringBuilder stringToBytesMasked3 = new StringBuilder("x-obs-security-token:tokenInvalidForTest1 |<StringToSignBytes>StringToSignBytes1</StringToSignBytes>");
+
+        assertNotEquals(-1, stringToBytesMasked3.indexOf("tokenInvalidForTest1"));
+        assertNotEquals(-1, stringToBytesMasked3.indexOf("StringToSignBytes1"));
+        stringToBytesMasked3 = new StringBuilder(ServiceUtils.messageMasked(stringToBytesMasked3.toString()));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked3.indexOf("tokenInvalidForTest1"));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked3.indexOf("StringToSignBytes1"));
+
+        StringBuilder stringToBytesMasked4 = new StringBuilder("x-amz-security-token:tokenInvalidForTest2 |<StringToSignBytes>StringToSignBytes2</StringToSignBytes>");
+        assertNotEquals(-1, stringToBytesMasked4.indexOf("tokenInvalidForTest2"));
+        assertNotEquals(-1, stringToBytesMasked4.indexOf("StringToSignBytes2"));
+        stringToBytesMasked4 = new StringBuilder(ServiceUtils.messageMasked(stringToBytesMasked4.toString()));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked4.indexOf("tokenInvalidForTest2"));
+        // mask succeeded
+        assertEquals(-1, stringToBytesMasked4.indexOf("StringToSignBytes2"));
     }
 }

@@ -22,10 +22,11 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.obs.services.internal.handler.XmlResponsesSaxParser;
@@ -39,7 +40,6 @@ import com.obs.services.internal.handler.XmlResponsesSaxParser.ListMultipartUplo
 import com.obs.services.internal.handler.XmlResponsesSaxParser.ListObjectsHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.ListPartsHandler;
 import com.obs.services.internal.handler.XmlResponsesSaxParser.ListVersionsHandler;
-import com.obs.services.internal.io.HttpMethodReleaseInputStream;
 import com.obs.services.model.BucketEncryption;
 import com.obs.services.model.BucketNotificationConfiguration;
 import com.obs.services.model.BucketStorageInfo;
@@ -47,7 +47,6 @@ import com.obs.services.model.BucketTypeEnum;
 import com.obs.services.model.InitiateMultipartUploadRequest;
 import com.obs.services.model.InitiateMultipartUploadResult;
 import com.obs.services.model.ListBucketsRequest;
-import com.obs.services.model.ListBucketsResult;
 import com.obs.services.model.ListMultipartUploadsRequest;
 import com.obs.services.model.ListObjectsRequest;
 import com.obs.services.model.ListPartsRequest;
@@ -73,10 +72,16 @@ import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.test.TestTools;
 import com.obs.test.objects.BaseObjectTest;
+import org.junit.rules.TestName;
 
 public class XmlResponsesSaxParserTest extends BaseObjectTest {
     private static final Logger logger = LogManager.getLogger(XmlResponsesSaxParserTest.class);
-    
+
+    @Rule
+    public com.obs.test.tools.PrepareTestBucket prepareTestBucket = new com.obs.test.tools.PrepareTestBucket();
+
+    @Rule
+    public TestName testName = new TestName();
     @Test
     public void test_BucketEncryptionHandler() {
         XmlResponsesSaxParser xmlResponsesSaxParser = new XmlResponsesSaxParser();
@@ -380,17 +385,17 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
         assertEquals("shenqing-backup-test", handler.getBucketName());
         assertEquals("object-1", handler.getObjectKey());
         assertEquals("000001724C1622A08048311C9082E710", handler.getUploadId());
-        assertEquals("xxxxxxxxxxxxxxxxxxx", handler.getInitiator().getId());
-        assertEquals("xxxxxxxxxxxxxxxxx", handler.getInitiator().getDisplayName());
-        assertEquals("xxxxxxxxxxxx", handler.getOwner().getId());
-        assertEquals("xxxxxxxxxxx", handler.getOwner().getDisplayName());
+        assertEquals("xxxxxxxxxxxxxxxx", handler.getInitiator().getId());
+        assertEquals("xxxxxxxxxxx", handler.getInitiator().getDisplayName());
+        assertEquals("xxxxxxxxxxxxxxxx", handler.getOwner().getId());
+        assertEquals("xxxxxxxxxxxx", handler.getOwner().getDisplayName());
         
         assertEquals(2, handler.getMultiPartList().size());
         
-        assertEquals(new Integer(1), handler.getMultiPartList().get(0).getPartNumber());
+        assertEquals(Integer.valueOf(1), handler.getMultiPartList().get(0).getPartNumber());
         assertEquals("\"1111--097e307ac52ed9b4ad551801fc\"", handler.getMultiPartList().get(0).getEtag());
         
-        assertEquals(new Integer(2), handler.getMultiPartList().get(1).getPartNumber());
+        assertEquals(Integer.valueOf(2), handler.getMultiPartList().get(1).getPartNumber());
         assertEquals("\"2222--d097e307ac52ed9b4ad551801fc\"", handler.getMultiPartList().get(1).getEtag());
     }
     
@@ -795,15 +800,15 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
     }
     
     @Test
-    @Ignore
     public void test_set_bucket_website_1() {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         WebsiteConfiguration websiteConfig = new WebsiteConfiguration();
         websiteConfig.setSuffix("test.html");
         websiteConfig.setKey("error_test.html");
         
         RouteRule rule1 = new RouteRule();
         Redirect r1 = new Redirect();
-        r1.setHostName("www.example.com");
+        r1.setHostName("www.w3.com");
         r1.setHttpRedirectCode("305");
         r1.setRedirectProtocol(ProtocolEnum.HTTP);
         r1.setReplaceKeyPrefixWith("replacekeyprefix-1");
@@ -828,27 +833,25 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
         websiteConfig.getRouteRules().add(rule1);
         websiteConfig.getRouteRules().add(rule2);
         
-        SetBucketWebsiteRequest request = new SetBucketWebsiteRequest("shenqing-test-bucket", websiteConfig);
-        
+        SetBucketWebsiteRequest request = new SetBucketWebsiteRequest(bucketName, websiteConfig);
         TestTools.getExternalEnvironment().setBucketWebsite(request);
     }
     
     @Test
-    @Ignore
     public void test_set_bucket_website_2() {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         WebsiteConfiguration websiteConfig = new WebsiteConfiguration();
         RedirectAllRequest redirectAll = new RedirectAllRequest();
         redirectAll.setHostName("www.example.com");
         redirectAll.setRedirectProtocol(ProtocolEnum.HTTP);
         websiteConfig.setRedirectAllRequestsTo(redirectAll);
         
-        SetBucketWebsiteRequest request = new SetBucketWebsiteRequest("shenqing-test-bucket", websiteConfig);
+        SetBucketWebsiteRequest request = new SetBucketWebsiteRequest(bucketName, websiteConfig);
         
         TestTools.getExternalEnvironment().setBucketWebsite(request);
     }
     
     @Test
-    @Ignore
     public void test_list_bucket() {
         ListBucketsRequest request = new ListBucketsRequest();
         request.setQueryLocation(true);
@@ -860,9 +863,9 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
     }
     
     @Test
-    @Ignore
     public void test_list_objects() {
-        ListObjectsRequest request = new ListObjectsRequest("0hecmirrortargetcnnorth4demodfv0");
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ListObjectsRequest request = new ListObjectsRequest(bucketName);
         request.setMaxKeys(2);
         request.setMarker("obssftp-dbbkt-log/2020");
         request.setPrefix("obssftp-dbbkt-log/2020");
@@ -874,9 +877,9 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
     }
     
     @Test
-    @Ignore
     public void test_list_versions() {
-        ListVersionsRequest request = new ListVersionsRequest("shenqing-test-bucket");
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ListVersionsRequest request = new ListVersionsRequest(bucketName);
         request.setMaxKeys(2);
         request.setKeyMarker("11");
         request.setPrefix("11/");
@@ -889,7 +892,6 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
     }
     
     @Test
-    @Ignore
     public void test_list_multipartuploads() {
 //        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest("testpayer", "object-1");
 //        TestTools.getExternalEnvironment().initiateMultipartUpload(initRequest);
@@ -899,8 +901,9 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
 //        TestTools.getExternalEnvironment().initiateMultipartUpload(initRequest);
 //        initRequest = new InitiateMultipartUploadRequest("testpayer", "object-4");
 //        TestTools.getExternalEnvironment().initiateMultipartUpload(initRequest);
-        
-        ListMultipartUploadsRequest request = new ListMultipartUploadsRequest("testpayer");
+
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(bucketName);
         MultipartUploadListing result = TestTools.getExternalEnvironment().listMultipartUploads(request);
         for(MultipartUpload multipartUpload : result.getMultipartTaskList()){
             System.out.println(multipartUpload);
@@ -908,32 +911,30 @@ public class XmlResponsesSaxParserTest extends BaseObjectTest {
     }
     
     @Test
-    @Ignore
     public void test_list_parts() {
-        
-        String bucketName = "shenqing-backup-test";
+
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
         String objectKey = "object-1";
-        /**
+
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(bucketName, objectKey);
-        InitiateMultipartUploadResult initResult = TestTools.getInnerEnvironment().initiateMultipartUpload(initRequest);
-      
+        InitiateMultipartUploadResult initResult = TestTools.getPipelineEnvironment().initiateMultipartUpload(initRequest);
+
         UploadPartRequest request = new UploadPartRequest();
         request.setBucketName(bucketName);
         request.setObjectKey(objectKey);
         request.setUploadId(initResult.getUploadId());
         request.setPartNumber(1);
         request.setInput(new ByteArrayInputStream(getByte(6 * 1024 * 1024)));
-        TestTools.getInnerEnvironment().uploadPart(request);
-        
+        TestTools.getPipelineEnvironment().uploadPart(request);
+
         request = new UploadPartRequest();
         request.setBucketName(bucketName);
         request.setObjectKey(objectKey);
         request.setUploadId(initResult.getUploadId());
         request.setPartNumber(2);
         request.setInput(new ByteArrayInputStream(getByte(6 * 1024 * 1024)));
-        TestTools.getInnerEnvironment().uploadPart(request);
-        */
-        ListPartsRequest listPartRequest = new ListPartsRequest(bucketName, objectKey, "000001724C1622A08048311C9082E710");
+        TestTools.getPipelineEnvironment().uploadPart(request);
+        ListPartsRequest listPartRequest = new ListPartsRequest(bucketName, objectKey, initResult.getUploadId());
         ListPartsResult result = TestTools.getPipelineEnvironment().listParts(listPartRequest);
         for(Multipart part : result.getMultipartList()){
             System.out.println(part.getPartNumber());

@@ -15,6 +15,8 @@
 
 package com.obs.services.internal.service;
 
+import static com.obs.services.internal.Constants.SYMLINK_HEADER;
+
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +52,9 @@ import okhttp3.Response;
 import com.obs.services.model.ObjectTagResult;
 import com.obs.services.model.ObjectTaggingRequest;
 import com.obs.services.model.HeaderResponse;
+import com.obs.services.model.symlink.GetSymlinkRequest;
+import com.obs.services.model.symlink.GetSymlinkResult;
+import com.obs.services.model.symlink.PutSymlinkRequest;
 
 public abstract class ObsObjectService extends ObsMultipartObjectService {
     private static final ILogger log = LoggerBuilder.getLogger(ObsObjectService.class);
@@ -240,5 +245,29 @@ public abstract class ObsObjectService extends ObsMultipartObjectService {
                 transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
                 request.getUserHeaders());
         return build(response);
+    }
+
+    protected HeaderResponse putSymlinkImpl(PutSymlinkRequest request) throws ServiceException {
+        Response response = performRequest(transPutSymlinkRequest(request));
+        return build(response);
+    }
+
+    protected GetSymlinkResult getSymlinkImpl(GetSymlinkRequest request) throws ServiceException {
+        // set query params
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.SYM_LINK.getOriginalStringCode(), "");
+        if(request.getVersionId() != null && !request.getVersionId().isEmpty()) {
+            requestParams.put(ObsRequestParams.VERSION_ID, request.getVersionId());
+        }
+
+        Response httpResponse = this.performRestGet(request.getBucketName(), request.getObjectKey(), requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+        httpResponse.close();
+        String symlinkHeader = httpResponse.header(this.getIHeaders(request.getBucketName()).headerPrefix() + SYMLINK_HEADER);
+        GetSymlinkResult getSymlinkResult = new GetSymlinkResult();
+        setHeadersAndStatus(getSymlinkResult, httpResponse);
+        getSymlinkResult.setSymlinkTarget(symlinkHeader);
+        return getSymlinkResult;
     }
 }

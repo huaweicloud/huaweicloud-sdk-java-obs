@@ -1,6 +1,7 @@
 package com.obs.test.objects;
 
 import com.obs.services.ObsClient;
+import com.obs.services.exception.ObsException;
 import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.BucketTypeEnum;
 import com.obs.services.model.CreateBucketRequest;
@@ -44,9 +45,23 @@ public class ListObjectTest {
     }
 
     @AfterClass
-    public static void delete_buckets() {
-        ObsClient obsClient = TestTools.getPipelineEnvironment();
-        TestTools.delete_buckets(obsClient, createdBuckets);
+    public static void delete_buckets()
+    {
+        try
+        {
+            ObsClient obsClient = TestTools.getPipelineEnvironment();
+            TestTools.delete_buckets(obsClient, createdBuckets);
+        }
+        catch (ObsException e)
+        {
+            System.out.println("ListObjectTest.delete_buckets:");
+            System.out.println("HTTP Code: " + e.getResponseCode());
+            System.out.println("Error Code:" + e.getErrorCode());
+            System.out.println("Error Message: " + e.getErrorMessage());
+
+            System.out.println("Request ID:" + e.getErrorRequestId());
+            System.out.println("Host ID:" + e.getErrorHostId());
+        }
     }
 
     @Test

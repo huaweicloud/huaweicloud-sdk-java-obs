@@ -8,10 +8,13 @@ public abstract class LogableCase {
     private Logger logger;
 
     private String caseName;
+
+    private boolean apiSupportedRequesterPay;
     
     public LogableCase(Logger logger, String caseName) {
         this.logger = logger;
         this.caseName = caseName;
+        apiSupportedRequesterPay = true;
     }
 
     abstract void action();
@@ -42,5 +45,11 @@ public abstract class LogableCase {
 
     public final String getCaseName() {
         return caseName;
+    }
+    public final void setApiSupportedRequesterPay(boolean isApiSupportedRequesterPay) {
+        apiSupportedRequesterPay = isApiSupportedRequesterPay;
+    }
+    public final boolean isApiSupportedRequesterPay() {
+        return apiSupportedRequesterPay;
     }
 }

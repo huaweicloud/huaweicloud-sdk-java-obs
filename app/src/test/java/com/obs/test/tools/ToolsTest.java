@@ -18,16 +18,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 public class ToolsTest {
     @Test
     public void test_properties_tools() throws FileNotFoundException, IllegalArgumentException, IOException {
-        File file = new File("./app/src/test/resource/test_data_me.properties");
+        File file = new File("./app/src/test/resource/test_data.properties");
         
         PropertiesTools tools = PropertiesTools.getInstance(file);
-        
-        assertEquals("http://8.45.130.11", tools.getProperties("environment.1.endpoint"));
+
+        assertNotNull(tools.getProperties("environment.1.endpoint"));
     }
 }

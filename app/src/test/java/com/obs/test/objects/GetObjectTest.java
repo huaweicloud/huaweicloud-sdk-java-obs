@@ -1,6 +1,7 @@
 package com.obs.test.objects;
 
 import com.obs.services.ObsClient;
+import com.obs.services.model.GetObjectMetadataRequest;
 import com.obs.services.model.GetObjectRequest;
 import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.ObsObject;
@@ -13,6 +14,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -53,11 +55,12 @@ public class GetObjectTest {
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("URLDecoder: Illegal hex characters in escape (%) pattern"));
         }
-        request.setIsEncodeHeaders(false);
 
-        ObsObject getResult = obsClient.getObject(request);
-        assertEquals("%^&", getResult.getMetadata().getUserMetadata("test-url-encode"));
-        assertEquals("%^&", getResult.getMetadata().getResponseHeaders().get("content-disposition"));
+        GetObjectMetadataRequest getObjectMetadataRequest = new GetObjectMetadataRequest(bucketName,objectKey);
+        getObjectMetadataRequest.setIsEncodeHeaders(false);
+        ObjectMetadata metadata1 = obsClient.getObjectMetadata(getObjectMetadataRequest);
+        assertEquals("%^&", metadata1.getUserMetadata("test-url-encode"));
+        assertEquals("%^&", metadata1.getResponseHeaders().get("content-disposition"));
     }
 
     @Test
@@ -73,11 +76,62 @@ public class GetObjectTest {
 
         assertEquals(200, putResult.getStatusCode());
 
-        GetObjectRequest request = new GetObjectRequest();
-        request.setObjectKey(objectKey);
-        request.setBucketName(bucketName);
-        ObsObject getResult = obsClient.getObject(request);
-        assertEquals("测试中文", getResult.getMetadata().getUserMetadata("test-url-encode"));
-        assertEquals("测试中文", getResult.getMetadata().getResponseHeaders().get("content-disposition"));
+
+        GetObjectMetadataRequest getObjectMetadataRequest = new GetObjectMetadataRequest(bucketName,objectKey);
+        ObjectMetadata metadata1 = obsClient.getObjectMetadata(getObjectMetadataRequest);
+        assertEquals("测试中文", metadata1.getUserMetadata("test-url-encode"));
+        assertEquals("测试中文", metadata1.getResponseHeaders().get("content-disposition"));
+    }
+
+
+    @Test
+    public void test_getObject_with_progress() throws IOException
+    {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ObsClient obsClient = TestTools.getPipelineEnvironment();
+        String objectKey = "test_getObject_with_progress";
+        ObjectMetadata metadata = new ObjectMetadata();
+        PutObjectResult putResult = obsClient.putObject(bucketName, objectKey,
+                new ByteArrayInputStream("testObject".getBytes(StandardCharsets.UTF_8)),metadata);
+
+        assertEquals(200, putResult.getStatusCode());
+
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectKey);
+        getObjectRequest.setProgressListener(status -> {
+            // 获取上传平均速率
+            System.out.println("AverageSpeed:" + status.getAverageSpeed());
+            // 获取上传进度百分比
+            System.out.println("TransferPercentage:" + status.getTransferPercentage());
+        });
+        ObsObject obsObject = obsClient.getObject(getObjectRequest);
+        assertEquals(200, obsObject.getMetadata().getStatusCode());
+        obsObject.getObjectContent().close();
+
+    }
+
+
+    @Test
+    public void test_getObject_with_read_bufferSize() throws IOException
+    {
+        String bucketName = testName.getMethodName().replace("_", "-").toLowerCase(Locale.ROOT);
+        ObsClient obsClient = TestTools.getPipelineEnvironmentWithReadBufferSize(10240);
+        String objectKey = "test_getObject_with_progress";
+        ObjectMetadata metadata = new ObjectMetadata();
+        PutObjectResult putResult = obsClient.putObject(bucketName, objectKey,
+                new ByteArrayInputStream("testObject".getBytes(StandardCharsets.UTF_8)),metadata);
+
+        assertEquals(200, putResult.getStatusCode());
+
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectKey);
+        getObjectRequest.setProgressListener(status -> {
+            // 获取上传平均速率
+            System.out.println("AverageSpeed:" + status.getAverageSpeed());
+            // 获取上传进度百分比
+            System.out.println("TransferPercentage:" + status.getTransferPercentage());
+        });
+        ObsObject obsObject = obsClient.getObject(getObjectRequest);
+        assertEquals(200, obsObject.getMetadata().getStatusCode());
+        obsObject.getObjectContent().close();
+
     }
 }

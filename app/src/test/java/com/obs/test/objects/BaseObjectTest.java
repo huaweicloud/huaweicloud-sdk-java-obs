@@ -19,9 +19,11 @@ import com.obs.services.model.ListMultipartUploadsRequest;
 import com.obs.services.model.ListPartsRequest;
 import com.obs.services.model.ListPartsResult;
 import com.obs.services.model.Multipart;
+import com.obs.services.model.ObjectMetadata;
 import com.obs.services.model.PartEtag;
 import com.obs.services.model.PutObjectRequest;
 import com.obs.services.model.PutObjectResult;
+import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.UploadPartRequest;
 
 import com.obs.test.UserInfo;
@@ -52,6 +54,24 @@ public abstract class BaseObjectTest extends BaseBucketTest {
             boolean isRequesterPays, int size) {
         PutObjectRequest putRequest = generatePutObjectRequest(bucketName, objectKey, size);
         putRequest.setRequesterPays(isRequesterPays);
+        return oper.getObsClient().putObject(putRequest);
+    }
+
+    /**
+     * 使用指定的用户，生产一个对象
+     *
+     * @param oper
+     * @param bucketName
+     * @param objectKey
+     * @return
+     */
+    protected PutObjectResult generateTestObjectCold(UserInfo oper, String bucketName, String objectKey,
+            boolean isRequesterPays, int size) {
+        PutObjectRequest putRequest = generatePutObjectRequest(bucketName, objectKey, size);
+        putRequest.setRequesterPays(isRequesterPays);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setObjectStorageClass(StorageClassEnum.COLD);
+        putRequest.setMetadata(metadata);
         return oper.getObsClient().putObject(putRequest);
     }
 
