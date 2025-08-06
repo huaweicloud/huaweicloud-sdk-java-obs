@@ -33,6 +33,7 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.ObjectTypeEnum;
 import com.obs.services.model.bpa.BucketPolicyStatus;
 import com.obs.services.model.bpa.BucketPublicAccessBlock;
 import com.obs.services.model.bpa.BucketPublicStatus;
@@ -397,6 +398,7 @@ public class XmlResponsesSaxParser {
                 currentOwner.setId(elementText);
             } else if (name.equals("Type")) {
                 currentObject.getMetadata().setAppendable("Appendable".equals(elementText));
+                currentObject.setObjectType(ObjectTypeEnum.getValueFromCode(elementText));
             }
         }
     }
@@ -1198,6 +1200,8 @@ public class XmlResponsesSaxParser {
 
         private boolean needDecode;
 
+        private ObjectTypeEnum objectType;
+
         public String getDelimiter() {
             return getDecodedString(this.delimiter, needDecode);
         }
@@ -1301,6 +1305,7 @@ public class XmlResponsesSaxParser {
                 storageClass = content;
             } else if (name.equals("Type")) {
                 isAppendable = "Appendable".equals(content);
+                objectType = ObjectTypeEnum.getValueFromCode(content);
             } else if (name.equals("ID")) {
                 if (owner == null) {
                     owner = new Owner();
@@ -1362,6 +1367,14 @@ public class XmlResponsesSaxParser {
                         .isDeleteMarker(false)
                         .appendable(isAppendable)
                         .builder();
+
+                if (objectType == null) {
+                    item.setObjectType(ObjectTypeEnum.NORMAL);
+                } else {
+                    item.setObjectType(objectType);
+                    // reset objectType
+                    objectType = null;
+                }
 
                 items.add(item);
                 this.reset();

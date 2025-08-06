@@ -56,6 +56,9 @@ import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
 import com.obs.services.model.ObjectTagResult;
 import com.obs.services.model.ObjectTaggingRequest;
+import com.obs.services.model.symlink.GetSymlinkRequest;
+import com.obs.services.model.symlink.GetSymlinkResult;
+import com.obs.services.model.symlink.PutSymlinkRequest;
 
 public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     @Override
@@ -279,7 +282,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     public PutObjectResult putObject(final PutObjectRequest request) throws ObsException {
 
         ServiceUtils.assertParameterNotNull(request, "PutObjectRequest is null");
-        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getObjectKey(), "objectKey is null");
 
         return this.doActionWithResult("putObject", request.getBucketName(),
                 new ActionCallbackWithResult<PutObjectResult>() {
@@ -380,7 +383,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
     public ObsObject getObject(final GetObjectRequest request) throws ObsException {
 
         ServiceUtils.assertParameterNotNull(request, "GetObjectRequest is null");
-        ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getObjectKey(), "objectKey is null");
         return this.doActionWithResult("getObject", request.getBucketName(), new ActionCallbackWithResult<ObsObject>() {
 
             @Override
@@ -836,5 +839,35 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
                         return AbstractObjectClient.this.restoreObjectV2Impl(request);
                     }
                 });
+    }
+
+    @Override
+    public HeaderResponse putSymlink(PutSymlinkRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "PutSymlinkRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getObjectKey(), "objectKey is null");
+        return this.doActionWithResult("putSymlink", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractObjectClient.this.putSymlinkImpl(request);
+                }
+            });
+    }
+
+    @Override
+    public GetSymlinkResult getSymlink(GetSymlinkRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetSymlinkRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getObjectKey(), "objectKey is null");
+        return this.doActionWithResult("getSymlink", request.getBucketName(),
+            new ActionCallbackWithResult<GetSymlinkResult>() {
+
+                @Override
+                public GetSymlinkResult action() throws ServiceException {
+                    return AbstractObjectClient.this.getSymlinkImpl(request);
+                }
+            });
     }
 }

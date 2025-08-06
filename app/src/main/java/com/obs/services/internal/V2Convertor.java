@@ -479,6 +479,9 @@ public class V2Convertor extends V2BucketConvertor {
                 case DEEP_ARCHIVE:
                     storageClassStr = "DEEP_ARCHIVE";
                     break;
+                case HIGH_PERFORMANCE:
+                    storageClassStr = "HIGH_PERFORMANCE";
+                    break;
                 default:
                     break;
             }

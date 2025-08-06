@@ -42,6 +42,8 @@ public class VersionOrDeleteMarker {
 
     private boolean appendable;
 
+    private ObjectTypeEnum objectType;
+
     /**
      * 
      * Constructor
@@ -312,6 +314,14 @@ public class VersionOrDeleteMarker {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public ObjectTypeEnum getObjectType() {
+        return objectType;
+    }
+
+    public void setObjectType(ObjectTypeEnum objectType) {
+        this.objectType = objectType;
     }
 
     @Override

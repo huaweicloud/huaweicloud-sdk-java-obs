@@ -322,6 +322,9 @@ public class ObsConvertor extends V2Convertor {
                 case INTELLIGENT_TIERING:
                     storageClassStr = "INTELLIGENT_TIERING";
                     break;
+                case HIGH_PERFORMANCE:
+                    storageClassStr = "HIGH_PERFORMANCE";
+                    break;
                 default:
                     break;
             }

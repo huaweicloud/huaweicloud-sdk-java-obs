@@ -143,6 +143,9 @@ import com.obs.services.model.select.SelectObjectRequest;
 import com.obs.services.model.select.SelectObjectResult;
 import com.obs.services.model.ObjectTagResult;
 import com.obs.services.model.ObjectTaggingRequest;
+import com.obs.services.model.symlink.GetSymlinkRequest;
+import com.obs.services.model.symlink.GetSymlinkResult;
+import com.obs.services.model.symlink.PutSymlinkRequest;
 import com.obs.services.model.trash.DeleteBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashResult;
@@ -2334,6 +2337,10 @@ public interface IObsClient extends IObsBucketExtendClient {
     GetBucketPolicyPublicStatusResult getBucketPolicyPublicStatus(GetBucketPolicyPublicStatusRequest request) throws ObsException;
 
     GetBucketPublicStatusResult getBucketPublicStatus(GetBucketPublicStatusRequest request) throws ObsException;
+
+    HeaderResponse putSymlink(PutSymlinkRequest request) throws ObsException;
+
+    GetSymlinkResult getSymlink(GetSymlinkRequest request) throws ObsException;
 
     /**
      * Close ObsClient and release connection resources.
