@@ -42,6 +42,8 @@ public class S3Object {
 
     protected CRC64InputStream objectContentWithCRC64;
 
+    protected ObjectTypeEnum objectType;
+
     public String getBucketName() {
         return bucketName;
     }
@@ -89,6 +91,17 @@ public class S3Object {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public ObjectTypeEnum getObjectType() {
+        if (objectType == null) {
+            objectType = ObjectTypeEnum.NORMAL;
+        }
+        return objectType;
+    }
+
+    public void setObjectType(ObjectTypeEnum objectType) {
+        this.objectType = objectType;
     }
 
     @Override

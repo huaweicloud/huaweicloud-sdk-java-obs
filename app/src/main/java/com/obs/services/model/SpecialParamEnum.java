@@ -196,7 +196,9 @@ public enum SpecialParamEnum {
 
     POLICY_STATUS("policyStatus"),
 
-    BUCKET_PUBLIC_STATUS("bucketStatus");
+    BUCKET_PUBLIC_STATUS("bucketStatus"),
+
+    SYM_LINK("symlink");
     
     /**
      * Specify the corresponding code in the database and the external code.

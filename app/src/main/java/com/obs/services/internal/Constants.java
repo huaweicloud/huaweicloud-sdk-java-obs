@@ -239,7 +239,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.25.5";
+    public static final String OBS_SDK_VERSION = "3.25.7";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -300,6 +300,7 @@ public class Constants {
     public static final String REQUEST_TIME_TOO_SKEWED_CODE = "RequestTimeTooSkewed";
     public static final String ERROR_CODE_HEADER_OBS = "x-obs-error-code";
     public static final String ERROR_CODE_HEADER_AMZ = "x-amz-error-code";
+    public static final String SYMLINK_HEADER = "symlink-target";
 
     public static final List<String> ALLOWED_RESPONSE_HTTP_CONTENT_TYPES_FOR_XML = Collections.unmodifiableList(
         Arrays.asList(
@@ -341,6 +342,6 @@ public class Constants {
                     "response-cache-control", "response-content-disposition", "response-content-encoding",
                     "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
                     "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
-                    "x-obs-trash", "getcontentsummary", "select", "select-type"));
+                    "x-obs-trash", "getcontentsummary", "select", "select-type", "symlink"));
 
 }

@@ -44,7 +44,12 @@ public enum StorageClassEnum {
     /**
      * INTELLIGENT TIERING
      */
-    INTELLIGENT_TIERING;
+    INTELLIGENT_TIERING,
+
+    /**
+     * HIGH PERFORMANCE
+     */
+    HIGH_PERFORMANCE;
 
     public String getCode() {
         return this.name();
@@ -61,6 +66,8 @@ public enum StorageClassEnum {
             return DEEP_ARCHIVE;
         } else if ("INTELLIGENT_TIERING".equals(code)) {
             return INTELLIGENT_TIERING;
+        } else if ("HIGH_PERFORMANCE".equals(code)) {
+            return HIGH_PERFORMANCE;
         }
         return null;
     }

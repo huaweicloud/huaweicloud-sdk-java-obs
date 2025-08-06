@@ -1,3 +1,7 @@
+Version 3.25.7
+New features:
+1. Added symlink feature
+-----------------------------------------------------------------------------------
 Version 3.25.5
 New features:
 1. Added IMDSv2 logic

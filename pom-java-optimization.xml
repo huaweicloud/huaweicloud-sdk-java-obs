@@ -2,12 +2,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.huaweicloud</groupId>
-    <artifactId>esdk-obs-java-optimised</artifactId>
-    <version>3.24.9</version>
+    <groupId>com.huawei.storage</groupId>
+    <artifactId>esdk-obs-java</artifactId>
+    <version>3.25.7</version>
     <packaging>jar</packaging>
 
-    <name>OBS SDK for Java Optimised</name>
+    <name>OBS SDK for Java</name>
     <description>The OBS SDK for Java used for accessing Object Storage Service</description>
 
     <properties>
@@ -18,12 +18,12 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.14.9</version>
+            <version>4.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio</artifactId>
-            <version>1.17.5</version>
+            <version>3.8.0</version>
         </dependency>
 
         <dependency>
@@ -45,17 +45,23 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.20.0</version>
+            <version>2.24.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.20.0</version>
+            <version>2.24.3</version>
+        </dependency>
+		<dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.6.5</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>app/src/main/java</sourceDirectory>
+        <sourceDirectory>../app/src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>app/src/main/resource</directory>
@@ -65,7 +71,7 @@
             </resource>
         </resources>
 
-        <testSourceDirectory>app/src/test/java</testSourceDirectory>
+        <testSourceDirectory>../app/src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -153,29 +159,18 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <!-- <exclude>com.squareup.okhttp3:okhttp:jar:</exclude> -->
-                                    <!-- <exclude>com.squareup.okio:okio:jar:</exclude> -->
+                                    <exclude>com.squareup.okhttp3:okhttp:jar:</exclude>
                                     <exclude>com.fasterxml.jackson.core:jackson-core:jar:</exclude>
                                     <exclude>com.fasterxml.jackson.core:jackson-databind:jar:</exclude>
                                     <exclude>com.fasterxml.jackson.core:jackson-annotations:jar:</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib:jar:</exclude>
+                                    <exclude>org.jetbrains:annotations:jar:</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib-common:jar:</exclude>
+                                    <exclude>com.squareup.okio:okio:jar:</exclude>
                                     <exclude>org.apache.logging.log4j:log4j-core:jar:</exclude>
                                     <exclude>org.apache.logging.log4j:log4j-api:jar:</exclude>
                                 </excludes>
                             </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.jamesmurty.utils</pattern>
-                                    <shadedPattern>com.obs.shade.jamesmurty.utils</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>okhttp3</pattern>
-                                    <shadedPattern>com.obs.shade.okhttp3</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>okio</pattern>
-                                    <shadedPattern>com.obs.shade.okio</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
