@@ -104,7 +104,7 @@ public class ObsConstraint {
 
     public static final long DEFAULT_EXPIRE_SECONEDS = 300;
 
-    public static final int DEFAULT_IDLE_CONNECTION_TIME = 30000;
+    public static final int DEFAULT_IDLE_CONNECTION_TIME = 28000;//28s
 
     public static final int DEFAULT_MAX_IDLE_CONNECTIONS = HTTP_MAX_CONNECT_VALUE;
 
@@ -186,6 +186,10 @@ public class ObsConstraint {
         public static final String DOMAINS = "Domains";
     }
 
+    public static final String SNAPSHOT = "Snapshot";
+    public static final String SNAPSHOT_FULL_PATH = "ObjectKey";
+    public static final String TAG_SNAPSHOT_DIR = "SnapshottableDir";
+    public static final String TAG_SNAPSHOT_DIR_COUNT = "SnapshottableDirCount";
     /**
      * Constants for CustomDomainCertificateConfig validation
      */
@@ -196,4 +200,30 @@ public class ObsConstraint {
     public static final int CUSTOM_DOMAIN_CERTIFICATE_ID_MAX_LENGTH = 16;
     public static final int CUSTOM_DOMAIN_CERTIFICATE_MAX_XML_BODY_SIZE_BY_KB = 40;
 
+    /**
+     * Constants for Snapshot validation
+     */
+    public static final int SNAPSHOT_NAME_MAX_LENGTH = 255;
+    public static final int RULE_ID_MAX_LENGTH = 255;
+    public static final int SNAPSHOT_FULL_PATH_MAX_LENGTH = 1024;
+    public static final int SNAPSHOT_MAX_KEYS = 1000;
+
+    public static final String MARKER = "Marker";
+    public static final String MAX_KEYS = "MaxKeys";
+    public static final String TRUNCATED_CHECK = "IsTruncated";
+    public static final String NEXT_MARKER = "NextMarker";
+    public static final String ID = "ID";
+    public static final String DISPLAY_NAME = "DisplayName";
+    public static final String GROUP = "Group";
+    public static final String FILE_ID = "FileId";
+    public static final String PERMISSION = "Permission";
+    public static final String MODIFICATION_TIME = "ModificationTime";
+    public static final String SNAPSHOT_QUOTA = "SnapshotQuota";
+    public static final String PARENT_FULL_PATH = "ParentFullPath";
+    public static final String SNAPSHOT_ENTRY = "SnapshotEntry";
+    public static final String SNAPSHOT_COUNT = "SnapshotCount";
+    public static final String SNAPSHOT_NAME = "SnapshotName";
+    public static final String SNAPSHOT_ID = "SnapshotID";
+    public static final String MODIFY_TIME = "ModifyTime";
+    public static final String OWNER = "Owner";
 }

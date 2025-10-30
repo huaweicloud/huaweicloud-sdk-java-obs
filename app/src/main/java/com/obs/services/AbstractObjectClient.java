@@ -846,6 +846,7 @@ public abstract class AbstractObjectClient extends AbstractBucketAdvanceClient {
         ServiceUtils.assertParameterNotNull(request, "PutSymlinkRequest is null");
         ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
         ServiceUtils.assertParameterNotNull(request.getObjectKey(), "objectKey is null");
+        ServiceUtils.assertParameterNotNull(request.getSymlinkTarget(), "symlinkTarget is null");
         return this.doActionWithResult("putSymlink", request.getBucketName(),
             new ActionCallbackWithResult<HeaderResponse>() {
 

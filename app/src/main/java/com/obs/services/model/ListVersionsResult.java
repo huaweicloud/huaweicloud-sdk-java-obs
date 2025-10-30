@@ -46,11 +46,13 @@ public class ListVersionsResult extends HeaderResponse {
 
     private String delimiter;
 
+    private String snapshotId;
+
     @Deprecated
     //CHECKSTYLE:OFF
     public ListVersionsResult(String bucketName, String prefix, String keyMarker, String nextKeyMarker,
             String versionIdMarker, String nextVersionIdMarker, String maxKeys, boolean isTruncated,
-            VersionOrDeleteMarker[] versions, List<String> commonPrefixes, String location, String delimiter) {
+            VersionOrDeleteMarker[] versions, List<String> commonPrefixes, String location, String delimiter, String snapshotId) {
         super();
         this.bucketName = bucketName;
         this.prefix = prefix;
@@ -68,6 +70,7 @@ public class ListVersionsResult extends HeaderResponse {
         this.commonPrefixes = commonPrefixes;
         this.location = location;
         this.delimiter = delimiter;
+        this.snapshotId = snapshotId;
     }
 
     private ListVersionsResult(Builder builder) {
@@ -88,6 +91,7 @@ public class ListVersionsResult extends HeaderResponse {
         this.commonPrefixes = builder.commonPrefixes;
         this.location = builder.location;
         this.delimiter = builder.delimiter;
+        this.snapshotId = builder.snapshotId;
     }
     
     public static final class Builder {
@@ -103,6 +107,7 @@ public class ListVersionsResult extends HeaderResponse {
         private List<String> commonPrefixes;
         private String location;
         private String delimiter;
+        private String snapshotId;
         
         public Builder bucketName(String bucketName) {
             this.bucketName = bucketName;
@@ -165,6 +170,11 @@ public class ListVersionsResult extends HeaderResponse {
         
         public Builder delimiter(String delimiter) {
             this.delimiter = delimiter;
+            return this;
+        }
+
+        public Builder snapshotId(String snapshotId) {
+            this.snapshotId = snapshotId;
             return this;
         }
         
@@ -292,13 +302,22 @@ public class ListVersionsResult extends HeaderResponse {
         return delimiter;
     }
 
+    /**
+     * Obtain the snapshot ID.
+     *
+     * @return Snapshot ID
+     */
+    public String getSnapshotId() {
+        return snapshotId;
+    }
+
     @Override
     public String toString() {
         return "ListVersionsResult [bucketName=" + bucketName + ", prefix=" + prefix + ", keyMarker=" + keyMarker
                 + ", nextKeyMarker=" + nextKeyMarker + ", versionIdMarker=" + versionIdMarker + ", nextVersionIdMarker="
                 + nextVersionIdMarker + ", maxKeys=" + maxKeys + ", isTruncated=" + isTruncated + ", versions="
                 + Arrays.toString(versions) + ", commonPrefixes=" + commonPrefixes + ", location=" + location
-                + ", delimiter=" + delimiter + "]";
+                + ", delimiter=" + delimiter + ", snapshotId=" + snapshotId + "]";
     }
 
 }

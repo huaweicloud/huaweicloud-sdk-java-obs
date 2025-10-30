@@ -24,6 +24,22 @@ import com.obs.services.model.AbortMultipartUploadRequest;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AppendObjectRequest;
 import com.obs.services.model.AppendObjectResult;
+import com.obs.services.model.DeleteBucketLifecycleRequest;
+import com.obs.services.model.GetBucketLifecycleRequest;
+import com.obs.services.model.Qos.DeleteBucketQosRequest;
+import com.obs.services.model.Qos.GetBucketQoSRequest;
+import com.obs.services.model.Qos.GetBucketQoSResult;
+import com.obs.services.model.Qos.SetBucketQosRequest;
+import com.obs.services.model.CreateSnapshotRequest;
+import com.obs.services.model.CreateSnapshotResponse;
+import com.obs.services.model.DeleteSnapshotRequest;
+import com.obs.services.model.GetSnapshottableDirListRequest;
+import com.obs.services.model.GetSnapshottableDirListResult;
+import com.obs.services.model.GetSnapshotListRequest;
+import com.obs.services.model.RenameSnapshotRequest;
+import com.obs.services.model.RenameSnapshotResponse;
+import com.obs.services.model.SetDisallowSnapshotRequest;
+import com.obs.services.model.SetSnapshotAllowRequest;
 import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
 import com.obs.services.model.bpa.GetBucketPolicyPublicStatusRequest;
 import com.obs.services.model.bpa.GetBucketPolicyPublicStatusResult;
@@ -1059,6 +1075,18 @@ public interface IObsClient extends IObsBucketExtendClient {
     LifecycleConfiguration getBucketLifecycle(BaseBucketRequest request) throws ObsException;
 
     /**
+     * Obtain the bucket lifecycle rules.
+     *
+     * @param request
+     *            Request parameters
+     * @return Bucket lifecycle rules
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * @since 3.25.10
+     */
+    LifecycleConfiguration getBucketLifecycle(GetBucketLifecycleRequest request) throws ObsException;
+
+    /**
      * Set the bucket lifecycle rules.
      *
      * @param bucketName
@@ -1107,6 +1135,19 @@ public interface IObsClient extends IObsBucketExtendClient {
      * @since 3.20.3
      */
     HeaderResponse deleteBucketLifecycle(BaseBucketRequest request) throws ObsException;
+
+
+    /**
+     * Delete the bucket lifecycle rules from a bucket.
+     *
+     * @param request
+     *            Request parameters
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface fails to be called or access to OBS fails
+     * @since 3.25.10
+     */
+    HeaderResponse deleteBucketLifecycle(DeleteBucketLifecycleRequest request) throws ObsException;
 
     /**
      * Obtain bucket policies.
@@ -2342,12 +2383,33 @@ public interface IObsClient extends IObsBucketExtendClient {
 
     GetSymlinkResult getSymlink(GetSymlinkRequest request) throws ObsException;
 
+    HeaderResponse setBucketQos(SetBucketQosRequest request) throws ObsException;
+
+    GetBucketQoSResult getBucketQoS(GetBucketQoSRequest request);
+
+    HeaderResponse deleteBucketQoS(DeleteBucketQosRequest request) throws ObsException;
+
+    HeaderResponse deleteSnapshot(DeleteSnapshotRequest request) throws ObsException;
+
+    HeaderResponse setSnapshotAllow(SetSnapshotAllowRequest request) throws ObsException;
+
+    HeaderResponse setDisallowSnapshot(SetDisallowSnapshotRequest request) throws ObsException;
+
     /**
-     * Close ObsClient and release connection resources.
-     * 
-     * @throws IOException
-     *             ObsClient close exception
+     * Get snapshot list for a bucket or object
      */
+    HeaderResponse getSnapshotList(GetSnapshotListRequest request) throws ObsException;
+
+    GetSnapshottableDirListResult getSnapshottableDirList(GetSnapshottableDirListRequest request) throws ObsException;
+
+    CreateSnapshotResponse createSnapshot(CreateSnapshotRequest request) throws ObsException;
+
+
+    /**
+     * Rename snapshot for an object
+     */
+    RenameSnapshotResponse renameSnapshot(RenameSnapshotRequest request) throws ObsException;
+
     void close() throws IOException;
 
 }

@@ -26,9 +26,16 @@ public class SetBucketLifecycleRequest extends BaseBucketRequest {
     }
 
     private LifecycleConfiguration lifecycleConfig;
+    private String ruleId;
 
     public SetBucketLifecycleRequest(String bucketName, LifecycleConfiguration lifecycleConfig) {
         this.bucketName = bucketName;
+        this.lifecycleConfig = lifecycleConfig;
+    }
+
+    public SetBucketLifecycleRequest(String bucketName, String ruleId, LifecycleConfiguration lifecycleConfig) {
+        this.bucketName = bucketName;
+        this.ruleId = ruleId;
         this.lifecycleConfig = lifecycleConfig;
     }
 
@@ -36,8 +43,16 @@ public class SetBucketLifecycleRequest extends BaseBucketRequest {
         return lifecycleConfig;
     }
 
+    public String getRuleId() {
+        return ruleId;
+    }
+
     public void setLifecycleConfig(LifecycleConfiguration lifecycleConfig) {
         this.lifecycleConfig = lifecycleConfig;
+    }
+
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
     }
 
     @Override

@@ -883,4 +883,51 @@ public class ServiceUtils {
         }
     }
 
+    public static String escapeXml11(String input) {
+        if (input == null) {
+            return null;
+        }
+
+        StringBuilder result = new StringBuilder(input.length() + 16);
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            switch (c) {
+                case '<':
+                    result.append("&lt;");
+                    break;
+                case '>':
+                    result.append("&gt;");
+                    break;
+                case '&':
+                    result.append("&amp;");
+                    break;
+                case '"':
+                    result.append("&quot;");
+                    break;
+                case '\'':
+                    result.append("&#x27;");
+                    break;
+                default:
+                    if (isValidXml11Char(c)) {
+                        result.append(c);
+                    } else {
+                        result.append("&#x").append(Integer.toHexString(c).toUpperCase(Locale.ROOT)).append(";");
+                    }
+                    break;
+            }
+        }
+
+        return result.toString();
+    }
+
+    private static boolean isValidXml11Char(char c) {
+        if (c >= 0x20 && c <= 0xD7FF) return true;
+        if (c >= 0xE000 && c <= 0xFFFD) return true;
+        if (c == 0x09 || c == 0x0A || c == 0x0D) return true;
+
+        return false;
+    }
+
 }

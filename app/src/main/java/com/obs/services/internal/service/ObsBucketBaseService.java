@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -34,6 +33,8 @@ import com.obs.services.internal.utils.Mimetypes;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.BaseBucketRequest;
+import com.obs.services.model.BaseObjectRequest;
+import com.obs.services.model.BaseSnapshotRequest;
 import com.obs.services.model.BucketLocationResponse;
 import com.obs.services.model.BucketMetadataInfoRequest;
 import com.obs.services.model.BucketMetadataInfoResult;
@@ -42,6 +43,13 @@ import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.CreateSnapshotRequest;
+import com.obs.services.model.CreateSnapshotResponse;
+import com.obs.services.model.DeleteSnapshotRequest;
+import com.obs.services.model.GetSnapshottableDirListRequest;
+import com.obs.services.model.GetSnapshottableDirListResult;
+import com.obs.services.model.GetSnapshotListRequest;
+import com.obs.services.model.GetSnapshotListResponse;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.HttpMethodEnum;
 import com.obs.services.model.ListBucketsRequest;
@@ -52,8 +60,12 @@ import com.obs.services.model.ListVersionsResult;
 import com.obs.services.model.ObjectListing;
 import com.obs.services.model.ObsBucket;
 import com.obs.services.model.OptionsInfoRequest;
+import com.obs.services.model.RenameSnapshotRequest;
+import com.obs.services.model.RenameSnapshotResponse;
 import com.obs.services.model.SetBucketPolicyRequest;
 import com.obs.services.model.SetBucketStoragePolicyRequest;
+import com.obs.services.model.SetDisallowSnapshotRequest;
+import com.obs.services.model.SetSnapshotAllowRequest;
 import com.obs.services.model.SpecialParamEnum;
 import com.obs.services.model.VersionOrDeleteMarker;
 import com.obs.services.model.fs.GetBucketFSStatusResult;
@@ -67,7 +79,11 @@ import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
 import com.obs.services.model.inventory.GetInventoryConfigurationResult;
 import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 import okhttp3.Response;
-import okhttp3.internal.http.HttpMethod;
+
+import static com.obs.services.internal.Constants.ObsRequestParams.MARKER;
+import static com.obs.services.internal.Constants.ObsRequestParams.MAX_KEYS;
+import static com.obs.services.internal.Constants.ObsRequestParams.SNAPSHOT_FULL_PATH;
+
 
 public abstract class ObsBucketBaseService extends RequestConvertor {
 
@@ -123,10 +139,10 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
                 this.putHeader(headers, this.getIHeaders("").bucketTypeHeader(), request.getBucketType().getCode());
             }
             if (request.getMaxKeys() > 0) {
-                params.put(Constants.ObsRequestParams.MAX_KEYS, String.valueOf(request.getMaxKeys()));
+                params.put(MAX_KEYS, String.valueOf(request.getMaxKeys()));
             }
             if (request.getMarker() != null) {
-                params.put(Constants.ObsRequestParams.MARKER, request.getMarker());
+                params.put(MARKER, request.getMarker());
             }
         }
 
@@ -469,13 +485,13 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         NewTransResult newTransResult = transRequest(request);
         newTransResult.setParams(requestParams);
-        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+        Response httpResponse = performRequest(newTransResult, true, false, false, false);
         this.verifyResponseContentType(httpResponse);
 
         GetInventoryConfigurationResult result = new GetInventoryConfigurationResult();
         List<InventoryConfiguration> configurations = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
                 XmlResponsesSaxParser.InventoryConfigurationsHandler.class, false).getInventoryConfigurations();
-        if(configurations == null || configurations.isEmpty()) {
+        if (configurations == null || configurations.isEmpty()) {
             log.warn("No configuration got, config id is :" + request.getConfigurationId());
         } else {
             result.setInventoryConfiguration(configurations.get(0));
@@ -490,7 +506,7 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         NewTransResult newTransResult = transRequest(request);
         newTransResult.setParams(requestParams);
-        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+        Response httpResponse = performRequest(newTransResult, true, false, false, false);
         this.verifyResponseContentType(httpResponse);
 
         ListInventoryConfigurationResult result = new ListInventoryConfigurationResult();
@@ -508,8 +524,140 @@ public abstract class ObsBucketBaseService extends RequestConvertor {
 
         NewTransResult newTransResult = transRequest(request);
         newTransResult.setParams(requestParams);
-        Response httpResponse = performRequest(newTransResult, true,false,false,false);
+        Response httpResponse = performRequest(newTransResult, true, false, false, false);
 
         return build(httpResponse);
+    }
+
+    private HeaderResponse processSnapshotRequest(BaseObjectRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_SNAPSHOT_ROOT.getOriginalStringCode(), "");
+
+        NewTransResult newTransResult = transObjectRequest(request);
+        newTransResult.setParams(requestParams);
+        Response httpResponse = performRequest(newTransResult);
+
+        return build(httpResponse);
+    }
+
+    protected HeaderResponse setSnapshotAllowImpl(SetSnapshotAllowRequest request) throws ServiceException {
+        return processSnapshotRequest(request);
+    }
+
+    protected HeaderResponse setDisallowSnapshotImpl(SetDisallowSnapshotRequest request) throws ServiceException {
+        return processSnapshotRequest(request);
+    }
+
+    protected GetSnapshottableDirListResult getSnapshottableDirListImpl(GetSnapshottableDirListRequest request) throws ServiceException {
+        NewTransResult newTransResult = transGetSnapshottableDirListRequest(request);
+        Response httpResponse = performRequest(newTransResult, true, false, false, false);
+
+        this.verifyResponseContentType(httpResponse);
+
+        XmlResponsesSaxParser.GetSnapshottableDirListHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.GetSnapshottableDirListHandler.class, true);
+
+        GetSnapshottableDirListResult getSnapshottableDirListResult = new GetSnapshottableDirListResult(handler.getMarker(), handler.getNextMarker(),
+                handler.isTruncated(), handler.getMaxKeys(), handler.getSnapshottableDirCount(), handler.getSnapshottableDirs());
+        setHeadersAndStatus(getSnapshottableDirListResult, httpResponse);
+
+        return getSnapshottableDirListResult;
+    }
+
+    protected GetSnapshotListResponse getSnapshotListImpl(GetSnapshotListRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_SNAPSHOT.getOriginalStringCode(), "");
+
+        if (ServiceUtils.isValid(request.getObjectKey())) {
+            requestParams.put(SNAPSHOT_FULL_PATH, request.getObjectKey());
+        }
+
+        if (ServiceUtils.isValid(request.getMarker())) {
+            requestParams.put(MARKER, request.getMarker());
+        }
+
+        if (request.getMaxKeys() > 0) {
+            requestParams.put(MAX_KEYS, String.valueOf(request.getMaxKeys()));
+        }
+
+        NewTransResult newTransResult = transObjectRequest(request);
+        newTransResult.setParams(requestParams);
+        Response httpResponse = performRequest(newTransResult, true, false, false, false);
+        XmlResponsesSaxParser.GetSnapshotListHandler handler = getXmlResponseSaxParser().parse(
+                new HttpMethodReleaseInputStream(httpResponse), XmlResponsesSaxParser.GetSnapshotListHandler.class, false);
+
+        GetSnapshotListResponse getSnapshotListResponse = new GetSnapshotListResponse(handler.getMarker(), handler.getNextMarker(),
+                handler.isTruncated(), handler.getMaxKeys(), handler.getSnapshotCount(), handler.getSnapshots());
+        setHeadersAndStatus(getSnapshotListResponse, httpResponse);
+
+        return getSnapshotListResponse;
+    }
+
+
+
+    /**
+     * Internal implementation of renameSnapshot
+     */
+    protected RenameSnapshotResponse renameSnapshotImpl(RenameSnapshotRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_SNAPSHOT.getOriginalStringCode(), "");
+
+
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+        String xml;
+        if (request.getOldSnapshotName() == null || request.getNewSnapshotName() == null) {
+            log.warn("Snapshot rename operation skipped - missing snapshot names. OldSnapshotName: " +
+                    request.getOldSnapshotName() + ", NewSnapshotName: " + request.getNewSnapshotName());
+            xml = "";
+        } else {
+            xml = this.getIConvertor(request.getBucketName()).transRenameSnapshot(request);
+        }
+
+        NewTransResult newTransResult = transObjectRequest(request);
+        newTransResult.setParams(requestParams);
+        newTransResult.setHeaders(headers);
+        newTransResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+
+        Response httpResponse = performRequest(newTransResult);
+        RenameSnapshotResponse result = new RenameSnapshotResponse();
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected CreateSnapshotResponse createSnapshotImpl(CreateSnapshotRequest request) throws ServiceException {
+        Response httpResponse = executeSnapshotRequest(request);
+        CreateSnapshotResponse result = new CreateSnapshotResponse();
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected HeaderResponse deleteSnapshotImpl(DeleteSnapshotRequest request) throws ServiceException {
+        Response httpResponse = executeSnapshotRequest(request);
+        return build(httpResponse);
+    }
+
+    private Response executeSnapshotRequest(BaseSnapshotRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.OBS_SNAPSHOT.getOriginalStringCode(), "");
+
+        if (request instanceof CreateSnapshotRequest) {
+            requestParams.put("snapshotName", request.getSnapshotName());
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+
+        String xml = this.getIConvertor(request.getBucketName()).transCreateSnapshot(request.getSnapshotName());
+
+        NewTransResult newTransResult = transObjectRequest(request);
+        newTransResult.setParams(requestParams);
+        newTransResult.setHeaders(headers);
+        newTransResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+
+        return performRequest(newTransResult);
     }
 }

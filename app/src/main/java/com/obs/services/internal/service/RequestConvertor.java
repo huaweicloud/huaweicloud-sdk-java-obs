@@ -46,6 +46,7 @@ import com.obs.services.model.CreateBucketRequest;
 import com.obs.services.model.ExtensionBucketPermissionEnum;
 import com.obs.services.model.ExtensionObjectPermissionEnum;
 import com.obs.services.model.GetObjectRequest;
+import com.obs.services.model.GetSnapshottableDirListRequest;
 import com.obs.services.model.InitiateMultipartUploadRequest;
 import com.obs.services.model.ListObjectsRequest;
 import com.obs.services.model.ListVersionsRequest;
@@ -869,6 +870,26 @@ public abstract class RequestConvertor extends AclHeaderConvertor {
         }
 
         return new TransResult(headers, params, null);
+    }
+
+    protected NewTransResult transGetSnapshottableDirListRequest(GetSnapshottableDirListRequest getSnapshottableDirListRequest) {
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put(SpecialParamEnum.OBS_SNAPSHOT_ROOT.getOriginalStringCode(), "");
+        if (getSnapshottableDirListRequest.getMaxKeys() > 0) {
+            params.put(ObsRequestParams.MAX_KEYS, String.valueOf(getSnapshottableDirListRequest.getMaxKeys()));
+        }
+        if (getSnapshottableDirListRequest.getMarker() != null) {
+            params.put(ObsRequestParams.MARKER, getSnapshottableDirListRequest.getMarker());
+        }
+
+        Map<String, String> headers = new HashMap<String, String>();
+        transRequestPaymentHeaders(getSnapshottableDirListRequest, headers, this.getIHeaders(getSnapshottableDirListRequest.getBucketName()));
+
+        NewTransResult result = transRequest(getSnapshottableDirListRequest);
+        result.setParams(params);
+        result.setHeaders(headers);
+        return result;
     }
 
     protected TransResult transListContentSummaryRequest(ListContentSummaryRequest listContentSummaryRequest) {

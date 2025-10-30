@@ -15,8 +15,28 @@
 package com.obs.services.internal.handler;
 
 import static com.obs.services.internal.ObsConstraint.CERTIFICATE_ID;
+import static com.obs.services.internal.ObsConstraint.DISPLAY_NAME;
+import static com.obs.services.internal.ObsConstraint.FILE_ID;
+import static com.obs.services.internal.ObsConstraint.GROUP;
+import static com.obs.services.internal.ObsConstraint.ID;
+import static com.obs.services.internal.ObsConstraint.MARKER;
+import static com.obs.services.internal.ObsConstraint.MAX_KEYS;
+import static com.obs.services.internal.ObsConstraint.MODIFICATION_TIME;
+import static com.obs.services.internal.ObsConstraint.MODIFY_TIME;
+import static com.obs.services.internal.ObsConstraint.NEXT_MARKER;
+import static com.obs.services.internal.ObsConstraint.OWNER;
 import static com.obs.services.internal.ObsConstraint.ObsBucketXMLElements.CREATE_TIME;
 import static com.obs.services.internal.ObsConstraint.ObsBucketXMLElements.DOMAINS;
+import static com.obs.services.internal.ObsConstraint.PARENT_FULL_PATH;
+import static com.obs.services.internal.ObsConstraint.PERMISSION;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_COUNT;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_ENTRY;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_ID;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_NAME;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_QUOTA;
+import static com.obs.services.internal.ObsConstraint.TAG_SNAPSHOT_DIR;
+import static com.obs.services.internal.ObsConstraint.TAG_SNAPSHOT_DIR_COUNT;
+import static com.obs.services.internal.ObsConstraint.TRUNCATED_CHECK;
 import static com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder.RESERVED_DAYS;
 import static com.obs.services.model.bpa.BucketPolicyStatus.POLICY_STATUS;
 import static com.obs.services.model.bpa.BucketPublicAccessBlock.BLOCK_PUBLIC_ACLS;
@@ -34,6 +54,13 @@ import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.ObjectTypeEnum;
+import com.obs.services.model.Qos.QosRule;
+import com.obs.services.model.Qos.GetBucketQoSResult;
+import com.obs.services.model.Qos.QpsLimitConfiguration;
+import com.obs.services.model.Qos.BpsLimitConfiguration;
+import com.obs.services.model.Qos.NetworkType;
+import com.obs.services.model.Snapshot;
+import com.obs.services.model.SnapshottableDir;
 import com.obs.services.model.bpa.BucketPolicyStatus;
 import com.obs.services.model.bpa.BucketPublicAccessBlock;
 import com.obs.services.model.bpa.BucketPublicStatus;
@@ -109,6 +136,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+
 import com.obs.services.model.ObjectTagResult;
 
 public class XmlResponsesSaxParser {
@@ -2846,6 +2875,348 @@ public class XmlResponsesSaxParser {
             } else {
                 log.error("bucketPublicStatus is null, " +
                     "parse xml in BucketPublicStatusHandler failed");
+            }
+        }
+    }
+    
+    public static class BucketQosConfigurationHandler extends DefaultXmlHandler {
+
+        // 解析结果对象
+        protected GetBucketQoSResult result;
+
+        // 临时存储当前解析的对象
+        private QosRule currentQosRule;
+        private QpsLimitConfiguration currentQpsLimit;
+        private BpsLimitConfiguration currentBpsLimit;
+
+        // 核心标记：当前是否在QoSGroupConfiguration内部
+        private boolean isInGroupConfig = false;
+
+        public GetBucketQoSResult getQosResult() {
+            return result;
+        }
+
+        @Override
+        public void startElement(String name) {
+            // 初始化结果对象
+            if ("GetBucketQoSResponse".equals(name)) {
+                result = new GetBucketQoSResult();
+                return;
+            }
+
+            // 进入QoSGroupConfiguration区域，标记为true
+            if ("QoSGroupConfiguration".equals(name)) {
+                isInGroupConfig = true;
+                return;
+            }
+
+            // 初始化QoS规则对象
+            if ("QoSRule".equals(name)) {
+                currentQosRule = new QosRule(null, 0, null, null);
+            } else if ("QpsLimit".equals(name)) {
+                currentQpsLimit = new QpsLimitConfiguration(0, 0, 0, 0);
+            } else if ("BpsLimit".equals(name)) {
+                currentBpsLimit = new BpsLimitConfiguration(0, 0, 0);
+            }
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if (result == null) {
+                return;
+            }
+
+            // 离开QoSGroupConfiguration区域，标记为false
+            if ("QoSGroupConfiguration".equals(name)) {
+                isInGroupConfig = false;
+                return;
+            }
+
+            // 解析QoS组名称
+            if ("QoSGroup".equals(name)) {
+                result.setQosGroup(content.trim());
+                return;
+            }
+
+            // 处理QpsLimit的子元素
+            if (currentQpsLimit != null && !"QpsLimit".equals(name)) {
+                long value = parseAndLogLong(name, content);
+                switch (name) {
+                    case "Get":
+                        currentQpsLimit.setQpsGetLimit(value);
+                        break;
+                    case "PutPostDelete":
+                        currentQpsLimit.setQpsPutPostDeleteLimit(value);
+                        break;
+                    case "List":
+                        currentQpsLimit.setQpsListLimit(value);
+                        break;
+                    case "Total":
+                        currentQpsLimit.setQpsTotalLimit(value);
+                        break;
+                    default:
+                        break;
+                }
+                return;
+            }
+
+            // 处理BpsLimit的子元素
+            if (currentBpsLimit != null && !"BpsLimit".equals(name)) {
+                long value = parseAndLogLong(name, content);
+                switch (name) {
+                    case "Get":
+                        currentBpsLimit.setBpsGetLimit(value);
+                        break;
+                    case "PutPost":
+                        currentBpsLimit.setBpsPutPostLimit(value);
+                        break;
+                    case "Total":
+                        currentBpsLimit.setBpsTotalLimit(value);
+                        break;
+                    default:
+                        break;
+                }
+                return;
+            }
+
+            // 处理QoSRule的子元素和结束标签
+            if (currentQosRule != null) {
+                switch (name) {
+                    case "NetworkType":
+                        currentQosRule.setNetworkType(parseNetworkType(content));
+                        break;
+                    case "ConcurrentRequestLimit":
+                        currentQosRule.setConcurrentRequestLimit(parseAndLogLong(name, content));
+                        break;
+                    case "QpsLimit":
+                        currentQosRule.setQpsLimit(currentQpsLimit);
+                        currentQpsLimit = null;
+                        break;
+                    case "BpsLimit":
+                        currentQosRule.setBpsLimit(currentBpsLimit);
+                        currentBpsLimit = null;
+                        break;
+                    case "QoSRule":
+                        // 根据boolean标记决定加入哪个列表
+                        if (isInGroupConfig) {
+                            result.getGroupQosRules().add(currentQosRule);
+                        } else {
+                            result.getBucketQosRules().add(currentQosRule);
+                        }
+                        currentQosRule = null;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        private NetworkType parseNetworkType(String content) {
+            try {
+                return NetworkType.valueOf(content.trim().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                log.error("Invalid NetworkType value: " + content, e);
+                return null;
+            }
+        }
+
+        private long parseAndLogLong(String name, String content) {
+            try {
+                return Long.parseLong(content.trim());
+            } catch (NumberFormatException e) {
+                log.error("Failed to parse long value for " + name + " " + content, e);
+                return 0;
+            }
+        }
+    }
+    public static abstract class BasePaginatedHandler extends DefaultXmlHandler {
+        protected String marker;
+        protected String nextMarker;
+        protected boolean truncated;
+        protected int maxKeys;
+
+        public boolean isTruncated() {
+            return truncated;
+        }
+
+        public String getMarker() {
+            return marker;
+        }
+
+        public int getMaxKeys() {
+            return maxKeys;
+        }
+
+        public String getNextMarker() {
+            return nextMarker;
+        }
+
+        protected void handleCommonPaginationElements(String name, String elementText) {
+            switch (name) {
+                case MARKER:
+                    marker = elementText;
+                    break;
+                case MAX_KEYS:
+                    maxKeys = parseIntWithWarning(elementText, "maxKeys");
+                    break;
+                case TRUNCATED_CHECK:
+                    truncated = Boolean.parseBoolean(elementText);
+                    break;
+                case NEXT_MARKER:
+                    nextMarker = elementText;
+                    break;
+            }
+        }
+
+        protected int parseIntWithWarning(String elementText, String fieldName) {
+            try {
+                return Integer.parseInt(elementText);
+            } catch (NumberFormatException e) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Failed to parse Integer for " + fieldName + ": " + elementText, e);
+                }
+                return 0;
+            }
+        }
+
+        protected long parseLongWithWarning(String elementText, String fieldName) {
+            try {
+                return Long.parseLong(elementText);
+            } catch (NumberFormatException e) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Failed to parse Long for " + fieldName + ": " + elementText, e);
+                }
+                return 0L;
+            }
+        }
+    }
+
+    public static class GetSnapshottableDirListHandler extends BasePaginatedHandler {
+        private Owner bucketsOwner;
+        private int snapshottableDirCount;
+        private SnapshottableDir currentSnapshottableDir;
+        private List<SnapshottableDir> snapshottableDir = new ArrayList<>();
+
+        public List<SnapshottableDir> getSnapshottableDirs() {
+            return this.snapshottableDir;
+        }
+
+        public Owner getOwner() {
+            return bucketsOwner;
+        }
+
+        public int getSnapshottableDirCount() {
+            return snapshottableDirCount;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals(TAG_SNAPSHOT_DIR)) {
+                currentSnapshottableDir = new SnapshottableDir();
+            } else if (name.equals(OWNER)) {
+                bucketsOwner = new Owner();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            handleCommonPaginationElements(name, elementText);
+
+            if (name.equals(TAG_SNAPSHOT_DIR_COUNT)) {
+                snapshottableDirCount = parseIntWithWarning(elementText, "snapshottableDirCount");
+                return;
+            }
+
+            if (bucketsOwner != null) {
+                if (name.equals(ID)) {
+                    bucketsOwner.setId(elementText);
+                    return;
+                } else if (name.equals(DISPLAY_NAME)) {
+                    bucketsOwner.setDisplayName(elementText);
+                    return;
+                }
+            }
+
+            if (currentSnapshottableDir != null) {
+                switch (name) {
+                    case TAG_SNAPSHOT_DIR:
+                        currentSnapshottableDir.setOwner(bucketsOwner);
+                        snapshottableDir.add(currentSnapshottableDir);
+                        break;
+                    case GROUP:
+                        currentSnapshottableDir.setGroup(elementText);
+                        break;
+                    case FILE_ID:
+                        currentSnapshottableDir.setFileId(elementText);
+                        break;
+                    case PERMISSION:
+                        currentSnapshottableDir.setPermission(elementText);
+                        break;
+                    case MODIFICATION_TIME:
+                        long modTime = parseLongWithWarning(elementText, "modificationTime");
+                        if (modTime > 0) {
+                            currentSnapshottableDir.setModificationTime(new Date(modTime));
+                        }
+                        break;
+                    case SNAPSHOT_QUOTA:
+                        int quota = parseIntWithWarning(elementText, "snapshotQuota");
+                        currentSnapshottableDir.setSnapshotQuota(quota);
+                        break;
+                    case PARENT_FULL_PATH:
+                        currentSnapshottableDir.setParentFullPath(elementText);
+                        break;
+                }
+            }
+        }
+    }
+
+    public static class GetSnapshotListHandler extends BasePaginatedHandler {
+        private int snapshotCount;
+        private Snapshot currentSnapshot;
+        private List<Snapshot> snapshotList = new ArrayList<>();
+
+        public List<Snapshot> getSnapshots() {
+            return this.snapshotList;
+        }
+
+        public int getSnapshotCount() {
+            return snapshotCount;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (name.equals(SNAPSHOT_ENTRY)) {
+                currentSnapshot = new Snapshot();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            handleCommonPaginationElements(name, elementText);
+
+            if (name.equals(SNAPSHOT_COUNT)) {
+                snapshotCount = parseIntWithWarning(elementText, "snapshotCount");
+                return;
+            }
+
+            if (currentSnapshot != null) {
+                switch (name) {
+                    case SNAPSHOT_ENTRY:
+                        snapshotList.add(currentSnapshot);
+                        break;
+                    case SNAPSHOT_NAME:
+                        currentSnapshot.setSnapshotName(elementText);
+                        break;
+                    case SNAPSHOT_ID:
+                        currentSnapshot.setSnapshotID(elementText);
+                        break;
+                    case MODIFY_TIME:
+                        long modifyTime = parseLongWithWarning(elementText, "modifyTime");
+                        if (modifyTime > 0) {
+                            currentSnapshot.setModifyTime(new Date(modifyTime));
+                        }
+                        break;
+                }
             }
         }
     }

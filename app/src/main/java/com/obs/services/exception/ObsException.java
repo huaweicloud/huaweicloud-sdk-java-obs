@@ -47,6 +47,7 @@ public class ObsException extends RuntimeException {
 
     private boolean calledToSting = false;
 
+    private String encodedAuthorizationMessage = null;
     public ObsException(String message) {
         this(message, null, null);
     }
@@ -132,6 +133,7 @@ public class ObsException extends RuntimeException {
         this.errorMessage = findXmlElementText(xmlMsg, "Message");
         this.errorRequestId = findXmlElementText(xmlMsg, "RequestId");
         this.errorHostId = findXmlElementText(xmlMsg, "HostId");
+        this.encodedAuthorizationMessage = findXmlElementText(xmlMsg, "EncodedAuthorizationMessage");
     }
 
     public String getXmlMessage() {
@@ -245,6 +247,14 @@ public class ObsException extends RuntimeException {
 
     public void setErrorIndicator(String errorIndicator) {
         this.errorIndicator = errorIndicator;
+    }
+
+    public String getEncodedAuthorizationMessage(){
+        return this.encodedAuthorizationMessage;
+    }
+
+    public void setEncodedAuthorizationMessage(String encodedAuthorizationMessage){
+        this.encodedAuthorizationMessage = encodedAuthorizationMessage;
     }
 
 }
