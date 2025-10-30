@@ -19,6 +19,10 @@ public class GetSymlinkRequest extends BaseObjectRequest {
         this.versionId = versionId;
     }
 
+    public GetSymlinkRequest(String bucketName, String objectKey){
+        super(bucketName, objectKey);
+    }
+
     public String getVersionId() {
         return versionId;
     }

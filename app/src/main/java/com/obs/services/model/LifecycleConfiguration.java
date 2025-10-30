@@ -892,7 +892,7 @@ public class LifecycleConfiguration extends HeaderResponse {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result + getOuterType().getClass().hashCode();
             result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
             result = prime * result + ((expiration == null) ? 0 : expiration.hashCode());
             result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -915,7 +915,7 @@ public class LifecycleConfiguration extends HeaderResponse {
             }
             
             Rule other = (Rule) obj;
-            if (!getOuterType().equals(other.getOuterType())) {
+            if (!getOuterType().getClass().equals(other.getOuterType().getClass())) {
                 return false;
             }
             

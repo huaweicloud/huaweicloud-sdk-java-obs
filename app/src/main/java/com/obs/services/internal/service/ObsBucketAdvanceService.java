@@ -34,8 +34,15 @@ import com.obs.services.internal.xml.BucketPublicAccessBlockXMLBuilder;
 import com.obs.services.internal.xml.CustomDomainCertificateConfigXMLBuilder;
 import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder;
+import com.obs.services.internal.xml.QosConfigurationXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
+import com.obs.services.model.DeleteBucketLifecycleRequest;
+import com.obs.services.model.GetBucketLifecycleRequest;
+import com.obs.services.model.Qos.SetBucketQosRequest;
+import com.obs.services.model.Qos.GetBucketQoSRequest;
+import com.obs.services.model.Qos.GetBucketQoSResult;
+import com.obs.services.model.Qos.DeleteBucketQosRequest;
 import com.obs.services.model.bpa.BucketPublicAccessBlock;
 import com.obs.services.model.bpa.BucketPublicStatus;
 import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
@@ -103,7 +110,6 @@ import com.oef.services.model.RequestParamEnum;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -261,6 +267,11 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
             throws ServiceException {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(SpecialParamEnum.LIFECYCLE.getOriginalStringCode(), "");
+        if (request.getRuleId() != null) {
+            ServiceUtils.checkParameterLength(Constants.ObsRequestParams.RULE_ID, request.getRuleId(),
+                1, ObsConstraint.RULE_ID_MAX_LENGTH);
+            requestParams.put(Constants.ObsRequestParams.RULE_ID, request.getRuleId());
+        }
 
         Map<String, String> headers = new HashMap<>();
         String xml = this.getIConvertor(request.getBucketName())
@@ -294,12 +305,53 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         return ret;
     }
 
+    protected LifecycleConfiguration getBucketLifecycleConfigurationImpl(GetBucketLifecycleRequest request)
+        throws ServiceException {
+        Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put(SpecialParamEnum.LIFECYCLE.getOriginalStringCode(), "");
+        if (request.getRuleId() != null) {
+            ServiceUtils.checkParameterLength(Constants.ObsRequestParams.RULE_ID, request.getRuleId(),
+                1, ObsConstraint.RULE_ID_MAX_LENGTH);
+            requestParameters.put(Constants.ObsRequestParams.RULE_ID, request.getRuleId());
+        }
+        if (request.getRuleIdMarker() != null) {
+            ServiceUtils.checkParameterLength(Constants.ObsRequestParams.RULE_ID_MARKER, request.getRuleIdMarker(),
+                1, ObsConstraint.RULE_ID_MAX_LENGTH);
+            requestParameters.put(Constants.ObsRequestParams.RULE_ID_MARKER, request.getRuleIdMarker());
+        }
+
+        Response response = performRestGet(request.getBucketName(), null, requestParameters,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(response);
+
+        LifecycleConfiguration ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+            XmlResponsesSaxParser.BucketLifecycleConfigurationHandler.class, false).getLifecycleConfig();
+        setHeadersAndStatus(ret, response);
+        return ret;
+    }
+
     protected HeaderResponse deleteBucketLifecycleConfigurationImpl(BaseBucketRequest request) throws ServiceException {
         Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put(SpecialParamEnum.LIFECYCLE.getOriginalStringCode(), "");
         Response response = performRestDelete(request.getBucketName(), null, requestParameters,
                 transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
                 request.getUserHeaders());
+        return build(response);
+    }
+
+    protected HeaderResponse deleteBucketLifecycleConfigurationImpl(DeleteBucketLifecycleRequest request) throws ServiceException {
+        Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put(SpecialParamEnum.LIFECYCLE.getOriginalStringCode(), "");
+        if (request.getRuleId() != null) {
+            ServiceUtils.checkParameterLength(Constants.ObsRequestParams.RULE_ID, request.getRuleId(),
+                1, ObsConstraint.RULE_ID_MAX_LENGTH);
+            requestParameters.put(Constants.ObsRequestParams.RULE_ID, request.getRuleId());
+        }
+        Response response = performRestDelete(request.getBucketName(), null, requestParameters,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
         return build(response);
     }
 
@@ -1128,5 +1180,54 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         setHeadersAndStatus(getBucketPublicAccessBlockResult, httpResponse);
         getBucketPublicAccessBlockResult.setBucketPublicStatus(bucketPolicyStatus);
         return getBucketPublicAccessBlockResult;
+    }
+
+    protected HeaderResponse setBucketQosImpl(SetBucketQosRequest request){
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.BUCKET_QOS.getOriginalStringCode(), "");
+        Map<String,String > headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers,this.getIHeaders(request.getBucketName()));
+
+        QosConfigurationXMLBuilder xmlBuilder = new QosConfigurationXMLBuilder();
+        String xml = xmlBuilder.buildXML(request.getQosConfig());
+
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+
+        if (log.isTraceEnabled()) {
+            log.trace("setBucketQosRequest's xml is:");
+            log.trace(xml);
+        }
+        NewTransResult transResult = transRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+
+        Response response = performRequest(transResult,true,false,false,false);
+        return build(response);
+    }
+
+    protected GetBucketQoSResult getBucketQosImpl(GetBucketQoSRequest request){
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.BUCKET_QOS.getOriginalStringCode(), "");
+        Response response = performRestGet(request.getBucketName(),null,requestParams,
+                transRequestPaymentHeaders(request,null,this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
+        this.verifyResponseContentType(response);
+
+        GetBucketQoSResult ret = getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(response),
+                XmlResponsesSaxParser.BucketQosConfigurationHandler.class, false).getQosResult();
+        setHeadersAndStatus(ret, response);
+        return ret;
+    }
+
+    protected HeaderResponse deleteBucketQosImpl(DeleteBucketQosRequest request){
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.BUCKET_QOS.getOriginalStringCode(), "");
+        Response response = performRestDelete(request.getBucketName(), null, requestParams,
+                transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+                request.getUserHeaders());
+        return this.build(response);
     }
 }

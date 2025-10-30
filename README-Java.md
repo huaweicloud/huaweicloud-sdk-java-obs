@@ -1,3 +1,9 @@
+Version 3.25.10
+New features:
+1. Support for Posix snapshot features
+2. Support for bucket QoS features
+3. Support Lifecycle 2.0
+-----------------------------------------------------------------------------------
 Version 3.25.7
 New features:
 1. Added symlink feature

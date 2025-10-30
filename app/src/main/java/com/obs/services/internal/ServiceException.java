@@ -48,6 +48,7 @@ public class ServiceException extends RuntimeException {
     private String requestPath;
     private String requestHost;
     private String errorIndicator;
+    private String encodedAuthorizationMessage;
 
     public ServiceException(String message, String xmlMessage) {
         this(message, xmlMessage, null);
@@ -125,6 +126,7 @@ public class ServiceException extends RuntimeException {
         if (errorDetails != null && errorDetails.length() > 0) {
             this.errorMessage += " " + errorDetails;
         }
+        this.encodedAuthorizationMessage = findXmlElementText(xmlMessage,"EncodedAuthorizationMessage");
     }
     
 
@@ -245,6 +247,14 @@ public class ServiceException extends RuntimeException {
 
     public void setErrorIndicator(String errorIndicator) {
         this.errorIndicator = errorIndicator;
+    }
+
+    public String getEncodedAuthorizationMessage() {
+        return this.encodedAuthorizationMessage;
+    }
+
+    public void setEncodedAuthorizationMessage(String encodedAuthorizationMessage) {
+        this.encodedAuthorizationMessage = encodedAuthorizationMessage;
     }
 
 }

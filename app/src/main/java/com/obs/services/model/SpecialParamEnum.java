@@ -190,6 +190,10 @@ public enum SpecialParamEnum {
 
     OBS_TRASH("x-obs-trash"),
 
+    OBS_SNAPSHOT("x-obs-snapshot"),
+
+    OBS_SNAPSHOT_ROOT("x-obs-snapshotroot"),
+
     INVENTORY("inventory"),
 
     PUBLIC_ACCESS_BLOCK("publicAccessBlock"),
@@ -198,7 +202,9 @@ public enum SpecialParamEnum {
 
     BUCKET_PUBLIC_STATUS("bucketStatus"),
 
-    SYM_LINK("symlink");
+    SYM_LINK("symlink"),
+
+    BUCKET_QOS("x-obs-qosInfo");
     
     /**
      * Specify the corresponding code in the database and the external code.

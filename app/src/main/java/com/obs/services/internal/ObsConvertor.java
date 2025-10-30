@@ -41,6 +41,9 @@ import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.TopicConfiguration;
 
+import static com.obs.services.internal.utils.ServiceUtils.escapeXml11;
+
+
 public class ObsConvertor extends V2Convertor {
 
     private static ObsConvertor instance = new ObsConvertor();
@@ -94,6 +97,17 @@ public class ObsConvertor extends V2Convertor {
             return builder.asString();
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for StorageClass", e);
+        }
+    }
+
+    @Override
+    public String transCreateSnapshot(String snapshotName) throws ServiceException {
+        try {
+            OBSXMLBuilder builder = OBSXMLBuilder.create("SnapshotRequestBody");
+            builder.elem("SnapshotName").text(escapeXml11(snapshotName));
+            return builder.asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for SnapshotName", e);
         }
     }
 

@@ -101,7 +101,7 @@ public class Mimetypes {
         extensionToMimetypeMap.put("7z", "application/x-7z-compressed");
         extensionToMimetypeMap.put("deb", "application/x-debian-package");
         extensionToMimetypeMap.put("wmz", "application/x-ms-wmz");
-        extensionToMimetypeMap.put("woff", "application/x-font-woff");
+        extensionToMimetypeMap.put("woff", "application/font-woff");
         extensionToMimetypeMap.put("xap", "application/x-silverlight-app");
         extensionToMimetypeMap.put("man", "application/x-troff-man");
         extensionToMimetypeMap.put("mfp", "application/x-shockwave-flash");
@@ -118,9 +118,9 @@ public class Mimetypes {
         extensionToMimetypeMap.put("wmd", "application/x-ms-wmd");
         extensionToMimetypeMap.put("exe", "application/x-msdownload");
         extensionToMimetypeMap.put("dll", "application/x-msdownload");
-        extensionToMimetypeMap.put("js", "application/x-javascript");
-        extensionToMimetypeMap.put("mocha", "application/x-javascript");
-        extensionToMimetypeMap.put("ls", "application/x-javascript");
+        extensionToMimetypeMap.put("js", "application/javascript");
+        extensionToMimetypeMap.put("mocha", "application/javascript");
+        extensionToMimetypeMap.put("ls", "application/javascript");
         extensionToMimetypeMap.put("latex", "application/x-latex");
         extensionToMimetypeMap.put("torrent", "application/x-bittorrent");
         extensionToMimetypeMap.put("vpg", "application/x-vpeg005");
@@ -129,7 +129,6 @@ public class Mimetypes {
         extensionToMimetypeMap.put("906", "application/x-906");
         extensionToMimetypeMap.put("anv", "application/x-anv");
         extensionToMimetypeMap.put("a11", "application/x-a11");
-        extensionToMimetypeMap.put("bmp", "application/x-bmp");
         extensionToMimetypeMap.put("bot", "application/x-bot");
         extensionToMimetypeMap.put("bz2", "application/x-bzip2");
         extensionToMimetypeMap.put("c4t", "application/x-c4t");
@@ -175,7 +174,6 @@ public class Mimetypes {
         extensionToMimetypeMap.put("hpl", "application/x-hpl");
         extensionToMimetypeMap.put("hrf", "application/x-hrf");
         extensionToMimetypeMap.put("icb", "application/x-icb");
-        extensionToMimetypeMap.put("ico", "application/x-ico");
         extensionToMimetypeMap.put("iff", "application/x-iff");
         extensionToMimetypeMap.put("ig4", "application/x-g4");
         extensionToMimetypeMap.put("igs", "application/x-igs");
@@ -440,6 +438,8 @@ public class Mimetypes {
         extensionToMimetypeMap.put("xbm", "image/x-xbitmap");
         extensionToMimetypeMap.put("xpm", "image/x-xpixmap");
         extensionToMimetypeMap.put("webp", "image/webp");
+        extensionToMimetypeMap.put("ico", "image/x-icon");
+        extensionToMimetypeMap.put("bmp", "image/bmp");
     }
 
     private static void addAudioMimetype(Map<String, String> extensionToMimetypeMap) {

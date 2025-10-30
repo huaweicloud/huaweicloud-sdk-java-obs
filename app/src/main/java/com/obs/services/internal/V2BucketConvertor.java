@@ -37,6 +37,7 @@ import com.obs.services.model.GrantAndPermission;
 import com.obs.services.model.GranteeInterface;
 import com.obs.services.model.GroupGrantee;
 import com.obs.services.model.Permission;
+import com.obs.services.model.RenameSnapshotRequest;
 import com.obs.services.model.SSEAlgorithmEnum;
 import com.obs.services.model.TopicConfiguration;
 import com.obs.services.model.fs.FSStatusEnum;
@@ -356,4 +357,6 @@ public abstract class V2BucketConvertor implements IConvertor {
             throw new ServiceException("Failed to build XML document for InventoryConfiguration", e);
         }
     }
+
+    public abstract String transRenameSnapshot(RenameSnapshotRequest request) throws ServiceException;
 }

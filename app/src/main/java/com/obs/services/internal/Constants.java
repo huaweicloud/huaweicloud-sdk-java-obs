@@ -115,6 +115,7 @@ public class Constants {
     public static class ObsRequestParams {
         public static final String UPLOAD_ID = "uploadId";
         public static final String VERSION_ID = "versionId";
+        public static final String RULE_ID = "rule-id";
         public static final String PREFIX = "prefix";
         public static final String MARKER = "marker";
         public static final String MAX_KEYS = "max-keys";
@@ -123,6 +124,7 @@ public class Constants {
         public static final String KEY_MARKER = "key-marker";
         public static final String UPLOAD_ID_MARKER = "upload-id-marker";
         public static final String VERSION_ID_MARKER = "version-id-marker";
+        public static final String RULE_ID_MARKER = "rule-id-marker";
         public static final String RESPONSE_CONTENT_TYPE = "response-content-type";
         public static final String RESPONSE_CONTENT_LANGUAGE = "response-content-language";
         public static final String RESPONSE_EXPIRES = "response-expires";
@@ -144,6 +146,7 @@ public class Constants {
         public static final String X_CACHE_CONTROL = "x-cache-control";
         public static final String TASKID = "taskID";
 
+        public static final String SNAPSHOT_FULL_PATH = "objectKey";
     }
 
     public static class ObsBucketReplicationRequestParams {
@@ -239,7 +242,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.25.7";
+    public static final String OBS_SDK_VERSION = "3.25.10";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -342,6 +345,7 @@ public class Constants {
                     "response-cache-control", "response-content-disposition", "response-content-encoding",
                     "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
                     "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
-                    "x-obs-trash", "getcontentsummary", "select", "select-type", "symlink"));
+                    "x-obs-trash", "getcontentsummary", "select", "select-type", "symlink", "x-obs-qosinfo",
+                    "x-obs-snapshot", "x-obs-snapshotroot"));
 
 }

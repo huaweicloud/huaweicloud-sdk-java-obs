@@ -18,6 +18,8 @@ package com.obs.services;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
+import com.obs.services.model.DeleteBucketLifecycleRequest;
+import com.obs.services.model.GetBucketLifecycleRequest;
 import com.obs.services.model.bpa.DeleteBucketPublicAccessBlockRequest;
 import com.obs.services.model.bpa.GetBucketPolicyPublicStatusRequest;
 import com.obs.services.model.bpa.GetBucketPolicyPublicStatusResult;
@@ -85,6 +87,20 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
                 });
     }
 
+    @Override
+    public LifecycleConfiguration getBucketLifecycle(final GetBucketLifecycleRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketLifecycleRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketLifecycleConfiguration", request.getBucketName(),
+            new ActionCallbackWithResult<LifecycleConfiguration>() {
+
+                @Override
+                public LifecycleConfiguration action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketLifecycleConfigurationImpl(request);
+                }
+            });
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -144,6 +160,20 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
                         return AbstractBucketAdvanceClient.this.deleteBucketLifecycleConfigurationImpl(request);
                     }
                 });
+
+    }
+
+    @Override
+    public HeaderResponse deleteBucketLifecycle(final DeleteBucketLifecycleRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "DeleteBucketLifecycleRequest is null");
+        ServiceUtils.assertParameterNotNull2(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("deleteBucketLifecycleConfiguration", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.deleteBucketLifecycleConfigurationImpl(request);
+                }
+            });
 
     }
 

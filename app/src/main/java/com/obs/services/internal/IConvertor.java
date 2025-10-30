@@ -27,6 +27,7 @@ import com.obs.services.model.EventTypeEnum;
 import com.obs.services.model.GroupGranteeEnum;
 import com.obs.services.model.KeyAndVersion;
 import com.obs.services.model.LifecycleConfiguration;
+import com.obs.services.model.RenameSnapshotRequest;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.StorageClassEnum;
@@ -54,6 +55,8 @@ public interface IConvertor {
     String transBucketEcryption(BucketEncryption encryption) throws ServiceException;
 
     String transStoragePolicy(BucketStoragePolicyConfiguration status) throws ServiceException;
+
+    String transCreateSnapshot(String snapshotName) throws ServiceException;
 
     String transBucketLoggingConfiguration(BucketLoggingConfiguration c) throws ServiceException;
 
@@ -87,4 +90,5 @@ public interface IConvertor {
 
     String transBucketInventoryConfiguration(InventoryConfiguration inventoryConfiguration) throws ServiceException;
 
+    String transRenameSnapshot(RenameSnapshotRequest request) throws ServiceException;
 }

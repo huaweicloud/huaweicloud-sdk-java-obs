@@ -25,6 +25,11 @@ public class PutSymlinkRequest extends BaseObjectRequest {
         this.objectMetadata = objectMetadata;
     }
 
+    public PutSymlinkRequest(String bucketName, String objectKey, String symlinkTarget){
+        super(bucketName,objectKey);
+        this.symlinkTarget = symlinkTarget;
+    }
+
     public String getSymlinkTarget() {
         return symlinkTarget;
     }

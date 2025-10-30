@@ -16,8 +16,11 @@
 package com.obs.services;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.obs.services.exception.ObsException;
+import com.obs.services.internal.ObsConstraint;
 import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AccessControlList;
@@ -34,16 +37,31 @@ import com.obs.services.model.BucketStorageInfo;
 import com.obs.services.model.BucketStoragePolicyConfiguration;
 import com.obs.services.model.BucketVersioningConfiguration;
 import com.obs.services.model.CreateBucketRequest;
+import com.obs.services.model.CreateSnapshotRequest;
+import com.obs.services.model.CreateSnapshotResponse;
 import com.obs.services.model.CreateVirtualBucketRequest;
 import com.obs.services.model.CreateVirtualBucketResult;
 import com.obs.services.model.CustomDomainCertificateConfig;
 import com.obs.services.model.DeleteBucketCustomDomainRequest;
+import com.obs.services.model.DeleteBucketLifecycleRequest;
+import com.obs.services.model.DeleteSnapshotRequest;
 import com.obs.services.model.GetBucketCustomDomainRequest;
+import com.obs.services.model.GetSnapshottableDirListRequest;
+import com.obs.services.model.GetSnapshottableDirListResult;
+import com.obs.services.model.GetSnapshotListRequest;
+import com.obs.services.model.GetSnapshotListResponse;
 import com.obs.services.model.HeaderResponse;
 import com.obs.services.model.ListBucketAliasResult;
 import com.obs.services.model.ListBucketsRequest;
 import com.obs.services.model.ListBucketsResult;
 import com.obs.services.model.ObsBucket;
+import com.obs.services.model.Qos.DeleteBucketQosRequest;
+import com.obs.services.model.Qos.GetBucketQoSRequest;
+import com.obs.services.model.Qos.GetBucketQoSResult;
+import com.obs.services.model.Qos.SetBucketQosRequest;
+import com.obs.services.model.Qos.QosRule;
+import com.obs.services.model.RenameSnapshotRequest;
+import com.obs.services.model.RenameSnapshotResponse;
 import com.obs.services.model.RequestPaymentConfiguration;
 import com.obs.services.model.RequestPaymentEnum;
 import com.obs.services.model.SetBucketAclRequest;
@@ -54,6 +72,8 @@ import com.obs.services.model.SetBucketQuotaRequest;
 import com.obs.services.model.SetBucketRequestPaymentRequest;
 import com.obs.services.model.SetBucketStoragePolicyRequest;
 import com.obs.services.model.SetBucketVersioningRequest;
+import com.obs.services.model.SetDisallowSnapshotRequest;
+import com.obs.services.model.SetSnapshotAllowRequest;
 import com.obs.services.model.inventory.SetInventoryConfigurationRequest;
 import com.obs.services.model.inventory.GetInventoryConfigurationRequest;
 import com.obs.services.model.inventory.DeleteInventoryConfigurationRequest;
@@ -61,8 +81,34 @@ import com.obs.services.model.inventory.ListInventoryConfigurationRequest;
 import com.obs.services.model.inventory.GetInventoryConfigurationResult;
 import com.obs.services.model.inventory.ListInventoryConfigurationResult;
 
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT;
+import static com.obs.services.internal.ObsConstraint.SNAPSHOT_FULL_PATH;
+
 
 public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClient {
+
+    private <T, R> T executeAction(String actionName,
+                                   R request,
+                                   Function<R, String> nameExtractor,
+                                   Runnable additionalValidation,
+                                   Supplier<T> implementation) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "request is null");
+
+        String bucketName = nameExtractor.apply(request);
+        ServiceUtils.assertParameterNotNull2(bucketName, "bucketName is null");
+
+        if (additionalValidation != null) {
+            additionalValidation.run();
+        }
+        return this.doActionWithResult(actionName, bucketName,
+                new ActionCallbackWithResult<T>() {
+                    @Override
+                    public T action() throws ServiceException {
+                        return implementation.get();
+                    }
+                });
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -987,4 +1033,140 @@ public abstract class AbstractBucketClient extends AbstractDeprecatedBucketClien
                 });
 
     }
+
+    @Override
+    public HeaderResponse setBucketQos(SetBucketQosRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request,"setBucketQosRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(),"bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getQosConfig(),"QosConfig is null");
+        ServiceUtils.assertParameterNotNull(request.getQosConfig().getRules(),"rules is null");
+
+        List<QosRule> rules = request.getQosConfig().getRules();
+
+        if (rules.isEmpty()) {
+            throw new IllegalArgumentException("rules is empty");
+        }
+
+        for (QosRule rule : rules) {
+            ServiceUtils.assertParameterNotNull(rule.getNetworkType(), "networkType is null");
+            ServiceUtils.assertParameterNotNull(rule.getQpsLimit(), "qpsLimit is null");
+            ServiceUtils.assertParameterNotNull(rule.getBpsLimit(), "bpsLimit is null");
+        }
+        return this.doActionWithResult("setBucketQoS", request.getBucketName(),
+                new ActionCallbackWithResult<HeaderResponse>() {
+                    @Override
+                    public HeaderResponse action() throws ServiceException {
+                        return AbstractBucketClient.this.setBucketQosImpl(request);
+                    }
+                });
+    }
+
+    @Override
+    public GetBucketQoSResult getBucketQoS(GetBucketQoSRequest request) {
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketQos", request.getBucketName(), new ActionCallbackWithResult<GetBucketQoSResult>() {
+            @Override
+            public GetBucketQoSResult action() throws ServiceException {
+                return AbstractBucketClient.this.getBucketQosImpl(request);
+            }
+        });
+    }
+    @Override
+    public HeaderResponse deleteBucketQoS(DeleteBucketQosRequest request) throws ObsException{
+        ServiceUtils.assertParameterNotNull(request.getBucketName(),"bucketName is null");
+        return this.doActionWithResult("deleteBucketQos", request.getBucketName(), new ActionCallbackWithResult<HeaderResponse>() {
+            @Override
+            public HeaderResponse action() throws ServiceException {
+                return AbstractBucketClient.this.deleteBucketQosImpl(request);
+            }
+        });
+    }
+
+    public HeaderResponse deleteSnapshot(DeleteSnapshotRequest request) throws ObsException {
+        return executeAction("deleteSnapshot", request, DeleteSnapshotRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                    ServiceUtils.assertParameterNotNull2(request.getSnapshotName(), "snapshotName is null");
+                },
+                () -> AbstractBucketClient.this.deleteSnapshotImpl(request)
+        );
+    }
+
+    @Override
+    public HeaderResponse setSnapshotAllow(SetSnapshotAllowRequest request) throws ObsException {
+        return executeAction("setSnapshotAllow", request, SetSnapshotAllowRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                },
+                () -> AbstractBucketClient.this.setSnapshotAllowImpl(request)
+        );
+    }
+
+    @Override
+    public HeaderResponse setDisallowSnapshot(SetDisallowSnapshotRequest request) throws ObsException {
+        return executeAction("setDisallowSnapshot", request, SetDisallowSnapshotRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                },
+                () -> AbstractBucketClient.this.setDisallowSnapshotImpl(request)
+        );
+    }
+
+    @Override
+    public GetSnapshottableDirListResult getSnapshottableDirList(GetSnapshottableDirListRequest request) throws ObsException {
+        return executeAction("getSnapshottableDirList", request, GetSnapshottableDirListRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNegative(request.getMaxKeys(), "maxKeys is negative");
+                },
+                () -> AbstractBucketClient.this.getSnapshottableDirListImpl(request)
+        );
+    }
+
+    /**
+     * Get snapshot list for a bucket or object
+     */
+    @Override
+    public GetSnapshotListResponse getSnapshotList(GetSnapshotListRequest request) throws ObsException {
+        return executeAction("getSnapshotList", request, GetSnapshotListRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNegative(request.getMaxKeys(), "maxKeys is negative");
+                },
+                () -> AbstractBucketClient.this.getSnapshotListImpl(request)
+        );
+    }
+
+    /**
+     * Create snapshot for an object
+     */
+    @Override
+    public CreateSnapshotResponse createSnapshot(CreateSnapshotRequest request) throws ObsException {
+        return executeAction("createSnapshot", request, CreateSnapshotRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                    ServiceUtils.assertParameterNotNull2(request.getSnapshotName(), "snapshotName is null");
+                    ServiceUtils.checkParameterLength(SNAPSHOT, request.getSnapshotName(),
+                            1, ObsConstraint.SNAPSHOT_NAME_MAX_LENGTH);
+                    ServiceUtils.checkParameterLength(SNAPSHOT_FULL_PATH, request.getObjectKey(),
+                            1, ObsConstraint.SNAPSHOT_FULL_PATH_MAX_LENGTH);
+                },
+                () -> AbstractBucketClient.this.createSnapshotImpl(request)
+        );
+    }
+
+    /**
+     * Rename snapshot for an object
+     */
+    @Override
+    public RenameSnapshotResponse renameSnapshot(RenameSnapshotRequest request) throws ObsException {
+        return executeAction("renameSnapshot", request, RenameSnapshotRequest::getBucketName,
+                () -> {
+                    ServiceUtils.assertParameterNotNull2(request.getObjectKey(), "objectKey is null");
+                    ServiceUtils.assertParameterNotNull2(request.getOldSnapshotName(), "oldSnapshotName is null");
+                    ServiceUtils.assertParameterNotNull2(request.getNewSnapshotName(), "newSnapshotName is null");
+                },
+                () -> AbstractBucketClient.this.renameSnapshotImpl(request)
+        );
+    }
+
+    public abstract HeaderResponse deleteBucketLifecycle(DeleteBucketLifecycleRequest request) throws ObsException;
 }

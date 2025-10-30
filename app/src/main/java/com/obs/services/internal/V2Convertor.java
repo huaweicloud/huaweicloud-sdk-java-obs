@@ -17,6 +17,7 @@ package com.obs.services.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -39,6 +40,7 @@ import com.obs.services.model.LifecycleConfiguration.Transition;
 import com.obs.services.model.Owner;
 import com.obs.services.model.Permission;
 import com.obs.services.model.Redirect;
+import com.obs.services.model.RenameSnapshotRequest;
 import com.obs.services.model.ReplicationConfiguration;
 import com.obs.services.model.RestoreObjectRequest;
 import com.obs.services.model.RouteRule;
@@ -46,6 +48,9 @@ import com.obs.services.model.RouteRuleCondition;
 import com.obs.services.model.StorageClassEnum;
 import com.obs.services.model.WebsiteConfiguration;
 import com.obs.services.model.BucketTagInfo;
+
+import static com.obs.services.internal.utils.ServiceUtils.escapeXml11;
+
 
 public class V2Convertor extends V2BucketConvertor {
 
@@ -313,6 +318,32 @@ public class V2Convertor extends V2BucketConvertor {
         } catch (Exception e) {
             throw new ServiceException("Failed to build XML document for StoragePolicy", e);
         }
+    }
+
+    private String buildSnapshotXML(Consumer<OBSXMLBuilder> builderConfigurer, String operation) throws ServiceException {
+        try {
+            OBSXMLBuilder builder = OBSXMLBuilder.create("SnapshotRequestBody");
+            builderConfigurer.accept(builder);
+            return builder.asString();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to build XML document for " + operation, e);
+        }
+    }
+
+    @Override
+    public String transCreateSnapshot(String snapshotName) throws ServiceException {
+        return buildSnapshotXML(builder ->
+                        builder.elem("SnapshotName").text(escapeXml11(snapshotName)),
+                "CreateSnapshotRequest"
+        );
+    }
+
+    @Override
+    public String transRenameSnapshot(RenameSnapshotRequest request) throws ServiceException {
+        return buildSnapshotXML(builder -> {
+            builder.elem("SnapshotName").text(escapeXml11(request.getOldSnapshotName()));
+            builder.elem("NewSnapshotName").text(escapeXml11(request.getNewSnapshotName()));
+        }, "RenameSnapshotRequest");
     }
 
     @Override
