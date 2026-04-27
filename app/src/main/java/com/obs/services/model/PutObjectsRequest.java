@@ -215,14 +215,9 @@ public class PutObjectsRequest extends AbstractBulkRequest {
      *            Folder
      */
     public void setPrefix(String prefix) {
-        if (null == prefix) {
-            return;
-        } else if (prefix.endsWith("/")) {
-            this.prefix = prefix;
-        } else {
-            this.prefix = prefix + "/";
+        if (prefix != null) {
+            this.prefix = prefix.endsWith("/") ? prefix : prefix + "/";
         }
-
     }
 
     /**

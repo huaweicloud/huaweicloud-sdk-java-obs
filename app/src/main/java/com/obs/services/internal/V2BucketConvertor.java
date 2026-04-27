@@ -106,6 +106,9 @@ public abstract class V2BucketConvertor implements IConvertor {
                 if (c.getLogfilePrefix() != null) {
                     enabledBuilder.elem("TargetPrefix").text(ServiceUtils.toValid(c.getLogfilePrefix()));
                 }
+                if (c.getTargetSorting() != null) {
+                    enabledBuilder.elem("TargetSorting").text(ServiceUtils.toValid(c.getTargetSorting().name()));
+                }
                 GrantAndPermission[] grants = c.getTargetGrants();
                 if (grants.length > 0) {
                     OBSXMLBuilder grantsBuilder = enabledBuilder.elem("TargetGrants");

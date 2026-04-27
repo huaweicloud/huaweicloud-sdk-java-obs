@@ -15,6 +15,7 @@
 package com.obs.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.obs.log.ILogger;
@@ -36,10 +37,7 @@ public class DefaultCredentialsProviderChain implements IObsCredentialsProvider 
         if (credentialsProviders == null || credentialsProviders.length == 0) {
             throw new IllegalArgumentException("No credential providers specified");
         }
-
-        for (IObsCredentialsProvider provider : credentialsProviders) {
-            this.credentialsProviders.add(provider);
-        }
+        this.credentialsProviders.addAll(Arrays.asList(credentialsProviders));
     }
 
     public DefaultCredentialsProviderChain(boolean reused, IObsCredentialsProvider... credentialsProviders) {

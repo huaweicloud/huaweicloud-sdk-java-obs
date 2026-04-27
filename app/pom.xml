@@ -4,7 +4,7 @@
 
 	<groupId>com.huaweicloud</groupId>
 	<artifactId>esdk-obs-java-android</artifactId>
-	<version>3.25.10</version>
+	<version>3.26.3</version>
 
 	<name>OBS SDK for Java/Android</name>
 	<description>The OBS SDK for Android used for accessing Object Storage Service</description>

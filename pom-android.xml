@@ -4,7 +4,7 @@
 
 	<groupId>com.huaweicloud</groupId>
 	<artifactId>esdk-obs-android</artifactId>
-	<version>3.25.10</version>
+	<version>3.26.3</version>
 	<packaging>jar</packaging>
 
 	<name>OBS SDK for Android</name>

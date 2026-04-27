@@ -28,6 +28,8 @@ public class BucketLoggingConfiguration extends HeaderResponse {
 
     private String agency;
 
+    private TargetSortingTypeEnum targetSorting;
+
     private final List<GrantAndPermission> targetGrantsList = new ArrayList<GrantAndPermission>();
 
     public BucketLoggingConfiguration() {
@@ -45,6 +47,42 @@ public class BucketLoggingConfiguration extends HeaderResponse {
         this.targetBucketName = targetBucketName;
         this.logfilePrefix = logfilePrefix;
     }
+
+    /**
+     * Constructor
+     *
+     * @param targetBucketName
+     *            Name of the bucket in which logs are saved
+     * @param logfilePrefix
+     *            Name prefix of the logged objects
+     * @param targetSorting
+     *            log time grouping config
+     */
+    public BucketLoggingConfiguration(String targetBucketName, String logfilePrefix, TargetSortingTypeEnum targetSorting) {
+        this.targetBucketName = targetBucketName;
+        this.logfilePrefix = logfilePrefix;
+        this.targetSorting = targetSorting;
+    }
+
+    /**
+     * Get the log grouping config.
+     *
+     * @return time window of log grouping
+     */
+    public TargetSortingTypeEnum getTargetSorting() {
+        return targetSorting;
+    }
+
+    /**
+     * Set the log grouping config.
+     *
+     * @param targetSorting
+     *            level of the log grouping
+     */
+    public void setTargetSorting(TargetSortingTypeEnum targetSorting) {
+        this.targetSorting = targetSorting;
+    }
+
 
     /**
      * Obtain the bucket in which logs are saved.
@@ -145,7 +183,6 @@ public class BucketLoggingConfiguration extends HeaderResponse {
     @Override
     public String toString() {
         return "BucketLoggingConfiguration [targetBucketName=" + targetBucketName + ", logfilePrefix=" + logfilePrefix
-                + ", agency=" + agency + ", targetGrantsList=" + targetGrantsList + "]";
+            + ", agency=" + agency + ", targetSorting=" + targetSorting + ", targetGrantsList=" + targetGrantsList + "]";
     }
-
 }
