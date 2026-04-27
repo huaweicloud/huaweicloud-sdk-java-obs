@@ -242,7 +242,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.25.10";
+    public static final String OBS_SDK_VERSION = "3.26.3";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -334,6 +334,7 @@ public class Constants {
                     "uploadid", "partnumber", "website", "notification", "lifecycle", "deletebucket", "delete", "cors",
                     "restore", "tagging", "replication", "metadata", "encryption", "directcoldaccess", "mirrorrefresh",
                     "mirrorbacktosource", "obsbucketalias", "obsalias", "replication_progress", "inventory",
+                    "x-obs-accesslabel",
                     PUBLIC_ACCESS_BLOCK.getStringCode(),
                     POLICY_STATUS.getStringCode(),
                     BUCKET_PUBLIC_STATUS.getStringCode(),

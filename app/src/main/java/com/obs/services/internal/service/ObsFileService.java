@@ -221,7 +221,6 @@ public abstract class ObsFileService extends ObsObjectService {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
         newResult.setParams(requestParams);
-        newResult.setEncodeUrl(false);
         Map<String, String> headers = new HashMap<>();
         headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_JSON);
         newResult.setHeaders(headers);
@@ -257,7 +256,6 @@ public abstract class ObsFileService extends ObsObjectService {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
         newResult.setParams(requestParams);
-        newResult.setEncodeUrl(false);
         newResult.setObjectKey(request.getDir());
         Response httpResponse = performRequest(newResult, true, false, false, false);
 
@@ -281,7 +279,6 @@ public abstract class ObsFileService extends ObsObjectService {
         newResult.setHttpMethod(HttpMethodEnum.DELETE);
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put(Constants.OBS_HEADER_PREFIX + SpecialParamEnum.ACCESSLABEL.getOriginalStringCode(), "");
-        newResult.setEncodeUrl(false);
         newResult.setParams(requestParams);
         Map<String, String> headers = new HashMap<>();
         newResult.setHeaders(headers);

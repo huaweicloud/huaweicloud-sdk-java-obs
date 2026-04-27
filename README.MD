@@ -1,3 +1,186 @@
+Version 3.26.3
+New features:
+1. Bucket logging interface now supports setting daily or hourly archiving
+Resolved issues:
+1. Fixed the signature mismatch issue when using AccessLabel interface with path style or S3 protocol
+-----------------------------------------------------------------------------------
+Version 3.25.10
+New features:
+1. Support for Posix snapshot features
+2. Support for bucket QoS features
+3. Support Lifecycle 2.0
+-----------------------------------------------------------------------------------
+Version 3.25.7
+New features:
+1. Added symlink feature
+-----------------------------------------------------------------------------------
+Version 3.25.5
+New features:
+1. Added IMDSv2 logic
+-----------------------------------------------------------------------------------
+Version 3.25.4
+New features:
+1. Added logic to set okhttp callTimeout
+2. Added DeleteData of crr configuration
+3. Added custom domain configuration
+Resolved issues:
+1. Optimised logic of verifying ContentType
+-----------------------------------------------------------------------------------
+Version 3.24.12
+New features:
+1. Added bpa feature
+2. Added intelligent tiering feature
+3. Added posix trash feature
+-----------------------------------------------------------------------------------
+Version 3.24.9
+Resolved issues:
+1. Fixed the issue that can't auto add ContentType webp
+2. Optimized logic of building xml when using CompleteMultiPart
+3. Optimized logic of parsing xml 
+4. Added auto retry logic when request failed with wrong date
+5. Added Element ExpiredObjectDeleteMarker in LifeCycleConfiguration
+-----------------------------------------------------------------------------------
+Version 3.24.8
+Resolved issues:
+1. PutObject、Getobject、GetObjectMetadata、UploadPart、AppendObject、CopyObject、CopyPart、CompeleMultiUploadPart now supports crc64 checksum.
+2. UploadFile can be cancelled and aborted now.
+3. Allow you set okhttp's EventListenerFactory to profile each stage of a http request，not set by default.
+4. Fixed the issue that client encryption is available only in obs protocal and add some check logic when encryption algrithm is null.
+5. Optimised the logic of set progress listener when using uploadFile.
+6. Optimised some log info format.
+7. Added some logic to compatible with Android 7.0 when using DateTimeFormatter. 
+
+Third-party dependence:
+1. Replace okio 3.8.0 with okio 3.6.0 
+2. Replace log4j-core 2.20.0 with log4j-core 2.18.0 
+3. Replace jackson-core 2.15.4 with jackson-core 2.15.2 
+4. Replace jackson-databind 2.15.4 with jackson-databind 2.15.2 
+5. Replace jackson-annotations 2.15.4 with jackson-annotations 2.15.2
+6. Replace log4j-api 2.20.0 with log4j-api 2.18.0 
+-----------------------------------------------------------------------------------
+Version 3.24.3
+Resolved issues:
+1. Optimized log info of some exception stack
+2. Added log when client closed
+3. Fixed the issue of hostname verifying
+4. Optimized Security of client encryption
+5. Optimized the retry logic
+6. Fixed issue of setObjectMetadata not working while copyObject
+7. Optimized object key coding of temporary url
+8. Optimized performance of parsing and generating time string
+9. Optimized logic of xml generating
+10. Fixed several issues of null pointer
+
+Third-party dependence:
+1. Replace okhttp 4.12.0 with okhttp 4.11.0
+2. Replace okio 3.6.0 with okio 3.5.0
+3. Replace jackson-core 2.15.2 with jackson-core 2.13.3
+4. Replace jackson-databind 2.15.2 with jackson-databind 2.13.4.1
+5. Replace jackson-annotations 2.15.2 with jackson-annotations 2.13.3
+-----------------------------------------------------------------------------------
+Version 3.23.9.1
+New features:
+1. Allow you set custom dns resolver
+
+Third-party dependence:
+1. Remove java-xmlbuilder, use default javax.xml lib
+-----------------------------------------------------------------------------------
+Version 3.23.9
+New features:
+1. Allow you set\get\list\delete bucket inventory configuration
+2. Added client side encryption feature
+3. Allow you config AbortIncompleteMultipartUpload in LifecycleConfiguration
+
+Third-party dependence:
+1. Replace okio 3.5.0 with okio 2.10.0
+2. Replace okhttp 4.11.0 with okhttp 4.10.0
+-----------------------------------------------------------------------------------
+Version 3.23.5
+New features:
+1. Allow you put Object in two Buckets by calling putObjectInTwoBucket
+2. Allow you query statistics on the capacity of standard, warm and cold objects in bucket
+-----------------------------------------------------------------------------------
+Version 3.23.3
+New features:
+1. Allow you to query the progress of crr 
+2. Added interfaces of Object tagging(set, get, delete)
+
+Third-party dependence:
+1. Replace powermock-module-junit4 2.0.9 with powermock-module-junit4 1.6.5
+2. Replace powermock-api-mockito2 2.0.9 with powermock-api-mockito 1.6.5
+3. Replace mockito-core 4.11.0 with mockito-core 1.10.19
+-----------------------------------------------------------------------------------
+
+Version 3.22.12
+New features:
+1. Added the Deep Archive storage class in the Java SDK.
+2. Implemented the APIs related to posix accesslable int the Java SDK.
+
+Third-party dependence:
+1. Replace log4j2 2.17.1 with log4j2 2.18.0
+2. Replace okhttp 4.9.3 with okhttp 4.10.0
+4. Replace jackson-core 2.13.0 with jackson-core 2.13.3
+5. Replace jackson-databind 2.13.0 with jackson-databind 2.13.4.1
+6. Replace jackson-annotations 2.13.0 with jackson-annotations 2.13.3
+-----------------------------------------------------------------------------------
+
+Version 3.22.3
+Third-party dependence:
+1. Replace log4j2 2.17.0 with log4j2 2.17.1
+2. Replace okhttp 4.9.1 with okhttp 4.9.3
+3. Replace okio 2.7.0 with okio 2.10.0
+4. Replace jackson-core 2.12.5 with jackson-core 2.13.0
+5. Replace jackson-databind 2.12.5 with jackson-databind 2.13.0
+6. Replace jackson-annotations 2.12.5 with jackson-annotations 2.13.0
+-----------------------------------------------------------------------------------
+
+Version 3.21.12
+Third-party dependence:
+1. Replace log4j2 2.16.0 with log4j2 2.17.0
+-----------------------------------------------------------------------------------
+
+Version 3.21.11
+New features:
+1. Allowed you to add any custom header field in a request.
+Third-party dependence:
+1. Replace jackson-core 2.11.1 with jackson-core 2.12.5
+2. Replace jackson-databind 2.11.1 with jackson-databind 2.12.5
+3. Replace jackson-annotations 2.11.1 with jackson-annotations 2.12.5
+4. Replace okhttp 4.8.0 with okhttp 4.9.1
+5. Replace log4j2 2.14.1 with log4j2 2.16.0
+-----------------------------------------------------------------------------------
+Version 3.21.8
+
+1. Replace okhttp 3.14.9 with okhttp 4.8.0.
+2. Adding original headers to Response object
+
+-----------------------------------------------------------------------------------
+
+Version 3.21.4
+
+1. Fixed a known issue
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.6
+Fixed issues:
+1. Fixed the issue that logs cannot be dynamically updated.
+2. Fixed the issue that automatic depression is not executed when gzip files are being downloaded. 
+
+Third-party dependencies:
+1. Replaced okhttp 3.14.2 with okhttp 3.14.4.
+2. Replaced log4j-core 2.12.0 with log4j-core 2.13.2.
+3. Replaced log4j-api 2.12.0 with log4j-api 2.13.2.
+
+-----------------------------------------------------------------------------------
+
+Version 3.20.3
+New Features:
+1. Supports Requester Pays.
+2. Deleted the default log4j configuration.
+
+-----------------------------------------------------------------------------------
+
 Version 3.20.1
 Third-party dependence:
 1. Replace okhttp 3.11.0 with okhttp 3.14.2.

@@ -53,6 +53,7 @@ import com.obs.services.internal.ServiceException;
 import com.obs.services.internal.utils.ServiceUtils;
 import com.obs.services.model.AbstractNotification;
 import com.obs.services.model.AccessControlList;
+import com.obs.services.model.TargetSortingTypeEnum;
 import com.obs.services.model.ObjectTypeEnum;
 import com.obs.services.model.Qos.QosRule;
 import com.obs.services.model.Qos.GetBucketQoSResult;
@@ -388,7 +389,7 @@ public class XmlResponsesSaxParser {
                     currentExtendCommonPrefix.setObjectKey(elementText);
                 } else if (insideCommonPrefixes && name.equals("MTime")) {
                     currentExtendCommonPrefix.getMetadata()
-                            .setLastModified(new Date(Long.parseLong(elementText) * 1000));
+                        .setLastModified(new Date(Long.parseLong(elementText) * 1000));
                 }
             }
 
@@ -408,8 +409,9 @@ public class XmlResponsesSaxParser {
                         currentObject.getMetadata().setLastModified(ServiceUtils.parseIso8601Date(elementText));
                     } catch (ParseException e) {
                         if (log.isErrorEnabled()) {
-                            log.error("Non-ISO8601 date for LastModified in bucket's object listing output: "
-                                    + elementText, e);
+                            log.error(
+                                "Non-ISO8601 date for LastModified in bucket's object listing output: " + elementText,
+                                e);
                         }
                     }
                 }
@@ -454,7 +456,6 @@ public class XmlResponsesSaxParser {
         private String nextMarker;
 
         private String lastFolder;
-
 
         public String getBucketName() {
             return bucketName;
@@ -876,6 +877,8 @@ public class XmlResponsesSaxParser {
 
         private String targetPrefix;
 
+        private TargetSortingTypeEnum targetSorting;
+
         private GranteeInterface currentGrantee;
 
         private Permission currentPermission;
@@ -895,9 +898,13 @@ public class XmlResponsesSaxParser {
                 case "TargetPrefix":
                     targetPrefix = elementText;
                     break;
+                case "TargetSorting":
+                    targetSorting = TargetSortingTypeEnum.valueOf(elementText);
+                    break;
                 case "LoggingEnabled":
                     bucketLoggingStatus.setTargetBucketName(targetBucket);
                     bucketLoggingStatus.setLogfilePrefix(targetPrefix);
+                    bucketLoggingStatus.setTargetSorting(targetSorting);
                     break;
                 case "Agency":
                     bucketLoggingStatus.setAgency(elementText);
@@ -1117,11 +1124,11 @@ public class XmlResponsesSaxParser {
                 this.status = elementText;
             } else if (name.equals("VersioningConfiguration")) {
                 this.versioningStatus = new BucketVersioningConfiguration(
-                        VersioningStatusEnum.getValueFromCode(this.status));
+                    VersioningStatusEnum.getValueFromCode(this.status));
             }
         }
     }
-    
+
     public static class BucketCustomDomainHandler extends DefaultXmlHandler {
         private BucketCustomDomainInfo bucketCustomDomainInfo = new BucketCustomDomainInfo();
 
@@ -1146,8 +1153,7 @@ public class XmlResponsesSaxParser {
                     createTime = ServiceUtils.parseIso8601Date(content);
                 } catch (ParseException e) {
                     if (log.isErrorEnabled()) {
-                        log.error("Non-ISO8601 date for CreateTime in domain listing output: "
-                                + content, e);
+                        log.error("Non-ISO8601 date for CreateTime in domain listing output: " + content, e);
                     }
                 }
             } else if (DOMAINS.equals(name)) {
@@ -1156,7 +1162,7 @@ public class XmlResponsesSaxParser {
         }
 
     }
-    
+
     public static class RequestPaymentHandler extends DefaultXmlHandler {
 
         private RequestPaymentConfiguration requestPaymentConfiguration;
@@ -1173,7 +1179,7 @@ public class XmlResponsesSaxParser {
                 this.payer = elementText;
             } else if (name.equals("RequestPaymentConfiguration")) {
                 this.requestPaymentConfiguration = new RequestPaymentConfiguration(
-                        RequestPaymentEnum.getValueFromCode(this.payer));
+                    RequestPaymentEnum.getValueFromCode(this.payer));
             }
         }
     }
@@ -1321,9 +1327,8 @@ public class XmlResponsesSaxParser {
                     lastModified = ServiceUtils.parseIso8601Date(content);
                 } catch (ParseException e) {
                     if (log.isWarnEnabled()) {
-                        log.warn(
-                                "Non-ISO8601 date for LastModified in bucket's versions listing output: " + content,
-                                e);
+                        log.warn("Non-ISO8601 date for LastModified in bucket's versions listing output: " + content,
+                            e);
                     }
                 }
             } else if (name.equals("ETag")) {
@@ -1381,21 +1386,20 @@ public class XmlResponsesSaxParser {
         }
 
         private void addVersionOrDeleteMarker(String name) {
-            VersionOrDeleteMarker.Builder builder = new VersionOrDeleteMarker.Builder()
-                    .bucketName(bucketName)
-                    .key(key)
-                    .versionId(versionId)
-                    .isLatest(isLatest)
-                    .lastModified(lastModified)
-                    .owner(owner);
+            VersionOrDeleteMarker.Builder builder = new VersionOrDeleteMarker.Builder().bucketName(bucketName)
+                .key(key)
+                .versionId(versionId)
+                .isLatest(isLatest)
+                .lastModified(lastModified)
+                .owner(owner);
 
             if (name.equals("Version")) {
                 VersionOrDeleteMarker item = builder.etag(etag)
-                        .size(size)
-                        .storageClass(StorageClassEnum.getValueFromCode(storageClass))
-                        .isDeleteMarker(false)
-                        .appendable(isAppendable)
-                        .builder();
+                    .size(size)
+                    .storageClass(StorageClassEnum.getValueFromCode(storageClass))
+                    .isDeleteMarker(false)
+                    .appendable(isAppendable)
+                    .builder();
 
                 if (objectType == null) {
                     item.setObjectType(ObjectTypeEnum.NORMAL);
@@ -1409,11 +1413,11 @@ public class XmlResponsesSaxParser {
                 this.reset();
             } else if (name.equals("DeleteMarker")) {
                 VersionOrDeleteMarker item = builder.etag(null)
-                        .size(0)
-                        .storageClass(null)
-                        .isDeleteMarker(true)
-                        .appendable(false)
-                        .builder();
+                    .size(0)
+                    .storageClass(null)
+                    .isDeleteMarker(true)
+                    .appendable(false)
+                    .builder();
 
                 items.add(item);
                 this.reset();
@@ -1521,7 +1525,7 @@ public class XmlResponsesSaxParser {
 
         public MultipartUpload getMultipartUpload() {
             return new MultipartUpload(uploadId, objectKey, initiatedDate,
-                    StorageClassEnum.getValueFromCode(storageClass), owner, initiator);
+                StorageClassEnum.getValueFromCode(storageClass), owner, initiator);
         }
 
         public void endUploadId(String content) {
@@ -1763,9 +1767,11 @@ public class XmlResponsesSaxParser {
         public void endETag(String content) {
             this.etag = content;
         }
+
         public void endCRC64(String content) {
             this.crc64 = content;
         }
+
         public void endCRC32C(String content) {
             this.crc32c = content;
         }
@@ -2118,8 +2124,7 @@ public class XmlResponsesSaxParser {
 
         private DeleteObjectsResult result;
 
-        private final List<DeleteObjectsResult.DeleteObjectResult> deletedObjectResults =
-                new ArrayList<>();
+        private final List<DeleteObjectsResult.DeleteObjectResult> deletedObjectResults = new ArrayList<>();
 
         private final List<DeleteObjectsResult.ErrorResult> errorResults = new ArrayList<>();
 
@@ -2171,9 +2176,8 @@ public class XmlResponsesSaxParser {
             } else if ("Message".equals(name)) {
                 message = content;
             } else if ("Deleted".equals(name)) {
-                DeleteObjectsResult.DeleteObjectResult r =
-                        new DeleteObjectsResult.DeleteObjectResult(key, version, withDeleteMarker,
-                                deleteMarkerVersion);
+                DeleteObjectsResult.DeleteObjectResult r = new DeleteObjectsResult.DeleteObjectResult(key, version,
+                    withDeleteMarker, deleteMarkerVersion);
                 deletedObjectResults.add(r);
                 key = version = deleteMarkerVersion = null;
                 withDeleteMarker = false;
@@ -2254,41 +2258,44 @@ public class XmlResponsesSaxParser {
         public ArrayList<InventoryConfiguration> getInventoryConfigurations() {
             return inventoryConfigurations;
         }
+
         @Override
-        public void startElement(String name) {}
+        public void startElement(String name) {
+        }
+
         @Override
         public void endElement(String name, String content) {
-            if("Id".equals(name)) {
+            if ("Id".equals(name)) {
                 inventoryConfiguration.setConfigurationId(content);
             }
-            if("IsEnabled".equals(name)) {
+            if ("IsEnabled".equals(name)) {
                 inventoryConfiguration.setEnabled(Boolean.valueOf(content));
             }
-            if("Prefix".equals(name)) {
+            if ("Prefix".equals(name)) {
                 prefix = content;
             }
-            if("Filter".equals(name)) {
+            if ("Filter".equals(name)) {
                 inventoryConfiguration.setObjectPrefix(prefix);
             }
-            if("Format".equals(name)) {
+            if ("Format".equals(name)) {
                 inventoryConfiguration.setInventoryFormat(content);
             }
-            if("Bucket".equals(name)) {
+            if ("Bucket".equals(name)) {
                 inventoryConfiguration.setDestinationBucket(content);
             }
-            if("Destination".equals(name)) {
+            if ("Destination".equals(name)) {
                 inventoryConfiguration.setInventoryPrefix(prefix);
             }
-            if("Frequency".equals(name)) {
+            if ("Frequency".equals(name)) {
                 inventoryConfiguration.setFrequency(content);
             }
-            if("IncludedObjectVersions".equals(name)) {
+            if ("IncludedObjectVersions".equals(name)) {
                 inventoryConfiguration.setIncludedObjectVersions(content);
             }
-            if("Field".equals(name)) {
+            if ("Field".equals(name)) {
                 inventoryConfiguration.getOptionalFields().add(content);
             }
-            if("InventoryConfiguration".equals(name)) {
+            if ("InventoryConfiguration".equals(name)) {
                 inventoryConfigurations.add(inventoryConfiguration);
                 inventoryConfiguration = new InventoryConfiguration();
             }
@@ -2358,8 +2365,8 @@ public class XmlResponsesSaxParser {
                     }
                     return;
                 }
-                bucketNotificationConfiguration
-                        .addFunctionGraphConfiguration(new FunctionGraphConfiguration(id, filter, urn, events));
+                bucketNotificationConfiguration.addFunctionGraphConfiguration(
+                    new FunctionGraphConfiguration(id, filter, urn, events));
                 events = new ArrayList<>();
             }
         }
@@ -2389,7 +2396,7 @@ public class XmlResponsesSaxParser {
         public void startNoncurrentVersionExpiration() {
             latestTimeEvent = config.new NoncurrentVersionExpiration();
             latestRule.setNoncurrentVersionExpiration(
-                    ((LifecycleConfiguration.NoncurrentVersionExpiration) latestTimeEvent));
+                ((LifecycleConfiguration.NoncurrentVersionExpiration) latestTimeEvent));
         }
 
         public void startTransition() {
@@ -2400,25 +2407,29 @@ public class XmlResponsesSaxParser {
         public void startNoncurrentVersionTransition() {
             latestTimeEvent = config.new NoncurrentVersionTransition();
             latestRule.getNoncurrentVersionTransitions()
-                    .add(((LifecycleConfiguration.NoncurrentVersionTransition) latestTimeEvent));
+                .add(((LifecycleConfiguration.NoncurrentVersionTransition) latestTimeEvent));
         }
+
         public void startAbortIncompleteMultipartUpload() {
             latestRule.setAbortIncompleteMultipartUpload(config.new AbortIncompleteMultipartUpload());
         }
+
         public void endDaysAfterInitiation(String content) {
             latestRule.getAbortIncompleteMultipartUpload().setDaysAfterInitiation(Integer.parseInt(content.trim()));
         }
+
         public void endStorageClass(String content) {
             LifecycleConfiguration.setStorageClass(latestTimeEvent, StorageClassEnum.getValueFromCode(content.trim()));
         }
+
         public void endExpiredObjectDeleteMarker(String content) {
             boolean expiredObjectDeleteMarker = false;
             if (content.trim().equals("true")) {
                 expiredObjectDeleteMarker = true;
             }
             if (latestTimeEvent instanceof LifecycleConfiguration.Expiration) {
-                ((LifecycleConfiguration.Expiration) latestTimeEvent)
-                        .setExpiredObjectDeleteMarker(expiredObjectDeleteMarker);
+                ((LifecycleConfiguration.Expiration) latestTimeEvent).setExpiredObjectDeleteMarker(
+                    expiredObjectDeleteMarker);
             }
         }
 
@@ -2455,14 +2466,14 @@ public class XmlResponsesSaxParser {
         }
 
         public void endKey(String content) {
-            if(latestRule.getTagSet() == null) {
+            if (latestRule.getTagSet() == null) {
                 latestRule.setTagSet(new BucketTagInfo.TagSet());
             }
-            latestRule.getTagSet().addTag(content.trim(),"");
+            latestRule.getTagSet().addTag(content.trim(), "");
         }
 
         public void endValue(String content) {
-            if(latestRule.getTagSet() != null && !latestRule.getTagSet().getTags().isEmpty()) {
+            if (latestRule.getTagSet() != null && !latestRule.getTagSet().getTags().isEmpty()) {
                 int tagSetSize = latestRule.getTagSet().getTags().size();
                 latestRule.getTagSet().getTags().get(tagSetSize - 1).setValue(content.trim());
             }
@@ -2473,8 +2484,11 @@ public class XmlResponsesSaxParser {
         protected AccessControlList accessControlList;
 
         protected Owner owner;
+
         protected GranteeInterface currentGrantee;
+
         protected Permission currentPermission;
+
         protected boolean currentDelivered;
 
         protected boolean insideACL = false;
@@ -2718,17 +2732,16 @@ public class XmlResponsesSaxParser {
             } else if (Constants.ObsBucketReplicationRequestParams.STORAGE_CLASS.equals(name)) {
                 currentRule.getDestination().setObjectStorageClass(StorageClassEnum.getValueFromCode(content));
             } else if (Constants.ObsBucketReplicationRequestParams.HISTORICAL_OBJECT_REPLICATION.equals(name)) {
-                currentRule
-                        .setHistoricalObjectReplication(HistoricalObjectReplicationEnum.getValueFromCode(content));
+                currentRule.setHistoricalObjectReplication(HistoricalObjectReplicationEnum.getValueFromCode(content));
             } else if (Constants.ObsBucketReplicationRequestParams.DELETE_DATA.equals(name)) {
-                currentRule
-                        .getDestination().setDeleteData(DeleteDataEnum.getValueFromCode(content));
+                currentRule.getDestination().setDeleteData(DeleteDataEnum.getValueFromCode(content));
             }
         }
     }
 
     public static class GetCrrProgressResultHandler extends DefaultXmlHandler {
         private GetCrrProgressResult getCrrProgressResult = new GetCrrProgressResult();
+
         SimpleDateFormat formatter = new SimpleDateFormat(Constants.EXPIRATION_DATE_FORMATTER);
 
         public GetCrrProgressResult getReplicationConfiguration() {
@@ -2813,12 +2826,13 @@ public class XmlResponsesSaxParser {
                     bucketPublicAccessBlock.setRestrictPublicBuckets(parseAndLogBool(name, content));
                 }
             } else {
-                log.error("bucketPublicAccessBlock is null, " +
-                    "parse xml in BucketPublicAccessBlockXMLHandler failed");
+                log.error(
+                    "bucketPublicAccessBlock is null, " + "parse xml in BucketPublicAccessBlockXMLHandler failed");
             }
         }
 
     }
+
     protected static Boolean parseAndLogBool(String name, String content) {
         Boolean value = Boolean.parseBoolean(content);
         if (log.isTraceEnabled()) {
@@ -2826,6 +2840,7 @@ public class XmlResponsesSaxParser {
         }
         return value;
     }
+
     public static class BucketPolicyStatusHandler extends DefaultXmlHandler {
         protected BucketPolicyStatus bucketPolicyStatus;
 
@@ -2847,11 +2862,11 @@ public class XmlResponsesSaxParser {
                     bucketPolicyStatus.setIsPublic(parseAndLogBool(name, content));
                 }
             } else {
-                log.error("bucketPolicyStatus is null, " +
-                    "parse xml in BucketPolicyStatusHandler failed");
+                log.error("bucketPolicyStatus is null, " + "parse xml in BucketPolicyStatusHandler failed");
             }
         }
     }
+
     public static class BucketPublicStatusHandler extends DefaultXmlHandler {
         protected BucketPublicStatus bucketPublicStatus;
 
@@ -2873,12 +2888,11 @@ public class XmlResponsesSaxParser {
                     bucketPublicStatus.setIsPublic(parseAndLogBool(name, content));
                 }
             } else {
-                log.error("bucketPublicStatus is null, " +
-                    "parse xml in BucketPublicStatusHandler failed");
+                log.error("bucketPublicStatus is null, " + "parse xml in BucketPublicStatusHandler failed");
             }
         }
     }
-    
+
     public static class BucketQosConfigurationHandler extends DefaultXmlHandler {
 
         // 解析结果对象
@@ -2886,7 +2900,9 @@ public class XmlResponsesSaxParser {
 
         // 临时存储当前解析的对象
         private QosRule currentQosRule;
+
         private QpsLimitConfiguration currentQpsLimit;
+
         private BpsLimitConfiguration currentBpsLimit;
 
         // 核心标记：当前是否在QoSGroupConfiguration内部
@@ -3010,7 +3026,7 @@ public class XmlResponsesSaxParser {
                 }
             }
         }
-        
+
         private NetworkType parseNetworkType(String content) {
             try {
                 return NetworkType.valueOf(content.trim().toUpperCase(Locale.ROOT));
@@ -3029,10 +3045,14 @@ public class XmlResponsesSaxParser {
             }
         }
     }
+
     public static abstract class BasePaginatedHandler extends DefaultXmlHandler {
         protected String marker;
+
         protected String nextMarker;
+
         protected boolean truncated;
+
         protected int maxKeys;
 
         public boolean isTruncated() {
@@ -3093,8 +3113,11 @@ public class XmlResponsesSaxParser {
 
     public static class GetSnapshottableDirListHandler extends BasePaginatedHandler {
         private Owner bucketsOwner;
+
         private int snapshottableDirCount;
+
         private SnapshottableDir currentSnapshottableDir;
+
         private List<SnapshottableDir> snapshottableDir = new ArrayList<>();
 
         public List<SnapshottableDir> getSnapshottableDirs() {
@@ -3172,7 +3195,9 @@ public class XmlResponsesSaxParser {
 
     public static class GetSnapshotListHandler extends BasePaginatedHandler {
         private int snapshotCount;
+
         private Snapshot currentSnapshot;
+
         private List<Snapshot> snapshotList = new ArrayList<>();
 
         public List<Snapshot> getSnapshots() {
