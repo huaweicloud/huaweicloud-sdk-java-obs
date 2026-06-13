@@ -1,3 +1,7 @@
+Version 3.26.3.1
+Resolved issues:
+1. Fixed the problem that the client encryption function does not support consistency verification.
+-----------------------------------------------------------------------------------
 Version 3.26.3
 New features:
 1. Bucket logging interface now supports setting daily or hourly archiving
