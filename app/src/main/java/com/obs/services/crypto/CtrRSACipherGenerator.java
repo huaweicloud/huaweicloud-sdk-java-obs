@@ -44,6 +44,8 @@ public class CtrRSACipherGenerator extends CTRCipherGenerator {
     private static String RsaCipherProvider = "";
     public static final String ENCRYPTED_ALGORITHM =
             CTRCipherGenerator.ENCRYPTED_ALGORITHM + " " + CIPHER_RSA_ALGORITHM;
+    public static final String ENCRYPTED_ALGORITHM_HMAC =
+            CTRCipherGenerator.ENCRYPTED_ALGORITHM_CTR_HMAC + " " + CIPHER_RSA_ALGORITHM;
     public static final int MIN_RSA_KEY_LENGTH = 3072;
     private PrivateKey privateKey;
     private PublicKey publicKey;

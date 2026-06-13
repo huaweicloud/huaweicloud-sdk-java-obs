@@ -23,7 +23,6 @@ import com.obs.log.LoggerBuilder;
 import com.obs.services.IObsCredentialsProvider;
 import com.obs.services.ObsClient;
 import com.obs.services.ObsConfiguration;
-import com.obs.services.crypto.CTRCipherGenerator.SHA256Info;
 import com.obs.services.exception.ObsException;
 import com.obs.services.internal.Constants;
 import com.obs.services.internal.ObsConstraint;
@@ -152,86 +151,81 @@ public class CryptoObsClient extends ObsClient {
         }
         try {
             if (this.ctrCipherGenerator != null) {
+                // 设计决策：所有新上传强制使用 HMAC EtM (Encrypt-then-MAC) 模式，
+                // 以修复 CWE-353（缺少 HMAC 完整性验证）。旧 CTR-only 模式仅保留
+                // 用于读取历史加密数据（见 getObjectImpl 中的解密分支）。
                 // 获取AES密钥和初始值
-                byte[] object_CryptoIvBytes = getOrGenerateCryptoIvBytes();
-                byte[] object_CryptoKeyBytes = getOrGenerateCryptoKeyBytes();
+                byte[] objectCryptoIvBytes = getOrGenerateCryptoIvBytes();
+                byte[] objectCryptoKeyBytes = getOrGenerateCryptoKeyBytes();
                 // 计算加密前后数据的sha256值
-                if (request.getFile() != null && ctrCipherGenerator.isNeedSha256()) {
+                // 注意: HMAC模式不需要额外的SHA256计算，HMAC已提供完整性保护
+                if (request.getFile() != null) {
                     request.getMetadata()
                             .addUserMetadata(
                                     CTRCipherGenerator.PLAINTEXT_CONTENT_LENGTH_META_NAME,
                                     String.valueOf(request.getFile().length()));
-                    try (FileInputStream fileInputStream = new FileInputStream(request.getFile())) {
-                        String content_sha256_header = Constants.OBS_HEADER_PREFIX + Constants.CONTENT_SHA256;
-                        if (request.getUserHeaders().containsKey(content_sha256_header)) {
-                            // 用户已设置明文数据的sha256.直接到设置自定义加密元数据中
-                            request.getMetadata()
-                                    .addUserMetadata(
-                                            CTRCipherGenerator.PLAINTEXT_SHA_256_META_NAME,
-                                            request.getUserHeaders().get(content_sha256_header));
-                            // 计算加密后的数据的sha256
-                            SHA256Info sha256Info =
-                                    ctrCipherGenerator.computeSHA256HashAES(
-                                            fileInputStream, object_CryptoIvBytes, object_CryptoKeyBytes, false);
-
-                            // 设置自定义加密元数据中的密文数据的sha256
-                            request.getMetadata()
-                                    .addUserMetadata(
-                                            CTRCipherGenerator.ENCRYPTED_SHA_256_META_NAME,
-                                            sha256Info.getSha256ForAESEncrypted());
-                            // 设置头域中的sha256用于验证数据完整性
-                            request.addUserHeaders(content_sha256_header, sha256Info.getSha256ForAESEncrypted());
-                        } else {
-                            // 计算文件sha256和加密后的sha256
-                            SHA256Info sha256Info =
-                                    ctrCipherGenerator.computeSHA256HashAES(
-                                            fileInputStream, object_CryptoIvBytes, object_CryptoKeyBytes, true);
-                            // 设置自定义加密元数据中的明文数据的sha256
-                            request.getMetadata()
-                                    .addUserMetadata(
-                                            CTRCipherGenerator.PLAINTEXT_SHA_256_META_NAME,
-                                            sha256Info.getSha256ForPlainText());
-                            // 设置自定义加密元数据中的密文数据的sha256
-                            request.getMetadata()
-                                    .addUserMetadata(
-                                            CTRCipherGenerator.ENCRYPTED_SHA_256_META_NAME,
-                                            sha256Info.getSha256ForAESEncrypted());
-                            // 设置头域中的sha256用于验证数据完整性
-                            request.addUserHeaders(content_sha256_header, sha256Info.getSha256ForAESEncrypted());
-                        }
-                        request.setInput(new FileInputStream(request.getFile()));
+                    FileInputStream fileInputStream = null;
+                    boolean needCloseStream = true;
+                    try {
+                        fileInputStream = new FileInputStream(request.getFile());
+                        // HMAC模式: 不计算SHA256，HMAC本身已提供完整性保护
+                        // 流会在 getAES256CTRHMACEncryptedStream 中被消费并关闭
+                        request.setInput(fileInputStream);
+                        needCloseStream = false;
                     } catch (FileNotFoundException e) {
                         throw new IllegalArgumentException("File doesn't exist");
                     } catch (IOException e) {
                         throw new ServiceException(e);
+                    } finally {
+                        if (needCloseStream && fileInputStream != null) {
+                            try {
+                                fileInputStream.close();
+                            } catch (IOException e) {
+                                if (log.isWarnEnabled()) {
+                                    log.warn("close fileInputStream failed.", e);
+                                }
+                            }
+                        }
                     }
                 }
 
-                // 设置加密数据流
-                request.setInput(
-                        ctrCipherGenerator.getAES256EncryptedStream(
-                                request.getInput(), object_CryptoIvBytes, object_CryptoKeyBytes));
+                // 设置加密数据流 (使用HMAC EtM模式提供完整性保护)
+                // 注意: 需要记录原始Content-Length用于解密验证
                 ObjectMetadata objectMetadata = request.getMetadata();
+                if (objectMetadata == null) {
+                    objectMetadata = new ObjectMetadata();
+                    request.setMetadata(objectMetadata);
+                }
+                Long contentLength = objectMetadata.getContentLength();
+                if (contentLength != null && contentLength > 0) {
+                    // 记录原始内容长度（不含HMAC开销）
+                    objectMetadata.addUserMetadata(
+                            CTRCipherGenerator.PLAINTEXT_CONTENT_LENGTH_META_NAME,
+                            String.valueOf(contentLength));
+                }
+                request.setInput(
+                        ctrCipherGenerator.getAES256CTRHMACEncryptedStream(
+                                request.getInput(), objectCryptoIvBytes, objectCryptoKeyBytes));
                 // 设置加密信息的自定义头域
-                objectMetadata.addUserMetadata(ENCRYPTED_START_META_NAME, getBase64Info(object_CryptoIvBytes));
+                objectMetadata.addUserMetadata(ENCRYPTED_START_META_NAME, getBase64Info(objectCryptoIvBytes));
                 if (ctrCipherGenerator.getMasterKeyInfo() != null) {
                     objectMetadata.addUserMetadata(
                             CTRCipherGenerator.MASTER_KEY_INFO_META_NAME, ctrCipherGenerator.getMasterKeyInfo());
                 }
                 if (this.ctrCipherGenerator instanceof CtrRSACipherGenerator) {
-                    // 附件加密算法元数据信息
+                    // 附件HMAC EtM加密算法元数据信息
                     objectMetadata.addUserMetadata(
-                            ENCRYPTED_ALGORITHM_META_NAME, CtrRSACipherGenerator.ENCRYPTED_ALGORITHM);
+                            ENCRYPTED_ALGORITHM_META_NAME, CtrRSACipherGenerator.ENCRYPTED_ALGORITHM_HMAC);
                     // rsa 加密aesKey
                     CtrRSACipherGenerator ctrRSACipherGenerator = (CtrRSACipherGenerator) ctrCipherGenerator;
-                    byte[] rsaEncryptedAESKey = ctrRSACipherGenerator.RSAEncrypted(object_CryptoKeyBytes);
+                    byte[] rsaEncryptedAESKey = ctrRSACipherGenerator.RSAEncrypted(objectCryptoKeyBytes);
                     // 将加密后的aesKey附加到元数据
                     objectMetadata.addUserMetadata(
                             ENCRYPTED_AES_KEY_META_NAME, ServiceUtils.toBase64(rsaEncryptedAESKey));
                 } else {
-                    // 附件加密算法元数据信息
+                    // 附件HMAC EtM加密算法元数据信息
                     objectMetadata.addUserMetadata(
-                            ENCRYPTED_ALGORITHM_META_NAME, CTRCipherGenerator.ENCRYPTED_ALGORITHM);
+                            ENCRYPTED_ALGORITHM_META_NAME, CTRCipherGenerator.ENCRYPTED_ALGORITHM_CTR_HMAC);
                 }
             }
             // 后面和普通上传一致
@@ -259,7 +253,8 @@ public class CryptoObsClient extends ObsClient {
                 | InvalidKeyException
                 | IllegalBlockSizeException
                 | BadPaddingException
-                | NoSuchProviderException e) {
+                | NoSuchProviderException
+                | IOException e) {
             throw new ServiceException(e);
         } finally {
             if (result != null && result.getBody() != null && request.isAutoClose()) {
@@ -355,8 +350,9 @@ public class CryptoObsClient extends ObsClient {
                                     .get(headerMetaPrefix + ENCRYPTED_START_META_NAME);
 
             if (isValidEncryptedAlgorithm(encryptedAlgorithm)) {
-                byte[] cryptoKeyBytes = ctrCipherGenerator.getCryptoKeyBytes();
-                if (encryptedAlgorithm.equals(CtrRSACipherGenerator.ENCRYPTED_ALGORITHM)) {
+                byte[] cryptoKeyBytes = null;
+                // 修复：检查是否为RSA加密方式（包含"RSA"字符串，包括HMAC+RSA模式）
+                if (encryptedAlgorithm.contains("RSA")) {
                     // 如果是rsa加密方式
                     if (!(ctrCipherGenerator instanceof CtrRSACipherGenerator)) {
                         throw new ServiceException(
@@ -371,6 +367,9 @@ public class CryptoObsClient extends ObsClient {
                                                     .get(
                                                             headerMetaPrefix
                                                                     + ENCRYPTED_AES_KEY_META_NAME);
+                            if (aesEncryptedKey == null) {
+                                throw new ServiceException("RSA encrypted AES key not found in metadata");
+                            }
                             // 解密rsa加密后的主密钥
                             cryptoKeyBytes =
                                     ctrRSACipherGenerator.RSADecrypted(ServiceUtils.fromBase64(aesEncryptedKey));
@@ -384,20 +383,36 @@ public class CryptoObsClient extends ObsClient {
                             throw new ServiceException(e);
                         }
                     }
+                } else {
+                    // 非RSA模式使用预设密钥
+                    cryptoKeyBytes = ctrCipherGenerator.getCryptoKeyBytes();
                 }
                 try {
                     byte[] iv = CTRCipherGenerator.getBytesFromBase64(encryptedStart);
 
-                    // 设置解密流
-                    obsObject.setObjectContent(
-                            ctrCipherGenerator.getAES256DecryptedStream(
-                                    response.body().byteStream(), iv, cryptoKeyBytes));
-                } catch (UnsupportedEncodingException
-                        | InvalidAlgorithmParameterException
+                    // 检测是否为HMAC EtM模式
+                    if (CTRCipherGenerator.isCTRHMACAlgorithm(encryptedAlgorithm)) {
+                        // HMAC EtM模式：使用HMAC验证后解密
+                        obsObject.setObjectContent(
+                                ctrCipherGenerator.getAES256CTRHMACDecryptedStream(
+                                        response.body().byteStream(), iv, cryptoKeyBytes));
+                    } else {
+                        // 旧CTR模式：直接解密（无完整性保护）
+                        obsObject.setObjectContent(
+                                ctrCipherGenerator.getAES256DecryptedStream(
+                                        response.body().byteStream(), iv, cryptoKeyBytes));
+                    }
+                } catch (HMACVerificationException e) {
+                    // HMAC验证失败，抛出明确的完整性错误
+                    throw new ServiceException("HMAC verification failed: data integrity violation detected", e);
+                } catch (InvalidAlgorithmParameterException
                         | NoSuchPaddingException
                         | NoSuchAlgorithmException
                         | InvalidKeyException
-                        | NoSuchProviderException e) {
+                        | NoSuchProviderException
+                        | IllegalBlockSizeException
+                        | BadPaddingException
+                        | IOException e) {
                     throw new ServiceException(e);
                 }
             } else {
@@ -430,7 +445,10 @@ public class CryptoObsClient extends ObsClient {
 
     public boolean isValidEncryptedAlgorithm(String encryptedAlgorithm) {
         return encryptedAlgorithm != null && (encryptedAlgorithm.equals(CtrRSACipherGenerator.ENCRYPTED_ALGORITHM)
-                || encryptedAlgorithm.equals(CTRCipherGenerator.ENCRYPTED_ALGORITHM));
+                || encryptedAlgorithm.equals(CTRCipherGenerator.ENCRYPTED_ALGORITHM)
+                // 新增: 支持HMAC EtM模式
+                || encryptedAlgorithm.equals(CtrRSACipherGenerator.ENCRYPTED_ALGORITHM_HMAC)
+                || encryptedAlgorithm.equals(CTRCipherGenerator.ENCRYPTED_ALGORITHM_CTR_HMAC));
     }
 
     protected byte[] getOrGenerateCryptoIvBytes() {
