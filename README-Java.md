@@ -1,3 +1,17 @@
+Version 3.26.9
+New features:
+1. Supported bucket real-time log configuration feature
+2. Lifecycle management supports last access time
+3. Added ResponseVary parameter to bucket CORS rules
+Resolved issues:
+1. Fixed the issue of printing plaintext security token in debug logs
+Third-party dependence:
+1. Replaced okhttp 4.10.0 with okhttp-jvm 5.3.0
+2. Replaced okio 2.10.0 with okio-jvm 3.16.2
+3. Upgraded jackson-core to 2.21.5
+4. Upgraded jackson-databind to 2.21.5
+5. Upgraded jackson-annotations to 2.21
+-----------------------------------------------------------------------------------
 Version 3.26.6
 New features:
 1. The online decompression policy for buckets is supported.

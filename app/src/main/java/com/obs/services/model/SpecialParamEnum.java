@@ -229,7 +229,17 @@ public enum SpecialParamEnum {
     /**
      * Set, obtain, or delete the DIS notification policy of a bucket.
      */
-    DIS_POLICY("disPolicy");
+    DIS_POLICY("disPolicy"),
+
+    /**
+     * Set, obtain, or delete the real-time log configuration of a bucket.
+     */
+    REALTIME_LOG("realtimeLog"),
+
+    /**
+     * Set or obtain the access monitor configuration of a bucket.
+     */
+    ACCESS_MONITOR("accessmonitor");
 
     /**
      * Specify the corresponding code in the database and the external code.

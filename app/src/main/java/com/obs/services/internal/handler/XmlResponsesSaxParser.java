@@ -38,6 +38,9 @@ import static com.obs.services.internal.ObsConstraint.TAG_SNAPSHOT_DIR;
 import static com.obs.services.internal.ObsConstraint.TAG_SNAPSHOT_DIR_COUNT;
 import static com.obs.services.internal.ObsConstraint.TRUNCATED_CHECK;
 import static com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder.RESERVED_DAYS;
+import static com.obs.services.internal.xml.BucketRealTimeLogConfigurationXMLBuilder.LOG_GROUP_ID;
+import static com.obs.services.internal.xml.BucketRealTimeLogConfigurationXMLBuilder.LOG_STREAM_ID;
+import static com.obs.services.internal.xml.BucketRealTimeLogConfigurationXMLBuilder.PROJECT_ID;
 import static com.obs.services.internal.xml.ObjectLockConfigurationXMLBuilder.OBJECT_LOCK_ENABLED;
 import static com.obs.services.internal.xml.ObjectLockConfigurationXMLBuilder.MODE;
 import static com.obs.services.internal.xml.ObjectLockConfigurationXMLBuilder.DAYS;
@@ -49,6 +52,9 @@ import static com.obs.services.model.bpa.BucketPublicAccessBlock.IGNORE_PUBLIC_A
 import static com.obs.services.model.bpa.BucketPublicAccessBlock.PUBLIC_ACCESS_BLOCK_CONFIGURATION;
 import static com.obs.services.model.bpa.BucketPublicAccessBlock.RESTRICT_PUBLIC_BUCKETS;
 import static com.obs.services.model.bpa.BucketPublicStatus.BUCKET_STATUS;
+import static com.obs.services.model.accessmonitor.AccessMonitorConfiguration.ACCESS_MONITOR_CONFIGURATION;
+import com.obs.services.model.accessmonitor.AccessMonitorConfiguration;
+import com.obs.services.model.accessmonitor.AccessMonitorStatusEnum;
 
 import com.obs.log.ILogger;
 import com.obs.log.LoggerBuilder;
@@ -1017,6 +1023,35 @@ public class XmlResponsesSaxParser {
         }
     }
 
+    public static class BucketRealTimeLogConfigurationXMLHandler extends DefaultXmlHandler {
+        private String logGroupId;
+        private String logStreamId;
+        private String projectId;
+
+        public String getLogGroupId() {
+            return logGroupId;
+        }
+
+        public String getLogStreamId() {
+            return logStreamId;
+        }
+
+        public String getProjectId() {
+            return projectId;
+        }
+
+        @Override
+        public void endElement(String name, String elementText) {
+            if (LOG_GROUP_ID.equals(name)) {
+                logGroupId = elementText;
+            } else if (LOG_STREAM_ID.equals(name)) {
+                logStreamId = elementText;
+            } else if (PROJECT_ID.equals(name)) {
+                projectId = elementText;
+            }
+        }
+    }
+
     public static class BucketCorsHandler extends DefaultXmlHandler {
 
         private final BucketCors configuration = new BucketCors();
@@ -1091,6 +1126,8 @@ public class XmlResponsesSaxParser {
 
             } else if (name.equals("AllowedHeader") && (null != allowedHeaders)) {
                 allowedHeaders.add(elementText);
+            } else if (name.equals("ResponseVary") && (null != currentRule)) {
+                currentRule.setResponseVary(Boolean.valueOf(elementText));
             }
         }
     }
@@ -2301,6 +2338,17 @@ public class XmlResponsesSaxParser {
         private InventoryConfiguration inventoryConfiguration = new InventoryConfiguration();
 
         private String prefix;
+        private String filterPrefix;
+        private String andPrefix;
+        private Boolean filterIsLatest;
+        private Boolean filterDeleteMarker;
+        private Boolean andIsLatest;
+        private Boolean andDeleteMarker;
+        private boolean inFilter = false;
+        private boolean inAnd = false;
+        private boolean inDestination = false;
+        private InventoryConfiguration.InventoryFilter currentFilter;
+        private InventoryConfiguration.FilterAndOperator currentAnd;
 
         public ArrayList<InventoryConfiguration> getInventoryConfigurations() {
             return inventoryConfigurations;
@@ -2308,6 +2356,15 @@ public class XmlResponsesSaxParser {
 
         @Override
         public void startElement(String name) {
+            if ("Filter".equals(name)) {
+                inFilter = true;
+                currentFilter = new InventoryConfiguration.InventoryFilter();
+            } else if ("And".equals(name) && inFilter) {
+                inAnd = true;
+                currentAnd = new InventoryConfiguration.FilterAndOperator();
+            } else if ("Destination".equals(name)) {
+                inDestination = true;
+            }
         }
 
         @Override
@@ -2319,10 +2376,62 @@ public class XmlResponsesSaxParser {
                 inventoryConfiguration.setEnabled(Boolean.valueOf(content));
             }
             if ("Prefix".equals(name)) {
-                prefix = content;
+                if (inAnd) {
+                    andPrefix = content;
+                } else if (inFilter) {
+                    filterPrefix = content;
+                } else if (inDestination) {
+                    prefix = content;
+                }
+            }
+            if ("IsLatest".equals(name)) {
+                if (inAnd) {
+                    andIsLatest = Boolean.valueOf(content);
+                } else if (inFilter) {
+                    filterIsLatest = Boolean.valueOf(content);
+                }
+            }
+            if ("DeleteMarker".equals(name)) {
+                if (inAnd) {
+                    andDeleteMarker = Boolean.valueOf(content);
+                } else if (inFilter) {
+                    filterDeleteMarker = Boolean.valueOf(content);
+                }
+            }
+            if ("And".equals(name) && inFilter) {
+                if (andPrefix != null) {
+                    currentAnd.setPrefix(andPrefix);
+                }
+                if (andIsLatest != null) {
+                    currentAnd.setIsLatest(andIsLatest);
+                }
+                if (andDeleteMarker != null) {
+                    currentAnd.setDeleteMarker(andDeleteMarker);
+                }
+                currentFilter.setAndOperator(currentAnd);
+                inAnd = false;
+                andPrefix = null;
+                andIsLatest = null;
+                andDeleteMarker = null;
             }
             if ("Filter".equals(name)) {
-                inventoryConfiguration.setObjectPrefix(prefix);
+                if (filterPrefix != null) {
+                    currentFilter.setPrefix(filterPrefix);
+                }
+                if (filterIsLatest != null) {
+                    currentFilter.setIsLatest(filterIsLatest);
+                }
+                if (filterDeleteMarker != null) {
+                    currentFilter.setDeleteMarker(filterDeleteMarker);
+                }
+                inventoryConfiguration.setFilter(currentFilter);
+                // Also set objectPrefix for backward compatibility
+                inventoryConfiguration.setObjectPrefix(filterPrefix != null ? filterPrefix : "");
+                inFilter = false;
+                filterPrefix = null;
+                filterIsLatest = null;
+                filterDeleteMarker = null;
+                currentFilter = null;
             }
             if ("Format".equals(name)) {
                 inventoryConfiguration.setInventoryFormat(content);
@@ -2331,7 +2440,9 @@ public class XmlResponsesSaxParser {
                 inventoryConfiguration.setDestinationBucket(content);
             }
             if ("Destination".equals(name)) {
-                inventoryConfiguration.setInventoryPrefix(prefix);
+                inventoryConfiguration.setInventoryPrefix(prefix != null ? prefix : "");
+                inDestination = false;
+                prefix = null;
             }
             if ("Frequency".equals(name)) {
                 inventoryConfiguration.setFrequency(content);
@@ -2490,6 +2601,15 @@ public class XmlResponsesSaxParser {
 
         public void endDays(String content) {
             LifecycleConfiguration.setDays(latestTimeEvent, Integer.parseInt(content.trim()));
+        }
+
+        public void endIsAccessTime(String content) {
+            boolean isAccessTime = "true".equals(content.trim());
+            if (latestTimeEvent instanceof LifecycleConfiguration.Transition) {
+                ((LifecycleConfiguration.Transition) latestTimeEvent).setIsAccessTime(isAccessTime);
+            } else if (latestTimeEvent instanceof LifecycleConfiguration.NoncurrentVersionTransition) {
+                ((LifecycleConfiguration.NoncurrentVersionTransition) latestTimeEvent).setIsAccessTime(isAccessTime);
+            }
         }
 
         public void startRule() {
@@ -2950,6 +3070,34 @@ public class XmlResponsesSaxParser {
         }
     }
 
+    public static class AccessMonitorConfigurationHandler extends DefaultXmlHandler {
+        protected AccessMonitorConfiguration accessMonitorConfiguration;
+
+        public AccessMonitorConfiguration getAccessMonitorConfiguration() {
+            return accessMonitorConfiguration;
+        }
+
+        @Override
+        public void startElement(String name) {
+            if (ACCESS_MONITOR_CONFIGURATION.equals(name)) {
+                accessMonitorConfiguration = new AccessMonitorConfiguration();
+            }
+        }
+
+        @Override
+        public void endElement(String name, String content) {
+            if (accessMonitorConfiguration != null) {
+                if (AccessMonitorConfiguration.STATUS.equals(name)) {
+                    String trimmedContent = content != null ? content.trim() : null;
+                    accessMonitorConfiguration.setAccessMonitorStatus(
+                            AccessMonitorStatusEnum.getValueFromCode(trimmedContent));
+                }
+            } else {
+                log.error("accessMonitorConfiguration is null, parse xml in AccessMonitorConfigurationHandler failed");
+            }
+        }
+    }
+
     public static class BucketQosConfigurationHandler extends DefaultXmlHandler {
 
         // 解析结果对象
@@ -2962,8 +3110,8 @@ public class XmlResponsesSaxParser {
 
         private BpsLimitConfiguration currentBpsLimit;
 
-        // 核心标记：当前是否在QoSGroupConfiguration内部
-        private boolean isInGroupConfig = false;
+        // 核心标记：当前是否在集群配置区域（ResourceClusterConfiguration或旧标签QoSGroupConfiguration）内部
+        private boolean isInClusterConfig = false;
 
         public GetBucketQoSResult getQosResult() {
             return result;
@@ -2977,9 +3125,9 @@ public class XmlResponsesSaxParser {
                 return;
             }
 
-            // 进入QoSGroupConfiguration区域，标记为true
-            if ("QoSGroupConfiguration".equals(name)) {
-                isInGroupConfig = true;
+            // 进入集群配置区域（支持新标签ResourceClusterConfiguration和旧标签QoSGroupConfiguration），标记为true
+            if ("ResourceClusterConfiguration".equals(name) || "QoSGroupConfiguration".equals(name)) {
+                isInClusterConfig = true;
                 return;
             }
 
@@ -2999,15 +3147,15 @@ public class XmlResponsesSaxParser {
                 return;
             }
 
-            // 离开QoSGroupConfiguration区域，标记为false
-            if ("QoSGroupConfiguration".equals(name)) {
-                isInGroupConfig = false;
+            // 离开集群配置区域（支持新标签ResourceClusterConfiguration和旧标签QoSGroupConfiguration），标记为false
+            if ("ResourceClusterConfiguration".equals(name) || "QoSGroupConfiguration".equals(name)) {
+                isInClusterConfig = false;
                 return;
             }
 
-            // 解析QoS组名称
-            if ("QoSGroup".equals(name)) {
-                result.setQosGroup(content.trim());
+            // 解析集群名称（支持新标签ResourceCluster和旧标签QoSGroup）
+            if ("ResourceCluster".equals(name) || "QoSGroup".equals(name)) {
+                result.setResourceCluster(content.trim());
                 return;
             }
 
@@ -3071,8 +3219,8 @@ public class XmlResponsesSaxParser {
                         break;
                     case "QoSRule":
                         // 根据boolean标记决定加入哪个列表
-                        if (isInGroupConfig) {
-                            result.getGroupQosRules().add(currentQosRule);
+                        if (isInClusterConfig) {
+                            result.getClusterQosRules().add(currentQosRule);
                         } else {
                             result.getBucketQosRules().add(currentQosRule);
                         }

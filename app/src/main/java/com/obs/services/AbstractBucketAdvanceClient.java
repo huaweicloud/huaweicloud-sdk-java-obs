@@ -28,6 +28,9 @@ import com.obs.services.model.bpa.GetBucketPublicAccessBlockResult;
 import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
 import com.obs.services.model.bpa.GetBucketPublicStatusResult;
 import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorRequest;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorResult;
+import com.obs.services.model.accessmonitor.SetBucketAccessMonitorRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketDirectColdAccess;
 import com.obs.services.model.BucketEncryption;
@@ -56,6 +59,10 @@ import com.obs.services.model.trash.DeleteBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashResult;
 import com.obs.services.model.trash.SetBucketTrashRequest;
+import com.obs.services.model.realtimelog.DeleteBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogResult;
+import com.obs.services.model.realtimelog.SetBucketRealTimeLogRequest;
 import com.obs.services.model.compress.SetBucketCompressPolicyRequest;
 import com.obs.services.model.compress.GetBucketCompressPolicyRequest;
 import com.obs.services.model.compress.GetBucketCompressPolicyResult;
@@ -889,6 +896,53 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
     }
 
     @Override
+    public HeaderResponse setBucketRealTimeLog(final SetBucketRealTimeLogRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "SetBucketRealTimeLogRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        ServiceUtils.assertParameterNotNull(request.getRealTimeLogConfiguration(),
+            "realTimeLogConfiguration is null");
+        ServiceUtils.assertParameterNotNull(request.getRealTimeLogConfiguration().getLogGroupId(),
+            "logGroupId is null");
+        ServiceUtils.assertParameterNotNull(request.getRealTimeLogConfiguration().getLogStreamId(),
+            "logStreamId is null");
+        ServiceUtils.assertParameterNotNull(request.getRealTimeLogConfiguration().getProjectId(),
+            "projectId is null");
+        return this.doActionWithResult("setBucketRealTimeLog", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.setBucketRealTimeLogImpl(request);
+                }
+            });
+    }
+
+    @Override
+    public GetBucketRealTimeLogResult getBucketRealTimeLog(final GetBucketRealTimeLogRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketRealTimeLogRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketRealTimeLog", request.getBucketName(),
+            new ActionCallbackWithResult<GetBucketRealTimeLogResult>() {
+                @Override
+                public GetBucketRealTimeLogResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketRealTimeLogImpl(request);
+                }
+            });
+    }
+
+    @Override
+    public HeaderResponse deleteBucketRealTimeLog(final DeleteBucketRealTimeLogRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "DeleteBucketRealTimeLogRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("deleteBucketRealTimeLog", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.deleteBucketRealTimeLogImpl(request);
+                }
+            });
+    }
+
+    @Override
     public HeaderResponse setBucketCompressPolicy(final SetBucketCompressPolicyRequest request) throws ObsException {
         ServiceUtils.assertParameterNotNull(request, "SetBucketCompressPolicyRequest is null");
         ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
@@ -1148,6 +1202,32 @@ public abstract class AbstractBucketAdvanceClient extends AbstractBucketClient {
                 @Override
                 public GetBucketPublicStatusResult action() throws ServiceException {
                     return AbstractBucketAdvanceClient.this.getBucketPublicStatusImpl(request);
+                }
+            });
+    }
+
+    @Override
+    public HeaderResponse setBucketAccessMonitor(SetBucketAccessMonitorRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "SetBucketAccessMonitorRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("setBucketAccessMonitor", request.getBucketName(),
+            new ActionCallbackWithResult<HeaderResponse>() {
+                @Override
+                public HeaderResponse action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.setBucketAccessMonitorImpl(request);
+                }
+            });
+    }
+
+    @Override
+    public GetBucketAccessMonitorResult getBucketAccessMonitor(GetBucketAccessMonitorRequest request) throws ObsException {
+        ServiceUtils.assertParameterNotNull(request, "GetBucketAccessMonitorRequest is null");
+        ServiceUtils.assertParameterNotNull(request.getBucketName(), "bucketName is null");
+        return this.doActionWithResult("getBucketAccessMonitor", request.getBucketName(),
+            new ActionCallbackWithResult<GetBucketAccessMonitorResult>() {
+                @Override
+                public GetBucketAccessMonitorResult action() throws ServiceException {
+                    return AbstractBucketAdvanceClient.this.getBucketAccessMonitorImpl(request);
                 }
             });
     }

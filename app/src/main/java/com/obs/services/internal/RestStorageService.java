@@ -950,7 +950,7 @@ public abstract class RestStorageService extends RestConnectionService {
             iauthentication = V4Authentication.makeServiceCanonicalString(request.method(),
                     convertHeadersToMap(builder.build().headers()), fullUrl, providerCredentials, now, securityKey);
             if (log.isDebugEnabled()) {
-                log.debug("CanonicalRequest:" + iauthentication.getCanonicalRequest());
+                log.debug("CanonicalRequest:" + messageMasked(iauthentication.getCanonicalRequest()));
             }
         } else {
             iauthentication = Constants.AUTHTICATION_MAP.get(providerCredentials.getLocalAuthType(bucketName))

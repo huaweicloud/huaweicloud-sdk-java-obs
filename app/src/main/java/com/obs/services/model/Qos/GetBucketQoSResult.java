@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetBucketQoSResult extends HeaderResponse {
-    private String qosGroup = "";
+    private String resourceCluster = "";
     private List<QosRule> bucketQosRules = new ArrayList<>();
-    private List<QosRule> groupQosRules = new ArrayList<>();
+    private List<QosRule> clusterQosRules = new ArrayList<>();
 
     /**
      * 获取Bucket的QoS规则列表
+     *
+     * @return Bucket级别的QoS规则列表
      */
     public List<QosRule> getBucketQosRules() {
         return bucketQosRules;
@@ -19,37 +21,99 @@ public class GetBucketQoSResult extends HeaderResponse {
 
     /**
      * 设置Bucket的QoS规则列表
+     *
+     * @param bucketQosRules Bucket级别的QoS规则列表
      */
     public void setBucketQosRules(List<QosRule> bucketQosRules) {
         this.bucketQosRules = bucketQosRules;
     }
 
     /**
-     * 获取QoS组的QoS规则列表
+     * 获取集群的QoS规则列表
+     *
+     * @return 集群级别的QoS规则列表
      */
-    public List<QosRule> getGroupQosRules() {
-        return groupQosRules;
+    public List<QosRule> getClusterQosRules() {
+        return clusterQosRules;
     }
 
     /**
-     * 设置QoS组的QoS规则列表
+     * 设置集群的QoS规则列表
+     *
+     * @param clusterQosRules 集群级别的QoS规则列表
      */
-    public void setGroupQosRules(List<QosRule> groupQosRules) {
-        this.groupQosRules = groupQosRules;
+    public void setClusterQosRules(List<QosRule> clusterQosRules) {
+        this.clusterQosRules = clusterQosRules;
+    }
+
+    /**
+     * 获取集群名称
+     *
+     * @return 集群名称字符串
+     */
+    public String getResourceCluster() {
+        return resourceCluster;
+    }
+
+    /**
+     * 设置集群名称
+     *
+     * @param resourceCluster 集群名称字符串
+     */
+    public void setResourceCluster(String resourceCluster) {
+        this.resourceCluster = resourceCluster;
     }
 
     /**
      * 获取QoS组名称
+     * <p>
+     * 此方法已废弃，请使用 {@link #getResourceCluster()} 替代。
+     * "QoSGroup"概念已重命名为"ResourceCluster"（集群）。
+     *
+     * @return 集群名称字符串
      */
+    @Deprecated
     public String getQosGroup() {
-        return qosGroup;
+        return resourceCluster;
     }
 
     /**
      * 设置QoS组名称
+     * <p>
+     * 此方法已废弃，请使用 {@link #setResourceCluster(String)} 替代。
+     * "QoSGroup"概念已重命名为"ResourceCluster"（集群）。
+     *
+     * @param qosGroup 集群名称字符串
      */
+    @Deprecated
     public void setQosGroup(String qosGroup) {
-        this.qosGroup = qosGroup;
+        this.resourceCluster = qosGroup;
+    }
+
+    /**
+     * 获取QoS组的QoS规则列表
+     * <p>
+     * 此方法已废弃，请使用 {@link #getClusterQosRules()} 替代。
+     * "QoSGroup"概念已重命名为"ResourceCluster"（集群）。
+     *
+     * @return 集群级别的QoS规则列表
+     */
+    @Deprecated
+    public List<QosRule> getGroupQosRules() {
+        return clusterQosRules;
+    }
+
+    /**
+     * 设置QoS组的QoS规则列表
+     * <p>
+     * 此方法已废弃，请使用 {@link #setClusterQosRules(List)} 替代。
+     * "QoSGroup"概念已重命名为"ResourceCluster"（集群）。
+     *
+     * @param groupQosRules 集群级别的QoS规则列表
+     */
+    @Deprecated
+    public void setGroupQosRules(List<QosRule> groupQosRules) {
+        this.clusterQosRules = groupQosRules;
     }
 
     @Override
@@ -57,9 +121,9 @@ public class GetBucketQoSResult extends HeaderResponse {
         return "GetBucketQoSResult{" +
                 "statusCode=" + getStatusCode() +
                 ", requestId='" + getRequestId() + '\'' +
-                ", qosGroup='" + qosGroup + '\'' +
+                ", resourceCluster='" + resourceCluster + '\'' +
                 ", bucketQosRules=" + bucketQosRules +
-                ", groupQosRules=" + groupQosRules +
+                ", clusterQosRules=" + clusterQosRules +
                 '}';
     }
 }

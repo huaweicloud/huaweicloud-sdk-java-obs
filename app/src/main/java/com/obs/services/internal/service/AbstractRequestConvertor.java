@@ -39,6 +39,7 @@ import com.obs.services.model.fs.GetBucketFSStatusResult;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import okhttp3.Response;
 
 import java.io.ByteArrayInputStream;
@@ -429,8 +430,9 @@ public abstract class AbstractRequestConvertor extends RestStorageService {
     protected ResponseBodyHolder readResponseBodyAsHolder(Response response) {
         String body = null;
         try {
-            if (response.body() != null) {
-                body = response.body().string();
+            ResponseBody responseBody = response.body();
+            if (responseBody != null && responseBody.contentLength() != 0) {
+                body = responseBody.string();
             }
         } catch (IOException e) {
             if (log.isWarnEnabled()) {

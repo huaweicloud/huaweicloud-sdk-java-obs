@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.StreamWriteFeature;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -113,13 +113,9 @@ public class JSONChange {
             this.setDefaultPropertyInclusion(JsonInclude.Value.construct(Include.ALWAYS, Include.NON_NULL));
             this.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             this.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-            this.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             // 按时间戳格式生成日期
             this.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, true);
-            this.enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
-            // 不包含空值属性
-            this.setSerializationInclusion(Include.NON_EMPTY);
-            this.setSerializationInclusion(Include.NON_NULL);
+            this.configure(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN.mappedFeature(), true);
             // 是否缩放排列输出，默认false，
             this.configure(SerializationFeature.INDENT_OUTPUT, false);
         }

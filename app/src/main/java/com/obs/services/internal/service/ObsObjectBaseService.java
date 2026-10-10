@@ -539,6 +539,21 @@ public abstract class ObsObjectBaseService extends ObsBucketAdvanceService {
         if (objMetadata.getNextPosition() == -1L) {
             objMetadata.setNextPosition(Long.parseLong(response.header(Constants.CommonHeaders.CONTENT_LENGTH, "-1")));
         }
+
+        String lastAccessTimeStr = response.header(OBS_HEADER_PREFIX + "last-access-time");
+        if (lastAccessTimeStr == null || lastAccessTimeStr.isEmpty()) {
+            lastAccessTimeStr = response.header(V2_HEADER_PREFIX + "last-access-time");
+        }
+        if (lastAccessTimeStr != null && !lastAccessTimeStr.isEmpty()) {
+            try {
+                objMetadata.setLastAccessTime(ServiceUtils.parseRfc822Date(lastAccessTimeStr));
+            } catch (ParseException e) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Response last-access-time is not well-format", e);
+                }
+            }
+        }
+
         setHeadersAndStatus(objMetadata, response, needDecode);
         objMetadata.setUserMetadata(ServiceUtils.cleanUserMetadata(objMetadata.getOriginalHeaders(), needDecode));
         return objMetadata;

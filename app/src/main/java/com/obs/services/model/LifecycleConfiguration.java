@@ -315,6 +315,8 @@ public class LifecycleConfiguration extends HeaderResponse {
      */
     public class Transition extends TimeEvent {
 
+        protected Boolean isAccessTime;
+
         public Transition() {
             super();
         }
@@ -467,9 +469,31 @@ public class LifecycleConfiguration extends HeaderResponse {
             this.days = null;
         }
 
+        /**
+         * Obtain whether the transition rule is based on last access time.
+         *
+         * @return Whether the transition rule is based on last access time.
+         *         true: based on last access time; false: based on last modified time
+         */
+        public Boolean getIsAccessTime() {
+            return isAccessTime;
+        }
+
+        /**
+         * Set whether the transition rule is based on last access time.
+         *
+         * @param isAccessTime
+         *            Whether the transition rule is based on last access time.
+         *            true: based on last access time; false: based on last modified time
+         */
+        public void setIsAccessTime(Boolean isAccessTime) {
+            this.isAccessTime = isAccessTime;
+        }
+
         @Override
         public String toString() {
-            return "Transition [days=" + days + ", date=" + date + ", storageClass=" + storageClass + "]";
+            return "Transition [days=" + days + ", date=" + date + ", storageClass=" + storageClass
+                    + ", isAccessTime=" + isAccessTime + "]";
         }
     }
 
@@ -478,6 +502,8 @@ public class LifecycleConfiguration extends HeaderResponse {
      *
      */
     public class NoncurrentVersionTransition extends TimeEvent {
+        protected Boolean isAccessTime;
+
         public NoncurrentVersionTransition() {
         }
 
@@ -587,9 +613,31 @@ public class LifecycleConfiguration extends HeaderResponse {
             this.storageClass = storageClass;
         }
 
+        /**
+         * Obtain whether the transition rule is based on last access time.
+         *
+         * @return Whether the transition rule is based on last access time.
+         *         true: based on last access time; false: based on last modified time
+         */
+        public Boolean getIsAccessTime() {
+            return isAccessTime;
+        }
+
+        /**
+         * Set whether the transition rule is based on last access time.
+         *
+         * @param isAccessTime
+         *            Whether the transition rule is based on last access time.
+         *            true: based on last access time; false: based on last modified time
+         */
+        public void setIsAccessTime(Boolean isAccessTime) {
+            this.isAccessTime = isAccessTime;
+        }
+
         @Override
         public String toString() {
-            return "NoncurrentVersionTransition [days=" + days + ", storageClass=" + storageClass + "]";
+            return "NoncurrentVersionTransition [days=" + days + ", storageClass=" + storageClass
+                    + ", isAccessTime=" + isAccessTime + "]";
         }
 
     }

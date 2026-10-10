@@ -55,6 +55,8 @@ public class ObjectMetadata extends HeaderResponse {
 
     private boolean appendable;
 
+    private Date lastAccessTime;
+
     private Map<String, Object> userMetadata;
 
     /**
@@ -83,6 +85,26 @@ public class ObjectMetadata extends HeaderResponse {
 
     public void setNextPosition(long nextPosition) {
         this.nextPosition = nextPosition;
+    }
+
+    /**
+     * Obtain the last access time of the object.
+     * This value is only returned when access tracking is enabled for the bucket.
+     *
+     * @return Last access time of the object
+     */
+    public Date getLastAccessTime() {
+        return ServiceUtils.cloneDateIgnoreNull(this.lastAccessTime);
+    }
+
+    /**
+     * Set the last access time of the object.
+     *
+     * @param lastAccessTime
+     *            Last access time of the object
+     */
+    public void setLastAccessTime(Date lastAccessTime) {
+        this.lastAccessTime = ServiceUtils.cloneDateIgnoreNull(lastAccessTime);
     }
 
     /**
@@ -420,12 +442,12 @@ public class ObjectMetadata extends HeaderResponse {
     @Override
     public String toString() {
         return "ObjectMetadata [metadata=" + this.getAllMetadata() + ", lastModified=" + lastModified
-                + ", contentDisposition=" + contentDisposition + ", cacheControl=" + cacheControl 
-                + ", expires=" + expires + ", contentLength=" + contentLength + ", contentType=" 
-                + contentType + ", contentEncoding=" + contentEncoding + ", etag=" + etag 
-                + ", contentMd5=" + contentMd5 + ", storageClass=" + storageClass 
-                + ", webSiteRedirectLocation=" + webSiteRedirectLocation + ", nextPosition=" 
-                + nextPosition + ", appendable=" + appendable + "]";
+                + ", contentDisposition=" + contentDisposition + ", cacheControl=" + cacheControl
+                + ", expires=" + expires + ", contentLength=" + contentLength + ", contentType="
+                + contentType + ", contentEncoding=" + contentEncoding + ", etag=" + etag
+                + ", contentMd5=" + contentMd5 + ", storageClass=" + storageClass
+                + ", webSiteRedirectLocation=" + webSiteRedirectLocation + ", nextPosition="
+                + nextPosition + ", appendable=" + appendable + ", lastAccessTime=" + lastAccessTime + "]";
     }
 
 }

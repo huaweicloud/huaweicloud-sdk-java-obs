@@ -159,6 +159,10 @@ public class V2Convertor extends V2BucketConvertor {
                 OBSXMLBuilder noncurrentVersionBuilder = b.elem("NoncurrentVersionTransition");
                 noncurrentVersionBuilder.elem("NoncurrentDays").t(
                         noncurrentVersionTransition.getDays().toString());
+                if (noncurrentVersionTransition.getIsAccessTime() != null
+                        && noncurrentVersionTransition.getIsAccessTime()) {
+                    noncurrentVersionBuilder.elem("IsAccessTime").t("true");
+                }
                 noncurrentVersionBuilder.elem("StorageClass")
                         .t(this.transStorageClass(noncurrentVersionTransition.getObjectStorageClass()));
             }
@@ -203,6 +207,9 @@ public class V2Convertor extends V2BucketConvertor {
                             ServiceUtils.formatIso8601MidnightDate(transition.getDate()));
                 } else if (transition.getDays() != null) {
                     transitionBuilder.elem("Days").t(transition.getDays().toString());
+                }
+                if (transition.getIsAccessTime() != null && transition.getIsAccessTime()) {
+                    transitionBuilder.elem("IsAccessTime").t("true");
                 }
                 transitionBuilder.elem("StorageClass").t(
                         this.transStorageClass(transition.getObjectStorageClass()));

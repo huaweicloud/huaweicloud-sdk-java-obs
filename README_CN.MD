@@ -1,3 +1,17 @@
+Version 3.26.9
+New features:
+1. 支持桶实时日志配置特性
+2. 生命周期管理支持最后访问时间
+3. 桶CORS规则增加ResponseVary参数
+Resolved issues:
+1. 修复debug日志打印明文security token的问题
+Third-party dependence:
+1. 使用 okhttp-jvm 5.3.0 替代 okhttp 4.10.0 
+2. 使用 okio-jvm 3.16.2 替代 okio 2.10.0
+3. 升级 jackson-core 到 2.21.5
+4. 升级 jackson-databind 到 2.21.5
+5. 升级 jackson-annotations 到 2.21
+-----------------------------------------------------------------------------------
 Version 3.26.6
 New features:
 1. 支持桶在线解压策略特性

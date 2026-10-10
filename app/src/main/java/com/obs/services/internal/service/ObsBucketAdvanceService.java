@@ -34,8 +34,10 @@ import com.obs.services.internal.xml.BucketPublicAccessBlockXMLBuilder;
 import com.obs.services.internal.xml.CustomDomainCertificateConfigXMLBuilder;
 import com.obs.services.internal.xml.OBSXMLBuilder;
 import com.obs.services.internal.xml.BucketTrashConfigurationXMLBuilder;
+import com.obs.services.internal.xml.BucketRealTimeLogConfigurationXMLBuilder;
 import com.obs.services.internal.xml.ObjectLockConfigurationXMLBuilder;
 import com.obs.services.internal.xml.QosConfigurationXMLBuilder;
+import com.obs.services.internal.xml.AccessMonitorXMLBuilder;
 import com.obs.services.model.AccessControlList;
 import com.obs.services.model.AuthTypeEnum;
 import com.obs.services.model.DeleteBucketLifecycleRequest;
@@ -55,6 +57,10 @@ import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
 import com.obs.services.model.bpa.GetBucketPublicStatusResult;
 import com.obs.services.model.bpa.BucketPolicyStatus;
 import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
+import com.obs.services.model.accessmonitor.AccessMonitorConfiguration;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorRequest;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorResult;
+import com.obs.services.model.accessmonitor.SetBucketAccessMonitorRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketCustomDomainInfo;
@@ -107,6 +113,11 @@ import com.obs.services.model.trash.DeleteBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashResult;
 import com.obs.services.model.trash.SetBucketTrashRequest;
+import com.obs.services.model.realtimelog.BucketRealTimeLogConfiguration;
+import com.obs.services.model.realtimelog.DeleteBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogResult;
+import com.obs.services.model.realtimelog.SetBucketRealTimeLogRequest;
 import com.obs.services.model.compress.CompressPolicyConfiguration;
 import com.obs.services.model.compress.DeleteBucketCompressPolicyRequest;
 import com.obs.services.model.compress.GetBucketCompressPolicyRequest;
@@ -829,7 +840,7 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
             ServiceUtils.checkParameterSize("Certificate Request Body Size",
                     sizeInKB,
                     ObsConstraint.CUSTOM_DOMAIN_CERTIFICATE_MAX_XML_BODY_SIZE_BY_KB);
-            result.setBody(RequestBody.create(xml.getBytes(StandardCharsets.UTF_8)));
+            result.setBody(RequestBody.create(xml.getBytes(StandardCharsets.UTF_8), null));
             result.getUserHeaders().put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
             result.setHasCertificate(true);
         }
@@ -1091,6 +1102,58 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
             transRequestPaymentHeaders(deleteBucketTrashRequest, null,
                 this.getIHeaders(deleteBucketTrashRequest.getBucketName())),
             deleteBucketTrashRequest.getUserHeaders());
+        return this.build(response);
+    }
+
+    protected HeaderResponse setBucketRealTimeLogImpl(SetBucketRealTimeLogRequest request) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.REALTIME_LOG.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+        BucketRealTimeLogConfigurationXMLBuilder xmlBuilder = new BucketRealTimeLogConfigurationXMLBuilder();
+        String xml = xmlBuilder.buildXML(request.getRealTimeLogConfiguration());
+        if (log.isTraceEnabled()) {
+            log.trace("setBucketRealTimeLogRequest's xml is:");
+            log.trace(xml);
+        }
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        NewTransResult transResult = transRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(transResult, true, false, false, false);
+        return build(response);
+    }
+
+    protected GetBucketRealTimeLogResult getBucketRealTimeLogImpl(GetBucketRealTimeLogRequest request) {
+        Map<String, String> requestParameters = new HashMap<>();
+        requestParameters.put(SpecialParamEnum.REALTIME_LOG.getOriginalStringCode(), "");
+
+        Response httpResponse = performRestGet(request.getBucketName(), null, requestParameters,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+
+        XmlResponsesSaxParser.BucketRealTimeLogConfigurationXMLHandler handler =
+            getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.BucketRealTimeLogConfigurationXMLHandler.class, false);
+
+        GetBucketRealTimeLogResult result = new GetBucketRealTimeLogResult();
+        result.setRealTimeLogConfiguration(
+            new BucketRealTimeLogConfiguration(handler.getLogGroupId(), handler.getLogStreamId(), handler.getProjectId()));
+        setHeadersAndStatus(result, httpResponse);
+        return result;
+    }
+
+    protected HeaderResponse deleteBucketRealTimeLogImpl(DeleteBucketRealTimeLogRequest request) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.REALTIME_LOG.getOriginalStringCode(), "");
+        Response response = performRestDelete(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
         return this.build(response);
     }
 
@@ -1391,6 +1454,48 @@ public abstract class ObsBucketAdvanceService extends ObsBucketBaseService {
         setHeadersAndStatus(getBucketPublicAccessBlockResult, httpResponse);
         getBucketPublicAccessBlockResult.setBucketPublicStatus(bucketPolicyStatus);
         return getBucketPublicAccessBlockResult;
+    }
+
+    protected HeaderResponse setBucketAccessMonitorImpl(SetBucketAccessMonitorRequest request) throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.ACCESS_MONITOR.getOriginalStringCode(), "");
+        Map<String, String> headers = new HashMap<>();
+        transRequestPaymentHeaders(request, headers, this.getIHeaders(request.getBucketName()));
+
+        AccessMonitorXMLBuilder xmlBuilder = new AccessMonitorXMLBuilder();
+        String xml = xmlBuilder.buildXML(request.getAccessMonitorConfiguration());
+        if (log.isTraceEnabled()) {
+            log.trace("setBucketAccessMonitor's xml is:");
+            log.trace(xml);
+        }
+        headers.put(CommonHeaders.CONTENT_LENGTH, String.valueOf(xml.length()));
+        headers.put(CommonHeaders.CONTENT_MD5, ServiceUtils.computeMD5(xml));
+        headers.put(CommonHeaders.CONTENT_TYPE, Mimetypes.MIMETYPE_XML);
+        NewTransResult transResult = transRequest(request);
+        transResult.setHeaders(headers);
+        transResult.setParams(requestParams);
+        transResult.setBody(createRequestBody(Mimetypes.MIMETYPE_XML, xml));
+        Response response = performRequest(transResult, true, false, false, false);
+        return build(response);
+    }
+
+    protected GetBucketAccessMonitorResult getBucketAccessMonitorImpl(GetBucketAccessMonitorRequest request)
+            throws ServiceException {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(SpecialParamEnum.ACCESS_MONITOR.getOriginalStringCode(), "");
+
+        Response httpResponse = performRestGet(request.getBucketName(), null, requestParams,
+            transRequestPaymentHeaders(request, null, this.getIHeaders(request.getBucketName())),
+            request.getUserHeaders());
+
+        this.verifyResponseContentType(httpResponse);
+        AccessMonitorConfiguration accessMonitorConfiguration =
+            getXmlResponseSaxParser().parse(new HttpMethodReleaseInputStream(httpResponse),
+                XmlResponsesSaxParser.AccessMonitorConfigurationHandler.class, false).getAccessMonitorConfiguration();
+        GetBucketAccessMonitorResult result = new GetBucketAccessMonitorResult();
+        setHeadersAndStatus(result, httpResponse);
+        result.setAccessMonitorConfiguration(accessMonitorConfiguration);
+        return result;
     }
 
     protected HeaderResponse setBucketQosImpl(SetBucketQosRequest request){

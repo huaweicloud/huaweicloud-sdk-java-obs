@@ -48,6 +48,9 @@ import com.obs.services.model.bpa.GetBucketPublicAccessBlockResult;
 import com.obs.services.model.bpa.GetBucketPublicStatusRequest;
 import com.obs.services.model.bpa.GetBucketPublicStatusResult;
 import com.obs.services.model.bpa.PutBucketPublicAccessBlockRequest;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorRequest;
+import com.obs.services.model.accessmonitor.GetBucketAccessMonitorResult;
+import com.obs.services.model.accessmonitor.SetBucketAccessMonitorRequest;
 import com.obs.services.model.BaseBucketRequest;
 import com.obs.services.model.BucketCors;
 import com.obs.services.model.BucketDirectColdAccess;
@@ -168,6 +171,10 @@ import com.obs.services.model.trash.DeleteBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashRequest;
 import com.obs.services.model.trash.GetBucketTrashResult;
 import com.obs.services.model.trash.SetBucketTrashRequest;
+import com.obs.services.model.realtimelog.DeleteBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogRequest;
+import com.obs.services.model.realtimelog.GetBucketRealTimeLogResult;
+import com.obs.services.model.realtimelog.SetBucketRealTimeLogRequest;
 import com.obs.services.model.compress.SetBucketCompressPolicyRequest;
 import com.obs.services.model.compress.GetBucketCompressPolicyRequest;
 import com.obs.services.model.compress.GetBucketCompressPolicyResult;
@@ -2393,6 +2400,42 @@ public interface IObsClient extends IObsBucketExtendClient {
     HeaderResponse deleteBucketTrash(DeleteBucketTrashRequest deleteBucketTrashRequest) throws ObsException;
 
     /**
+     * Set the real-time log configuration of a bucket.
+     *
+     * @param request
+     *            Request parameters for setting real-time log configuration
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    HeaderResponse setBucketRealTimeLog(SetBucketRealTimeLogRequest request) throws ObsException;
+
+    /**
+     * Get the real-time log configuration of a bucket.
+     *
+     * @param request
+     *            Request parameters for getting real-time log configuration
+     * @return The real-time log configuration
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    GetBucketRealTimeLogResult getBucketRealTimeLog(GetBucketRealTimeLogRequest request) throws ObsException;
+
+    /**
+     * Delete the real-time log configuration of a bucket.
+     *
+     * @param request
+     *            Request parameters for deleting real-time log configuration
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    HeaderResponse deleteBucketRealTimeLog(DeleteBucketRealTimeLogRequest request) throws ObsException;
+
+    /**
      * Set the online decompression policy of a bucket.
      *
      * @param request
@@ -2536,6 +2579,30 @@ public interface IObsClient extends IObsBucketExtendClient {
     GetBucketPolicyPublicStatusResult getBucketPolicyPublicStatus(GetBucketPolicyPublicStatusRequest request) throws ObsException;
 
     GetBucketPublicStatusResult getBucketPublicStatus(GetBucketPublicStatusRequest request) throws ObsException;
+
+    /**
+     * Set the access monitor configuration of a bucket.
+     *
+     * @param request
+     *            Request parameters for setting the access monitor configuration
+     * @return Common response headers
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    HeaderResponse setBucketAccessMonitor(SetBucketAccessMonitorRequest request) throws ObsException;
+
+    /**
+     * Get the access monitor configuration of a bucket.
+     *
+     * @param request
+     *            Request parameters for getting the access monitor configuration
+     * @return Result containing the access monitor configuration
+     * @throws ObsException
+     *             OBS SDK self-defined exception, thrown when the interface
+     *             fails to be called or access to OBS fails
+     */
+    GetBucketAccessMonitorResult getBucketAccessMonitor(GetBucketAccessMonitorRequest request) throws ObsException;
 
     HeaderResponse putSymlink(PutSymlinkRequest request) throws ObsException;
 

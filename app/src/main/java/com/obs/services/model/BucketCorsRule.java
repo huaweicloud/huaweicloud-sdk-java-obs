@@ -33,6 +33,8 @@ public class BucketCorsRule {
 
     private List<String> exposeHeader;
 
+    private Boolean responseVary;
+
     /**
      * Obtain the CORS rule ID.
      * 
@@ -159,7 +161,7 @@ public class BucketCorsRule {
 
     /**
      * Specify the additional response headers allowed by the CORS rules.
-     * 
+     *
      * @param exposeHeader
      *            List of additional headers
      */
@@ -167,11 +169,32 @@ public class BucketCorsRule {
         this.exposeHeader = exposeHeader;
     }
 
+    /**
+     * Obtain whether to return the Vary:Origin response header for CORS requests.
+     *
+     * @return Whether to return the Vary:Origin response header. true: return Vary:Origin; false: do not return Vary:Origin; null: not set
+     */
+    public Boolean getResponseVary() {
+        return responseVary;
+    }
+
+    /**
+     * Set whether to return the Vary:Origin response header for CORS requests.
+     *
+     * @param responseVary
+     *            Whether to return the Vary:Origin response header.
+     *            true: return Vary:Origin response header for CORS requests;
+     *            false: do not return Vary:Origin response header for CORS requests
+     */
+    public void setResponseVary(Boolean responseVary) {
+        this.responseVary = responseVary;
+    }
+
     @Override
     public String toString() {
         return "BucketCorsRule [id=" + id + ", maxAgeSecond=" + maxAgeSecond + ", allowedMethod=" + allowedMethod
                 + ", allowedOrigin=" + allowedOrigin + ", allowedHeader=" + allowedHeader + ", exposeHeader="
-                + exposeHeader + "]";
+                + exposeHeader + ", responseVary=" + responseVary + "]";
     }
 
 }

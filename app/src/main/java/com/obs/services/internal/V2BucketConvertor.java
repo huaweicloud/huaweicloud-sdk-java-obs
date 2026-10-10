@@ -202,6 +202,9 @@ public abstract class V2BucketConvertor implements IConvertor {
                         builder.e("ExposeHeader").t(ServiceUtils.toValid(exposeHeader));
                     }
                 }
+                if (rule.getResponseVary() != null) {
+                    builder.e("ResponseVary").t(String.valueOf(rule.getResponseVary()));
+                }
                 builder = builder.up();
             }
             return builder.asString();
@@ -336,9 +339,34 @@ public abstract class V2BucketConvertor implements IConvertor {
             builder.e("Id").t(inventoryConfiguration.getConfigurationId());
             builder.e("IsEnabled").t(inventoryConfiguration.getEnabled().toString());
 
-            if(!inventoryConfiguration.getObjectPrefix().equals("")) {
-                OBSXMLBuilder filter = builder.e("Filter");
-                filter.e("Prefix").t(inventoryConfiguration.getObjectPrefix());
+            InventoryConfiguration.InventoryFilter filter = inventoryConfiguration.getFilter();
+            if (filter != null) {
+                OBSXMLBuilder filterBuilder = builder.e("Filter");
+                if (!filter.getPrefix().equals("")) {
+                    filterBuilder.e("Prefix").t(filter.getPrefix());
+                }
+                if (filter.getIsLatest() != null) {
+                    filterBuilder.e("IsLatest").t(filter.getIsLatest().toString());
+                }
+                if (filter.getDeleteMarker() != null) {
+                    filterBuilder.e("DeleteMarker").t(filter.getDeleteMarker().toString());
+                }
+                if (filter.getAndOperator() != null) {
+                    OBSXMLBuilder andBuilder = filterBuilder.e("And");
+                    InventoryConfiguration.FilterAndOperator andOp = filter.getAndOperator();
+                    if (!andOp.getPrefix().equals("")) {
+                        andBuilder.e("Prefix").t(andOp.getPrefix());
+                    }
+                    if (andOp.getIsLatest() != null) {
+                        andBuilder.e("IsLatest").t(andOp.getIsLatest().toString());
+                    }
+                    if (andOp.getDeleteMarker() != null) {
+                        andBuilder.e("DeleteMarker").t(andOp.getDeleteMarker().toString());
+                    }
+                }
+            } else if (!inventoryConfiguration.getObjectPrefix().equals("")) {
+                OBSXMLBuilder filterElement = builder.e("Filter");
+                filterElement.e("Prefix").t(inventoryConfiguration.getObjectPrefix());
             }
             OBSXMLBuilder destination = builder.e("Destination");
             destination.e("Format").t(inventoryConfiguration.getInventoryFormat());

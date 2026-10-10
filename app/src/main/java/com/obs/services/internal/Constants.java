@@ -17,6 +17,7 @@ package com.obs.services.internal;
 import static com.obs.services.model.SpecialParamEnum.BUCKET_PUBLIC_STATUS;
 import static com.obs.services.model.SpecialParamEnum.POLICY_STATUS;
 import static com.obs.services.model.SpecialParamEnum.PUBLIC_ACCESS_BLOCK;
+import static com.obs.services.model.SpecialParamEnum.ACCESS_MONITOR;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -245,7 +246,7 @@ public class Constants {
 
     public static final TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 
-    public static final String OBS_SDK_VERSION = "3.26.6";
+    public static final String OBS_SDK_VERSION = "3.26.9";
 
     public static final String USER_AGENT_VALUE = "obs-sdk-java/" + Constants.OBS_SDK_VERSION;
 
@@ -350,6 +351,7 @@ public class Constants {
                     "x-image-save-bucket", "x-image-save-object", "x-image-process", "x-obs-sse-kms-key-project-id",
                     "x-oss-process", "ignore-sign-in-query", "listcontentsummary", "multilistcontentsummary",
                     "x-obs-trash", "getcontentsummary", "select", "select-type", "symlink", "x-obs-qosinfo",
-                    "x-obs-snapshot", "x-obs-snapshotroot", "object-lock", "retention", "obscompresspolicy", "dispolicy"));
+                    "x-obs-snapshot", "x-obs-snapshotroot", "object-lock", "retention", "obscompresspolicy", "dispolicy", "realtimelog",
+                    ACCESS_MONITOR.getStringCode()));
 
 }

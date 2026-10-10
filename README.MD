@@ -1,3 +1,28 @@
+Version 3.26.9
+New features:
+1. Supported bucket real-time log configuration feature
+2. Lifecycle management supports last access time
+3. Added ResponseVary parameter to bucket CORS rules
+Resolved issues:
+1. Fixed the issue of printing plaintext security token in debug logs
+Third-party dependence:
+1. Replaced okhttp 4.10.0 with okhttp-jvm 5.3.0
+2. Replaced okio 2.10.0 with okio-jvm 3.16.2
+3. Upgraded jackson-core to 2.21.5
+4. Upgraded jackson-databind to 2.21.5
+5. Upgraded jackson-annotations to 2.21
+-----------------------------------------------------------------------------------
+Version 3.26.6
+New features:
+1. The online decompression policy for buckets is supported.
+2. The DIS policy for buckets is supported.
+3. The mirror back to source feature is supported.
+4. The WORM feature is supported.
+5. OIDC token can be used to initialize ObsClient.
+Third-party dependencies:
+1. Log4j-core has been upgraded to 2.25.4.
+2. Log4j-api has been upgraded to 2.25.4.
+-----------------------------------------------------------------------------------
 Version 3.26.3.1
 Resolved issues:
 1. Fixed the problem that the client encryption function does not support consistency verification.

@@ -561,8 +561,8 @@ public class IdTokenCredentialsProvider implements IObsCredentialsProvider {
             ILOG.debug("Requesting federation token from: " + url);
         }
 
-        RequestBody body = RequestBody.create(jsonBody,
-            MediaType.get("application/json;charset=utf8"));
+        RequestBody body = RequestBody.create(
+            jsonBody, MediaType.get("application/json;charset=utf8"));
         Request request = new Request.Builder()
             .url(url)
             .post(body)
@@ -674,8 +674,8 @@ public class IdTokenCredentialsProvider implements IObsCredentialsProvider {
                 + ", expires_seconds: " + expiresSeconds);
         }
 
-        RequestBody body = RequestBody.create(jsonBody,
-            MediaType.get("application/json; charset=utf-8"));
+        RequestBody body = RequestBody.create(
+            jsonBody, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
             .url(url)
             .post(body)
@@ -691,7 +691,7 @@ public class IdTokenCredentialsProvider implements IObsCredentialsProvider {
             }
 
             String responseBodyString;
-            if (response.body() == null) {
+            if (response.body() == null || response.body().contentLength() == 0) {
                 throw new ObsException("Temporary credentials response body is null");
             }
 
